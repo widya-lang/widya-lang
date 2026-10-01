@@ -1,0 +1,120 @@
+// =================================================================
+// Modul Tugas PR & Integrasi Drive ke Widya Sinau LMS (WidyaOS)
+// Memfasilitasi Siswa Mengunggah Tugas / PR dari Cloud Drive
+// (Google Drive, OneDrive, Nextcloud Lokal, Sewidya Sovereign Cloud)
+// Dilengkapi Verifikasi Deadline, Anti-Plagiasi Hash, & Notifikasi Wali
+// =================================================================
+
+struktur TugasPRLMS {
+    id_tugas,
+    id_rombel,
+    kode_mapel,
+    nama_mapel,
+    judul_tugas,
+    petunjuk_pengerjaan,
+    tenggat_waktu_deadline, // e.g. "2026-09-20T23:59:00"
+    skor_maksimal,
+    daftar_pengumpulan,
+    daftar_hash_berkas_terkumpul // Deteksi plagiasi file duplikat
+}
+
+struktur PengumpulanTugasDrive {
+    id_submisi,
+    id_tugas,
+    nisn,
+    nama_siswa,
+    penyedia_drive, // "GOOGLE_DRIVE", "MICROSOFT_ONEDRIVE", "NEXTCLOUD_LOKAL", "SEWIDYA_SOVEREIGN_DRIVE"
+    url_tautan_berkas,
+    nama_berkas,
+    ukuran_mb,
+    hash_berkas_sha256,
+    waktu_pengumpulan,
+    status_ketepatan, // "TEPAT_WAKTU", "TERLAMBAT"
+    status_orisinalitas, // "ORISINIL_UNIK", "PERINGATAN_DUPLIKASI_PERSIS"
+    nilai_guru,
+    catatan_umpan_balik,
+    notifikasi_ke_wali
+}
+
+// -----------------------------------------------------------------
+// [1] Guru Membuat Tugas / PR Baru di LMS Sinau
+// -----------------------------------------------------------------
+fungsi buat_tugas_pr_lms(id_tugas, id_rombel, kode_mapel, nama_mapel, judul, instruksi, deadline) {
+    kembalikan TugasPRLMS(
+        id_tugas,
+        id_rombel,
+        kode_mapel,
+        nama_mapel,
+        judul,
+        instruksi,
+        deadline,
+        100.0,
+        [],
+        []
+    );
+}
+
+// -----------------------------------------------------------------
+// [2] Siswa Mengunggah / Melampirkan Berkas PR dari Cloud Drive
+// Mendukung Google Drive, OneDrive, Nextcloud, & Sewidya Drive
+// -----------------------------------------------------------------
+fungsi kumpulkan_pr_dari_drive(tugas, nisn, nama_siswa, provider, url_drive, nama_file, ukuran_mb, file_hash, waktu_kumpul) {
+    // 1. Cek Ketepatan Waktu Pengumpulan (Deadline)
+    misal status_waktu = "TEPAT_WAKTU";
+    jika waktu_kumpul > tugas.tenggat_waktu_deadline {
+        status_waktu = "TERLAMBAT";
+    }
+    
+    // 2. Cek Anti-Plagiasi (Apakah ada siswa lain yang mengunggah file yang sama persis?)
+    misal status_plagiasi = "ORISINIL_UNIK";
+    untuk h in tugas.daftar_hash_berkas_terkumpul {
+        jika h == file_hash {
+            status_plagiasi = "PERINGATAN_DUPLIKASI_PERSIS";
+        }
+    }
+    
+    // Simpan hash berkas jika orisinil
+    jika status_plagiasi == "ORISINIL_UNIK" {
+        tambah(tugas.daftar_hash_berkas_terkumpul, file_hash);
+    }
+    
+    misal id_sub = "SUB-" + tugas.id_tugas + "-" + nisn;
+    misal submisi = PengumpulanTugasDrive(
+        id_sub,
+        tugas.id_tugas,
+        nisn,
+        nama_siswa,
+        provider,
+        url_drive,
+        nama_file,
+        ukuran_mb,
+        file_hash,
+        waktu_kumpul,
+        status_waktu,
+        status_plagiasi,
+        nihil, // Belum dinilai guru
+        "Menunggu peninjauan dan penilaian guru",
+        "NOTIFIKASI_TERKIRIM_KE_PORTAL_WALI_MURID"
+    );
+    
+    tambah(tugas.daftar_pengumpulan, submisi);
+    kembalikan submisi;
+}
+
+// -----------------------------------------------------------------
+// [3] Guru Meninjau & Menilai Tugas PR di LMS Sinau
+// Nilai tugas ini otomatis terakumulasi ke Portofolio Formatif e-Rapor
+// -----------------------------------------------------------------
+fungsi beri_nilai_tugas_pr(submisi, nilai_angka, catatan_guru) {
+    submisi.nilai_guru = nilai_angka;
+    submisi.catatan_umpan_balik = catatan_guru;
+    
+    kembalikan {
+        "id_submisi": submisi.id_submisi,
+        "nisn": submisi.nisn,
+        "nama_siswa": submisi.nama_siswa,
+        "nilai_diberikan": nilai_angka,
+        "umpan_balik": catatan_guru,
+        "status_sinkronisasi_erapor": "TERINTEGRASI_KE_NILAI_FORMATIF_ERAPOR"
+    };
+}

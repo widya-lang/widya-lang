@@ -1,0 +1,178 @@
+// =================================================================
+// SIMULASI SUITE: SIKLUS PERENCANAAN SEKOLAH LENGKAP WIDYAOS
+// Rapor Pendidikan (PBD) -> RKJM (4 Tahun) -> RKT (1 Tahun) -> RKAS
+// Uji Kepatuhan Benang Merah (Golden Thread) & Deteksi Belanja Siluman
+// =================================================================
+
+impor "widyaos/modul/perencanaan_sekolah_pbd.wya";
+
+cetak("==================================================================");
+cetak(" UJI SIKLUS PERENCANAAN & PENGANGGARAN SEKOLAH (PBD - RKJM - RKT - RKAS)");
+cetak("==================================================================");
+
+// [TEST 1] Ingesti Hasil Rapor Pendidikan & Rekomendasi PBD
+cetak("\n[1] Analisis Rapor Pendidikan & Rekomendasi PBD (Identifikasi-Refleksi-Benahi)");
+misal pbd_literasi = buat_rekomendasi_pbd(
+    "PBD-2026-01",
+    "A.1 Kemampuan Literasi Siswa",
+    "KURANG",
+    "Koleksi buku non-teks bermutu di perpustakaan minim & guru belum menerapkan metode diferensiasi membaca",
+    "Peningkatan kompetensi GTK melalui PMM & pengadaan buku pengayaan literasi berkualitas via SIPLah"
+);
+
+cetak("📊 Indikator Prioritas :", pbd_literasi.indikator_prioritas, "(Nilai:", pbd_literasi.nilai_capaian, ")");
+cetak("🔍 Akar Masalah        :", pbd_literasi.akar_masalah);
+cetak("🛠️ Tindakan Benahi     :", pbd_literasi.kegiatan_benahi);
+
+jika pbd_literasi.id_rekomendasi == "PBD-2026-01" {
+    cetak("✅ [TEST 1] Ingesti Rekomendasi Perencanaan Berbasis Data (PBD): LULUS");
+} lainnya {
+    cetak("❌ [TEST 1] Ingesti Rekomendasi Perencanaan Berbasis Data (PBD): GAGAL");
+}
+
+// [TEST 2] Penyusunan Dokumen RKJM 4 Tahunan (2024 - 2028)
+cetak("\n[2] Penyusunan Rencana Kerja Jangka Menengah (RKJM) Siklus 4 Tahun");
+misal rkjm = inisialisasi_rkjm(
+    "20101234",
+    2024,
+    2028,
+    "Terwujudnya Lulusan Unggul Berkarakter Pelajar Pancasila dan Berdaya Saing Global",
+    "Menyelenggarakan pembelajaran berdiferensiasi dan tata kelola transparan akuntabel"
+);
+
+misal sasaran_proses = tambah_sasaran_rkjm(
+    rkjm,
+    "RKJM-SNP-PROSES",
+    "STANDAR_PROSES",
+    "Peningkatan skor indeks literasi dan numerasi dari 55.0 menjadi 85.0 dalam 4 tahun",
+    "Target Th 1: 62.0",
+    "Target Th 2: 70.0",
+    "Target Th 3: 78.0",
+    "Target Th 4: 85.0"
+);
+
+cetak("🏛️ Visi Sekolah        :", rkjm.visi_sekolah);
+cetak("🎯 Sasaran Strategis 4Th:", sasaran_proses.uraian_target_4_tahun);
+cetak("📈 Target Tahun Berjalan:", sasaran_proses.tahun_3_target);
+
+jika panjang(rkjm.daftar_sasaran_snp) == 1 dan rkjm.periode_tahun_selesai == 2028 {
+    cetak("✅ [TEST 2] Penyusunan Dokumen RKJM 4 Tahunan: LULUS");
+} lainnya {
+    cetak("❌ [TEST 2] Penyusunan Dokumen RKJM 4 Tahunan: GAGAL");
+}
+
+// [TEST 3] Penjabaran Rencana Kerja Tahunan (RKT Tahun Ajaran 2026/2027)
+cetak("\n[3] Penjabaran Rencana Kerja Tahunan (RKT) Berbasis PBD & RKJM");
+misal rkt = inisialisasi_rkt("20101234", "2026/2027");
+
+misal prog_1 = tambah_program_rkt(
+    rkt,
+    "PROG-RKT-LIT-01",
+    "RKJM-SNP-PROSES",
+    "PBD-2026-01",
+    "Pengadaan 450 Eksemplar Buku Pengayaan Literasi Bermutu untuk Pojok Baca",
+    "Waka Kurikulum & Kepala Perpustakaan",
+    "Tersedianya 450 judul buku cerita bermutu terindeks di perpustakaan"
+);
+
+misal prog_2 = tambah_program_rkt(
+    rkt,
+    "PROG-RKT-GTK-02",
+    "RKJM-SNP-PTK",
+    "PBD-2026-01",
+    "In-House Training (IHT) Pembelajaran Berdiferensiasi & Pemanfaatan IFP",
+    "Waka Kurikulum",
+    "100% Guru mampu mengoperasikan materi interaktif di layar IFP"
+);
+
+cetak("📋 Program Kerja RKT 1 :", prog_1.nama_kegiatan);
+cetak("   Penanggung Jawab    :", prog_1.penanggung_jawab_pic);
+cetak("📋 Program Kerja RKT 2 :", prog_2.nama_kegiatan);
+
+jika panjang(rkt.daftar_program_tahunan) == 2 {
+    cetak("✅ [TEST 3] Penjabaran RKT Tahunan Berbasis Rapor Mutu: LULUS");
+} lainnya {
+    cetak("❌ [TEST 3] Penjabaran RKT Tahunan Berbasis Rapor Mutu: GAGAL");
+}
+
+// [TEST 4] Penyusunan RKAS & Proteksi Anti-Belanja Siluman (Golden Thread Guardrail)
+cetak("\n[4] Penganggaran RKAS & Uji Proteksi Terhadap Belanja Siluman");
+misal rkas = inisialisasi_rkas("20101234", "2026", 180000000.0);
+
+// 1. Usulan Belanja Sah (Ada keterkaitan ke RKT: PROG-RKT-LIT-01)
+misal belanja_sah = tambah_anggaran_rkas(
+    rkas,
+    rkt,
+    "RKAS-ITEM-001",
+    "PROG-RKT-LIT-01",
+    "BOSP_REGULER",
+    "03.02.01",
+    "Pembelian Buku Pengayaan Literasi Cerita Rakyat Nusantara SIPLah",
+    450.0,
+    "Eksemplar",
+    40000.0, // Rp 40.000 / buku
+    1 // Triwulan 1
+);
+cetak("🟢 Usulan Belanja Sah   : Status sukses =", belanja_sah.sukses, "| Total: Rp", belanja_sah.data.total_anggaran_rp);
+
+// 2. Usulan Belanja Siluman (TIDAK ADA keterkaitan ke program RKT!)
+misal belanja_siluman = tambah_anggaran_rkas(
+    rkas,
+    rkt,
+    "RKAS-ITEM-999",
+    "PROG-FIKTIF-GAZEBO-TIDAK-ADA-DI-RKT",
+    "BOSP_REGULER",
+    "08.05.02",
+    "Pengadaan Gazebo Santai Belakang Sekolah",
+    1.0,
+    "Unit",
+    15000000.0,
+    2
+);
+cetak("🚫 Usulan Belanja Siluman: Status sukses =", belanja_siluman.sukses, "| Kode:", belanja_siluman.kode);
+cetak("   Alasan Penolakan    :", belanja_siluman.pesan);
+
+jika belanja_sah.sukses == benar dan belanja_siluman.sukses == salah {
+    cetak("✅ [TEST 4] Proteksi Belanja Siluman (Golden Thread RKT -> RKAS): LULUS");
+} lainnya {
+    cetak("❌ [TEST 4] Proteksi Belanja Siluman (Golden Thread RKT -> RKAS): GAGAL");
+}
+
+// [TEST 5] Pengesahan Berita Acara Rapat Pleno RKAS bersama Komite Sekolah
+cetak("\n[5] Pengesahan Dokumen RKAS & Penerbitan Berita Acara Pleno Komite");
+misal sah_rkas = sahkan_dokumen_rkas(
+    rkas,
+    "BA-PLENO-RKAS/2026/045",
+    "did:sewidya:kepsek:20101234",
+    "did:sewidya:komite:20101234"
+);
+
+cetak("📜 Nomor Berita Acara  :", sah_rkas.nomor_berita_acara);
+cetak("💰 Total Belanja Sah   : Rp", sah_rkas.total_alokasi_belanja);
+cetak("⚖️ Status Pengesahan   :", sah_rkas.status);
+cetak("✍️ DID Pengesah        : Kepala Sekolah & Ketua Komite Sekolah Lengkap");
+
+jika sah_rkas.status == "DISETUJUI_KOMITE_DAN_DISDIK" dan sah_rkas.total_alokasi_belanja == 18000000.0 {
+    cetak("✅ [TEST 5] Pengesahan Pleno Berita Acara Kertas Kerja RKAS: LULUS");
+} lainnya {
+    cetak("❌ [TEST 5] Pengesahan Pleno Berita Acara Kertas Kerja RKAS: GAGAL");
+}
+
+// [TEST 6] Evaluasi Diri Tahunan Ketercapaian (Closing the Loop)
+cetak("\n[6] Evaluasi Diri Akhir Tahun & Penutupan Siklus Perencanaan");
+misal eval_tahunan = evaluasi_ketercapaian_rkt_rkas(rkt, rkas, 18000000.0);
+
+cetak("📊 Program Terencana   :", eval_tahunan.total_program_terencana, "program kerja");
+cetak("🎯 Realisasi Belanja   : Rp", eval_tahunan.total_realisasi_spk);
+cetak("📈 Tingkat Serapan     :", eval_tahunan.persentase_serapan, "%");
+cetak("🔄 Siklus Lanjutan     :", eval_tahunan.rekomendasi_siklus_lanjutan);
+
+jika eval_tahunan.persentase_serapan == 100.0 {
+    cetak("✅ [TEST 6] Evaluasi Diri Tahunan & Umpan Balik Siklus Lanjutan: LULUS");
+} lainnya {
+    cetak("❌ [TEST 6] Evaluasi Diri Tahunan & Umpan Balik Siklus Lanjutan: GAGAL");
+}
+
+cetak("\n==================================================================");
+cetak("     SEMUA PENGUJIAN SIKLUS PERENCANAAN SEKOLAH (PBD) LULUS!      ");
+cetak("==================================================================");

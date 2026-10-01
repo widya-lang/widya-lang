@@ -1,0 +1,298 @@
+// ============================================================================
+// MODUL EVALUASI & AUDIT KESEHATAN PROYEK WIDYA-LANG (evaluasi_proyek_widya.wya)
+// Analisis Kualitas Kode, Metrik Kompleksitas, Kepatuhan UU PDP, & Telemetri
+// ============================================================================
+
+struktur MetrikKode {
+    total_berkas,
+    total_baris_kode,
+    total_baris_komentar,
+    rasio_komentar,
+    total_fungsi,
+    total_struktur,
+    total_impor
+}
+
+struktur TemuanAudit {
+    kategori,
+    tingkat,
+    pesan,
+    saran
+}
+
+struktur LaporanEvaluasiProyek {
+    id_evaluasi,
+    nama_proyek,
+    skor_kesehatan,
+    skor_kepatuhan_pdp,
+    skor_keandalan,
+    status_kelayakan,
+    metrik_kode,
+    daftar_temuan,
+    status_telemetri,
+    rekomendasi_optimasi
+}
+
+// 1. Analisis Metrik Baris Kode & Elemen Sintaksis
+fungsi evaluasi_analisis_konten_kode(teks_kode) {
+    misal p = panjang(teks_kode);
+    jika (p == 0) {
+        kembalikan {
+            "baris_kode": 0,
+            "baris_komentar": 0,
+            "fungsi": 0,
+            "struktur": 0,
+            "impor": 0,
+            "kurung_seimbang": benar
+        };
+    }
+
+    misal baris_total = 1;
+    misal baris_komentar = 0;
+    misal jml_fungsi = 0;
+    misal jml_struktur = 0;
+    misal jml_impor = 0;
+
+    misal kurung_buka = 0;
+    misal kurung_tutup = 0;
+
+    misal i = 0;
+    selama (i < p) {
+        misal ch = potong(teks_kode, i, i + 1);
+        jika (ch == "\n") {
+            baris_total = baris_total + 1;
+        }
+        jika (ch == "{") { kurung_buka = kurung_buka + 1; }
+        jika (ch == "}") { kurung_tutup = kurung_tutup + 1; }
+
+        // Cek kata kunci awal
+        jika (i + 6 <= p) {
+            misal sub6 = potong(teks_kode, i, i + 6);
+            jika (sub6 == "fungsi") { jml_fungsi = jml_fungsi + 1; }
+        }
+        jika (i + 8 <= p) {
+            misal sub8 = potong(teks_kode, i, i + 8);
+            jika (sub8 == "struktur") { jml_struktur = jml_struktur + 1; }
+        }
+        jika (i + 5 <= p) {
+            misal sub5 = potong(teks_kode, i, i + 5);
+            jika (sub5 == "impor") { jml_impor = jml_impor + 1; }
+        }
+        jika (i + 2 <= p) {
+            misal sub2 = potong(teks_kode, i, i + 2);
+            jika (sub2 == "//") { baris_komentar = baris_komentar + 1; }
+        }
+
+        i = i + 1;
+    }
+
+    misal kurung_seimbang = (kurung_buka == kurung_tutup);
+
+    kembalikan {
+        "baris_kode": baris_total,
+        "baris_komentar": baris_komentar,
+        "fungsi": jml_fungsi,
+        "struktur": jml_struktur,
+        "impor": jml_impor,
+        "kurung_seimbang": kurung_seimbang
+    };
+}
+
+// 2. Audit Kepatuhan Privasi Data Pribadi (UU PDP No. 27/2022)
+fungsi evaluasi_audit_kepatuhan_pdp(teks_kode) {
+    misal temuan = [];
+    misal skor_pdp = 100;
+    misal p = panjang(teks_kode);
+
+    // Cari indikasi kata kunci data pribadi tanpa enkripsi/hashing
+    misal pola_sensitif = ["nik", "nomor_ktp", "kata_sandi_terbuka", "plaintext_password", "rahasia_bocor"];
+    untuk kata in pola_sensitif {
+        misal len_k = panjang(kata);
+        misal ada = salah;
+        misal idx = 0;
+        selama (idx + len_k <= p) {
+            misal sub = potong(teks_kode, idx, idx + len_k);
+            jika (sub == kata) {
+                ada = benar;
+                idx = p + 1;
+            } lainnya {
+                idx = idx + 1;
+            }
+        }
+
+        jika (ada) {
+            skor_pdp = skor_pdp - 25;
+            tambah(temuan, TemuanAudit(
+                "PRIVASI_PDP",
+                "KRITIS",
+                "Terdeteksi potensi penggunaan variabel data pribadi/rahasia '" + kata + "' tanpa pseudonimisasi.",
+                "Terapkan pseudonimisasi dengan fungsi sha256() atau modul kripto_ed25519 sesuai UU PDP No. 27/2022."
+            ));
+        }
+    }
+
+    jika (skor_pdp < 0) { skor_pdp = 0; }
+
+    kembalikan {
+        "skor_pdp": skor_pdp,
+        "temuan": temuan
+    };
+}
+
+// 3. Deteksi Integrasi Modul Telemetri Proyek
+fungsi evaluasi_cek_telemetri(teks_kode) {
+    misal p = panjang(teks_kode);
+    misal target = "telemetri_";
+    misal len_t = panjang(target);
+    misal terintegrasi = salah;
+
+    misal i = 0;
+    selama (i + len_t <= p) {
+        misal sub = potong(teks_kode, i, i + len_t);
+        jika (sub == target) {
+            terintegrasi = benar;
+            i = p + 1;
+        } lainnya {
+            i = i + 1;
+        }
+    }
+
+    kembalikan terintegrasi;
+}
+
+// 4. Evaluasi Menyeluruh Proyek Widya-Lang
+fungsi evaluasi_proyek_analisis_kode(nama_proyek, daftar_berkas_map) {
+    misal id_ev = "eval-" + nama_proyek + "-" + ke_teks(waktu());
+
+    misal total_berkas = 0;
+    misal total_baris = 0;
+    misal total_komentar = 0;
+    misal total_fungsi = 0;
+    misal total_struktur = 0;
+    misal total_impor = 0;
+
+    misal semua_temuan = [];
+    misal ada_telemetri_global = salah;
+    misal skor_kesehatan = 100;
+    misal skor_keandalan = 100;
+    misal min_skor_pdp = 100;
+
+    misal kunci_berkas = kunci(daftar_berkas_map);
+    total_berkas = panjang(kunci_berkas);
+
+    untuk nama_b in kunci_berkas {
+        misal isi_kode = daftar_berkas_map[nama_b];
+        misal analisis = evaluasi_analisis_konten_kode(isi_kode);
+
+        total_baris = total_baris + analisis["baris_kode"];
+        total_komentar = total_komentar + analisis["baris_komentar"];
+        total_fungsi = total_fungsi + analisis["fungsi"];
+        total_struktur = total_struktur + analisis["struktur"];
+        total_impor = total_impor + analisis["impor"];
+
+        // Cek keseimbangan kurung
+        jika (!analisis["kurung_seimbang"]) {
+            skor_keandalan = skor_keandalan - 30;
+            skor_kesehatan = skor_kesehatan - 30;
+            tambah(semua_temuan, TemuanAudit(
+                "SINTAKSIS",
+                "KRITIS",
+                "Berkas '" + nama_b + "' memiliki kurung kurawal '{' dan '}' yang tidak seimbang.",
+                "Periksa kembali blok fungsi dan kontrol alur pada berkas."
+            ));
+        }
+
+        // Cek privasi UU PDP
+        misal hasil_pdp = evaluasi_audit_kepatuhan_pdp(isi_kode);
+        jika (hasil_pdp["skor_pdp"] < min_skor_pdp) {
+            min_skor_pdp = hasil_pdp["skor_pdp"];
+        }
+        untuk t in hasil_pdp["temuan"] {
+            tambah(semua_temuan, t);
+        }
+
+        // Cek telemetri
+        misal tel_ada = evaluasi_cek_telemetri(isi_kode);
+        jika (tel_ada) {
+            ada_telemetri_global = benar;
+        }
+    }
+
+    // Evaluasi rasio komentar
+    misal rasio_komentar = 0.0;
+    jika (total_baris > 0) {
+        rasio_komentar = (total_komentar * 1.0) / (total_baris * 1.0);
+    }
+    jika (rasio_komentar < 0.05 dan total_baris > 30) {
+        skor_kesehatan = skor_kesehatan - 10;
+        tambah(semua_temuan, TemuanAudit(
+            "KOMPLEKSITAS",
+            "PERINGATAN",
+            "Rasio komentar/dokumentasi rendah (" + ke_teks(rasio_komentar) + ").",
+            "Tambahkan komentar penjelas fungsi dan arsitektur untuk mempermudah pemeliharaan."
+        ));
+    }
+
+    // Evaluasi integrasi telemetri
+    jika (!ada_telemetri_global) {
+        skor_kesehatan = skor_kesehatan - 15;
+        tambah(semua_temuan, TemuanAudit(
+            "TELEMETRI",
+            "PERINGATAN",
+            "Proyek belum mengintegrasikan modul telemetri berdaulat ('modul/telemetri_proyek.wya').",
+            "Gunakan telemetri_buat_klien() dan telemetri_catat_metrik() agar performa proyek terpantau secara real-time."
+        ));
+    }
+
+    // Sinkronkan skor kesehatan dengan PDP
+    jika (min_skor_pdp < 100) {
+        skor_kesehatan = skor_kesehatan - (100 - min_skor_pdp);
+    }
+
+    jika (skor_kesehatan < 0) { skor_kesehatan = 0; }
+    jika (skor_keandalan < 0) { skor_keandalan = 0; }
+
+    // Tentukan status kelayakan
+    misal status_kelayakan = "SIAP_PRODUKSI";
+    jika (skor_kesehatan < 85) {
+        status_kelayakan = "PERLU_PERBAIKAN";
+    }
+    jika (skor_kesehatan < 60) {
+        status_kelayakan = "BERISIKO";
+    }
+
+    // Bangun rekomendasi optimasi
+    misal rekomendasi = [];
+    jika (!ada_telemetri_global) {
+        tambah(rekomendasi, "Pasang klien telemetri via 'impor \"modul/telemetri_proyek.wya\"' untuk observabilitas mandiri.");
+    }
+    jika (min_skor_pdp < 100) {
+        tambah(rekomendasi, "Lakukan refactoring pada variabel data sensitif agar mematuhi UU PDP No. 27/2022.");
+    }
+    jika (skor_keandalan == 100 dan ada_telemetri_global dan min_skor_pdp == 100) {
+        tambah(rekomendasi, "Proyek berada dalam kondisi prima: sintaksis bersih, patuh privasi, dan telemetri aktif.");
+    }
+
+    misal metrik_obj = MetrikKode(
+        total_berkas,
+        total_baris,
+        total_komentar,
+        rasio_komentar,
+        total_fungsi,
+        total_struktur,
+        total_impor
+    );
+
+    kembalikan LaporanEvaluasiProyek(
+        id_ev,
+        nama_proyek,
+        skor_kesehatan,
+        min_skor_pdp,
+        skor_keandalan,
+        status_kelayakan,
+        metrik_obj,
+        semua_temuan,
+        ada_telemetri_global,
+        rekomendasi
+    );
+}

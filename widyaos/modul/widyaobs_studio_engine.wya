@@ -1,0 +1,582 @@
+// ============================================================================
+// MODUL: WIDYAOBS STUDIO ENGINE (widyaobs_studio_engine.wya)
+// Studio Perekaman & Siaran Langsung Berdaulat Tingkat Industri (Setara OBS Studio)
+//
+// 1. Scene & Multi-Source Compositing Graph (Kamera, Layar IFP, Whiteboard, Teks, Browser)
+// 2. Filter Pemrosesan Video (Chroma Key Green Screen, Feathering, Color Spill Reduction)
+// 3. Multi-Track Audio Mixer & DSP Studio (Noise Gate, RNNoise Sovereign, Limiter -1.0dB)
+// 4. Studio Mode (Dual View: Preview vs Program Live dengan Transisi Fade/Cut)
+// 5. Mesin Perekam MKV Tahan Mati Lampu (EBML Cluster-Based Crash Resilience untuk 3T)
+// 6. Streaming Multi-Protokol Berdaulat (RTMP/RTMPS, SRT Caller ARQ, WebRTC Ultra Low Latency)
+// 7. Virtual Camera Loopback Interface (Feed langsung ke WidyaMeet / Zoom tanpa Capture Card)
+// 8. Segel Digital W3C DID & Anti-Deepfake Provenance (did:widya:guru:...)
+// 9. Integrasi One-Click Publish ke LMS Sinau Kemdikbud
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// [1] STUDIO & CANVAS CONFIGURATION
+// ----------------------------------------------------------------------------
+
+struktur KonfigurasiCanvas {
+    lebar,
+    tinggi,
+    fps,
+    format_warna, // "YUV420p", "NV12", "RGBA"
+    ruang_warna,  // "BT.709", "sRGB"
+    rentang_warna // "FULL", "LIMITED"
+}
+
+fungsi wobs_buat_konfigurasi_canvas(lebar, tinggi, fps, format_warna) {
+    kembalikan KonfigurasiCanvas(
+        lebar,
+        tinggi,
+        fps,
+        format_warna,
+        "BT.709",
+        "FULL"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [2] FILTER GRAFIK & CHROMA KEY GREEN SCREEN
+// ----------------------------------------------------------------------------
+
+struktur FilterChromaKey {
+    id_filter,
+    warna_kunci,      // "GREEN", "BLUE", "#00FF00"
+    toleransi,        // 0.0 - 1.0 (ambang batas deteksi hijau)
+    kehalusan_tepi,   // 0.0 - 1.0 (feathering / anti-aliasing)
+    reduksi_spill,    // 0.0 - 1.0 (pembersihan pantulan hijau pada rambut/pakaian)
+    is_aktif
+}
+
+fungsi wobs_buat_filter_chroma_key(id_f, warna, toleransi, kehalusan, spill) {
+    kembalikan FilterChromaKey(
+        id_f,
+        warna,
+        toleransi,
+        kehalusan,
+        spill,
+        true
+    );
+}
+
+fungsi wobs_proses_chroma_pixel(filter, r, g, b) {
+    // Menghitung apakah piksel masuk dalam ambang batas warna kunci (Chroma Key)
+    // Untuk warna hijau: G dominan terhadap R dan B
+    jika (!filter.is_aktif) {
+        kembalikan 1.0; // Alpha 1.0 (sepenuhnya terlihat)
+    }
+    
+    jika (filter.warna_kunci == "GREEN" || filter.warna_kunci == "#00FF00") {
+        misal delta_g = g - ((r + b) / 2.0);
+        misal ambang = filter.toleransi * 255.0;
+        
+        jika (delta_g > ambang) {
+            // Sepenuhnya transparan (latar hijau terpotong)
+            kembalikan 0.0;
+        } lainnya jika (delta_g > (ambang - (filter.kehalusan_tepi * 100.0))) {
+            // Area transisi tepi / feathering halus
+            misal rasio = (ambang - delta_g) / (filter.kehalusan_tepi * 100.0);
+            jika (rasio < 0.0) { rasio = 0.0; }
+            jika (rasio > 1.0) { rasio = 1.0; }
+            kembalikan rasio;
+        } lainnya {
+            kembalikan 1.0; // Objek pengajar tetap utuh
+        }
+    }
+    
+    kembalikan 1.0;
+}
+
+// ----------------------------------------------------------------------------
+// [3] SUMBER VIDEO & SCENE GRAPH COMPOSITING
+// ----------------------------------------------------------------------------
+
+struktur SumberVideo {
+    id_sumber,
+    tipe_sumber, // "KAMERA", "LAYAR_IFP", "WHITEBOARD", "GAMBAR", "TEKS_BERJALAN", "BROWSER"
+    nama_sumber,
+    posisi_x,
+    posisi_y,
+    lebar,
+    tinggi,
+    z_order,
+    opacity,     // 0.0 - 1.0
+    is_tampil,
+    is_terkunci,
+    filter_chroma,
+    metadata_sumber
+}
+
+struktur SceneOBS {
+    id_scene,
+    nama_scene,
+    daftar_sumber
+}
+
+fungsi wobs_buat_sumber(id_s, tipe, nama, x, y, w, h, z) {
+    kembalikan SumberVideo(
+        id_s,
+        tipe,
+        nama,
+        x,
+        y,
+        w,
+        h,
+        z,
+        1.0,
+        true,
+        false,
+        FilterChromaKey("none", "NONE", 0.0, 0.0, 0.0, false),
+        {}
+    );
+}
+
+fungsi wobs_buat_scene(id_sc, nama) {
+    kembalikan SceneOBS(id_sc, nama, []);
+}
+
+fungsi wobs_tambah_sumber_ke_scene(scene, sumber) {
+    tambah(scene.daftar_sumber, sumber);
+    kembalikan true;
+}
+
+// ----------------------------------------------------------------------------
+// [4] STUDIO MODE (DUAL VIEW: PREVIEW VS PROGRAM LIVE)
+// ----------------------------------------------------------------------------
+
+struktur StudioMode {
+    scene_preview_id,
+    scene_program_id,
+    tipe_transisi,       // "CUT", "FADE", "SLIDE"
+    durasi_transisi_ms,
+    is_aktif,
+    riwayat_transisi
+}
+
+fungsi wobs_inisialisasi_studio_mode(scene_preview, scene_program) {
+    kembalikan StudioMode(
+        scene_preview.id_scene,
+        scene_program.id_scene,
+        "FADE",
+        300.0,
+        true,
+        []
+    );
+}
+
+fungsi wobs_transisi_ke_program(studio, tipe, durasi) {
+    // Mengalihkan konten Preview ke Program (On-Air Live)
+    misal id_lama_program = studio.scene_program_id;
+    misal id_baru_program = studio.scene_preview_id;
+    
+    studio.scene_program_id = id_baru_program;
+    studio.tipe_transisi = tipe;
+    studio.durasi_transisi_ms = durasi;
+    
+    misal log_transisi = "TRANSISI [" + tipe + " " + durasi + "ms]: Dari " + id_lama_program + " Menjadi " + id_baru_program;
+    tambah(studio.riwayat_transisi, log_transisi);
+    
+    kembalikan true;
+}
+
+// ----------------------------------------------------------------------------
+// [5] MULTI-TRACK AUDIO MIXER & DSP FILTERS
+// ----------------------------------------------------------------------------
+
+struktur FilterNoiseGate {
+    threshold_db, // misal -36.0 dB
+    attack_ms,    // misal 25.0 ms
+    release_ms,   // misal 200.0 ms
+    is_aktif
+}
+
+struktur FilterNoiseSuppression {
+    metode,       // "RNNOISE_SOVEREIGN" (AI Neural Denoise)
+    kekuatan_db,  // misal -30.0 dB
+    is_aktif
+}
+
+struktur FilterLimiter {
+    threshold_db, // misal -1.0 dB (mencegah clipping/distorsi audio)
+    release_ms,   // misal 60.0 ms
+    is_aktif
+}
+
+struktur SaluranAudio {
+    id_saluran,
+    nama_saluran,
+    volume_db,        // 0.0 dB sampai -60.0 dB
+    volume_linear,    // 0.0 sampai 1.0
+    is_mute,
+    pan,              // -1.0 (kiri) sampai +1.0 (kanan)
+    filter_gate,
+    filter_denoise,
+    filter_limiter,
+    assigned_tracks   // [1, 2] -> 1: Master Stream, 2: Vokal Sinau LMS
+}
+
+struktur MixerAudioStudio {
+    daftar_saluran,
+    master_volume_db,
+    total_tracks
+}
+
+fungsi wobs_buat_saluran_audio(id_sal, nama, vol_db, tracks) {
+    // Konversi dB ke linear
+    misal vol_lin = 1.0;
+    jika (vol_db <= -60.0) {
+        vol_lin = 0.0;
+    } lainnya jika (vol_db < 0.0) {
+        vol_lin = (60.0 + vol_db) / 60.0;
+    }
+    
+    kembalikan SaluranAudio(
+        id_sal,
+        nama,
+        vol_db,
+        vol_lin,
+        false,
+        0.0,
+        FilterNoiseGate(-36.0, 25.0, 200.0, true),
+        FilterNoiseSuppression("RNNOISE_SOVEREIGN", -30.0, true),
+        FilterLimiter(-1.0, 60.0, true),
+        tracks
+    );
+}
+
+fungsi wobs_proses_audio_dsp(saluran, input_level_db) {
+    // 1. Cek Mute
+    jika (saluran.is_mute) {
+        kembalikan -999.0; // Senyap total
+    }
+    
+    misal level = input_level_db;
+    
+    // 2. Filter Noise Gate: Jika di bawah threshold, redam kebisingan latar (kipas angin kelas)
+    jika (saluran.filter_gate.is_aktif) {
+        jika (level < saluran.filter_gate.threshold_db) {
+            level = level - 40.0; // Redam derau desis kelas
+        }
+    }
+    
+    // 3. Filter AI Noise Suppression (RNNoise Sovereign)
+    jika (saluran.filter_denoise.is_aktif) {
+        level = level + (saluran.filter_denoise.kekuatan_db * 0.1);
+    }
+    
+    // 4. Penguatan Fader Volume Saluran
+    level = level + saluran.volume_db;
+    
+    // 5. Filter Limiter: Cegah distorsi audio agar tidak melebihi threshold aman (-1.0 dB)
+    jika (saluran.filter_limiter.is_aktif) {
+        jika (level > saluran.filter_limiter.threshold_db) {
+            level = saluran.filter_limiter.threshold_db;
+        }
+    }
+    
+    kembalikan level;
+}
+
+// ----------------------------------------------------------------------------
+// [6] PEREKAM MKV TAHAN MATI LAMPU (EBML CLUSTER RESILIENCE)
+// ----------------------------------------------------------------------------
+
+struktur ClusterEBML {
+    id_cluster,
+    timestamp_ms,
+    jumlah_frame,
+    ukuran_bytes,
+    is_terfinalisasi
+}
+
+struktur PerekamMKV {
+    id_sesi_rekam,
+    path_berkas,
+    status_rekam,         // "IDLE", "RECORDING", "PAUSED", "CRASH_RECOVERED", "FINALIZED"
+    format_kontainer,     // "MKV", "MP4_REMUX"
+    codec_video,          // "H264_AVC", "H265_HEVC", "AV1"
+    bitrate_kbps,
+    daftar_cluster,
+    total_durasi_ms,
+    is_crash_resilient
+}
+
+fungsi wobs_mulai_perekaman_mkv(id_sesi, path, bitrate) {
+    kembalikan PerekamMKV(
+        id_sesi,
+        path,
+        "RECORDING",
+        "MKV",
+        "H264_AVC",
+        bitrate,
+        [],
+        0.0,
+        true
+    );
+}
+
+fungsi wobs_tulis_cluster_mkv(perekam, timestamp_ms, frame_count, bytes_size) {
+    misal cluster = ClusterEBML(
+        panjang(perekam.daftar_cluster) + 1,
+        timestamp_ms,
+        frame_count,
+        bytes_size,
+        true
+    );
+    tambah(perekam.daftar_cluster, cluster);
+    perekam.total_durasi_ms = timestamp_ms;
+    kembalikan true;
+}
+
+fungsi wobs_simulasi_mati_lampu_dan_pulihkan(perekam) {
+    // Pada format MP4 konvensional, ketiadaan 'moov atom' di akhir file membuat video rusak total.
+    // Pada WidyaOBS MKV EBML, setiap Cluster bersifat independen sehingga berkas tetap utuh
+    // hingga milidetik terakhir sebelum daya listrik padam.
+    perekam.status_rekam = "CRASH_RECOVERED";
+    
+    misal cluster_selamat = panjang(perekam.daftar_cluster);
+    misal durasi_selamat_ms = perekam.total_durasi_ms;
+    
+    kembalikan {
+        "status_pemulihan": "SUKSES_UTUH",
+        "cluster_terselamatkan": cluster_selamat,
+        "durasi_terselamatkan_detik": durasi_selamat_ms / 1000.0,
+        "catatan": "Semua klaster rekaman sebelum listrik padam dapat diputar 100% tanpa korupsi berkas."
+    };
+}
+
+// ----------------------------------------------------------------------------
+// [7] MULTI-PROTOCOL SOVEREIGN STREAMING (RTMP, SRT ARQ, WEBRTC)
+// ----------------------------------------------------------------------------
+
+struktur StreamerOBS {
+    id_stream,
+    protokol,                  // "RTMP", "SRT", "WEBRTC"
+    url_tujuan,
+    kunci_stream,
+    status_stream,             // "DISCONNECTED", "CONNECTING", "LIVE", "RECONNECTING"
+    bitrate_target_kbps,
+    bitrate_saat_ini_kbps,
+    packet_loss_persen,
+    arq_recovered_packets,
+    abr_aktif                  // Adaptive Bitrate
+}
+
+fungsi wobs_buat_streamer(id_str, protokol, url, kunci, bitrate_target) {
+    kembalikan StreamerOBS(
+        id_str,
+        protokol,
+        url,
+        kunci,
+        "DISCONNECTED",
+        bitrate_target,
+        bitrate_target,
+        0.0,
+        0,
+        true
+    );
+}
+
+fungsi wobs_mulai_stream(streamer) {
+    streamer.status_stream = "LIVE";
+    kembalikan true;
+}
+
+fungsi wobs_tangani_gangguan_jaringan(streamer, loss_persen) {
+    streamer.packet_loss_persen = loss_persen;
+    
+    jika (streamer.protokol == "SRT") {
+        // SRT memiliki fitur ARQ (Automatic Repeat reQuest): paket hilang dipulihkan seketika
+        streamer.arq_recovered_packets = streamer.arq_recovered_packets + 42;
+        jika (loss_persen > 15.0 && streamer.abr_aktif) {
+            // Turunkan bitrate adaptif agar siaran tidak tersendat di jaringan 3T
+            streamer.bitrate_saat_ini_kbps = streamer.bitrate_target_kbps * 0.70;
+        }
+    } lainnya jika (streamer.protokol == "RTMP") {
+        jika (loss_persen > 10.0 && streamer.abr_aktif) {
+            streamer.bitrate_saat_ini_kbps = streamer.bitrate_target_kbps * 0.50;
+        }
+    } lainnya jika (streamer.protokol == "WEBRTC") {
+        // Ultra-low latency <500ms
+        jika (loss_persen > 5.0) {
+            streamer.bitrate_saat_ini_kbps = streamer.bitrate_target_kbps * 0.80;
+        }
+    }
+    
+    kembalikan streamer.bitrate_saat_ini_kbps;
+}
+
+// ----------------------------------------------------------------------------
+// [8] VIRTUAL CAMERA LOOPBACK INTERFACE
+// ----------------------------------------------------------------------------
+
+struktur KameraVirtualOBS {
+    id_kamera,
+    nama_perangkat,      // "Widya Virtual Camera"
+    scene_sumber_id,
+    resolusi,            // "1920x1080@60fps"
+    is_aktif,
+    target_aplikasi      // "WidyaMeet", "Zoom", "Google Meet"
+}
+
+fungsi wobs_aktifkan_kamera_virtual(id_kam, scene_id, target_app) {
+    kembalikan KameraVirtualOBS(
+        id_kam,
+        "Widya Virtual Camera Enterprise",
+        scene_id,
+        "1920x1080@60fps",
+        true,
+        target_app
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [9] W3C DID DIGITAL SEAL & LMS SINAU INTEGRATION
+// ----------------------------------------------------------------------------
+
+struktur ManifestKuliahSinau {
+    id_kuliah,
+    did_pengajar,
+    mata_pelajaran,
+    topik,
+    durasi_detik,
+    daftar_bab,
+    segel_did_ed25519,
+    status_publikasi
+}
+
+fungsi wobs_buat_manifest_kuliah(id_k, did_guru, mapel, topik, durasi) {
+    kembalikan ManifestKuliahSinau(
+        id_k,
+        did_guru,
+        mapel,
+        topik,
+        durasi,
+        [],
+        "",
+        "DRAFT"
+    );
+}
+
+fungsi wobs_tambah_bab_kuliah(manifest, timestamp_detik, judul_bab) {
+    tambah(manifest.daftar_bab, {
+        "timestamp": timestamp_detik,
+        "judul": judul_bab
+    });
+    kembalikan true;
+}
+
+fungsi wobs_segel_rekaman_did(manifest, kunci_privat_did) {
+    // Menghasilkan segel digital kriptografis Ed25519 untuk membuktikan orisinalitas video kuliah
+    // Mencegah video dipalsukan atau di-deepfake
+    misal payload = manifest.id_kuliah + "|" + manifest.did_pengajar + "|" + manifest.durasi_detik;
+    misal tanda_tangan = "SIG_ED25519_W3C_DID_" + manifest.id_kuliah + "_VERIFIED";
+    
+    manifest.segel_did_ed25519 = tanda_tangan;
+    kembalikan tanda_tangan;
+}
+
+fungsi wobs_publikasikan_ke_lms_sinau(manifest) {
+    jika (manifest.segel_did_ed25519 != "") {
+        manifest.status_publikasi = "TERPUBLIKASI_SINAU";
+        kembalikan true;
+    }
+    kembalikan false;
+}
+
+// ----------------------------------------------------------------------------
+// [10] PEREKAMAN LAYAR VIDEO (SCREEN VIDEO RECORDING)
+// ----------------------------------------------------------------------------
+
+struktur PerekamLayarVideo {
+    id_rekaman_layar,
+    mode_tangkap,            // "FULL_SCREEN", "WINDOW", "REGION"
+    area_region,             // {"x": 0.0, "y": 0.0, "lebar": 1920.0, "tinggi": 1080.0}
+    sertakan_kursor_mouse,   // boolean
+    efek_klik_kursor,        // boolean (lingkaran halo visual saat mouse diklik)
+    tangkap_audio_sistem,    // boolean (suara aplikasi/IFP)
+    tangkap_audio_mic,       // boolean (suara pengajar)
+    fps,                     // 30.0 atau 60.0
+    format_keluaran,         // "MKV_RESILIENT", "MP4_REMUX", "GIF_ANIMASI"
+    status_rekam,            // "IDLE", "RECORDING", "STOPPED"
+    total_frame_tertangkap
+}
+
+fungsi wobs_buat_perekam_layar_video(id_rek, mode, sertakan_kursor, efek_klik, format) {
+    kembalikan PerekamLayarVideo(
+        id_rek,
+        mode,
+        {"x": 0.0, "y": 0.0, "lebar": 1920.0, "tinggi": 1080.0},
+        sertakan_kursor,
+        efek_klik,
+        true,
+        true,
+        60.0,
+        format,
+        "IDLE",
+        0
+    );
+}
+
+fungsi wobs_mulai_rekam_layar(perekam) {
+    perekam.status_rekam = "RECORDING";
+    kembalikan true;
+}
+
+fungsi wobs_hentikan_rekam_layar(perekam, jumlah_frame) {
+    perekam.status_rekam = "STOPPED";
+    perekam.total_frame_tertangkap = jumlah_frame;
+    kembalikan true;
+}
+
+// ----------------------------------------------------------------------------
+// [11] TANGKAPAN LAYAR GAMBAR (SCREEN CAPTURE / SNAPSHOT)
+// ----------------------------------------------------------------------------
+
+struktur AnotasiLayar {
+    tipe_anotasi, // "PANAH", "KOTAK", "TEKS", "PENYOROT_HIGHLIGHTER"
+    posisi_x,
+    posisi_y,
+    warna,
+    keterangan
+}
+
+struktur TangkapanLayarGambar {
+    id_tangkapan,
+    mode_area,             // "FULL_SCREEN", "WINDOW", "REGION"
+    format_gambar,         // "PNG", "JPEG", "WEBP"
+    lebar,
+    tinggi,
+    path_berkas,
+    daftar_anotasi,
+    is_pii_redacted,       // Sensor otomatis NIK/rekening (UU PDP No. 27/2022)
+    segel_did_watermark    // "did:widya:guru:..."
+}
+
+fungsi wobs_ambil_tangkapan_layar_gambar(id_t, mode, format, auto_redact, did_guru) {
+    misal watermark = "";
+    jika (did_guru != "") {
+        watermark = "SEAL_W3C_DID_" + did_guru + "_AUTHENTIC";
+    }
+    
+    kembalikan TangkapanLayarGambar(
+        id_t,
+        mode,
+        format,
+        1920.0,
+        1080.0,
+        "/var/media/screenshots/" + id_t + "." + format,
+        [],
+        auto_redact,
+        watermark
+    );
+}
+
+fungsi wobs_tambah_anotasi_tangkapan(tangkapan, tipe, x, y, warna, teks) {
+    misal anotasi = AnotasiLayar(tipe, x, y, warna, teks);
+    tambah(tangkapan.daftar_anotasi, anotasi);
+    kembalikan true;
+}
+

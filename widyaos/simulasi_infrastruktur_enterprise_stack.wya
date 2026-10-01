@@ -1,0 +1,245 @@
+// ====================================================================
+// SIMULASI MASTER: INFRASTRUKTUR ENTERPRISE WIDYAOS (LEVEL INDUSTRI)
+// Pengujian Komprehensif:
+// 1. WidyaBalance: L4/L7 Load Balancer (Round-Robin, Least-Connections, Failover)
+// 2. WidyaGateway: API Gateway, W3C DID Auth, & Circuit Breaker (Netflix/Kong)
+// 3. WidyaQueue / WidyaNSQ: Distributed Message Broker (Topic/Channel Fan-Out)
+// ====================================================================
+
+impor "widyaos/modul/widya_infrastruktur_enterprise.wya";
+
+fungsi utama() {
+    tulis("====================================================================");
+    tulis("🇮🇩  AUDIT MASTER: INFRASTRUKTUR ENTERPRISE STACK LEVEL INDUSTRI");
+    tulis("    Kemandirian Penuh: Load Balancer, API Gateway, & NSQ Message Queue");
+    tulis("====================================================================");
+
+    misal lulus_audit = 0;
+    misal total_audit = 10;
+
+    // ----------------------------------------------------------------
+    // [1] AUDIT 1: WidyaBalance - Inisialisasi Pool & Registrasi Node Server
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[1] Audit WidyaBalance (Substitusi NGINX/HAProxy): Inisialisasi Pool:");
+    misal pool_rr = widyabalance_buat_pool("POOL-WEB-DAPODIK", "ROUND_ROBIN");
+    pool_rr = widyabalance_tambah_node(pool_rr, "NODE-01", "192.168.10.11", 8080, 1, 15);
+    pool_rr = widyabalance_tambah_node(pool_rr, "NODE-02", "192.168.10.12", 8080, 1, 8);
+    pool_rr = widyabalance_tambah_node(pool_rr, "NODE-03", "192.168.10.13", 8080, 1, 24);
+
+    tulis("  • ID Pool Load Balancer : " + pool_rr.id_pool + " (Algoritma: " + pool_rr.algoritma + ")");
+    tulis("  • Total Node Terdaftar  : " + panjang(pool_rr.daftar_node) + " Server Backend");
+
+    jika panjang(pool_rr.daftar_node) == 3 {
+        tulis("  ✅ PASS: Pool Load Balancer Berhasil Mengagregasi 3 Node Server Backend!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Inisialisasi pool load balancer gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [2] AUDIT 2: WidyaBalance - Distribusi Beban Round-Robin
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[2] Audit WidyaBalance: Distribusi Beban Merata (Round-Robin):");
+    misal n1 = widyabalance_pilih_node(pool_rr);
+    misal n2 = widyabalance_pilih_node(pool_rr);
+    misal n3 = widyabalance_pilih_node(pool_rr);
+    tulis("  • Permintaan #1 -> " + n1.id_node + " (" + n1.alamat_ip + ")");
+    tulis("  • Permintaan #2 -> " + n2.id_node + " (" + n2.alamat_ip + ")");
+    tulis("  • Permintaan #3 -> " + n3.id_node + " (" + n3.alamat_ip + ")");
+
+    jika n1.id_node == "NODE-01" dan n2.id_node == "NODE-02" dan n3.id_node == "NODE-03" {
+        tulis("  ✅ PASS: Distribusi Beban Bergilir Round-Robin Berjalan Presisi 100%!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Rotasi round-robin tidak merata!");
+    }
+
+    // ----------------------------------------------------------------
+    // [3] AUDIT 3: WidyaBalance - Algoritma Least-Connections
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[3] Audit WidyaBalance: Algoritma Beban Terendah (Least-Connections):");
+    misal pool_lc = widyabalance_buat_pool("POOL-API-ARKAS", "LEAST_CONNECTIONS");
+    pool_lc = widyabalance_tambah_node(pool_lc, "SERVER-A", "10.0.0.1", 8080, 1, 45); // 45 koneksi
+    pool_lc = widyabalance_tambah_node(pool_lc, "SERVER-B", "10.0.0.2", 8080, 1, 5);  // 5 koneksi (PALING RINGAN)
+    pool_lc = widyabalance_tambah_node(pool_lc, "SERVER-C", "10.0.0.3", 8080, 1, 32); // 32 koneksi
+
+    misal server_terpilih = widyabalance_pilih_node(pool_lc);
+    tulis("  • Beban Server: SERVER-A (45 conn), SERVER-B (5 conn), SERVER-C (32 conn)");
+    tulis("  • Node Terpilih Otomatis: " + server_terpilih.id_node + " (" + server_terpilih.koneksi_aktif + " koneksi aktif)");
+
+    jika server_terpilih.id_node == "SERVER-B" dan server_terpilih.koneksi_aktif == 5 {
+        tulis("  ✅ PASS: Algoritma Least-Connections Cerdas Memilih Server Berbeban Terendah!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Pemilihan Least-Connections salah!");
+    }
+
+    // ----------------------------------------------------------------
+    // [4] AUDIT 4: WidyaBalance - Health Check Probing & Failover Otomatis
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[4] Audit WidyaBalance: Deteksi Node Tumbang & Zero-Downtime Failover:");
+    // Simulasikan SERVER-B (beban terendah) mendadak down
+    pool_lc = widyabalance_set_kesehatan_node(pool_lc, "SERVER-B", salah);
+    misal failover_node = widyabalance_pilih_node(pool_lc);
+    tulis("  • Status SERVER-B Diisolasi: DOWN (Health Check Gagal)");
+    tulis("  • Failover Pengalihan Trafik: " + failover_node.id_node + " (" + failover_node.koneksi_aktif + " koneksi aktif)");
+
+    jika failover_node.id_node == "SERVER-C" dan failover_node.status_sehat == benar {
+        tulis("  ✅ PASS: Node Rusak Diisolasi, Trafik Dialihkan ke Node Sehat Tanpa Downtime!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Failover load balancer gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [5] AUDIT 5: WidyaGateway - Dynamic Path Routing (Kong/Traefik Style)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[5] Audit WidyaGateway (Substitusi Kong/Apigee): Dynamic Path Routing:");
+    misal cb_dapodik = widyagateway_buat_circuit_breaker("SERVICE_DAPODIK_NASIONAL", 3, "FALLBACK_CACHE_DAPODIK");
+    misal req_dapodik = PermintaanGateway("/api/v1/dapodik/siswa", "GET", "did:widya:guru:19820101", "", "192.168.1.50");
+    misal resp_dapodik = widyagateway_dispatch(cb_dapodik, req_dapodik);
+
+    misal req_arkas = PermintaanGateway("/api/v2/arkas/transaksi", "POST", "did:widya:bendahara:2026", "{}", "192.168.1.60");
+    misal resp_arkas = widyagateway_dispatch(cb_dapodik, req_arkas);
+
+    tulis("  • Permintaan /api/v1/dapodik -> Target: " + resp_dapodik.target_microservice + " (HTTP " + resp_dapodik.status_code + ")");
+    tulis("  • Permintaan /api/v2/arkas   -> Target: " + resp_arkas.target_microservice + " (HTTP " + resp_arkas.status_code + ")");
+
+    jika resp_dapodik.target_microservice == "SERVICE_DAPODIK_NASIONAL" dan resp_arkas.target_microservice == "SERVICE_ARKAS_BKU_PERBENDAHARAAN" {
+        tulis("  ✅ PASS: API Gateway Berhasil Mengarahkan Permintaan ke Microservice Sesuai Path!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Routing API gateway salah!");
+    }
+
+    // ----------------------------------------------------------------
+    // [6] AUDIT 6: WidyaGateway - W3C DID Cryptographic Authentication
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[6] Audit WidyaGateway: Penegakan Autentikasi W3C DID:");
+    misal req_ilegal = PermintaanGateway("/api/v1/dapodik/guru", "GET", "TOKEN-PALSU-SWAP", "", "103.10.1.2");
+    misal resp_ilegal = widyagateway_dispatch(cb_dapodik, req_ilegal);
+    tulis("  • Uji Akses Token Liar: HTTP " + resp_ilegal.status_code + " - " + resp_ilegal.data_respons);
+
+    jika resp_ilegal.status_code == 401 dan resp_ilegal.data_respons == "AKSES_DITOLAK_TOKEN_W3C_DID_TIDAK_VALID" {
+        tulis("  ✅ PASS: Permintaan Tanpa Kredensial Resmi W3C DID Ditolak Mutlak (HTTP 401)!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Gerbang meloloskan token ilegal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [7] AUDIT 7: WidyaGateway - Circuit Breaker State Transition
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[7] Audit WidyaGateway: Circuit Breaker State Machine (Pencegah Efek Domino):");
+    misal cb_bank = widyagateway_buat_circuit_breaker("SERVICE_KLIRING_BANK_DAERAH", 2, "LAYANAN_BANK_SEDANG_SIAGA_OFFLINE");
+    tulis("  • Kondisi Awal           : " + cb_bank.kondisi + " (Kegagalan: " + cb_bank.jumlah_kegagalan + ")");
+    
+    // Simulasikan kegagalan downstream 2 kali (mencapai ambang batas 2)
+    cb_bank = widyagateway_catat_kegagalan(cb_bank);
+    cb_bank = widyagateway_catat_kegagalan(cb_bank);
+    tulis("  • Kondisi Pasca-Kegagalan: " + cb_bank.kondisi + " (Kegagalan: " + cb_bank.jumlah_kegagalan + " / " + cb_bank.ambang_batas + ")");
+
+    jika cb_bank.kondisi == "TERBUKA" {
+        tulis("  ✅ PASS: Circuit Breaker Memutus Aliran (TERBUKA) Melindungi Layanan Induk!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Circuit breaker gagal trip!");
+    }
+
+    // ----------------------------------------------------------------
+    // [8] AUDIT 8: WidyaGateway - Graceful Fallback Execution
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[8] Audit WidyaGateway: Eksekusi Graceful Fallback Saat Sirkuit Terbuka:");
+    misal req_bayar = PermintaanGateway("/api/v1/bank/transfer", "POST", "did:widya:bpd:01", "{}", "127.0.0.1");
+    misal resp_fallback = widyagateway_dispatch(cb_bank, req_bayar);
+    tulis("  • Status Kode Respons    : HTTP " + resp_fallback.status_code);
+    tulis("  • Pesan Perlindungan     : " + resp_fallback.data_respons);
+    tulis("  • Status Circuit Breaker : " + resp_fallback.circuit_breaker_status);
+
+    jika resp_fallback.status_code == 503 dan resp_fallback.data_respons == "LAYANAN_BANK_SEDANG_SIAGA_OFFLINE" {
+        tulis("  ✅ PASS: Respon Fallback Cepat Mengamankan Pengguna Tanpa Menimbulkan Freeze/Crash!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Eksekusi fallback gateway tidak bekerja!");
+    }
+
+    // ----------------------------------------------------------------
+    // [9] AUDIT 9: WidyaQueue / WidyaNSQ - Topic & Channel Fan-Out Architecture
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[9] Audit WidyaQueue (Substitusi NSQ/Kafka): Topik & Multi-Channel Fan-Out:");
+    misal topik_arkas = widyaqueue_buat_topik("TOPIK_TRANSAKSI_BELANJA_ARKAS");
+    topik_arkas = widyaqueue_buat_channel(topik_arkas, "CHANNEL_SIPLAH_PENGADAAN");
+    topik_arkas = widyaqueue_buat_channel(topik_arkas, "CHANNEL_PAJAK_DJP_BAPENDA");
+    topik_arkas = widyaqueue_buat_channel(topik_arkas, "CHANNEL_AUDIT_BPK_IMMUTABLE");
+
+    // Publikasi 1 transaksi
+    misal jml_channel_terkirim = widyaqueue_publish(
+        topik_arkas,
+        "MSG-TX-9901",
+        "BELANJA_MODAL_LAPTOP_TIK_RP_50000000"
+    );
+    tulis("  • Topik Dipublikasikan   : " + topik_arkas.nama_topik);
+    tulis("  • Fan-Out Terdistribusi  : Dikirim ke " + jml_channel_terkirim + " Saluran (Channel) Konsumen Independen");
+    tulis("  • Antrean Channel SIPLah : " + panjang(topik_arkas.daftar_channel[0].antrean_pesan) + " Pesan");
+    tulis("  • Antrean Channel Pajak  : " + panjang(topik_arkas.daftar_channel[1].antrean_pesan) + " Pesan");
+    tulis("  • Antrean Channel Audit  : " + panjang(topik_arkas.daftar_channel[2].antrean_pesan) + " Pesan");
+
+    jika jml_channel_terkirim == 3 dan panjang(topik_arkas.daftar_channel[0].antrean_pesan) == 1 {
+        tulis("  ✅ PASS: Arsitektur Fan-Out NSQ Sukses Menggandakan Pesan ke Seluruh Konsumen!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Fan-out arsitektur antrean gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [10] AUDIT 10: WidyaQueue - Protokol FIN & REQ (At-Least-Once Delivery)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[10] Audit WidyaQueue: Protokol FIN (Finish) & REQ (Re-Queue) At-Least-Once:");
+    misal ch_siplah = topik_arkas.daftar_channel[0];
+    misal ch_pajak = topik_arkas.daftar_channel[1];
+
+    // Konsumen SIPLah berhasil memproses pesan -> Kirim FIN
+    misal fin_sukses = widyaqueue_ack_fin(ch_siplah, "MSG-TX-9901");
+    // Konsumen Pajak mengalami koneksi terputus -> Kirim REQ (masukkan kembali untuk retry)
+    misal req_sukses = widyaqueue_ack_req(ch_pajak, "MSG-TX-9901");
+    misal audit_infra = widya_infrastruktur_audit_kedaulatan();
+
+    tulis("  • Konfirmasi FIN (SIPLah) : Berhasil (" + ch_siplah.total_selesai + " Pesan Selesai)");
+    tulis("  • Konfirmasi REQ (Pajak)  : Berhasil Requeue (Percobaan ke-" + ch_pajak.antrean_pesan[0].percobaan_ke + ")");
+    tulis("  • Kedaulatan Stack        : " + audit_infra);
+
+    jika fin_sukses == benar dan req_sukses == benar dan ch_pajak.antrean_pesan[0].percobaan_ke == 2 {
+        tulis("  ✅ PASS: Jaminan At-Least-Once Delivery Terpenuhi Penuh dengan Protokol FIN/REQ!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Protokol ACK antrean gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // RINGKASAN AKHIR AUDIT INFRASTRUKTUR ENTERPRISE
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("====================================================================");
+    tulis("🏆  HASIL AKHIR AUDIT INFRASTRUKTUR ENTERPRISE STACK:");
+    tulis("    Lulus: " + lulus_audit + " dari " + total_audit + " Skenario Pengujian Paripurna");
+    tulis("====================================================================");
+
+    jika lulus_audit == total_audit {
+        tulis("🇮🇩 KELULUSAN SEMPURNA 100%: STACK INFRASTRUKTUR ENTERPRISE BERDAULAT TOTAL!");
+        tulis("   WidyaBalance, WidyaGateway, dan WidyaQueue Menjamin Keandalan Skala Nasional.");
+    } jika_tidak {
+        tulis("⚠️ MASIH TERDAPAT SKENARIO PENGUJIAN YANG BELUM LULUS AUDIT.");
+    }
+}
+
+utama();

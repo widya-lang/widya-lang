@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Buku Panduan Lengkap WidyaBase untuk Pemula</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 20mm 18mm 22mm 18mm;
+    @bottom-right {
+      content: "Halaman " counter(page);
+      font-size: 8.5pt;
+      color: #64748b;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    @bottom-left {
+      content: "WidyaBase: Panduan Pemula Mesin Basis Data Dwibahasa";
+      font-size: 8.5pt;
+      color: #94a3b8;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+  }
+
+  @page :first {
+    margin: 0;
+    @bottom-right { content: ""; }
+    @bottom-left { content: ""; }
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+  }
+
+  /* Cover Page */
+  .cover {
+    width: 100vw;
+    height: 100vh;
+    min-height: 297mm;
+    background: linear-gradient(135deg, #0b132b 0%, #1c2541 45%, #253352 70%, #0d9488 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 45mm 25mm 30mm 25mm;
+    page-break-after: always;
+  }
+
+  .cover-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #38bdf8;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 11pt;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+
+  .cover-title {
+    font-size: 34pt;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 15px 0;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+  }
+
+  .cover-title span {
+    color: #38bdf8;
+    background: linear-gradient(to right, #38bdf8, #2dd4bf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cover-subtitle {
+    font-size: 15pt;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #cbd5e1;
+    margin: 0 0 30px 0;
+    max-width: 650px;
+  }
+
+  .cover-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+    max-width: 600px;
+  }
+
+  .cover-feature-item {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 9.5pt;
+    color: #e2e8f0;
+  }
+
+  .cover-feature-item strong {
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 3px;
+    font-size: 10.5pt;
+  }
+
+  .cover-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .cover-author {
+    font-size: 11pt;
+    color: #e2e8f0;
+  }
+
+  .cover-author strong {
+    color: #ffffff;
+    font-size: 12pt;
+    display: block;
+  }
+
+  .cover-edition {
+    text-align: right;
+    font-size: 9.5pt;
+    color: #94a3b8;
+  }
+
+  /* Structural Elements */
+  .page-break {
+    page-break-before: always;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  h1.chapter-title {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #0f172a;
+    border-bottom: 3px solid #0284c7;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chapter-number {
+    background: #0284c7;
+    color: #ffffff;
+    font-size: 13pt;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    border-left: 4px solid #0d9488;
+    padding-left: 10px;
+  }
+
+  h3 {
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0 0 12px 0;
+    text-align: justify;
+  }
+
+  ul, ol {
+    margin: 0 0 14px 0;
+    padding-left: 24px;
+  }
+
+  li {
+    margin-bottom: 5px;
+  }
+
+  /* Callout Boxes */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    border-left: 5px solid;
+    page-break-inside: avoid;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    font-size: 10.5pt;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .callout-info {
+    background-color: #f0f9ff;
+    border-color: #0284c7;
+    color: #0c4a6e;
+  }
+  .callout-info .callout-title { color: #0284c7; }
+
+  .callout-tip {
+    background-color: #f0fdf4;
+    border-color: #16a34a;
+    color: #14532d;
+  }
+  .callout-tip .callout-title { color: #16a34a; }
+
+  .callout-warn {
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #78350f;
+  }
+  .callout-warn .callout-title { color: #d97706; }
+
+  .callout-exercise {
+    background-color: #faf5ff;
+    border-color: #9333ea;
+    color: #581c87;
+  }
+  .callout-exercise .callout-title { color: #9333ea; }
+
+  /* Code Blocks */
+  pre {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9pt;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 14px 0;
+    border: 1px solid #334155;
+    page-break-inside: avoid;
+  }
+
+  code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9pt;
+  }
+
+  p code, li code, td code {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+  }
+
+  .code-kw { color: #38bdf8; font-weight: bold; }
+  .code-fn { color: #f472b6; }
+  .code-str { color: #a7f3d0; }
+  .code-num { color: #fbbf24; }
+  .code-comment { color: #64748b; font-style: italic; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+
+  th {
+    background-color: #1e293b;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    padding: 9px 12px;
+    border: 1px solid #334155;
+  }
+
+  td {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+
+  /* Table of Contents */
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dotted #cbd5e1;
+    font-size: 10pt;
+  }
+  .toc-item a {
+    text-decoration: none;
+    color: #0f172a;
+    font-weight: 500;
+  }
+  .toc-page {
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .toc-section {
+    font-weight: 700;
+    color: #0284c7;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-size: 11pt;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================================================= -->
+<!-- COVER PAGE                                                                -->
+<!-- ========================================================================= -->
+<div class="cover">
+  <div>
+    <div class="cover-badge">Panduan Resmi • Widya-Lang Ecosystem</div>
+    <h1 class="cover-title">PANDUAN LENGKAP<br><span>WIDYABASE</span></h1>
+    <p class="cover-subtitle">
+      Mempelajari Mesin Basis Data Mandiri Dwibahasa Skala Industri dari Level Nol hingga Mahir untuk Pengembang Pemula.
+    </p>
+
+    <div class="cover-features">
+      <div class="cover-feature-item">
+        <strong>🌐 SQL Dwibahasa Nusantara</strong>
+        Sintaks Bahasa Indonesia & Standar Global ANSI SQL yang setara secara simetris.
+      </div>
+      <div class="cover-feature-item">
+        <strong>⚡ Arsitektur Kelas Industri</strong>
+        Paging 4KB Slotted-Page, Buffer Pool LRU, & MVCC Snapshot Isolation.
+      </div>
+      <div class="cover-feature-item">
+        <strong>🛡️ Transaksi ACID & WAL</strong>
+        Write-Ahead Logging tahan banting dan otomatis pulih pasca-crash.
+      </div>
+      <div class="cover-feature-item">
+        <strong>🔌 Universal pgwire v3.0</strong>
+        Dapat langsung diakses DBeaver, TablePlus, Python, Node.js, dan Widya.
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-author">
+      <strong>Tim Pengembang Widya-Lang</strong>
+      Bakulcoding / Widya Project Indonesia
+    </div>
+    <div class="cover-edition">
+      Edisi Pertama (v1.0)<br>
+      Tahun Rilis: 2026
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- KATA PENGANTAR & DAFTAR ISI                                               -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">i</span> Kata Pengantar</h1>
+
+<p>
+  Selamat datang di dunia <strong>WidyaBase</strong>! Jika Anda adalah seorang pemrogram pemula, mahasiswa ilmu komputer, atau pengembang aplikasi yang ingin memahami bagaimana basis data relasional bekerja dari dasar, buku ini ditulis khusus untuk Anda.
+</p>
+
+<p>
+  Selama puluhan tahun, pemrogram di Indonesia mempelajari SQL dengan kata kunci berbahasa Inggris (seperti <code>CREATE TABLE</code>, <code>SELECT</code>, <code>INSERT INTO</code>). WidyaBase hadir dengan terobosan unik: <strong>Mesin Basis Data Mandiri Dwibahasa Simetris Pertama di Dunia</strong>. Anda dapat menulis kueri menggunakan bahasa ibu kita—Bahasa Indonesia yang alami (seperti <code>BUAT_TABEL</code>, <code>PILIH</code>, <code>SISIP_KE</code>)—maupun standar internasional ANSI SQL tanpa perbedaan performa seperseribu detik pun.
+</p>
+
+<p>
+  Lebih dari sekadar kueri yang ramah pemula, WidyaBase dirancang dengan standar arsitektur <strong>kelas industri</strong> yang sesungguhnya:
+</p>
+<ul>
+  <li><strong>Slotted-Page Storage 4KB</strong>: Standar manajemen disk berkinerja tinggi yang digunakan oleh mesin enterprise seperti PostgreSQL dan Oracle.</li>
+  <li><strong>Write-Ahead Logging (WAL)</strong>: Menjamin transaksi bisnis tidak akan pernah hilang walaupun listrik padam tiba-tiba.</li>
+  <li><strong>MVCC (Multi-Version Concurrency Control)</strong>: Membaca dan menulis data secara bersamaan tanpa saling mengunci (non-blocking).</li>
+  <li><strong>PostgreSQL Wire Protocol v3.0</strong>: Server daemon TCP mandiri sehingga aplikasi luar (DBeaver, Python, Node.js) dapat terhubung seketika.</li>
+</ul>
+
+<div class="callout callout-tip">
+  <div class="callout-title">💡 Petunjuk untuk Pembaca Pemula</div>
+  Anda tidak memerlukan pengalaman basis data sebelumnya untuk membaca buku ini. Ikuti setiap bab secara berurutan, ketikkan contoh-contoh kueri yang disediakan di terminal Anda, dan kerjakan latihan mandiri di akhir setiap bab!
+</div>
+
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">ii</span> Daftar Isi Buku</h1>
+
+<div class="toc-section">BAGIAN I: PENGENALAN & PERSIAPAN</div>
+<div class="toc-item"><span><strong>Bab 1</strong>: Mengenal WidyaBase & Filosofi Basis Data</span><span class="toc-page">Hal. 1</span></div>
+<div class="toc-item"><span><strong>Bab 2</strong>: Instalasi & Memulai Konsol Interaktif (REPL)</span><span class="toc-page">Hal. 3</span></div>
+
+<div class="toc-section">BAGIAN II: DASAR-DASAR SQL DWIBAHASA NUSANTARA</div>
+<div class="toc-item"><span><strong>Bab 3</strong>: Mendesain & Membuat Tabel Pertama (DDL)</span><span class="toc-page">Hal. 5</span></div>
+<div class="toc-item"><span><strong>Bab 4</strong>: Menyisipkan Data ke Basis Data (DML - Insert)</span><span class="toc-page">Hal. 7</span></div>
+<div class="toc-item"><span><strong>Bab 5</strong>: Membaca, Menyaring & Mengurutkan Data (DQL - Select)</span><span class="toc-page">Hal. 9</span></div>
+<div class="toc-item"><span><strong>Bab 6</strong>: Mengubah & Menghapus Data Secara Aman (DML - Update & Delete)</span><span class="toc-page">Hal. 12</span></div>
+
+<div class="toc-section">BAGIAN III: ANALITIK BISNIS & KEANDALAN DATA</div>
+<div class="toc-item"><span><strong>Bab 7</strong>: Fungsi Agregasi & Analitik Data Penjualan</span><span class="toc-page">Hal. 14</span></div>
+<div class="toc-item"><span><strong>Bab 8</strong>: Transaksi ACID & Perlindungan Data dari Crash</span><span class="toc-page">Hal. 16</span></div>
+
+<div class="toc-section">BAGIAN IV: KONEKTIVITAS, TOOLING & FITUR CANGGIH</div>
+<div class="toc-item"><span><strong>Bab 9</strong>: Menghubungkan DBeaver, Python, Node.js & Bahasa Widya</span><span class="toc-page">Hal. 18</span></div>
+<div class="toc-item"><span><strong>Bab 10</strong>: Backup, Ekspor & Impor Data (CSV, JSON, SQL Dump)</span><span class="toc-page">Hal. 21</span></div>
+<div class="toc-item"><span><strong>Bab 11</strong>: Pengantar Fitur Canggih: Vektor AI & JSONB</span><span class="toc-page">Hal. 23</span></div>
+
+<div class="toc-section">BAGIAN V: REFERENSI & LATIHAN</div>
+<div class="toc-item"><span><strong>Bab 12</strong>: Kamus Padanan Kueri Dwibahasa & Kunci Jawaban</span><span class="toc-page">Hal. 25</span></div>
+
+<!-- ========================================================================= -->
+<!-- BAB 1                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">01</span> Mengenal WidyaBase & Filosofi Basis Data</h1>
+
+<h2>1.1 Mengapa Kita Membutuhkan Basis Data?</h2>
+<p>
+  Bayangkan Anda memiliki sebuah toko kelontong atau kafe kopi. Pada hari pertama, Anda mencatat setiap penjualan di buku kas kertas. Ketika toko Anda semakin ramai dan transaksi mencapai ribuan per hari, mencatat di kertas menjadi lambat, rawan hilang, dan sulit dicari.
+</p>
+<p>
+  Anda mungkin mencoba menggunakan aplikasi spreadsheet seperti Microsoft Excel atau Google Sheets. Spreadsheet sangat bagus untuk laporan sederhana, namun memiliki kelemahan besar ketika dipakai oleh aplikasi:
+</p>
+<ul>
+  <li><strong>Konkurensi Buruk</strong>: Jika 5 kasir menyimpan transaksi pada detik yang sama, spreadsheet rawan bertabrakan (*file conflict*).</li>
+  <li><strong>Tidak Tahan Bencana</strong>: Jika komputer tiba-tiba mati listrik saat menyimpan, file spreadsheet bisa rusak (*corrupt*).</li>
+  <li><strong>Kecepatan Terbatas</strong>: Mencari 1 data di antara 1 juta baris membutuhkan pemindaian dari awal hingga akhir (*slow full scan*).</li>
+</ul>
+<p>
+  Di sinilah <strong>Basis Data Relasional (RDBMS)</strong> dibutuhkan. Basis data adalah perangkat lunak khusus yang dirancang untuk menyimpan, mengamankan, dan menyajikan jutaan data dalam hitungan milidetik secara konkuren dan tahan banting.
+</p>
+
+<h2>1.2 Apa itu WidyaBase?</h2>
+<p>
+  <strong>WidyaBase</strong> adalah mesin basis data relasional mandiri (*autonomous relational database engine*) yang diciptakan sebagai bagian dari ekosistem bahasa pemrograman Widya. WidyaBase dikompilasi menjadi satu file biner mandiri (<code>WidyaBase.exe</code>) tanpa memerlukan instalasi software pihak ketiga yang rumit.
+</p>
+
+<div class="callout callout-info">
+  <div class="callout-title">ℹ️ Konsep File Tunggal WidyaBase</div>
+  Saat Anda membuat basis data di WidyaBase, semua tabel dan data Anda disimpan dalam satu file biner berekstensi <code>.wdb</code> (misalnya <code>toko.wdb</code>), ditemani oleh satu file log transaksi <code>.wal</code> (misalnya <code>toko.wal</code>). Anda cukup menyalin file ini untuk memindahkan seluruh basis data Anda!
+</div>
+
+<h2>1.3 Ciri Khas: SQL Dwibahasa Simetris</h2>
+<p>
+  Keunikan utama WidyaBase adalah fleksibilitas bahasanya. Anda bebas memilih gaya penulisan yang paling Anda sukai:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tindakan Basis Data</th>
+      <th>Dialek Nusantara (Bahasa Indonesia)</th>
+      <th>Standar Global (ANSI SQL)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Membuat Tabel</td>
+      <td><code>BUAT_TABEL produk (...);</code></td>
+      <td><code>CREATE TABLE produk (...);</code></td>
+    </tr>
+    <tr>
+      <td>Menyisipkan Data</td>
+      <td><code>SISIP_KE produk NILAI (...);</code></td>
+      <td><code>INSERT INTO produk VALUES (...);</code></td>
+    </tr>
+    <tr>
+      <td>Mengambil Data</td>
+      <td><code>PILIH * DARI produk;</code></td>
+      <td><code>SELECT * FROM produk;</code></td>
+    </tr>
+    <tr>
+      <td>Menyaring Data</td>
+      <td><code>... DIMANA harga > 20000;</code></td>
+      <td><code>... WHERE harga > 20000;</code></td>
+    </tr>
+    <tr>
+      <td>Mengurutkan Data</td>
+      <td><code>... URUTKAN BERDASARKAN harga TURUN;</code></td>
+      <td><code>... ORDER BY harga DESC;</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================================================= -->
+<!-- BAB 2                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">02</span> Instalasi & Memulai Konsol Interaktif (REPL)</h1>
+
+<h2>2.1 Menyiapkan Berkas Eksekusi</h2>
+<p>
+  WidyaBase didistribusikan dalam bentuk biner portabel. Anda tidak perlu mengonfigurasi service Windows atau dependensi runtime C++ tambahan.
+</p>
+<ol>
+  <li>Letakkan berkas <code>WidyaBase.exe</code> pada folder kerja Anda (misalnya <code>C:\proyek\</code>).</li>
+  <li>Buka terminal favorit Anda (Command Prompt atau PowerShell).</li>
+  <li>Periksa apakah WidyaBase siap dijalankan dengan mengetikkan:</li>
+</ol>
+
+<pre><span class="code-comment"># Memeriksa versi dan bantuan WidyaBase</span>
+.WidyaBase.exe --help</pre>
+
+<p>
+  Anda akan melihat layar sambutan resmi WidyaBase beserta daftar perintah yang tersedia.
+</p>
+
+<h2>2.2 Membuka Konsol Interaktif (REPL)</h2>
+<p>
+  Cara tercepat bagi pemula untuk belajar adalah masuk ke mode <strong>REPL (Read-Eval-Print Loop)</strong>. Mode ini memungkinkan Anda mengetikkan kueri SQL dan melihat hasilnya seketika pada layar terminal.
+</p>
+
+<pre><span class="code-comment"># Masuk ke REPL dengan basis data 'toko.wdb'</span>
+.WidyaBase.exe --data toko.wdb sql</pre>
+
+<p>
+  Terminal Anda akan berubah menjadi konsol interaktif WidyaBase:
+</p>
+
+<pre>🗄️  Konsol SQL Interaktif WidyaBase v1.0.0
+Basis Data: toko.wdb | Protokol: Dwibahasa Simetris
+Ketik '.bantuan' untuk panduan perintah atau '.keluar' untuk selesai.
+
+widyabase> _</pre>
+
+<h2>2.3 Perintah Bantuan Konsol (Dot Commands)</h2>
+<p>
+  Di dalam REPL, terdapat perintah praktis berawalan tanda titik (<code>.</code>) untuk mengelola sesi Anda:
+</p>
+<ul>
+  <li><code>.bantuan</code> : Menampilkan panduan kueri dan sintaksis.</li>
+  <li><code>.tabel</code> : Menampilkan daftar seluruh tabel yang ada di dalam database.</li>
+  <li><code>.skema &lt;nama_tabel&gt;</code> : Melihat struktur kolom dan tipe data dari suatu tabel.</li>
+  <li><code>.status</code> : Memeriksa kesehatan mesin, total halaman disk, dan log transaksi.</li>
+  <li><code>.keluar</code> : Menyimpan dan menutup sesi konsol.</li>
+</ul>
+
+<div class="callout callout-exercise">
+  <div class="callout-title">🎯 Latihan Mandiri 2.1</div>
+  Buka terminal Anda, jalankan <code>.WidyaBase.exe sql</code>, lalu ketikkan <code>.status</code>. Perhatikan informasi status buffer pool dan halaman yang ditampilkan pada konsol Anda!
+</div>
+
+<!-- ========================================================================= -->
+<!-- BAB 3                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">03</span> Mendesain & Membuat Tabel Pertama (DDL)</h1>
+
+<h2>3.1 Memahami Konsep Tabel, Kolom, dan Baris</h2>
+<p>
+  Dalam basis data relasional, data disimpan dalam bentuk <strong>Tabel</strong>. Analoginya persis seperti sebuah lembar kerja:
+</p>
+<ul>
+  <li><strong>Kolom (Column / Field)</strong>: Menentukan jenis atribut apa yang disimpan (misal: ID, Nama Produk, Harga).</li>
+  <li><strong>Baris (Row / Record)</strong>: Satu data utuh yang mewakili satu objek nyata (misal: Produk ID 1 bernama 'Kopi Gayo' seharga 35.000).</li>
+  <li><strong>Kunci Utama (Primary Key)</strong>: Kolom khusus yang nilainya wajib unik dan tidak boleh kembar untuk setiap baris.</li>
+</ul>
+
+<h2>3.2 Tipe Data Dasar WidyaBase</h2>
+<p>
+  Sebelum membuat kolom, kita harus menentukan tipe datanya:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tipe Data (Nusantara)</th>
+      <th>Tipe Data (ANSI)</th>
+      <th>Penjelasan & Contoh Penggunaan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>INT</code> atau <code>BULAT</code></td>
+      <td><code>INT</code> / <code>INTEGER</code></td>
+      <td>Bilangan bulat tanpa koma desimal (Contoh: ID, stok barang, jumlah).</td>
+    </tr>
+    <tr>
+      <td><code>TEKS</code></td>
+      <td><code>TEXT</code> / <code>VARCHAR</code></td>
+      <td>Rangkaian karakter atau kalimat teks (Contoh: nama barang, alamat, surel).</td>
+    </tr>
+    <tr>
+      <td><code>ANGKA</code></td>
+      <td><code>NUMERIC</code> / <code>FLOAT</code></td>
+      <td>Bilangan dengan angka desimal atau pecahan mata uang (Contoh: harga, diskon).</td>
+    </tr>
+    <tr>
+      <td><code>LOGIKA</code></td>
+      <td><code>BOOLEAN</code></td>
+      <td>Nilai kebenaran (Hanya dapat bernilai TRUE / BENAR atau FALSE / SALAH).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>3.3 Perintah Membuat Tabel: <code>BUAT_TABEL</code></h2>
+<p>
+  Mari kita buat tabel pertama bernama <code>menu_kopi</code>. Di dalam REPL, ketikkan kueri berikut lalu tekan Enter:
+</p>
+
+<pre><span class="code-kw">BUAT_TABEL</span> menu_kopi (
+    id <span class="code-kw">INT KUNCI_UTAMA</span>,
+    nama <span class="code-kw">TEKS</span>,
+    harga <span class="code-kw">ANGKA</span>,
+    tersedia <span class="code-kw">LOGIKA</span>
+);</pre>
+
+<p>
+  WidyaBase akan merespons dengan:
+</p>
+<pre>✅ Tabel 'menu_kopi' berhasil dibuat (Root Page: 1)</pre>
+
+<div class="callout callout-tip">
+  <div class="callout-title">💡 Setara dengan Standar Global ANSI SQL</div>
+  Kueri di atas memiliki makna yang sama persis jika Anda menuliskan:<br>
+  <code>CREATE TABLE menu_kopi (id INT PRIMARY KEY, nama TEXT, harga NUMERIC, tersedia BOOLEAN);</code>
+</div>
+
+<h2>3.4 Menghapus Tabel: <code>HAPUS_TABEL</code></h2>
+<p>
+  Jika Anda membuat kesalahan desain tabel dan ingin menghapusnya, gunakan perintah:
+</p>
+<pre><span class="code-kw">HAPUS_TABEL</span> menu_kopi;</pre>
+
+<!-- ========================================================================= -->
+<!-- BAB 4                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">04</span> Menyisipkan Data ke Basis Data (DML - Insert)</h1>
+
+<h2>4.1 Perintah <code>SISIP_KE</code> (Insert)</h2>
+<p>
+  Setelah tabel terbentuk, tabel tersebut masih kosong. Untuk memasukkan baris data ke dalam tabel, kita menggunakan perintah <strong><code>SISIP_KE</code></strong> (atau <code>INSERT INTO</code> dalam standar ANSI).
+</p>
+
+<h3>Sintaks Dasar:</h3>
+<pre><span class="code-kw">SISIP_KE</span> &lt;nama_tabel&gt; (&lt;kolom1&gt;, &lt;kolom2&gt;, ...) <span class="code-kw">NILAI</span> (&lt;nilai1&gt;, &lt;nilai2&gt;, ...);</pre>
+
+<h2>4.2 Memasukkan Data Praktik</h2>
+<p>
+  Mari kita masukkan beberapa menu kopi ke dalam tabel <code>menu_kopi</code> yang telah kita buat:
+</p>
+
+<pre><span class="code-comment">-- Memasukkan menu pertama</span>
+<span class="code-kw">SISIP_KE</span> menu_kopi (id, nama, harga, tersedia) 
+<span class="code-kw">NILAI</span> (<span class="code-num">1</span>, <span class="code-str">'Kopi Tubruk Gayo'</span>, <span class="code-num">25000</span>, <span class="code-kw">BENAR</span>);
+
+<span class="code-comment">-- Memasukkan menu kedua</span>
+<span class="code-kw">SISIP_KE</span> menu_kopi (id, nama, harga, tersedia) 
+<span class="code-kw">NILAI</span> (<span class="code-num">2</span>, <span class="code-str">'Es Kopi Susu Aren'</span>, <span class="code-num">22000</span>, <span class="code-kw">BENAR</span>);
+
+<span class="code-comment">-- Memasukkan menu ketiga</span>
+<span class="code-kw">SISIP_KE</span> menu_kopi (id, nama, harga, tersedia) 
+<span class="code-kw">NILAI</span> (<span class="code-num">3</span>, <span class="code-str">'Manual Brew Toraja'</span>, <span class="code-num">32000</span>, <span class="code-kw">BENAR</span>);
+
+<span class="code-comment">-- Memasukkan menu keempat (stok habis / tidak tersedia)</span>
+<span class="code-kw">SISIP_KE</span> menu_kopi (id, nama, harga, tersedia) 
+<span class="code-kw">NILAI</span> (<span class="code-num">4</span>, <span class="code-str">'Cold Brew Flores'</span>, <span class="code-num">35000</span>, <span class="code-kw">SALAH</span>);</pre>
+
+<h2>4.3 Aturan Penulisan Nilai untuk Pemula</h2>
+<ul>
+  <li><strong>Nilai Teks</strong>: Wajib diapit dengan tanda petik tunggal (<code>'Kopi Gayo'</code>). Jangan gunakan tanda petik ganda untuk nilai teks.</li>
+  <li><strong>Nilai Angka / Numerik</strong>: Ditulis langsung tanpa tanda petik (<code>25000</code>). Jika mengandung desimal, gunakan tanda titik (<code>18500.50</code>).</li>
+  <li><strong>Nilai Boolean</strong>: Tuliskan <code>BENAR</code> atau <code>SALAH</code> (dalam standar ANSI: <code>TRUE</code> atau <code>FALSE</code>).</li>
+</ul>
+
+<div class="callout callout-warn">
+  <div class="callout-title">⚠️ Perhatian: Duplikasi Kunci Utama</div>
+  Karena kolom <code>id</code> didefinisikan sebagai <code>KUNCI_UTAMA</code>, Anda tidak boleh memasukkan dua baris yang memiliki nilai <code>id</code> yang sama! Kunci utama menjamin setiap baris dapat diidentifikasi secara unik.
+</div>
+
+<!-- ========================================================================= -->
+<!-- BAB 5                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">05</span> Membaca, Menyaring & Mengurutkan Data (DQL - Select)</h1>
+
+<h2>5.1 Mengambil Semua Data: <code>PILIH *</code></h2>
+<p>
+  Perintah <strong><code>PILIH</code></strong> (atau <code>SELECT</code>) adalah perintah yang paling sering digunakan dalam pengelolaan basis data. Tanda bintang (<code>*</code>) berarti kita ingin menampilkan seluruh kolom yang ada.
+</p>
+
+<pre><span class="code-kw">PILIH</span> * <span class="code-kw">DARI</span> menu_kopi;</pre>
+
+<p>Keluaran di konsol terminal Anda:</p>
+<pre>+----+--------------------+-------+----------+
+| ID | NAMA               | HARGA | TERSEDIA |
++----+--------------------+-------+----------+
+| 1  | Kopi Tubruk Gayo   | 25000 | true     |
+| 2  | Es Kopi Susu Aren  | 22000 | true     |
+| 3  | Manual Brew Toraja | 32000 | true     |
+| 4  | Cold Brew Flores   | 35000 | false    |
++----+--------------------+-------+----------+
+(4 baris ditampilkan)</pre>
+
+<h2>5.2 Memilih Kolom Spesifik & Memberi Nama Alias (<code>SEBAGAI</code>)</h2>
+<p>
+  Daripada mengambil semua kolom, kita dapat memilih kolom tertentu saja, dan memberikan judul kolom yang lebih ramah pengguna menggunakan kata kunci <strong><code>SEBAGAI</code></strong> (atau <code>AS</code>):
+</p>
+
+<pre><span class="code-kw">PILIH</span> nama <span class="code-kw">SEBAGAI</span> nama_menu, harga <span class="code-kw">SEBAGAI</span> harga_satuan 
+<span class="code-kw">DARI</span> menu_kopi;</pre>
+
+<h2>5.3 Menyaring Data dengan Kondisi: <code>DIMANA</code> (Where)</h2>
+<p>
+  Seringkali kita hanya ingin melihat data yang memenuhi kriteria tertentu. Kita menggunakan klausa <strong><code>DIMANA</code></strong> (atau <code>WHERE</code>):
+</p>
+
+<pre><span class="code-comment">-- Cari kopi yang harganya di bawah 30.000</span>
+<span class="code-kw">PILIH</span> nama, harga 
+<span class="code-kw">DARI</span> menu_kopi 
+<span class="code-kw">DIMANA</span> harga &lt; <span class="code-num">30000</span>;</pre>
+
+<h3>Operator Pembanding yang Didukung:</h3>
+<table>
+  <thead>
+    <tr><th>Operator</th><th>Arti</th><th>Contoh</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>=</code></td><td>Sama dengan</td><td><code>DIMANA id = 2</code></td></tr>
+    <tr><td><code>!=</code></td><td>Tidak sama dengan</td><td><code>DIMANA tersedia != SALAH</code></td></tr>
+    <tr><td><code>&gt;</code> / <code>&lt;</code></td><td>Lebih besar / Lebih kecil</td><td><code>DIMANA harga &gt; 25000</code></td></tr>
+    <tr><td><code>&gt;=</code> / <code>&lt;=</code></td><td>Lebih besar sama dengan / Lebih kecil sama dengan</td><td><code>DIMANA harga &gt;= 32000</code></td></tr>
+    <tr><td><code>DAN</code> / <code>AND</code></td><td>Kedua kondisi harus terpenuhi</td><td><code>DIMANA harga &gt; 20000 DAN harga &lt; 30000</code></td></tr>
+    <tr><td><code>ATAU</code> / <code>OR</code></td><td>Salah satu kondisi terpenuhi</td><td><code>DIMANA id = 1 ATAU id = 3</code></td></tr>
+  </tbody>
+</table>
+
+<h2>5.4 Mengurutkan Data: <code>URUTKAN BERDASARKAN</code> (Order By)</h2>
+<p>
+  Untuk mengurutkan data dari yang paling murah ke paling mahal (atau sebaliknya):
+</p>
+<ul>
+  <li><strong><code>NAIK</code></strong> (atau <code>ASC</code>): Dari kecil ke besar / A ke Z.</li>
+  <li><strong><code>TURUN</code></strong> (atau <code>DESC</code>): Dari besar ke kecil / Z ke A.</li>
+</ul>
+
+<pre><span class="code-comment">-- Mengurutkan kopi dari harga tertinggi ke terendah</span>
+<span class="code-kw">PILIH</span> nama, harga 
+<span class="code-kw">DARI</span> menu_kopi 
+<span class="code-kw">URUTKAN BERDASARKAN</span> harga <span class="code-kw">TURUN</span>;</pre>
+
+<h2>5.5 Membatasi Jumlah Data: <code>BATAS</code> & <code>LEWATI</code> (Limit & Offset)</h2>
+<p>
+  Fitur ini sangat penting saat Anda membuat halaman aplikasi web (*pagination*):
+</p>
+<pre><span class="code-comment">-- Ambil 2 menu termahal saja (Top 2)</span>
+<span class="code-kw">PILIH</span> nama, harga 
+<span class="code-kw">DARI</span> menu_kopi 
+<span class="code-kw">URUTKAN BERDASARKAN</span> harga <span class="code-kw">TURUN</span> 
+<span class="code-kw">BATAS</span> <span class="code-num">2</span>;</pre>
+
+<h2>5.6 Relasi Antar-Tabel: <code>GABUNG</code> (Join) & Optimasi Index Scan</h2>
+<p>
+  Di dunia nyata, data sering terpisah di beberapa tabel yang saling berhubungan (misal: tabel pesanan dan tabel pelanggan). WidyaBase mendukung kueri relasional <strong><code>GABUNG</code></strong> (atau <code>JOIN</code>) secara dwibahasa:
+</p>
+
+<pre><span class="code-comment">-- Menggabungkan tabel pesanan dengan tabel pelanggan</span>
+<span class="code-kw">PILIH</span> pesanan.id, pelanggan.nama, pesanan.total 
+<span class="code-kw">DARI</span> pesanan 
+<span class="code-kw">GABUNG</span> pelanggan <span class="code-kw">PADA</span> pesanan.pelanggan_id = pelanggan.id 
+<span class="code-kw">DIMANA</span> pesanan.total >= <span class="code-num">50000</span> 
+<span class="code-kw">URUTKAN BERDASARKAN</span> pesanan.total <span class="code-kw">TURUN</span>;</pre>
+
+<div class="callout callout-tip">
+  <div class="callout-title">⚡ Optimasi Index Scan B+Tree Otomatis</div>
+  Jika kueri Anda mencari data spesifik berdasarkan Kunci Utama (contoh: <code>DIMANA id = 10</code>), mesin WidyaBase secara otomatis mengalihkan eksekusi ke pemindaian pohon B+Tree $O(log N)$ berkecepatan mikrodetik tanpa perlu memindai seluruh baris tabel secara sekuensial!
+</div>
+
+<!-- ========================================================================= -->
+<!-- BAB 6                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">06</span> Mengubah & Menghapus Data Secara Aman (Update & Delete)</h1>
+
+<h2>6.1 Memperbarui Data: <code>PERBARUI ... ATUR</code> (Update)</h2>
+<p>
+  Data di dunia nyata selalu berubah: harga barang naik, stok berganti, atau status ketersediaan berubah. Untuk memperbarui data yang sudah ada, gunakan <strong><code>PERBARUI</code></strong> (atau <code>UPDATE</code>):
+</p>
+
+<h3>Sintaks:</h3>
+<pre><span class="code-kw">PERBARUI</span> &lt;nama_tabel&gt; <span class="code-kw">ATUR</span> &lt;kolom&gt; = &lt;nilai_baru&gt; <span class="code-kw">DIMANA</span> &lt;kondisi&gt;;</pre>
+
+<h3>Contoh Praktik:</h3>
+<p>Misalkan harga menu 'Kopi Tubruk Gayo' (ID = 1) naik menjadi 28.000:</p>
+
+<pre><span class="code-kw">PERBARUI</span> menu_kopi 
+<span class="code-kw">ATUR</span> harga = <span class="code-num">28000</span> 
+<span class="code-kw">DIMANA</span> id = <span class="code-num">1</span>;</pre>
+
+<p>WidyaBase akan menampilkan respon: <code>affected: 1</code> (1 baris berhasil diubah).</p>
+
+<h2>6.2 Menghapus Data: <code>HAPUS_DARI</code> (Delete)</h2>
+<p>
+  Jika suatu item ingin dihapus secara permanen dari tabel, gunakan perintah <strong><code>HAPUS_DARI</code></strong> (atau <code>DELETE FROM</code>):
+</p>
+
+<pre><span class="code-comment">-- Menghapus menu dengan ID = 4</span>
+<span class="code-kw">HAPUS_DARI</span> menu_kopi <span class="code-kw">DIMANA</span> id = <span class="code-num">4</span>;</pre>
+
+<div class="callout callout-warn">
+  <div class="callout-title">🚨 ATURAN EMAS PEMULA: Selalu Sertakan Klausa DIMANA!</div>
+  Jika Anda menjalankan perintah:
+  <code>PERBARUI menu_kopi ATUR harga = 10000;</code> tanpa klausa <code>DIMANA</code>, maka <strong>SEMUA</strong> harga kopi di warung Anda akan berubah menjadi 10.000!<br><br>
+  Begitu pula jika Anda mengetik <code>HAPUS_DARI menu_kopi;</code> tanpa <code>DIMANA</code>, seluruh data tabel akan terhapus bersih. Selalu berhati-hati dan teliti sebelum menekan Enter!
+</div>
+
+<!-- ========================================================================= -->
+<!-- BAB 7                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">07</span> Fungsi Agregasi & Analitik Data Penjualan</h1>
+
+<h2>7.1 Apa itu Fungsi Agregasi?</h2>
+<p>
+  Seringkali pemilik bisnis tidak butuh melihat daftar jutaan baris transaksi satu per satu, melainkan angka ringkasan eksekutif:
+  <em>Berapa banyak transaksi hari ini? Berapa total omzet penjualan? Berapa harga rata-rata produk kita?</em>
+</p>
+<p>
+  WidyaBase menyediakan 5 fungsi agregasi bilingual terintegrasi:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fungsi (Nusantara)</th>
+      <th>Fungsi (ANSI)</th>
+      <th>Kegunaan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>HITUNG(*)</code></td>
+      <td><code>COUNT(*)</code></td>
+      <td>Menghitung jumlah total baris data yang ditemukan.</td>
+    </tr>
+    <tr>
+      <td><code>JUMLAH(kolom)</code></td>
+      <td><code>SUM(kolom)</code></td>
+      <td>Menjumlahkan seluruh total nilai angka pada suatu kolom.</td>
+    </tr>
+    <tr>
+      <td><code>RATA_RATA(kolom)</code></td>
+      <td><code>AVG(kolom)</code></td>
+      <td>Menghitung rata-rata nilai numerik pada suatu kolom.</td>
+    </tr>
+    <tr>
+      <td><code>MIN(kolom)</code></td>
+      <td><code>MIN(kolom)</code></td>
+      <td>Mencari nilai terkecil / terendah pada suatu kolom.</td>
+    </tr>
+    <tr>
+      <td><code>MAKS(kolom)</code></td>
+      <td><code>MAX(kolom)</code></td>
+      <td>Mencari nilai terbesar / tertinggi pada suatu kolom.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>7.2 Studi Kasus: Laporan Eksekutif Toko Kopi</h2>
+<p>
+  Mari kita buat kueri analitik komprehensif terhadap tabel <code>menu_kopi</code>:
+</p>
+
+<pre><span class="code-kw">PILIH</span> 
+    <span class="code-fn">HITUNG</span>(*) <span class="code-kw">SEBAGAI</span> total_menu,
+    <span class="code-fn">JUMLAH</span>(harga) <span class="code-kw">SEBAGAI</span> total_nilai_menu,
+    <span class="code-fn">RATA_RATA</span>(harga) <span class="code-kw">SEBAGAI</span> harga_rata_rata,
+    <span class="code-fn">MIN</span>(harga) <span class="code-kw">SEBAGAI</span> harga_termurah,
+    <span class="code-fn">MAKS</span>(harga) <span class="code-kw">SEBAGAI</span> harga_termahal
+<span class="code-kw">DARI</span> menu_kopi;</pre>
+
+<p>Hasil yang ditampilkan:</p>
+<pre>+------------+------------------+-----------------+---------------+---------------+
+| TOTAL_MENU | TOTAL_NILAI_MENU | HARGA_RATA_RATA | HARGA_TERMURAH| HARGA_TERMAHAL|
++------------+------------------+-----------------+---------------+---------------+
+| 3          | 82000.0          | 27333.33        | 22000.0       | 32000.0       |
++------------+------------------+-----------------+---------------+---------------+
+(1 baris ringkasan analitik)</pre>
+
+<p>
+  Hanya dengan satu baris kueri yang mudah dibaca, Anda langsung mendapatkan laporan metrik finansial bisnis yang akurat!
+</p>
+
+<!-- ========================================================================= -->
+<!-- BAB 8                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">08</span> Transaksi ACID & Perlindungan Data dari Crash</h1>
+
+<h2>8.1 Skenario Nyata: Mengapa Kita Butuh Transaksi?</h2>
+<p>
+  Bayangkan skenario transfer uang di bank: Budi ingin mentransfer Rp 50.000 ke rekening Siti.
+</p>
+<ol>
+  <li>Langkah 1: Saldo Budi dikurangi Rp 50.000.</li>
+  <li>Langkah 2: Saldo Siti ditambah Rp 50.000.</li>
+</ol>
+<p>
+  Apa yang terjadi jika saat Langkah 1 selesai, server tiba-tiba mati listrik atau kabel tercabut sebelum Langkah 2 dieksekusi?
+  Uang Budi sudah terpotong, tetapi uang belum sampai ke Siti! Uang hilang di antah berantah.
+</p>
+<p>
+  Inilah mengapa kita memerlukan <strong>Transaksi ACID</strong>. Dalam sebuah transaksi, seluruh rangkaian langkah diperlakukan sebagai satu kesatuan utuh: <em>semua harus berhasil bersama-sama, atau jika ada satu kegagalan, semuanya dibatalkan seperti tidak pernah terjadi</em> (*All or Nothing*).
+</p>
+
+<h2>8.2 Memahami Konsep ACID untuk Pemula</h2>
+<ul>
+  <li><strong>Atomicity (Keutuhan)</strong>: Transaksi tidak dapat dibagi-bagi. Harus komit seutuhnya atau dibatalkan seutuhnya.</li>
+  <li><strong>Consistency (Konsistensi)</strong>: Data selalu valid sesuai aturan skema dan kunci utama.</li>
+  <li><strong>Isolation (Isolasi MVCC)</strong>: Transaksi satu tidak terganggu oleh transaksi lain yang sedang berjalan bersamaan.</li>
+  <li><strong>Durability (Ketahanan)</strong>: Begitu transaksi dikonfirmasi (Commit), data dijamin tersimpan permanen di disk melalui Write-Ahead Log (WAL).</li>
+</ul>
+
+<h2>8.3 Perintah Transaksi di WidyaBase</h2>
+
+<pre><span class="code-comment">-- 1. Memulai Transaksi</span>
+<span class="code-kw">MULAI TRANSAKSI</span>; <span class="code-comment">-- atau: BEGIN TRANSACTION;</span>
+
+<span class="code-comment">-- 2. Melakukan beberapa operasi</span>
+<span class="code-kw">SISIP_KE</span> menu_kopi (id, nama, harga, tersedia) <span class="code-kw">NILAI</span> (<span class="code-num">10</span>, <span class="code-str">'Kopi Promo'</span>, <span class="code-num">10000</span>, <span class="code-kw">BENAR</span>);
+<span class="code-kw">PERBARUI</span> menu_kopi <span class="code-kw">ATUR</span> harga = <span class="code-num">12000</span> <span class="code-kw">DIMANA</span> id = <span class="code-num">10</span>;
+
+<span class="code-comment">-- 3A. Jika semua berhasil: Simpan secara permanen</span>
+<span class="code-kw">KOMIT</span>; <span class="code-comment">-- atau: COMMIT;</span>
+
+<span class="code-comment">-- 3B. Jika terjadi kesalahan: Batalkan seluruh perubahan</span>
+<span class="code-comment">-- BATALKAN; -- atau: ROLLBACK;</span></pre>
+
+<!-- ========================================================================= -->
+<!-- BAB 9                                                                     -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">09</span> Menghubungkan DBeaver, Python, Node.js & Bahasa Widya</h1>
+
+<h2>9.1 Menjalankan Server Jaringan (pgwire v3.0)</h2>
+<p>
+  Salah satu keunggulan terbesar WidyaBase adalah kemampuannya bertindak sebagai <strong>PostgreSQL-compatible server</strong>. Anda dapat menjalankan WidyaBase sebagai service jaringan TCP:
+</p>
+
+<pre><span class="code-comment"># Menjalankan server WidyaBase pada port default 5432</span>
+.WidyaBase.exe --data toko.wdb mulai --port 5432</pre>
+
+<p>WidyaBase akan menampilkan log:</p>
+<pre>🚀 [WidyaBase] Server aktif mendengarkan di 0.0.0.0:5432 (pgwire v3.0)</pre>
+
+<h2>9.2 Menghubungkan DBeaver / TablePlus (GUI Client)</h2>
+<p>
+  Anda dapat menggunakan aplikasi manajemen visual database seperti <strong>DBeaver</strong> atau <strong>TablePlus</strong> untuk melihat tabel secara grafis:
+</p>
+<ol>
+  <li>Buka DBeaver, pilih <strong>New Database Connection -> PostgreSQL</strong>.</li>
+  <li>Isi Host: <code>localhost</code>, Port: <code>5432</code>, Database: <code>toko</code>.</li>
+  <li>Username: <code>postgres</code> (atau bebas), Password: biarkan kosong.</li>
+  <li>Klik <strong>Test Connection</strong> -> Sukses! Anda sekarang dapat menjelajahi tabel secara visual.</li>
+</ol>
+
+<h2>9.3 Menghubungkan dari Aplikasi Python</h2>
+<p>Gunakan library standar <code>psycopg2</code> di Python:</p>
+
+<pre><span class="code-kw">import</span> psycopg2
+
+<span class="code-comment"># Hubungkan ke WidyaBase</span>
+conn = psycopg2.connect(
+    host=<span class="code-str">"localhost"</span>,
+    port=<span class="code-num">5432</span>,
+    database=<span class="code-str">"toko"</span>,
+    user=<span class="code-str">"postgres"</span>
+)
+cursor = conn.cursor()
+
+<span class="code-comment"># Anda bisa mengirimkan kueri berbahasa Indonesia!</span>
+cursor.execute(<span class="code-str">"PILIH nama, harga DARI menu_kopi URUTKAN BERDASARKAN harga TURUN;"</span>)
+<span class="code-kw">for</span> baris <span class="code-kw">in</span> cursor.fetchall():
+    print(f<span class="code-str">"Menu: {baris[0]} | Harga: Rp {baris[1]:,}"</span>)
+
+cursor.close()
+conn.close()</pre>
+
+<h2>9.4 Menghubungkan secara Native dari Bahasa Pemrograman Widya</h2>
+<p>
+  Di dalam bahasa pemrograman Widya (<code>.wya</code>), WidyaBase terintegrasi secara asli tanpa perlu driver jaringan:
+</p>
+
+<pre><span class="code-kw">fungsi</span> utama() {
+    <span class="code-kw">tetapkan</span> db = WidyaBase.buka(<span class="code-str">"toko.wdb"</span>);
+    <span class="code-kw">tetapkan</span> hasil = db.eksekusi(<span class="code-str">"PILIH nama, harga DARI menu_kopi;"</span>);
+    
+    cetak(<span class="code-str">"Data Menu Kopi:"</span>);
+    <span class="code-kw">untuk</span> baris <span class="code-kw">dalam</span> hasil.baris {
+        cetak(baris[<span class="code-num">0</span>] + <span class="code-str">" -> Rp "</span> + baris[<span class="code-num">1</span>]);
+    }
+}</pre>
+
+<!-- ========================================================================= -->
+<!-- BAB 10                                                                    -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">10</span> Backup, Ekspor & Impor Data (CSV, JSON, SQL Dump)</h1>
+
+<h2>10.1 Mengapa Backup Data itu Wajib?</h2>
+<p>
+  Di dunia industri teknologi, data adalah aset yang paling berharga. Kegagalan perangkat keras hard disk, kesalahan manusia (*human error*), atau serangan siber dapat terjadi kapan saja. Oleh karena itu, kemampuan mengekspor dan mengimpor data merupakan keterampilan wajib bagi setiap pengembang.
+</p>
+
+<h2>10.2 Ekspor Data ke Format CSV (Untuk Microsoft Excel)</h2>
+<p>
+  CSV (Comma-Separated Values) adalah format pertukaran data paling umum yang dapat langsung dibuka oleh akuntan di Microsoft Excel:
+</p>
+
+<pre><span class="code-comment"># Ekspor data tabel ke file CSV</span>
+.WidyaBase.exe --data toko.wdb --format csv kueri "PILIH * DARI menu_kopi;" > menu_kopi.csv</pre>
+
+<h2>10.3 Ekspor Data ke Format JSON (Untuk Web / Mobile API)</h2>
+<p>
+  Jika Anda membangun aplikasi frontend berbasis React, Vue, Flutter, atau mobile app, Anda memerlukan format JSON:
+</p>
+
+<pre><span class="code-comment"># Ekspor data tabel ke file JSON</span>
+.WidyaBase.exe --data toko.wdb --format json kueri "PILIH * DARI menu_kopi;" > menu_kopi.json</pre>
+
+<h2>10.4 Membuat SQL Dump & Memulihkan Basis Data (Restore)</h2>
+<p>
+  Untuk mencadangkan seluruh struktur dan isi basis data ke dalam skrip SQL teks yang dapat dijalankan ulang di komputer mana pun:
+</p>
+
+<pre><span class="code-comment"># Membaca skrip SQL dump ke dalam basis data baru</span>
+Get-Content backup_toko.sql | .WidyaBase.exe --data toko_baru.wdb kueri -</pre>
+
+<h2>10.5 Memeriksa Integritas Database: <code>periksa</code></h2>
+<p>
+  Untuk memastikan file basis data Anda sehat, tidak ada halaman disk yang rusak, dan seluruh log WAL sinkron:
+</p>
+
+<pre>.WidyaBase.exe --data toko.wdb periksa</pre>
+
+<p>Keluaran laporan kesehatan:</p>
+<pre>🔍 Memeriksa integritas berkas basis data: toko.wdb
+• Status Buffer Pool   : Aktif (512 Halaman Terkelola)
+• Total Halaman Aktif  : 3 Halaman (12,288 Byte)
+• Total Tabel Terdaftar: 1 Tabel
+• Catatan WAL Aktif    : 8 Rekod
+• Status Integritas    : SEHAT & NORMAL (SIAP PRODUKSI) ✅</pre>
+
+<!-- ========================================================================= -->
+<!-- BAB 11                                                                    -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">11</span> Pengantar Fitur Canggih: Vektor AI & JSONB</h1>
+
+<h2>11.1 Basis Data di Era Kecerdasan Buatan (AI)</h2>
+<p>
+  Basis data modern tidak hanya menyimpan angka dan teks sederhana. Di era Large Language Models (LLM) seperti ChatGPT, Gemini, dan Claude, kita sering bekerja dengan <strong>Vektor Embedding</strong>—representasi makna kata dalam bentuk deretan angka float.
+</p>
+
+<h2>11.2 Menghitung Kemiripan Kosinus (Cosine Similarity)</h2>
+<p>
+  WidyaBase dilengkapi mesin kalkulasi vektor bawaan. Dengan membandingkan dua vektor embedding, WidyaBase dapat mengetahui seberapa mirip dua konsep atau produk:
+</p>
+
+<pre><span class="code-comment"># Mengukur kemiripan antara Vektor A (Kopi Arabika) dan Vektor B (Kopi Robusta)</span>
+.WidyaBase.exe vektor "[0.90, 0.10, 0.05]" "[0.85, 0.15, 0.08]"</pre>
+
+<p>Hasil perhitungan:</p>
+<pre>📐 Hasil Analisis Kemiripan Vektor AI:
+• Dimensi Vektor       : 3 Dimensi
+• Kemiripan Kosinus    : 0.9982 (Sangat Mirip / Semantik Identik)
+• Jarak Euclidean (L2) : 0.0768</pre>
+
+<p>
+  Fitur ini memungkinkan Anda membangun mesin pencari cerdas (*Semantic Search*), sistem rekomendasi produk belanja, dan aplikasi RAG (*Retrieval-Augmented Generation*) langsung di atas WidyaBase!
+</p>
+
+<!-- ========================================================================= -->
+<!-- BAB 12                                                                    -->
+<!-- ========================================================================= -->
+<div class="page-break"></div>
+
+<h1 class="chapter-title"><span class="chapter-number">12</span> Kamus Padanan Kueri Dwibahasa & Latihan Soal</h1>
+
+<h2>12.1 Kamus Padanan Lengkap Kueri Nusantara vs ANSI SQL</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kategori</th>
+      <th>Dialek Nusantara (Indonesia)</th>
+      <th>Standar Global (ANSI SQL)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2"><strong>DDL</strong></td>
+      <td><code>BUAT_TABEL nama (...)</code></td>
+      <td><code>CREATE TABLE nama (...)</code></td>
+    </tr>
+    <tr>
+      <td><code>HAPUS_TABEL nama</code></td>
+      <td><code>DROP TABLE nama</code></td>
+    </tr>
+    <tr>
+      <td rowspan="3"><strong>DML</strong></td>
+      <td><code>SISIP_KE tabel (kolom) NILAI (...)</code></td>
+      <td><code>INSERT INTO table (col) VALUES (...)</code></td>
+    </tr>
+    <tr>
+      <td><code>PERBARUI tabel ATUR k = v DIMANA ...</code></td>
+      <td><code>UPDATE table SET k = v WHERE ...</code></td>
+    </tr>
+    <tr>
+      <td><code>HAPUS_DARI tabel DIMANA ...</code></td>
+      <td><code>DELETE FROM table WHERE ...</code></td>
+    </tr>
+    <tr>
+      <td rowspan="5"><strong>DQL</strong></td>
+      <td><code>PILIH kolom DARI tabel</code></td>
+      <td><code>SELECT col FROM table</code></td>
+    </tr>
+    <tr>
+      <td><code>DIMANA kondisi</code></td>
+      <td><code>WHERE condition</code></td>
+    </tr>
+    <tr>
+      <td><code>URUTKAN BERDASARKAN kolom NAIK/TURUN</code></td>
+      <td><code>ORDER BY col ASC/DESC</code></td>
+    </tr>
+    <tr>
+      <td><code>SEBAGAI nama_alias</code></td>
+      <td><code>AS alias_name</code></td>
+    </tr>
+    <tr>
+      <td><code>BATAS n LEWATI m</code></td>
+      <td><code>LIMIT n OFFSET m</code></td>
+    </tr>
+    <tr>
+      <td rowspan="5"><strong>Agregasi</strong></td>
+      <td><code>HITUNG(*)</code></td>
+      <td><code>COUNT(*)</code></td>
+    </tr>
+    <tr>
+      <td><code>JUMLAH(kolom)</code></td>
+      <td><code>SUM(col)</code></td>
+    </tr>
+    <tr>
+      <td><code>RATA_RATA(kolom)</code></td>
+      <td><code>AVG(col)</code></td>
+    </tr>
+    <tr>
+      <td><code>MIN(kolom)</code></td>
+      <td><code>MIN(col)</code></td>
+    </tr>
+    <tr>
+      <td><code>MAKS(kolom)</code></td>
+      <td><code>MAX(col)</code></td>
+    </tr>
+    <tr>
+      <td rowspan="3"><strong>Transaksi</strong></td>
+      <td><code>MULAI TRANSAKSI;</code></td>
+      <td><code>BEGIN TRANSACTION;</code></td>
+    </tr>
+    <tr>
+      <td><code>KOMIT;</code></td>
+      <td><code>COMMIT;</code></td>
+    </tr>
+    <tr>
+      <td><code>BATALKAN;</code></td>
+      <td><code>ROLLBACK;</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>12.2 Proyek Latihan Akhir: Sistem Kasir Minimarket</h2>
+<div class="callout callout-exercise">
+  <div class="callout-title">📝 Soal Latihan Mandiri</div>
+  Buatlah basis data baru bernama <code>minimarket.wdb</code> lalu selesaikan misi berikut:
+  <ol>
+    <li>Buat tabel <code>barang</code> dengan kolom: <code>kode INT KUNCI_UTAMA</code>, <code>nama TEKS</code>, <code>harga ANGKA</code>, dan <code>stok INT</code>.</li>
+    <li>Sisipkan 3 barang:
+      <ul>
+        <li>Kode 101: 'Beras Pandan Wangi 5kg', harga 75000, stok 20</li>
+        <li>Kode 102: 'Minyak Goreng 2L', harga 34000, stok 50</li>
+        <li>Kode 103: 'Gula Pasir 1kg', harga 17500, stok 15</li>
+      </ul>
+    </li>
+    <li>Tampilkan semua barang yang stoknya di bawah 30 dengan urutan harga termurah!</li>
+    <li>Hitung total nilai aset seluruh persediaan barang (harga * stok) menggunakan kueri agregasi!</li>
+  </ol>
+</div>
+
+<h3>Kunci Jawaban Proyek Latihan:</h3>
+<pre><span class="code-comment">-- 1. Membuat Tabel</span>
+<span class="code-kw">BUAT_TABEL</span> barang (
+    kode <span class="code-kw">INT KUNCI_UTAMA</span>,
+    nama <span class="code-kw">TEKS</span>,
+    harga <span class="code-kw">ANGKA</span>,
+    stok <span class="code-kw">INT</span>
+);
+
+<span class="code-comment">-- 2. Menyisipkan Data</span>
+<span class="code-kw">SISIP_KE</span> barang (kode, nama, harga, stok) <span class="code-kw">NILAI</span> (<span class="code-num">101</span>, <span class="code-str">'Beras Pandan Wangi 5kg'</span>, <span class="code-num">75000</span>, <span class="code-num">20</span>);
+<span class="code-kw">SISIP_KE</span> barang (kode, nama, harga, stok) <span class="code-kw">NILAI</span> (<span class="code-num">102</span>, <span class="code-str">'Minyak Goreng 2L'</span>, <span class="code-num">34000</span>, <span class="code-num">50</span>);
+<span class="code-kw">SISIP_KE</span> barang (kode, nama, harga, stok) <span class="code-kw">NILAI</span> (<span class="code-num">103</span>, <span class="code-str">'Gula Pasir 1kg'</span>, <span class="code-num">17500</span>, <span class="code-num">15</span>);
+
+<span class="code-comment">-- 3. Kueri Stok &lt; 30 Urut Termurah</span>
+<span class="code-kw">PILIH</span> nama, harga, stok 
+<span class="code-kw">DARI</span> barang 
+<span class="code-kw">DIMANA</span> stok &lt; <span class="code-num">30</span> 
+<span class="code-kw">URUTKAN BERDASARKAN</span> harga <span class="code-kw">NAIK</span>;
+
+<span class="code-comment">-- 4. Kueri Ringkasan Eksekutif</span>
+<span class="code-kw">PILIH</span> 
+    <span class="code-fn">HITUNG</span>(*) <span class="code-kw">SEBAGAI</span> ragam_barang,
+    <span class="code-fn">JUMLAH</span>(stok) <span class="code-kw">SEBAGAI</span> total_unit,
+    <span class="code-fn">JUMLAH</span>(harga) <span class="code-kw">SEBAGAI</span> total_harga_katalog,
+    <span class="code-fn">RATA_RATA</span>(harga) <span class="code-kw">SEBAGAI</span> harga_rata_rata 
+<span class="code-kw">DARI</span> barang;</pre>
+
+<div class="callout callout-tip">
+  <div class="callout-title">🎉 Selamat! Anda Telah Menyelesaikan Buku Panduan Dasar!</div>
+  Kini Anda telah menguasai konsep dasar basis data, perancangan skema relasional, manipulasi data dwibahasa, agregasi analitik, transaksi ACID, hingga konektivitas eksternal. Selamat berkreasi membangun aplikasi hebat dengan WidyaBase!
+</div>
+
+</body>
+</html>

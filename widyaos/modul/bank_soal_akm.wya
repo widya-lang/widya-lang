@@ -1,0 +1,100 @@
+// =================================================================
+// Modul Bank Soal Komunitas Guru & Model Asesmen AKM Kemendikdasmen
+// (Adopsi MOD-16: Soal Terstandar HOTS, Forking CBT & Gamifikasi Guru)
+// =================================================================
+
+struktur ButirSoalAKM {
+    id_soal,
+    mapel,
+    fase_kurikulum, // FASE_A s.d. FASE_F
+    tipe_soal, // PILIHAN_GANDA_TUNGGAL, PILIHAN_GANDA_KOMPLEKS, MENJODOHKAN, URAIAN_HOTS
+    level_kognitif, // C1_MENGINGAT s.d. C6_MENCIPTAKAN
+    kategori_kesulitan, // MUDAH, SEDANG, SULIT, HOTS
+    teks_stimulus,
+    opsi_jawaban,
+    kunci_jawaban,
+    bobot_skor
+}
+
+struktur PaketSoalKomunitas {
+    id_paket,
+    judul,
+    author_nama,
+    author_nuptk,
+    daftar_butir_soal,
+    jumlah_fork,
+    total_rating_bintang,
+    jumlah_ulasan
+}
+
+struktur ProfilGamifikasiGuru {
+    nuptk,
+    nama_guru,
+    total_edupoints,
+    tier_guru, // GURU_PEMULA, GURU_KONTRIBUTOR, GURU_PENGGERAK, MASTER_EDUCATOR
+    total_soal_diterbitkan,
+    total_ujian_cbt_terbantu
+}
+
+// -------------------------------------------------------------
+// [1] Pembuatan Butir Soal Berstandar AKM Kemendikdasmen
+// -------------------------------------------------------------
+fungsi buat_soal_akm(id_soal, mapel, fase, tipe, bloom, kesulitan, stimulus, daftar_opsi, kunci_benar, bobot) {
+    kembalikan ButirSoalAKM(
+        id_soal,
+        mapel,
+        fase,
+        tipe,
+        bloom,
+        kesulitan,
+        stimulus,
+        daftar_opsi,
+        kunci_benar,
+        bobot
+    );
+}
+
+// -------------------------------------------------------------
+// [2] Penerbitan Paket Soal ke Komunitas Nasional
+// -------------------------------------------------------------
+fungsi publikasikan_paket_soal(id_paket, judul, author_nama, author_nuptk) {
+    kembalikan PaketSoalKomunitas(
+        id_paket,
+        judul,
+        author_nama,
+        author_nuptk,
+        [],
+        0,
+        5.0,
+        1
+    );
+}
+
+// -------------------------------------------------------------
+// [3] Forking Paket Soal Komunitas ke CBT Sekolah & Reward Poin
+// -------------------------------------------------------------
+fungsi fork_paket_ke_cbt_sekolah(paket, profil_guru) {
+    paket.jumlah_fork = paket.jumlah_fork + 1;
+    
+    // Berikan reward EduPoints kepada pembuat soal
+    // 50 poin per forking ke CBT sekolah
+    profil_guru.total_edupoints = profil_guru.total_edupoints + 50;
+    profil_guru.total_ujian_cbt_terbantu = profil_guru.total_ujian_cbt_terbantu + 1;
+    
+    // Kenaikan Tier Guru Otomatis
+    jika profil_guru.total_edupoints >= 500 {
+        profil_guru.tier_guru = "MASTER_EDUCATOR";
+    } kalau profil_guru.total_edupoints >= 200 {
+        profil_guru.tier_guru = "GURU_PENGGERAK";
+    } kalau profil_guru.total_edupoints >= 50 {
+        profil_guru.tier_guru = "GURU_KONTRIBUTOR";
+    }
+    
+    kembalikan {
+        "status": "FORK_BERHASIL",
+        "id_paket": paket.id_paket,
+        "total_soal": panjang(paket.daftar_butir_soal),
+        "edupoints_terbaru": profil_guru.total_edupoints,
+        "tier_terkini": profil_guru.tier_guru
+    };
+}

@@ -1,0 +1,23 @@
+// ==============================================================================
+// server.wya - Server Web Sovereign Widya-Lang (Native Web Server)
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("🌐 MEMULAI SERVER WEB RESMI WIDYA-LANG (NATIVE EDGE SERVER)");
+cetak("Arsitektur: Zero-Dependency • Non-Blocking • High Concurrency");
+cetak("==================================================================");
+
+misal port = 8080;
+cetak("🚀 Server aktif di http://localhost:" + ke_teks(port));
+cetak("📂 Melayani seluruh direktori: /home/devops/widya-lang/aplikasi");
+cetak("   1. Portal Utama      : http://localhost:" + ke_teks(port) + "/index.html");
+cetak("   2. Koperasi KDMP     : http://localhost:" + ke_teks(port) + "/01_koperasi_kdmp/index.html");
+cetak("   3. WidyaPay Switcher : http://localhost:" + ke_teks(port) + "/02_widyapay_switcher/index.html");
+cetak("   4. SmartCity ISPU    : http://localhost:" + ke_teks(port) + "/03_smartcity_telemetri/index.html");
+cetak("   5. WidyaMedika SIMRS : http://localhost:" + ke_teks(port) + "/04_widyamedika_simrs/index.html");
+cetak("   6. Workspace CRDT    : http://localhost:" + ke_teks(port) + "/05_widya_workspace_crdt/index.html");
+cetak("   7. WidyaOS Desktop   : http://localhost:" + ke_teks(port) + "/06_widyaos_web_desktop/index.html");
+cetak("==================================================================");
+
+// Jalankan edge dev server bawaan Widya-Lang
+eksekusi("./target/release/widya web dev ./aplikasi -p " + ke_teks(port));

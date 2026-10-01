@@ -1,0 +1,133 @@
+// ==============================================================================
+// integrasi/obsidian_bridge.wya - Jembatan Integrasi Brankas Lokal Obsidian
+// Diperbaiki: Write-then-Verify Pattern (Standar Industri)
+// ==============================================================================
+// CATATAN IMPOR: lifecycle_engine.wya ada di folder integrasi/ yang sama
+impor "./lifecycle_engine.wya";
+
+// Pastikan berkas ini mandiri dan direktori dibuat jika belum ada
+fungsi obsidian_pastikan_folder(jalur_folder) {
+    coba {
+        eksekusi("mkdir -p \"" + jalur_folder + "\" 2>/dev/null || powershell -NoProfile -Command New-Item -ItemType Directory -Path '" + jalur_folder + "' -Force");
+        kembalikan benar;
+    } tangkap (e) {
+        kembalikan salah;
+    }
+}
+
+// Inisialisasi seluruh struktur folder di dalam Vault Obsidian
+fungsi inisialisasi_obsidian_vault(cfg) {
+    misal root = cfg["obsidian"]["jalur_vault"];
+    obsidian_pastikan_folder(root);
+    obsidian_pastikan_folder(root + "/" + cfg["obsidian"]["folder_daily_notes"]);
+    obsidian_pastikan_folder(root + "/" + cfg["obsidian"]["folder_tasks"]);
+    obsidian_pastikan_folder(root + "/" + cfg["obsidian"]["folder_sop"]);
+    obsidian_pastikan_folder(root + "/" + cfg["obsidian"]["folder_arsip"]);
+    cetak("✓ [Obsidian Bridge] Struktur folder Vault Obsidian terverifikasi di: " + root);
+    kembalikan benar;
+}
+
+// Simpan Risalah Rapat Pagi / Malam ke folder DailyNotes
+// DIPERBAIKI: Menggunakan vault_tulis_dan_verifikasi() — Write-then-Verify Pattern
+fungsi obsidian_tulis_catatan_harian(cfg, tanggal_str, sesi, judul, konten_markdown, metadata_tambahan) {
+    misal nama_berkas = tanggal_str + "-" + sesi + ".md";
+    misal path_relatif = cfg["obsidian"]["folder_daily_notes"] + "/" + nama_berkas;
+
+    // Susun Frontmatter YAML standar Obsidian
+    misal frontmatter = "---\n" +
+        "tanggal: " + tanggal_str + "\n" +
+        "sesi: " + sesi + "\n" +
+        "tipe: Catatan Rapat Harian\n" +
+        "tags:\n" +
+        "  - #rapat-harian\n" +
+        "  - #" + sesi + "\n" +
+        "  - #widya-multi-agent\n" +
+        "status: RESMI\n" +
+        "---\n\n";
+
+    misal isi_lengkap = frontmatter + konten_markdown;
+
+    // Write-then-Verify: tulis ke vault, verifikasi, catat ke WidyaBase
+    misal waktu_str = tanggal_str + "-" + sesi;
+    misal hasil = vault_tulis_dan_verifikasi(cfg, path_relatif, isi_lengkap, waktu_str);
+
+    cetak("   ✓ [Obsidian Bridge] Catatan harian '" + nama_berkas + "'");
+    misal status_str = "⚠️ FALLBACK LOKAL";
+    jika (hasil["sukses"]) {
+        status_str = "✅ VAULT UTAMA";
+    }
+    cetak("     Status : " + status_str);
+    cetak("     Path   : " + hasil["path_final"]);
+    cetak("     Ukuran : " + teks(hasil["ukuran"]) + " bytes");
+
+    kembalikan hasil["path_final"];
+}
+
+
+// Perbarui Berkas Kanban Tugas di Tasks/Kanban_Prioritas.md
+fungsi obsidian_perbarui_kanban(cfg, tanggal_str, daftar_todo, daftar_progress, daftar_done) {
+    misal root = cfg["obsidian"]["jalur_vault"];
+    misal folder = cfg["obsidian"]["folder_tasks"];
+    misal path_kanban = root + "/" + folder + "/Kanban_Prioritas.md";
+
+    misal teks = "---\n" +
+        "kanban-plugin: basic\n" +
+        "tanggal_diperbarui: " + tanggal_str + "\n" +
+        "tags:\n" +
+        "  - #kanban\n" +
+        "  - #tugas-kantor\n" +
+        "---\n\n" +
+        "# 📌 Papan Kanban Kantor Digital Widya (9 AI Agent)\n" +
+        "> Terakhir diperbarui: " + tanggal_str + "\n\n" +
+        "## 📝 TODO (Rencana Kerja)\n";
+
+    misal i = 0;
+    selama (i < panjang(daftar_todo)) {
+        teks = teks + "- [ ] " + daftar_todo[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n## ⏳ IN PROGRESS (Sedang Dikerjakan)\n";
+    i = 0;
+    selama (i < panjang(daftar_progress)) {
+        teks = teks + "- [/] " + daftar_progress[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n## ✅ DONE (Telah Selesai & Lulus QA)\n";
+    i = 0;
+    selama (i < panjang(daftar_done)) {
+        teks = teks + "- [x] " + daftar_done[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n%% Catatan: Kartu di atas disinkronkan secara otomatis oleh agen_notulis %%\n";
+
+    // Write-then-Verify untuk Kanban
+    misal waktu_str = tanggal_str + "-kanban";
+    misal path_relatif = cfg["obsidian"]["folder_tasks"] + "/Kanban_Prioritas.md";
+    misal hasil = vault_tulis_dan_verifikasi(cfg, path_relatif, teks, waktu_str);
+
+    misal icon_str = "⚠️";
+    jika (hasil["sukses"]) {
+        icon_str = "✓";
+    }
+    cetak("   " + icon_str + " [Obsidian Bridge] Papan Kanban: " + hasil["path_final"]);
+    kembalikan hasil["sukses"];
+}
+
+
+// Sinkronkan berkas SOP dari folder internal ke folder SOP Obsidian Vault
+fungsi obsidian_salin_sop_ke_vault(cfg) {
+    misal root = cfg["obsidian"]["jalur_vault"];
+    misal target_sop = root + "/" + cfg["obsidian"]["folder_sop"];
+    
+    coba {
+        eksekusi("cp ./sop/*.md \"" + target_sop + "/\" 2>/dev/null || powershell -NoProfile -Command \"Copy-Item -Path './sop/*.md' -Destination '" + target_sop + "' -Force\"");
+        cetak("✓ [Obsidian Bridge] 10 Berkas SOP berhasil disalin ke Obsidian: " + target_sop);
+        kembalikan benar;
+    } tangkap (e) {
+        cetak("⚠️ [Obsidian Bridge] Melewati salin SOP (vault tidak dapat dijangkau).");
+        kembalikan salah;
+    }
+}

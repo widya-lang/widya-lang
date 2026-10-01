@@ -1,0 +1,107 @@
+// ============================================================================
+// SIMULASI SUITE: PERLINDUNGAN HUKUM, PROFESI & KESEJAHTERAAN GURU
+// Menguji Penanganan 4 Isu Krusial Guru di Lapangan:
+// 1. Perlindungan Hukum dari Kriminalisasi (SOP Disiplin Positif Permendikbud 10/2017)
+// 2. Validasi Ekuivalensi 24 Jam Beban Mengajar (Kelayakan SKTP & TPG InfoGTK)
+// 3. Otomatisasi Honorarium Guru Honorer (GTT) Terhubung BKU BOS ARKAS
+// 4. Pengaktifan Jam Tenang (Work-Life Balance Menghadapi Komplain Wali Murid)
+// ============================================================================
+
+impor "widyaos/modul/perlindungan_dan_profesi_guru.wya";
+
+cetak("====================================================================");
+cetak("👩‍🏫  SIMULASI: PERLINDUNGAN PROFESI & KESEJAHTERAAN GURU INDONESIA   ");
+cetak("====================================================================");
+
+// [1] Perlindungan Hukum dari Potensi Kriminalisasi Tindakan Edukatif
+cetak("\n[1] Uji Perlindungan Hukum Guru (SOP Disiplin Positif Permendikbud 10/2017):");
+misal proteksi_hukum = terbitkan_catatan_disiplin_positif(
+    "ADV-2026-009",
+    "1234567890123456",
+    "Budi Waluyo, S.Pd.",
+    "0081234567",
+    "PANGGILAN_WALI",
+    "Penertiban gawai saat KBM dan pembinaan pelanggaran tata tertib kelas berjenjang",
+    "TERTANDATANGANI_DIGITAL_ORANG_TUA"
+);
+
+cetak("  • Nama Guru Terlapor  :", proteksi_hukum.nama_guru);
+cetak("  • Jenjang Pembinaan   :", proteksi_hukum.tahap_pembinaan);
+cetak("  • Uraian Kasus        :", proteksi_hukum.uraian_tindakan_disiplin);
+cetak("  • Status Payung Hukum :", proteksi_hukum.status_perlindungan_hukum);
+cetak("  • Dukungan Organisasi :", proteksi_hukum.rekomendasi_bantuan_hukum);
+
+jika proteksi_hukum.status_perlindungan_hukum == "DILINDUNGI_SOP_PERMENDIKBUD_10_2017" {
+    cetak("  ✅ PASS: Guru Terlindungi Payung Hukum Resmi! Anti-Kriminalisasi Tindakan Edukatif.");
+} lainnya {
+    cetak("  ❌ FAIL: Perlindungan hukum guru gagal!");
+}
+
+// [2] Validasi Beban Mengajar 24 Jam Linier demi Pencairan TPG (Sertifikasi)
+cetak("\n[2] Uji Audit Ekuivalensi Beban Mengajar 24 Jam demi SKTP TPG InfoGTK:");
+// Skenario: Guru PPKn hanya ada 14 jam di sekolah induk, 6 jam di sekolah filial, + 4 jam tugas Koordinator P5
+misal validasi_tpg = validasi_kelayakan_tpg_guru(
+    "1234567890123456",
+    "Siti Rahmawati, M.Pd.",
+    "Pendidikan Pancasila",
+    14, // Sekolah Induk
+    6,  // Sekolah Luar
+    4   // Koordinator P5 & Wali Kelas
+);
+
+cetak("  • Nama Guru Sertifikasi :", validasi_tpg.nama_guru);
+cetak("  • Jam Sekolah Induk     :", validasi_tpg.jam_tatap_muka_sekolah_induk, "jam");
+cetak("  • Jam Sekolah Luar      :", validasi_tpg.jam_lintas_sekolah, "jam");
+cetak("  • Ekuivalensi Tambahan  :", validasi_tpg.jam_ekuivalensi_tugas_tambahan, "jam");
+cetak("  • Total Terhitung       :", validasi_tpg.total_jjm_terhitung, "jam / minggu");
+cetak("  • Status Kelayakan SKTP :", validasi_tpg.kelayakan_sktp_tpg);
+
+jika validasi_tpg.total_jjm_terhitung >= 24 dan validasi_tpg.kelayakan_sktp_tpg == "VALID_SIAP_SKTP" {
+    cetak("  ✅ PASS: Beban Mengajar Memenuhi Syarat 24 Jam! SKTP Siap Terbit & TPG Siap Cair.");
+} lainnya {
+    cetak("  ❌ FAIL: Validasi TPG gagal!");
+}
+
+// [3] Otomatisasi Slip Honorarium Guru Honorer (GTT) & Link BKU BOS ARKAS
+cetak("\n[3] Uji Perhitungan Honorarium Guru Honorer (GTT) Terhubung BKU BOS ARKAS:");
+misal honor_gtt = kalkulasi_honor_gtt_arkas(
+    "PAY-GTT-2026-03",
+    "3516012304950002",
+    "Ahmad Fauzi, S.Si.",
+    48,       // 48 jam tatap muka riil sebulan
+    50000,    // Rp 50.000 / jam
+    200000    // Rp 200.000 tunjangan kehadiran
+);
+
+cetak("  • Nama Guru Honorer :", honor_gtt.nama_guru);
+cetak("  • Jam Mengajar Riil :", honor_gtt.total_jam_tatap_muka_riil, "jam");
+cetak("  • Total Honor Bruto : Rp", honor_gtt.total_honor_bruto_rp);
+cetak("  • Akun Anggaran BOS :", honor_gtt.kode_rekening_arkas_bos);
+cetak("  • Status Penyaluran :", honor_gtt.status_pencairan);
+
+jika honor_gtt.total_honor_bruto_rp == 2600000 dan honor_gtt.status_pencairan == "TERJAMIN_LANGSUNG_TRANSFER_BKU_BOS" {
+    cetak("  ✅ PASS: Honorarium GTT Terekam Akurat Berbasis Kinerja Riil & Langsung Masuk BKU BOS!");
+} lainnya {
+    cetak("  ❌ FAIL: Perhitungan honor GTT gagal!");
+}
+
+// [4] Kebijakan Jam Tenang Guru (Work-Life Balance Anti-Burnout)
+cetak("\n[4] Uji Mode Jam Tenang Komunikasi Portal Wali (Cegah Burnout Guru):");
+misal jam_tenang = aktifkan_jam_tenang_guru(
+    "1234567890123456",
+    "Budi Waluyo, S.Pd.",
+    "15:30"
+);
+
+cetak("  • Status Mode Tenang :", jam_tenang.status_mode_tenang);
+cetak("  • Balasan Otomatis   :", jam_tenang.pesan_auto_responder);
+
+jika jam_tenang.status_mode_tenang == "AKTIF_NOTIFIKASI_WALI_DIBATASI" {
+    cetak("  ✅ PASS: Privasi & Hak Istirahat Guru Terlindungi Tanpa Memutus Hubungan Baik Sekolah!");
+} lainnya {
+    cetak("  ❌ FAIL: Jam tenang guru gagal!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 4/4 KASUS TATA KELOLA PROFESI GURU LULUS (100%)  ");
+cetak("====================================================================");

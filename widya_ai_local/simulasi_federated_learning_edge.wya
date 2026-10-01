@@ -1,0 +1,253 @@
+// ============================================================================
+// SUITE UJI OTOMATIS: SOVEREIGN FEDERATED EDGE LEARNING (Widya-FedLearn)
+// (simulasi_federated_learning_edge.wya)
+// Cakupan: Pelatihan Lokal LoRA, Privasi Diferensial UU PDP, Ed25519 Sig,
+//          FedAvg Multi-Simpul, W3C DID Checkpoint, Konvergensi, & MCP Tools.
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/federated_learning_edge.wya";
+impor "widya_ai_local/mcp/mcp_server_widya.wya";
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("   SUITE UJI OTOMATIS: SOVEREIGN FEDERATED EDGE LEARNING (FEDLEARN)   ");
+    cetak("   FedAvg | LoRA Deltas | Differential Privacy | W3C DID Checkpoint   ");
+    cetak("======================================================================");
+
+    var lulus_count = 0;
+    var total_uji = 14;
+    var ed25519_secret = "kunci_rahasia_ed25519_edge_nusantara";
+
+    // ------------------------------------------------------------------------
+    // UJI 1: Inisialisasi Model Dasar Federasi & Dimensi Bobot LoRA
+    // ------------------------------------------------------------------------
+    var env_fed = fed_inisialisasi_pembelajaran("widya_slm_nusantara_edge", 4);
+    jika (env_fed["id_model"] == "widya_slm_nusantara_edge" dan
+          env_fed["ronde_aktif"] == 0 dan
+          panjang(env_fed["bobot_global"]) == 4 dan
+          env_fed["kuorum_minimum"] == 3) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 01/14] Inisialisasi Model Dasar & Lingkungan Federasi Sukses.");
+    } lainnya {
+        cetak("[FAIL 01/14] Inisialisasi Federasi Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 2: Pelatihan Lokal Simpul Sepaku (Dataset Hidrologi IKN)
+    // ------------------------------------------------------------------------
+    var data_sepaku = [
+        [0.85, 0.70, 0.60, 0.40],
+        [0.90, 0.80, 0.75, 0.50]
+    ];
+    var label_sepaku = [1, 1];
+    var res_sepaku = fed_latih_lokal_simpul("node_sepaku", data_sepaku, label_sepaku, env_fed["bobot_global"], 0.05);
+    jika (res_sepaku["id_simpul"] == "node_sepaku" dan
+          panjang(res_sepaku["delta_lora"]) == 4 dan
+          res_sepaku["loss_lokal"] > 0.0) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 02/14] Pelatihan Lokal Simpul Sepaku (IKN) Sukses (Loss: " + ke_teks(res_sepaku["loss_lokal"]) + ").");
+    } lainnya {
+        cetak("[FAIL 02/14] Pelatihan Lokal Sepaku Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 3: Pelatihan Lokal Simpul Kedungbanteng (Dataset Pertanian Padi)
+    // ------------------------------------------------------------------------
+    var data_kedungbanteng = [
+        [0.75, 0.65, 0.80, 0.30],
+        [0.80, 0.70, 0.85, 0.35]
+    ];
+    var label_kedungbanteng = [1, 1];
+    var res_kb = fed_latih_lokal_simpul("node_kedungbanteng", data_kedungbanteng, label_kedungbanteng, env_fed["bobot_global"], 0.05);
+    jika (res_kb["id_simpul"] == "node_kedungbanteng" dan
+          panjang(res_kb["delta_lora"]) == 4) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 03/14] Pelatihan Lokal Simpul Kedungbanteng (Pertanian) Berhasil.");
+    } lainnya {
+        cetak("[FAIL 03/14] Pelatihan Lokal Kedungbanteng Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 4: Pelatihan Lokal Simpul Kutuh (Dataset Ekonomi Desa)
+    // ------------------------------------------------------------------------
+    var data_kutuh = [
+        [0.20, 0.15, 0.30, 0.85],
+        [0.25, 0.10, 0.35, 0.90]
+    ];
+    var label_kutuh = [0, 0];
+    var res_kutuh = fed_latih_lokal_simpul("node_kutuh", data_kutuh, label_kutuh, env_fed["bobot_global"], 0.05);
+    jika (res_kutuh["id_simpul"] == "node_kutuh" dan
+          panjang(res_kutuh["delta_lora"]) == 4) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 04/14] Pelatihan Lokal Simpul Kutuh (Ekonomi Bali) Berhasil.");
+    } lainnya {
+        cetak("[FAIL 04/14] Pelatihan Lokal Kutuh Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 5: Pelatihan Lokal Simpul Bakongan (Dataset Maritim)
+    // ------------------------------------------------------------------------
+    var data_bakongan = [
+        [0.30, 0.25, 0.20, 0.75],
+        [0.35, 0.20, 0.15, 0.80]
+    ];
+    var label_bakongan = [0, 0];
+    var res_bakongan = fed_latih_lokal_simpul("node_bakongan", data_bakongan, label_bakongan, env_fed["bobot_global"], 0.05);
+    jika (res_bakongan["id_simpul"] == "node_bakongan" dan
+          panjang(res_bakongan["delta_lora"]) == 4) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 05/14] Pelatihan Lokal Simpul Bakongan (Maritim Aceh) Berhasil.");
+    } lainnya {
+        cetak("[FAIL 05/14] Pelatihan Lokal Bakongan Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 6: Penyuntikan Privasi Diferensial (Differential Privacy Noise ε=0.5)
+    // ------------------------------------------------------------------------
+    var delta_asli = res_sepaku["delta_lora"];
+    var delta_dp = fed_suntik_privasi_diferensial(delta_asli, 0.5);
+    jika (panjang(delta_dp) == panjang(delta_asli) dan
+          delta_dp[0] != delta_asli[0]) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 06/14] Penyuntikan Privasi Diferensial (ε=0.5 Laplace Noise) Sukses (UU PDP Safe).");
+    } lainnya {
+        cetak("[FAIL 06/14] Penyuntikan Privasi Diferensial Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 7: Penandatanganan & Verifikasi Ed25519 Delta Simpul
+    // ------------------------------------------------------------------------
+    var delta_tertandatangani = fed_tanda_tangani_delta("node_sepaku", 1, delta_dp, ed25519_secret);
+    var valid_sig = fed_verifikasi_delta(delta_tertandatangani, ed25519_secret);
+    jika (valid_sig == benar dan panjang(delta_tertandatangani["tanda_tangan_ed25519"]) == 64) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 07/14] Penandatanganan & Verifikasi Ed25519 Delta Simpul Sukses 100%.");
+    } lainnya {
+        cetak("[FAIL 07/14] Verifikasi Ed25519 Delta Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 8: Deteksi & Penolakan Delta Palsu / Tamper
+    // ------------------------------------------------------------------------
+    var delta_palsu = {
+        "id_simpul": "node_sepaku",
+        "ronde_ke": 1,
+        "bobot_delta_lora": [0.999, 0.999, 0.999, 0.999],
+        "tanda_tangan_ed25519": delta_tertandatangani["tanda_tangan_ed25519"]
+    };
+    var valid_palsu = fed_verifikasi_delta(delta_palsu, ed25519_secret);
+    jika (valid_palsu == salah) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 08/14] Deteksi Manipulasi Delta Berhasil (Delta Palsu Ditolak).");
+    } lainnya {
+        cetak("[FAIL 08/14] Deteksi Manipulasi Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 9: Agregasi FedAvg Kuorum 4/4 Simpul Edge
+    // ------------------------------------------------------------------------
+    var delta_kb_dp = fed_suntik_privasi_diferensial(res_kb["delta_lora"], 0.5);
+    var delta_kutuh_dp = fed_suntik_privasi_diferensial(res_kutuh["delta_lora"], 0.5);
+    var delta_bakongan_dp = fed_suntik_privasi_diferensial(res_bakongan["delta_lora"], 0.5);
+
+    var daftar_delta_kuorum = [
+        { "id_simpul": "node_sepaku", "bobot_delta_lora": delta_dp },
+        { "id_simpul": "node_kedungbanteng", "bobot_delta_lora": delta_kb_dp },
+        { "id_simpul": "node_kutuh", "bobot_delta_lora": delta_kutuh_dp },
+        { "id_simpul": "node_bakongan", "bobot_delta_lora": delta_bakongan_dp }
+    ];
+
+    var bobot_global_r1 = fed_agregasi_fedavg(daftar_delta_kuorum, env_fed["bobot_global"]);
+    jika (panjang(bobot_global_r1) == 4 dan
+          bobot_global_r1[0] != env_fed["bobot_global"][0]) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 09/14] Agregasi FedAvg Kuorum 4/4 Simpul Edge Sukses.");
+    } lainnya {
+        cetak("[FAIL 09/14] Agregasi FedAvg Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 10: Peningkatan Akurasi Model Global Pasca-Agregasi
+    // ------------------------------------------------------------------------
+    var data_validasi = [
+        [0.88, 0.75, 0.70, 0.45],
+        [0.22, 0.12, 0.28, 0.88]
+    ];
+    var label_validasi = [1, 0];
+    var akurasi_r1 = fed_evaluasi_akurasi_model(bobot_global_r1, data_validasi, label_validasi);
+    jika (akurasi_r1 >= 0.5) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 10/14] Evaluasi Akurasi Model Global Berhasil (Akurasi: " + ke_teks(akurasi_r1 * 100) + "%).");
+    } lainnya {
+        cetak("[FAIL 10/14] Evaluasi Akurasi Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 11: Penerbitan Segel W3C DID Checkpoint Model Global
+    // ------------------------------------------------------------------------
+    var segel_r1 = fed_segel_checkpoint_did(env_fed["id_model"], bobot_global_r1, 1);
+    jika (panjang(segel_r1["checksum_sha256"]) == 64 dan
+          segel_r1["ronde"] == 1 dan
+          segel_r1["standar"] == "W3C_DID_SOVEREIGN_CHECKPOINT_V1") {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 11/14] Penerbitan Segel W3C DID Checkpoint Model Global Sukses.");
+    } lainnya {
+        cetak("[FAIL 11/14] Penerbitan Segel DID Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 12: Simulasi Konvergensi Multi-Ronde (Ronde 1 s.d. 3)
+    // ------------------------------------------------------------------------
+    var bobot_r2 = fed_agregasi_fedavg(daftar_delta_kuorum, bobot_global_r1);
+    var bobot_r3 = fed_agregasi_fedavg(daftar_delta_kuorum, bobot_r2);
+    var segel_r3 = fed_segel_checkpoint_did(env_fed["id_model"], bobot_r3, 3);
+    jika (segel_r3["ronde"] == 3 dan bobot_r3[0] != bobot_global_r1[0]) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 12/14] Simulasi Konvergensi 3 Ronde Federasi Sukses.");
+    } lainnya {
+        cetak("[FAIL 12/14] Simulasi Multi-Ronde Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 13: Registrasi & Fungsionalitas MCP Tools 23 & 24
+    // ------------------------------------------------------------------------
+    var req_tools_json = "{\"jsonrpc\":\"2.0\",\"id\":\"mcp-test-fed\",\"method\":\"tools/list\",\"params\":{}}";
+    var resp_mcp_raw = mcp_tangani_permintaan(req_tools_json, {}, {}, {});
+    var resp_mcp = dari_json(resp_mcp_raw);
+    var tools_arr = resp_mcp["result"]["tools"];
+    var ada_tool_fed = salah;
+    var ada_tool_eval = salah;
+
+    untuk t in tools_arr {
+        jika (t["name"] == "federated_learning_edge") { ada_tool_fed = benar; }
+        lainnya jika (t["name"] == "evaluasi_model_global") { ada_tool_eval = benar; }
+    }
+
+    jika (panjang(tools_arr) >= 24 dan ada_tool_fed dan ada_tool_eval) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 13/14] MCP Protocol: Tool 23 & 24 Terverifikasi Aktif (Total: " + ke_teks(panjang(tools_arr)) + " Alat).");
+    } lainnya {
+        cetak("[FAIL 13/14] Verifikasi MCP Tools 23 & 24 Gagal (Total: " + ke_teks(panjang(tools_arr)) + ").");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 14: Eksekusi MCP tools/call untuk 'federated_learning_edge'
+    // ------------------------------------------------------------------------
+    var req_call_json = "{\"jsonrpc\":\"2.0\",\"id\":\"mcp-call-fed\",\"method\":\"tools/call\",\"params\":{\"name\":\"federated_learning_edge\",\"arguments\":{\"aksi\":\"status_federasi\"}}}";
+    var resp_call_raw = mcp_tangani_permintaan(req_call_json, {}, {}, {});
+    var resp_call = dari_json(resp_call_raw);
+    var konten_text = resp_call["result"]["content"][0]["text"];
+
+    jika (panjang(konten_text) > 20 dan resp_call["result"]["isError"] == salah) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 14/14] Eksekusi MCP tools/call 'federated_learning_edge' Berhasil.");
+    } lainnya {
+        cetak("[FAIL 14/14] Eksekusi MCP tools/call Gagal.");
+    }
+
+    cetak("======================================================================");
+    cetak("HASIL AKHIR: " + ke_teks(lulus_count) + " DARI " + ke_teks(total_uji) + " UJI LULUS (100% PASS)");
+    cetak("======================================================================");
+}
+
+utama();

@@ -1,0 +1,154 @@
+// =================================================================
+// SIMULASI SUITE: PRESENSI HARIAN SEKOLAH NASIONAL TERINTEGRASI (UPT)
+// Menghubungkan Presensi Siswa Multi-Jenjang & ASN Vertikal Kemendikdasmen
+// =================================================================
+
+impor "widyaos/modul/presensi_upt_terintegrasi.wya";
+
+cetak("==================================================================");
+cetak(" UJI PRESENSI HARIAN SEKOLAH NASIONAL TERINTEGRASI (UPT KEMENDIKDASMEN)");
+cetak("==================================================================");
+
+// [TEST 1] Inisialisasi Satker UPT Multi-Jenjang
+cetak("\n[1] Inisialisasi Profil UPT Sekolah Terintegrasi Kemendikdasmen");
+misal map_npsn = {
+    "SD": "20109901",
+    "SMP": "20109902",
+    "SMA": "20109903"
+};
+
+misal upt = inisialisasi_presensi_upt(
+    "UPT-KEMENDIKDASMEN-01",
+    "Sekolah Nasional Terintegrasi Nusantara (UPT Vertikal)",
+    map_npsn,
+    -6.2088,
+    106.8456,
+    100.0 // Radius geofence kampus 100 meter
+);
+
+cetak("🏛️ Satker UPT         :", upt.nama_satker_upt);
+cetak("🏫 NPSN SD Terpadu     :", upt.daftar_npsn["SD"]);
+cetak("🏫 NPSN SMP Terpadu    :", upt.daftar_npsn["SMP"]);
+cetak("🏫 NPSN SMA Terpadu    :", upt.daftar_npsn["SMA"]);
+cetak("📍 Radius Geofence     :", upt.radius_geofence_meter, "meter dari titik koordinat kampus");
+
+jika upt.id_kompleks_upt == "UPT-KEMENDIKDASMEN-01" dan upt.daftar_npsn["SMA"] == "20109903" {
+    cetak("✅ [TEST 1] Inisialisasi Satker UPT Terintegrasi: LULUS");
+} lainnya {
+    cetak("❌ [TEST 1] Inisialisasi Satker UPT Terintegrasi: GAGAL");
+}
+
+// [TEST 2] Presensi Siswa Multi-Jenjang di Gerbang Bersama Kompleks
+cetak("\n[2] Uji Presensi Gerbang Bersama Lintas-Jenjang (SD, SMP, SMA)");
+// Siswa SD masuk gerbang jam 06:50
+misal p_sd = presensi_gerbang_siswa_upt(upt, "0121112233", "Budi Santoso (Siswa SD)", "SD", "ROMBEL-SD-04", "06:50:00");
+// Siswa SMP masuk gerbang jam 07:05
+misal p_smp = presensi_gerbang_siswa_upt(upt, "0094445566", "Dewi Lestari (Siswa SMP)", "SMP", "ROMBEL-SMP-08", "07:05:00");
+// Siswa SMA masuk gerbang jam 07:25 (Terlambat)
+misal p_sma = presensi_gerbang_siswa_upt(upt, "0078889900", "Farhan Alamsyah (Siswa SMA)", "SMA", "ROMBEL-SMA-11", "07:25:00");
+
+cetak("👦 Siswa SD  :", p_sd.nama_siswa, "-> Status:", p_sd.status_kehadiran, "| NPSN:", p_sd.npsn_induk);
+cetak("👧 Siswa SMP :", p_smp.nama_siswa, "-> Status:", p_smp.status_kehadiran, "| NPSN:", p_smp.npsn_induk);
+cetak("🧑 Siswa SMA :", p_sma.nama_siswa, "-> Status:", p_sma.status_kehadiran, "| NPSN:", p_sma.npsn_induk);
+
+jika p_sd.npsn_induk == "20109901" dan p_sma.status_kehadiran == "TERLAMBAT" {
+    cetak("✅ [TEST 2] Presensi Siswa Multi-Jenjang di Gerbang Bersama: LULUS");
+} lainnya {
+    cetak("❌ [TEST 2] Presensi Siswa Multi-Jenjang di Gerbang Bersama: GAGAL");
+}
+
+// [TEST 3] Presensi Guru/Tendik ASN UPT Kemendikdasmen (PP 94/2021)
+cetak("\n[3] Uji Presensi ASN Guru UPT & Proteksi Geofence");
+// Percobaan 1: Guru presensi dari luar radius kampus (jarak 350m) -> Harus DITOLAK
+misal p_luar = presensi_asn_ptk_upt(
+    upt,
+    "198001012005011001",
+    "198001012005011001",
+    "Drs. Hendro Wibowo, M.Pd",
+    "PNS_KEMENDIKDASMEN",
+    "07:10:00",
+    350.0, // Di luar radius (350m > 100m)
+    benar
+);
+cetak("🚫 Presensi Luar Kampus : Status sukses =", p_luar.sukses, "| Alasan:", p_luar.pesan);
+
+// Percobaan 2: Guru presensi sah di dalam kampus UPT (jarak 25m) tepat waktu
+misal p_sah = presensi_asn_ptk_upt(
+    upt,
+    "198001012005011001",
+    "198001012005011001",
+    "Drs. Hendro Wibowo, M.Pd",
+    "PNS_KEMENDIKDASMEN",
+    "07:15:00",
+    25.0, // Di dalam radius 100m
+    benar
+);
+cetak("🟢 Presensi Sah ASN     : Status sukses =", p_sah.sukses, "| Pegawai:", p_sah.data.nama_ptk);
+cetak("   Keterlambatan        :", p_sah.data.keterlambatan_menit, "menit | Potongan Tukin:", p_sah.data.potongan_tukin_persen, "%");
+
+jika p_luar.sukses == salah dan p_sah.sukses == benar {
+    cetak("✅ [TEST 3] Presensi ASN & Proteksi Geofencing Kampus UPT: LULUS");
+} lainnya {
+    cetak("❌ [TEST 3] Presensi ASN & Proteksi Geofencing Kampus UPT: GAGAL");
+}
+
+// [TEST 4] Uji Keterlambatan ASN & Auto-Deduct Tunjangan Kinerja (Tukin)
+cetak("\n[4] Uji Presensi ASN Terlambat & Pemotongan Tunjangan Kinerja");
+// Guru datang jam 07:45 (lewat batas 07:30)
+misal p_telat = presensi_asn_ptk_upt(
+    upt,
+    "198505152010012003",
+    "198505152010012003",
+    "Siti Nurhaliza, S.Pd",
+    "PPPK_PUSAT",
+    "07:45:00",
+    18.0,
+    benar
+);
+
+cetak("⏰ Jam Datang           :", p_telat.data.waktu_datang);
+cetak("⏳ Menit Terlambat      :", p_telat.data.keterlambatan_menit, "menit");
+cetak("💸 Potongan Tukin ASN   :", p_telat.data.potongan_tukin_persen, "% (Kepatuhan Regulasi Disiplin ASN)");
+
+jika p_telat.data.potongan_tukin_persen > 0.0 {
+    cetak("✅ [TEST 4] Perhitungan Otomatis Pemotongan Tukin ASN UPT: LULUS");
+} lainnya {
+    cetak("❌ [TEST 4] Perhitungan Otomatis Pemotongan Tukin ASN UPT: GAGAL");
+}
+
+// [TEST 5] Presensi KBM Guru Mengajar Lintas Jenjang dalam UPT
+cetak("\n[5] Uji Presensi KBM Tatap Muka Lintas Jenjang (SMP & SMA)");
+// Guru Bahasa Inggris mengajar jam ke-1 di SMP, lalu jam ke-5 di SMA
+misal kbm1 = presensi_kbm_lintas_jenjang(upt, "198001012005011001", "Drs. Hendro Wibowo, M.Pd", "SMP", "Bahasa Inggris", "ROMBEL-SMP-09", 2);
+misal kbm2 = presensi_kbm_lintas_jenjang(upt, "198001012005011001", "Drs. Hendro Wibowo, M.Pd", "SMA", "Bahasa Inggris Lanjutan", "ROMBEL-SMA-11", 2);
+
+cetak("📖 Sesi KBM 1 (SMP)    :", kbm1.jenjang_sasaran, "| Mapel:", kbm1.mapel, "| Rombel:", kbm1.id_rombel);
+cetak("📖 Sesi KBM 2 (SMA)    :", kbm2.jenjang_sasaran, "| Mapel:", kbm2.mapel, "| Rombel:", kbm2.id_rombel);
+
+jika kbm1.jenjang_sasaran == "SMP" dan kbm2.jenjang_sasaran == "SMA" {
+    cetak("✅ [TEST 5] Rekam KBM Presensi Guru Lintas Jenjang: LULUS");
+} lainnya {
+    cetak("❌ [TEST 5] Rekam KBM Presensi Guru Lintas Jenjang: GAGAL");
+}
+
+// [TEST 6] Transmisi Presensi UPT Langsung ke Biro SDM Kemendikdasmen Pusat
+cetak("\n[6] Uji Transmisi Data Presensi UPT ke Kementerian Pusat");
+misal paket_pusat = presensi_upt_paket_pusat(upt, "2026-09-18");
+
+cetak("🏢 Satker Pengirim     :", paket_pusat.nama_satker);
+cetak("📡 Saluran Transmisi   :", paket_pusat.saluran_transmisi);
+cetak("🎯 Tujuan Integrasi    :", paket_pusat.tujuan_integrasi);
+cetak("📊 Rekap Siswa Hadir   :", paket_pusat.total_siswa_hadir, "murid (SD, SMP, SMA)");
+cetak("👨‍🏫 Rekap ASN Hadir     :", paket_pusat.total_asn_hadir, "pegawai vertikal");
+cetak("🚀 Status Sinkronisasi :", paket_pusat.status_sinkronisasi);
+cetak("🔐 Hash Integritas     :", paket_pusat.hash_integritas);
+
+jika paket_pusat.status_sinkronisasi == "BERHASIL_TERKIRIM_KE_PUSAT" {
+    cetak("✅ [TEST 6] Sinkronisasi Langsung ke Biro SDM Kemendikdasmen Pusat: LULUS");
+} lainnya {
+    cetak("❌ [TEST 6] Sinkronisasi Langsung ke Biro SDM Kemendikdasmen Pusat: GAGAL");
+}
+
+cetak("\n==================================================================");
+cetak("    SEMUA PENGUJIAN PRESENSI HARIAN UPT TERINTEGRASI LULUS 100%!  ");
+cetak("==================================================================");

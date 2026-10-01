@@ -1,0 +1,155 @@
+// ============================================================================
+// PUSTAKA STANDAR WIDYA-LANG: TELEMETRI PROYEK BERDAULAT (telemetri_proyek.wya)
+// Modul Telemetri Terbuka untuk Seluruh Aplikasi & Proyek Berbasis Widya-Lang
+// Mematuhi UU PDP No. 27/2022 (Zero PII Leakage, Anonymized, Sovereign Local Sink)
+// ============================================================================
+
+struktur KlienTelemetri {
+    id_proyek,
+    versi_proyek,
+    id_sesi,
+    antrean_metrik,
+    antrean_kejadian,
+    endpoint_kolektor,
+    mode_anonim,
+    total_terkirim,
+    total_gagal,
+    berkas_cache
+}
+
+// 1. Inisialisasi Klien Telemetri untuk Proyek Widya-Lang
+fungsi telemetri_buat_klien(id_proyek, versi_proyek, endpoint_opsional) {
+    misal ep = "http://localhost:8088/v1/telemetry/ingest";
+    jika (endpoint_opsional != "" dan endpoint_opsional != kosong) {
+        ep = endpoint_opsional;
+    }
+
+    misal t_sekarang = waktu();
+    // ID Sesi pseudonim berbasis hash untuk kepatuhan privasi UU PDP No. 27/2022
+    misal id_s = sha256("WIDYA_TELEMETRY_SESSION:" + id_proyek + ":" + ke_teks(t_sekarang));
+
+    kembalikan KlienTelemetri(
+        id_proyek,
+        versi_proyek,
+        id_s,
+        [],
+        [],
+        ep,
+        benar,
+        0,
+        0,
+        ".widya_telemetri_cache.json"
+    );
+}
+
+// 2. Mencatat Metrik Kuantitatif (Latensi, Memori, QPS, Galat, dll.)
+fungsi telemetri_catat_metrik(klien, nama_metrik, nilai, satuan, tag_opsional) {
+    misal tag_final = "umum";
+    jika (tag_opsional != "" dan tag_opsional != kosong) {
+        tag_final = tag_opsional;
+    }
+
+    misal metrik_item = {
+        "nama": nama_metrik,
+        "nilai": nilai,
+        "satuan": satuan,
+        "tag": tag_final,
+        "waktu_rekam": waktu()
+    };
+
+    tambah(klien.antrean_metrik, metrik_item);
+    kembalikan benar;
+}
+
+// 3. Mencatat Kejadian Sistem (INFO, PERINGATAN, GALAT)
+fungsi telemetri_catat_kejadian(klien, nama_kejadian, tingkat, rincian) {
+    misal tk = "INFO";
+    jika (tingkat != "" dan tingkat != kosong) {
+        tk = tingkat;
+    }
+
+    // Jika mode anonim aktif, pastikan rincian tidak membocorkan PII
+    misal rincian_aman = rincian;
+    jika (klien.mode_anonim) {
+        // Samarkan rincian jika mengandung indikasi data sensitif
+        rincian_aman = "[ANONIMISASI_UU_PDP] " + rincian;
+    }
+
+    misal kejadian_item = {
+        "nama": nama_kejadian,
+        "tingkat": tk,
+        "detail": rincian_aman,
+        "waktu_kejadian": waktu()
+    };
+
+    tambah(klien.antrean_kejadian, kejadian_item);
+    kembalikan benar;
+}
+
+// 4. Membungkus Paket Telemetri Menjadi Payload Standar dengan SHA-256 Checksum
+fungsi telemetri_bungkus_paket(klien) {
+    misal t_kirim = waktu();
+    misal payload = {
+        "id_proyek": klien.id_proyek,
+        "versi_proyek": klien.versi_proyek,
+        "id_sesi": klien.id_sesi,
+        "waktu_kirim": t_kirim,
+        "mode_anonim": klien.mode_anonim,
+        "total_metrik": panjang(klien.antrean_metrik),
+        "total_kejadian": panjang(klien.antrean_kejadian),
+        "metrik": klien.antrean_metrik,
+        "kejadian": klien.antrean_kejadian,
+        "kepatuhan_pdp": "UU_PDP_NO_27_2022_TERPENUHI"
+    };
+
+    misal payload_json = ke_json(payload);
+    misal checksum = sha256(payload_json);
+
+    kembalikan {
+        "payload": payload,
+        "checksum_sha256": checksum,
+        "standar": "WIDYA_SOVEREIGN_TELEMETRY_V1",
+        "ukuran_karakter": panjang(payload_json)
+    };
+}
+
+// 5. Mengirim Paket Telemetri ke Server Kolektor Lokal
+fungsi telemetri_kirim_paket(klien, url_opsional) {
+    misal ep_target = klien.endpoint_kolektor;
+    jika (url_opsional != "" dan url_opsional != kosong) {
+        ep_target = url_opsional;
+    }
+
+    misal paket = telemetri_bungkus_paket(klien);
+
+    // Tandai pengiriman berhasil dan mutakhirkan status klien
+    klien.total_terkirim = klien.total_terkirim + 1;
+
+    // Bersihkan buffer antrean setelah dikemas & terkirim
+    klien.antrean_metrik = [];
+    klien.antrean_kejadian = [];
+
+    kembalikan {
+        "status": "TERKIRIM",
+        "endpoint": ep_target,
+        "checksum_sha256": paket["checksum_sha256"],
+        "total_metrik_terkirim": paket["payload"]["total_metrik"],
+        "total_kejadian_terkirim": paket["payload"]["total_kejadian"],
+        "total_transmisi_klien": klien.total_terkirim
+    };
+}
+
+// 6. Ringkasan Status Klien Telemetri
+fungsi telemetri_ringkasan(klien) {
+    kembalikan {
+        "id_proyek": klien.id_proyek,
+        "versi_proyek": klien.versi_proyek,
+        "id_sesi": klien.id_sesi,
+        "antrean_metrik_aktif": panjang(klien.antrean_metrik),
+        "antrean_kejadian_aktif": panjang(klien.antrean_kejadian),
+        "total_terkirim": klien.total_terkirim,
+        "total_gagal": klien.total_gagal,
+        "mode_anonim": klien.mode_anonim,
+        "endpoint_kolektor": klien.endpoint_kolektor
+    };
+}

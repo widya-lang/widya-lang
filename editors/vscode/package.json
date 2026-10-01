@@ -1,0 +1,81 @@
+{
+  "name": "widya-lang",
+  "displayName": "Widya-Lang Official Support",
+  "description": "Dukungan resmi sintaksis, LSP Language Server, DAP Debugger, dan Snippet untuk bahasa pemrograman Widya-Lang",
+  "version": "1.0.0",
+  "publisher": "widya-lang-foundation",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bakulcoding/widya-lang"
+  },
+  "homepage": "https://widya-lang.org",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Debuggers",
+    "Snippets"
+  ],
+  "keywords": [
+    "widya",
+    "widya-lang",
+    "hindley-milner",
+    "lsp",
+    "dap",
+    "web",
+    "desktop"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "widya",
+        "aliases": ["Widya", "widya", "Widya-Lang"],
+        "extensions": [".wya", ".widya", ".wd"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "widya",
+        "scopeName": "source.widya",
+        "path": "./syntaxes/widya.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "widya",
+        "path": "./snippets/widya.json"
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "widya"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "widya",
+        "label": "Widya DAP Debugger",
+        "runtime": "widya",
+        "configurationAttributes": {
+          "launch": {
+            "required": ["program"],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Lokasi file sumber Widya (.wya)"
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Otomatis berhenti saat entry point tercapai"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

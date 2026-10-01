@@ -1,0 +1,267 @@
+// ============================================================================
+// SIMULASI MASTER: WIDYAOBS STUDIO ENGINE (OBS STUDIO EQUIVALENT)
+// Uji Komprehensif Studio Perekaman & Siaran Langsung Berdaulat Tingkat Industri
+// ============================================================================
+
+impor "widyaos/modul/widyaobs_studio_engine.wya";
+
+tulis("====================================================================");
+tulis("   SIMULASI MASTER: WIDYAOBS STUDIO ENGINE (STANDAR INDUSTRI OBS)   ");
+tulis("====================================================================");
+
+misal total_lulus = 0;
+
+// ----------------------------------------------------------------------------
+// [TEST 1] Inisialisasi Studio & Konfigurasi Canvas Video 60 FPS
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 1] Menguji Inisialisasi Studio & Konfigurasi Canvas Video...");
+
+misal canvas = wobs_buat_konfigurasi_canvas(1920.0, 1080.0, 60.0, "YUV420p");
+
+jika (canvas.lebar == 1920.0 && canvas.tinggi == 1080.0 && canvas.fps == 60.0 && canvas.format_warna == "YUV420p" && canvas.ruang_warna == "BT.709") {
+    tulis("  -> LULUS: Konfigurasi Canvas 1080p 60 FPS YUV420p BT.709 terinisialisasi presisi.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Konfigurasi Canvas bermasalah.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 2] Pembuatan Scene & Multi-Source Compositing Graph
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 2] Menguji Pembuatan Scene & Multi-Source Compositing Graph...");
+
+misal scene_kelas = wobs_buat_scene("sc_kelas_fisika", "Kelas Fisika Kuantum");
+
+misal src_ifp = wobs_buat_sumber("src_ifp_1", "LAYAR_IFP", "Layar Smart Board IFP", 0.0, 0.0, 1920.0, 1080.0, 1);
+misal src_cam = wobs_buat_sumber("src_cam_guru", "KAMERA", "Kamera Dosen Depan", 1400.0, 700.0, 480.0, 270.0, 2);
+misal src_teks = wobs_buat_sumber("src_teks_run", "TEKS_BERJALAN", "Pengumuman Ujian BOSP", 0.0, 1030.0, 1920.0, 50.0, 3);
+
+wobs_tambah_sumber_ke_scene(scene_kelas, src_ifp);
+wobs_tambah_sumber_ke_scene(scene_kelas, src_cam);
+wobs_tambah_sumber_ke_scene(scene_kelas, src_teks);
+
+jika (scene_kelas.id_scene == "sc_kelas_fisika" && panjang(scene_kelas.daftar_sumber) == 3 && src_cam.z_order == 2) {
+    tulis("  -> LULUS: Scene komposit 3 layer (IFP, Kamera PiP, Teks Berjalan) berhasil dikonfigurasi.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Multi-source compositing graph gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 3] Filter Chroma Key (Green Screen Removal & Edge Feathering)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 3] Menguji Filter Chroma Key (Green Screen Removal & Feathering)...");
+
+misal filter_chroma = wobs_buat_filter_chroma_key("filter_green_1", "GREEN", 0.40, 0.15, 0.50);
+
+// Uji 1: Latar hijau murni (R=10, G=240, B=15) -> harus transparan (alpha = 0.0)
+misal alpha_hijau = wobs_proses_chroma_pixel(filter_chroma, 10.0, 240.0, 15.0);
+
+// Uji 2: Tubuh guru berkemeja biru (R=20, G=30, B=210) -> harus tampil penuh (alpha = 1.0)
+misal alpha_guru = wobs_proses_chroma_pixel(filter_chroma, 20.0, 30.0, 210.0);
+
+// Uji 3: Area transisi rambut (feathering)
+misal alpha_tepi = wobs_proses_chroma_pixel(filter_chroma, 60.0, 170.0, 60.0);
+
+jika (alpha_hijau == 0.0 && alpha_guru == 1.0 && alpha_tepi >= 0.0 && alpha_tepi <= 1.0) {
+    tulis("  -> LULUS: Filter Chroma Key akurat (Latar hijau dipotong 100%, objek guru dipertahankan utuh).");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Filter Chroma Key tidak bekerja sesuai toleransi.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 4] Multi-Track Audio Mixer dengan DSP (Noise Gate, RNNoise, Limiter)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 4] Menguji Multi-Track Audio Mixer & Rangkaian Filter DSP...");
+
+misal mic_guru = wobs_buat_saluran_audio("sal_mic_guru", "Mikrofon Wireless Guru", 0.0, [1, 2]);
+
+// Uji 1: Desis kipas angin kelas (-45.0 dB di bawah threshold -36.0 dB) -> diredam oleh Noise Gate
+misal out_desis = wobs_proses_audio_dsp(mic_guru, -45.0);
+
+// Uji 2: Suara teriakan guru (+6.0 dB di atas -1.0 dB ceiling) -> dipotong aman oleh Limiter (-1.0 dB)
+misal out_teriak = wobs_proses_audio_dsp(mic_guru, 6.0);
+
+// Uji 3: Suara vokal normal (-15.0 dB)
+misal out_vokal = wobs_proses_audio_dsp(mic_guru, -15.0);
+
+jika (out_desis < -80.0 && out_teriak == -1.0 && out_vokal > -25.0) {
+    tulis("  -> LULUS: Noise Gate meredam desis kelas, Limiter memotong distorsi teriakan ke batas aman -1.0 dB.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Pemrosesan Audio DSP mixer bermasalah.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 5] Studio Mode (Preview vs Program Live & Transisi Fade 300ms)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 5] Menguji Studio Mode (Dual View Preview vs Program Live)...");
+
+misal scene_intro = wobs_buat_scene("sc_intro", "Bumper Pembuka Kuliah");
+misal studio = wobs_inisialisasi_studio_mode(scene_intro, scene_kelas);
+
+misal sebelum_transisi = studio.scene_program_id;
+wobs_transisi_ke_program(studio, "FADE", 300.0);
+misal sesudah_transisi = studio.scene_program_id;
+
+jika (sebelum_transisi == "sc_kelas_fisika" && sesudah_transisi == "sc_intro" && panjang(studio.riwayat_transisi) == 1) {
+    tulis("  -> LULUS: Studio Mode transisi Fade 300ms dari Preview ke Program Live berjalan mulus.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Studio Mode perpindahan live program gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 6] Perekaman MKV Tahan Mati Lampu (EBML Cluster Crash Resilience)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 6] Menguji Perekaman MKV Tahan Mati Lampu (EBML Cluster Recovery)...");
+
+misal perekam = wobs_mulai_perekaman_mkv("rec_sesi_101", "/var/media/kuliah_fisika.mkv", 6000.0);
+
+// Simulasikan penulisan 5 cluster EBML (tiap cluster 10 detik rekaman)
+wobs_tulis_cluster_mkv(perekam, 10000.0, 600, 7500000);
+wobs_tulis_cluster_mkv(perekam, 20000.0, 600, 7500000);
+wobs_tulis_cluster_mkv(perekam, 30000.0, 600, 7500000);
+wobs_tulis_cluster_mkv(perekam, 40000.0, 600, 7500000);
+wobs_tulis_cluster_mkv(perekam, 50000.0, 600, 7500000);
+
+// Simulasikan mati lampu mendadak (sudden power outage) di detik ke-52
+misal hasil_pulih = wobs_simulasi_mati_lampu_dan_pulihkan(perekam);
+
+jika (perekam.status_rekam == "CRASH_RECOVERED" && hasil_pulih["cluster_terselamatkan"] == 5 && hasil_pulih["durasi_terselamatkan_detik"] == 50.0) {
+    tulis("  -> LULUS: Video MKV EBML pulih 100% tanpa korupsi berkas meski listrik padam mendadak di sekolah 3T.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Mekanisme pemulihan crash MKV EBML gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 7] Multi-Protocol Sovereign Streaming (RTMP, SRT Caller ARQ, WebRTC)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 7] Menguji Multi-Protocol Streaming & SRT ARQ Packet Loss Recovery...");
+
+misal stream_srt = wobs_buat_streamer("str_srt_1", "SRT", "srt://hub.pusdatin.kemdikbud.go.id:9000?mode=caller&latency=200", "live_token_77", 6000.0);
+wobs_mulai_stream(stream_srt);
+
+// Simulasikan lonjakan paket loss jaringan 3T sebesar 18%
+misal bitrate_adaptif = wobs_tangani_gangguan_jaringan(stream_srt, 18.0);
+
+jika (stream_srt.status_stream == "LIVE" && stream_srt.arq_recovered_packets == 42 && bitrate_adaptif == 4200.0) {
+    tulis("  -> LULUS: SRT ARQ memulihkan 42 paket hilang dan Adaptive Bitrate menurunkan ke 4200 kbps agar siaran lancar.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Multi-protocol streaming handling bermasalah.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 8] Virtual Camera Loopback Interface (Widya Virtual Camera)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 8] Menguji Virtual Camera Loopback Interface ke WidyaMeet/Zoom...");
+
+misal vcam = wobs_aktifkan_kamera_virtual("vcam_01", "sc_kelas_fisika", "WidyaMeet Enterprise");
+
+jika (vcam.is_aktif == true && vcam.target_aplikasi == "WidyaMeet Enterprise" && vcam.resolusi == "1920x1080@60fps") {
+    tulis("  -> LULUS: Virtual Camera Loopback aktif, menyalurkan program composite ke WidyaMeet tanpa capture card fisik.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Virtual Camera loopback gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 9] Integrasi One-Click Publish ke LMS Sinau Kemdikbud
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 9] Menguji Integrasi One-Click Publish ke LMS Sinau Kemdikbud...");
+
+misal manifest = wobs_buat_manifest_kuliah("kuliah_fisika_bab1", "did:widya:guru:198503122010011002", "Fisika Kelas 12", "Hukum Termodinamika", 3000.0);
+
+wobs_tambah_bab_kuliah(manifest, 0.0, "Pengantar Termodinamika");
+wobs_tambah_bab_kuliah(manifest, 600.0, "Hukum Pertama Termodinamika");
+wobs_tambah_bab_kuliah(manifest, 1800.0, "Siklus Carnot & Efisiensi Mesin");
+
+misal segel = wobs_segel_rekaman_did(manifest, "KEY_ED25519_GURU_SECRET");
+misal publikasi_lms = wobs_publikasikan_ke_lms_sinau(manifest);
+
+jika (panjang(manifest.daftar_bab) == 3 && manifest.status_publikasi == "TERPUBLIKASI_SINAU" && publikasi_lms == true) {
+    tulis("  -> LULUS: Materi kuliah beserta 3 bab otomatis terpublikasi ke LMS Sinau Kemdikbud.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: One-click LMS Sinau publish gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 10] Segel Digital W3C DID & Anti-Deepfake Provenance Verification
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 10] Menguji Segel Kriptografis W3C DID & Anti-Deepfake Provenance...");
+
+jika (manifest.segel_did_ed25519 == "SIG_ED25519_W3C_DID_kuliah_fisika_bab1_VERIFIED" && manifest.did_pengajar == "did:widya:guru:198503122010011002") {
+    tulis("  -> LULUS: Video rekaman terverifikasi dengan tanda tangan Ed25519 W3C DID, keaslian rekaman guru terjamin.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Verifikasi segel digital W3C DID gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 11] Perekaman Layar Video (Screen Video Recording dengan Audio Ganda)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 11] Menguji Perekaman Layar Video (Screen Video Recording)...");
+
+misal perekam_layar = wobs_buat_perekam_layar_video(
+    "rec_layar_01",
+    "FULL_SCREEN",
+    true, // sertakan kursor mouse
+    true, // efek visual klik mouse
+    "MKV_RESILIENT"
+);
+
+wobs_mulai_rekam_layar(perekam_layar);
+// Simulasikan perekaman 1800 frame (30 detik @ 60 FPS)
+wobs_hentikan_rekam_layar(perekam_layar, 1800);
+
+jika (perekam_layar.mode_tangkap == "FULL_SCREEN" && perekam_layar.sertakan_kursor_mouse == true && perekam_layar.status_rekam == "STOPPED" && perekam_layar.total_frame_tertangkap == 1800) {
+    tulis("  -> LULUS: Perekaman Layar Video (60 FPS, kursor mouse, audio ganda) sukses tersimpan.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Perekaman Layar Video bermasalah.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 12] Tangkapan Layar Gambar (Screen Capture / Snapshot dengan Sensor PII)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 12] Menguji Tangkapan Layar Gambar (Screen Capture Snapshot & Sensor PII)...");
+
+misal snapshot = wobs_ambil_tangkapan_layar_gambar(
+    "snap_ifp_materi",
+    "REGION",
+    "PNG",
+    true, // sensor otomatis data sensitif PII (UU PDP No. 27/2022)
+    "did:widya:guru:198503122010011002"
+);
+
+// Tambahkan anotasi pada tangkapan layar
+wobs_tambah_anotasi_tangkapan(snapshot, "KOTAK", 100.0, 150.0, "#FF0000", "Sorotan Rumus Carnot");
+wobs_tambah_anotasi_tangkapan(snapshot, "PANAH", 250.0, 300.0, "#00FF00", "Arah Aliran Kalor");
+
+jika (snapshot.format_gambar == "PNG" && snapshot.is_pii_redacted == true && panjang(snapshot.daftar_anotasi) == 2 && snapshot.segel_did_watermark != "") {
+    tulis("  -> LULUS: Tangkapan Layar Gambar (PNG) berhasil diambil dengan sensor PII, 2 anotasi, dan segel W3C DID.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Tangkapan Layar Gambar gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// RINGKASAN HASIL SIMULASI
+// ----------------------------------------------------------------------------
+tulis("\n====================================================================");
+tulis("  HASIL SIMULASI MASTER WIDYAOBS STUDIO ENGINE");
+tulis("  Total Pengujian : 12");
+tulis("  Lulus           : " + total_lulus);
+tulis("  Gagal           : " + (12 - total_lulus));
+tulis("====================================================================");
+
+jika (total_lulus == 12) {
+    tulis(">>> SELURUH UJI WIDYAOBS STUDIO ENGINE LULUS DENGAN SEMPURNA (100%) <<<");
+} lainnya {
+    tulis(">>> ADA PENGUJIAN YANG GAGAL! PERIKSA LOG DI ATAS <<<");
+}
+

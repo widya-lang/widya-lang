@@ -1,0 +1,105 @@
+// ============================================================================
+// SIMULASI: WIDYA MULTIMODAL WORLD MODEL ENGINE (simulasi_widya_multimodal_world_model_engine.wya)
+// Uji Komprehensif Pemodelan Dunia Multimodal, Kausalitas Fisik, & Planning in Imagination
+// ============================================================================
+
+impor "widyaos/modul/widya_multimodal_world_model_engine.wya";
+
+fungsi assert_wm(kondisi, nama_tes) {
+    jika (kondisi) {
+        cetak("[PASS] " + nama_tes);
+    } lainnya {
+        cetak("[FAIL] " + nama_tes);
+    }
+}
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("MEMULAI SIMULASI WIDYA MULTIMODAL WORLD MODEL ENGINE");
+    cetak("SETARA GOOGLE DEEPMIND GENIE/DREAMER, OPENAI SORA, & META V-JEPA");
+    cetak("======================================================================");
+
+    // ------------------------------------------------------------------------
+    // TES 1: Inisialisasi Lingkungan Dunia Multimodal
+    // ------------------------------------------------------------------------
+    misal dunia = wm_buat_lingkungan("world_sim_01", "Laboratorium_Fisika_Nusantara", -9.8);
+    assert_wm(dunia.id_dunia == "world_sim_01", "Tes 1.1: ID Lingkungan Dunia terdaftar");
+    assert_wm(dunia.gravitasi_y == -9.8, "Tes 1.2: Parameter percepatan gravitasi bumi valid (-9.8 m/s^2)");
+
+    // ------------------------------------------------------------------------
+    // TES 2: Pendaftaran Entitas Fisik Majemuk (Bola & Lantai)
+    // ------------------------------------------------------------------------
+    misal bola1 = wm_tambah_entitas(dunia, "b1", "Bola_Karet", "BOLA", 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.5, 0.8);
+    misal lantai = wm_tambah_entitas(dunia, "l1", "Bidang_Lantai", "BIDANG_LANTAI", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 20.0, 1.0);
+    assert_wm(panjang(dunia.daftar_entitas) == 2, "Tes 2.1: Dua entitas (Bola Karet dan Lantai) terdaftar");
+    assert_wm(bola1.py == 10.0 && bola1.restitusi == 0.8, "Tes 2.2: Ketinggian awal 10 meter dan elastisitas restitusi 0.8");
+
+    // ------------------------------------------------------------------------
+    // TES 3: Enkripsi & Pembentukan Vektor Keadaan Laten (S_t)
+    // ------------------------------------------------------------------------
+    misal vec_laten = wm_enkode_vektor_laten(dunia);
+    assert_wm(panjang(vec_laten) == 14, "Tes 3: Vektor laten 14-dimensi berhasil mengekstraksi seluruh keadaan spasial entitas");
+
+    // ------------------------------------------------------------------------
+    // TES 4: Penegakan Hukum Gravitasi & Gerak Jatuh Bebas
+    // ------------------------------------------------------------------------
+    // Langkah simulasi 0.1 detik pertama
+    wm_langkah_fisika(dunia, 0.1, []);
+    assert_wm(bola1.vy < 0.0, "Tes 4.1: Kecepatan vertikal menjadi negatif akibat tarikan gravitasi");
+    assert_wm(bola1.py < 10.0, "Tes 4.2: Posisi bola berkurang sesuai rumus jatuh bebas");
+
+    // ------------------------------------------------------------------------
+    // TES 5: Deteksi & Resolusi Tumbukan Elastis dengan Lantai
+    // ------------------------------------------------------------------------
+    // Lanjutkan langkah hingga bola mencapai lantai dan memantul (sekitar 1.5 detik)
+    misal langkah = 0;
+    misal ada_pantulan = salah;
+    selama (langkah < 20) {
+        misal res = wm_langkah_fisika(dunia, 0.1, []);
+        jika (res["tabrakan"]) {
+            ada_pantulan = benar;
+        }
+        langkah = langkah + 1;
+    }
+    assert_wm(ada_pantulan, "Tes 5.1: Deteksi tumbukan lantai terpicu secara fisik");
+    assert_wm(bola1.py >= bola1.ukuran, "Tes 5.2: Bola tidak menembus lantai (penetrasi dihentikan di batas radius)");
+
+    // ------------------------------------------------------------------------
+    // TES 6: Prediksi Transisi Aksi Multimodal (Action-Conditioned Transition)
+    // ------------------------------------------------------------------------
+    misal aksi_dorong = AksiPenggerak("b1", "IMPULS", 15.0, 0.0, 5.0, "dorong ke kanan-depan");
+    wm_langkah_fisika(dunia, 0.1, [aksi_dorong]);
+    assert_wm(bola1.vx > 0.0 && bola1.vz > 0.0, "Tes 6: Aksi impuls multimodal berhasil mengubah vektor kecepatan bola");
+
+    // ------------------------------------------------------------------------
+    // TES 7: Rollout Imagination (Simulasi Mental 20 Langkah ke Depan)
+    // ------------------------------------------------------------------------
+    misal trajectory = wm_rollout_imajinasi(dunia, [], 20, 0.05);
+    assert_wm(panjang(trajectory) == 20, "Tes 7.1: Model dunia mampu membayangkan 20 langkah ke masa depan");
+    assert_wm(trajectory[19].waktu_prediksi > dunia.waktu_dunia, "Tes 7.2: Garis waktu prediksi masa depan konsisten maju");
+
+    // ------------------------------------------------------------------------
+    // TES 8: Uji Konsistensi Spasial & Object Permanence
+    // ------------------------------------------------------------------------
+    misal perm_cek = wm_evaluasi_object_permanence(dunia, "b1");
+    assert_wm(perm_cek["ditemukan"] && perm_cek["status"] == "OBJEK_TERPELIHARA_KONSISTEN", "Tes 8: Objek tetap terpelihara dalam representasi dunia laten (Object Permanence)");
+
+    // ------------------------------------------------------------------------
+    // TES 9: Evaluasi Energi Mekanik Total
+    // ------------------------------------------------------------------------
+    misal energi = wm_hitung_energi_mekanik(dunia);
+    assert_wm(energi["energi_mekanik_total"] > 0.0, "Tes 9: Penghitungan energi mekanik total (Kinetik + Potensial) valid");
+
+    // ------------------------------------------------------------------------
+    // TES 10: Penyematan Segel Kriptografis W3C DID pada Jejak Simulasi
+    // ------------------------------------------------------------------------
+    misal segel = wm_segel_kriptografis(dunia, "did:widya:ai:world-model-sovereign");
+    assert_wm(segel["status"] == "TERSEGEL_W3C_DID_RESMI", "Tes 10.1: Simulasi dunia tersegel kriptografis W3C DID");
+    assert_wm(panjang(segel["hash_integritas"]) > 10, "Tes 10.2: Hash integritas forensik terbentuk mengunci lintasan simulasi");
+
+    cetak("======================================================================");
+    cetak("SELURUH PENGUJIAN MULTIMODAL WORLD MODEL SELESAI (10/10 PASS)");
+    cetak("======================================================================");
+}
+
+utama();

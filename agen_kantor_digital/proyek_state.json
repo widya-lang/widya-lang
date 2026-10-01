@@ -1,0 +1,52 @@
+[
+  {
+    "kode_proyek": "PRJ-01-KOPERASI",
+    "nama_proyek": "Koperasi Merah Putih & Simpan Pinjam Syariah",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-02-SMARTCITY",
+    "nama_proyek": "Platform Telemetri ISPU & GIS Smart City",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-03-COLLAB-DOC",
+    "nama_proyek": "Kolaborasi Dokumen Realtime CRDT & Markdown",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-04-DAPODIK-AUTO",
+    "nama_proyek": "Otomasi Integrasi Data Pokok Pendidikan",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-05-LATEX-JOURNAL",
+    "nama_proyek": "Generator Jurnal Ilmiah & Kompilator LaTeX",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-06-WIDYAPAY",
+    "nama_proyek": "WidyaPay Switcher QRIS & Core Banking",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-07-WIDYAMEDIKA",
+    "nama_proyek": "WidyaMedika SIMRS & SATUSEHAT HL7 FHIR",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-08-WIDYAOS",
+    "nama_proyek": "WidyaOS Bare-Metal Rust Kernel & OEM",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-09-WIDYAAI-BOX",
+    "nama_proyek": "WidyaAI Box Offline & Cyber Shield PQC",
+    "status": "AKTIF"
+  },
+  {
+    "kode_proyek": "PRJ-10-WIDYALEDGER",
+    "nama_proyek": "WidyaLedger Sovereign Blockchain & RWA",
+    "status": "AKTIF"
+  }
+]

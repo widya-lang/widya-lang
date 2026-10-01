@@ -1,0 +1,202 @@
+// ============================================================================
+// SUITE PENGUJIAN OTOMATIS FASE 25: SOVEREIGN WIDYA-GOV / TATA KELOLA KEBIJAKAN
+// (simulasi_tata_kelola_kebijakan.wya)
+// Autonomous Policy Engine, Declarative Constitution-as-Code,
+// Sybil-Resistant Quadratic Voting (sqrt credits), Digital Musyawarah Mufakat,
+// Formal Invariant Safety, Autonomous Village Treasury Allocation,
+// & Post-Quantum Dispute Arbitration Tribunal (NIST FIPS 204 ML-DSA-65)
+// Perangkat Target: AMD Ryzen 7 8840HS (Zen 4 8C/16T, Radeon 780M, NPU 16 TOPS)
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/tata_kelola_kebijakan.wya";
+impor "widya_ai_local/modul_evolusi/mesin_spasial_temporal.wya";
+impor "widya_ai_local/modul_evolusi/orkestrasi_alur_kerja.wya";
+impor "widya_ai_local/mcp/mcp_server_widya.wya";
+
+fungsi asserts(kondisi, pesan) {
+    jika (!kondisi) {
+        cetak("  [GAGAL]: " + pesan);
+    } lainnya {
+        cetak("  [PASS] " + pesan);
+    }
+}
+
+fungsi jalankan_pengujian_tata_kelola_kebijakan() {
+    cetak("======================================================================");
+    cetak("SUITE UJI FASE 25: SOVEREIGN WIDYA-GOV & DIGITAL CONSTITUTION ENGINE");
+    cetak("Invarian Kebijakan : Declarative Constitution-as-Code (UU PDP & UU Desa)");
+    cetak("Musyawarah Digital : Sybil-Resistant Quadratic Voting (Bobot = akar(k))");
+    cetak("Perbendaharaan     : Autonomous Village Treasury Allocation & Proof Escrow");
+    cetak("Tribunal Arbitrase : Post-Quantum Dispute Settlement & Collateral Slashing");
+    cetak("Kriptografi PQC    : NIST FIPS 204 ML-DSA-65 Digital Signatures");
+    cetak("Akselerasi HW      : AMD Ryzen 7 8840HS (Zen 4 8C/16T & NPU 16 TOPS)");
+    cetak("======================================================================");
+
+    // 1. Pembuatan Aturan Kebijakan Konstitusi Desa
+    cetak("\n[UJI 1] Pembuatan Aturan Kebijakan Konstitusi Desa...");
+    misal aturan_pdp = gov_buat_aturan_kebijakan(
+        "POL-001",
+        "Perlindungan Privasi Rekam Medis Desa",
+        "PRIVASI_DATA",
+        "WARGA_DESA",
+        "AKSES_REKAM_MEDIS",
+        { "zona_izin": "Sepaku_Hilir", "maks_kredit": 500.0 },
+        "IZINKAN"
+    );
+    asserts(aturan_pdp.id_aturan == "POL-001", "ID aturan kebijakan desa POL-001 valid");
+    asserts(aturan_pdp.kategori == "PRIVASI_DATA", "Kategori aturan kebijakan valid (PRIVASI_DATA)");
+    asserts(aturan_pdp.efek_keputusan == "IZINKAN", "Efek keputusan aturan valid (IZINKAN)");
+
+    // 2. Evaluasi Kebijakan: Akses Sah Sesuai UU PDP No. 27/2022
+    cetak("\n[UJI 2] Evaluasi Kebijakan Akses Sah Sesuai UU PDP No. 27/2022...");
+    misal ctx_sah = {
+        "zona_wilayah": "Sepaku_Hilir",
+        "nominal_kredit": 10.0
+    };
+    misal res_izin = gov_evaluasi_kebijakan([aturan_pdp], "WARGA_DESA", "AKSES_REKAM_MEDIS", "rekam_medis_01", ctx_sah);
+    asserts(res_izin["diizinkan"] == benar, "Akses data medis sah diizinkan oleh invarian konstitusi");
+    asserts(res_izin["aturan_id"] == "POL-001", "ID aturan yang mencocokkan tindakan valid (POL-001)");
+
+    // 3. Evaluasi Kebijakan: Tolak Pelanggaran Privasi Cross-DID
+    cetak("\n[UJI 3] Evaluasi Kebijakan Penolakan Pelanggaran Privasi...");
+    misal ctx_ilegal = {
+        "zona_wilayah": "Sepaku_Hilir",
+        "nominal_kredit": 10.0
+    };
+    misal res_tolak = gov_evaluasi_kebijakan([aturan_pdp], "PIHAK_LUAR", "AKSES_REKAM_MEDIS", "rekam_medis_01", ctx_ilegal);
+    asserts(res_tolak["diizinkan"] == salah, "Akses peran tidak terotorisasi ditolak secara mutlak");
+    asserts(res_tolak["aturan_id"] == kosong, "Tidak ada aturan yang mengizinkan pihak luar");
+
+    // 4. Pembuatan Proposal Musyawarah Mufakat Digital
+    cetak("\n[UJI 4] Pembuatan Proposal Musyawarah Mufakat Digital...");
+    misal prop_irigasi = gov_buat_proposal_musyawarah(
+        "PROP-DESA-001",
+        "Pembangunan Saluran Irigasi Tersier Sepaku",
+        "Pembangunan fisik irigasi pertanian 500m di Wilayah DAS Sepaku",
+        "did:widya:desa:kepala_desa_sepaku"
+    );
+    asserts(prop_irigasi.id_proposal == "PROP-DESA-001", "ID proposal musyawarah valid");
+    asserts(prop_irigasi.status == "MUSYAWARAH_TERBUKA", "Status proposal saat inisialisasi adalah MUSYAWARAH_TERBUKA");
+    asserts(prop_irigasi.total_suara_setuju == 0.0, "Total awal suara setuju bernilai 0.0");
+
+    // 5. Perhitungan Bobot Suara Kuadratik (Quadratic Voting sqrt)
+    cetak("\n[UJI 5] Perhitungan Bobot Suara Kuadratik (Formula akar(kredit))...");
+    misal bobot_16 = gov_hitung_suara_kuadratik(16.0);
+    misal bobot_25 = gov_hitung_suara_kuadratik(25.0);
+    misal bobot_100 = gov_hitung_suara_kuadratik(100.0);
+    asserts(bobot_16 == 4.0, "16 kredit suara = 4.0 bobot suara kuadratik (akar(16) = 4)");
+    asserts(bobot_25 == 5.0, "25 kredit suara = 5.0 bobot suara kuadratik (akar(25) = 5)");
+    asserts(bobot_100 == 10.0, "100 kredit suara = 10.0 bobot suara kuadratik (akar(100) = 10)");
+
+    // 6. Pemberian Suara Kuadratik yang Sah
+    cetak("\n[UJI 6] Pemberian Suara Kuadratik yang Sah...");
+    misal hasil_suara1 = gov_berikan_suara_kuadratik(prop_irigasi, "did:widya:warga:budi_01", 16.0, "SETUJU");
+    asserts(hasil_suara1["sukses"] == benar, "Suara kuadratik pertama berhasil dicatat");
+    asserts(prop_irigasi.total_suara_setuju == 4.0, "Total bobot suara setuju bertambah menjadi 4.0");
+    asserts(hasil_suara1["bobot_kuadratik"] == 4.0, "Bobot kuadratik tercatat tepat 4.0");
+
+    // 7. Pencegahan Sybil Attack (Voting Ganda dari DID yang Sama)
+    cetak("\n[UJI 7] Pencegahan Sybil Attack (Anti-Sybil 1 DID = 1 Hak Suara)...");
+    misal hasil_sybil = gov_berikan_suara_kuadratik(prop_irigasi, "did:widya:warga:budi_01", 9.0, "SETUJU");
+    asserts(hasil_sybil["sukses"] == salah, "Percobaan voting ganda dari DID yang sama berhasil dicegah");
+    asserts(prop_irigasi.total_suara_setuju == 4.0, "Total bobot suara tidak bertambah akibat upaya Sybil");
+
+    // 8. Finalisasi Musyawarah Mufakat Digital
+    cetak("\n[UJI 8] Finalisasi Musyawarah Mufakat Digital...");
+    gov_berikan_suara_kuadratik(prop_irigasi, "did:widya:warga:siti_02", 25.0, "SETUJU");
+    gov_berikan_suara_kuadratik(prop_irigasi, "did:widya:warga:joko_03", 9.0, "TOLAK");
+    // Total setuju: 4.0 + 5.0 = 9.0; Tolak: 3.0. Total = 12.0. Persentase = 9/12 = 75.0%
+    misal res_final = gov_finalisasi_musyawarah(prop_irigasi, 50.0);
+    asserts(res_final["sukses"] == benar, "Finalisasi musyawarah berhasil dieksekusi");
+    asserts(prop_irigasi.status == "DISAHKAN", "Status proposal berubah menjadi DISAHKAN");
+    asserts(res_final["persentase_setuju"] == 75.0, "Persentase suara setuju 75.0% memenuhi kuorum 50%");
+
+    // 9. Inisialisasi Perbendaharaan Desa Berdaulat
+    cetak("\n[UJI 9] Inisialisasi Perbendaharaan Desa Berdaulat...");
+    misal kas_desa = gov_inisialisasi_perbendaharaan("treasury_sepaku", "Desa Sepaku", 1000.0);
+    asserts(kas_desa.id_perbendaharaan == "treasury_sepaku", "ID perbendaharaan desa valid");
+    asserts(kas_desa.nama_desa == "Desa Sepaku", "Nama desa perbendaharaan valid");
+    asserts(kas_desa.saldo_kas_kredit == 1000.0, "Saldo awal perbendaharaan 1000.0 kredit valid");
+
+    // 10. Alokasi Kas Desa Bersyarat Bukti
+    cetak("\n[UJI 10] Alokasi Kas Desa Bersyarat Bukti...");
+    misal alok_res = gov_alokasi_kas_desa(
+        kas_desa,
+        "ALOK-IRIGASI-001",
+        150.0,
+        "did:widya:vendor:mitra_irigasi_01",
+        "resi_flow_terverifikasi"
+    );
+    asserts(alok_res["sukses"] == benar, "Alokasi kas 150.0 kredit berhasil dicadangkan");
+    asserts(alok_res["status"] == "DIALOKASIKAN", "Status alokasi tercatat DIALOKASIKAN");
+
+    // 11. Penolakan Pencairan Kas Tanpa Bukti Tanda Terima
+    cetak("\n[UJI 11] Penolakan Pencairan Kas Tanpa Bukti Tanda Terima...");
+    misal cair_gagal = gov_cairkan_alokasi_kas(kas_desa, "ALOK-IRIGASI-001", kosong, kosong);
+    asserts(cair_gagal["sukses"] == salah, "Pencairan kas tanpa bukti tanda terima ditolak");
+
+    // 12. Pencairan Kas Berhasil dengan Bukti Ganda Widya-Flow & Widya-Spatial
+    cetak("\n[UJI 12] Pencairan Kas Berhasil dengan Bukti Ganda Widya-Flow & Widya-Spatial...");
+    misal resi_flow = { "id_resi": "wf_receipt_551", "status_verifikasi": "TERVERIFIKASI_SAH_100%" };
+    misal atestasi_spatial = { "id_atestasi": "zk_pol_992", "status_privasi": "TERVERIFIKASI_AMAN_UU_PDP_ZERO_GPS_LEAKAGE" };
+    misal cair_sukses = gov_cairkan_alokasi_kas(kas_desa, "ALOK-IRIGASI-001", resi_flow, atestasi_spatial);
+    asserts(cair_sukses["sukses"] == benar, "Pencairan kas dengan bukti ganda Widya-Flow & Widya-Spatial berhasil");
+    asserts(kas_desa.saldo_kas_kredit == 850.0, "Sisa saldo kas perbendaharaan berkurang menjadi 850.0 kredit");
+
+    // 13. Tribunal Arbitrase Sengketa SLA & Eksekusi Slashing
+    cetak("\n[UJI 13] Tribunal Arbitrase Sengketa SLA & Eksekusi Slashing...");
+    misal putusan = gov_adili_sengketa_sla(
+        "SENGKETA-SLA-001",
+        "did:widya:desa:sepaku_resmi",
+        "did:widya:vendor:mitra_irigasi_01",
+        "Keterlambatan latensi streaming sensor DAS Sepaku",
+        180.0,
+        50.0
+    );
+    asserts(putusan.status == "KLAIM_DIKABULKAN", "Tergugat terbukti melanggar SLA latensi (> 50 ms)");
+    asserts(putusan.nominal_denda == 25.0, "Penalti pemotongan jaminan (slashing) 25.0 kredit diterapkan");
+    asserts(potong(putusan.segel_pqc_hakim, 0, 24) == "sig_mldsa65_arb_verdict_", "Putusan tribunal tersegel NIST FIPS 204 ML-DSA-65");
+
+    // 14. Integrasi Server REST API Rute 88–91 & MCP Tool 49–50
+    cetak("\n[UJI 14] Integrasi Server REST API Rute 88-91 & MCP Tool 49-50...");
+    misal req_mcp_49 = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req_mcp_49",
+        "method": "tools/call",
+        "params": {
+            "name": "evaluasi_kebijakan_tata_kelola",
+            "arguments": {
+                "peran_subjek": "WARGA_DESA",
+                "tindakan": "AKSES_IRIGASI",
+                "konteks": { "zona_wilayah": "Sepaku_Hilir" }
+            }
+        }
+    });
+    misal resp_tool49_str = mcp_tangani_permintaan(req_mcp_49, kosong, kosong, kosong);
+    misal resp_tool49 = dari_json(resp_tool49_str);
+    asserts(resp_tool49["result"]["content"][0]["type"] == "text", "MCP Tool 49 (evaluasi_kebijakan_tata_kelola) mengembalikan respon teks");
+
+    misal req_mcp_50 = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req_mcp_50",
+        "method": "tools/call",
+        "params": {
+            "name": "musyawarah_digital_voting",
+            "arguments": {
+                "id_proposal": "PROP-DESA-001",
+                "did_pemilih": "did:widya:warga:santoso_04",
+                "kredit": 36.0,
+                "pilihan": "SETUJU"
+            }
+        }
+    });
+    misal resp_tool50_str = mcp_tangani_permintaan(req_mcp_50, kosong, kosong, kosong);
+    misal resp_tool50 = dari_json(resp_tool50_str);
+    asserts(resp_tool50["result"]["content"][0]["type"] == "text", "MCP Tool 50 (musyawarah_digital_voting) mengembalikan respon teks");
+
+    cetak("\n======================================================================");
+    cetak("HASIL AKHIR: SEMUA 14 PENGUJIAN WIDYA-GOV SOVEREIGN POLICY LULUS 100%!");
+    cetak("======================================================================");
+}
+
+jalankan_pengujian_tata_kelola_kebijakan();

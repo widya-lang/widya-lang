@@ -1,0 +1,87 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R ] /Count 4 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 898 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: WIDYAPAY SWITCHER & NATIONAL PAYMENT GATEWAY \(50.000 TPS\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_analis` \(SOP-02\) & `agen_arsitek` \(SOP-03\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 673.89 Tm (**Target Klien:** Bank Pembangunan Daerah \(BPD\), BPR, FinTech Payment Gateway, E-Wallet) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1014 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Problem Statement & Target Kinerja) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Biaya lisensi engine switching asing \(seperti Base24, FIS, dsb.\) mencapai miliaran rupiah per tahun per bank, dengan latensi transaksi rata-rata 100-300ms.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (**Tujuan Produk**: Menyediakan mesin switching nasional native berkecepatan tinggi \(**50.000+ Transaksi per Detik / TPS**\) dengan latensi sub-milidetik \(**< 0.5 ms**\), kompatibilitas penuh standar **BI SNAP**, **EMVCo QRIS**, **BI-FAST \(ISO 20022\)**, dan kartu debit/kredit **ISO 8583**.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1345 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Spesifikasi Kebutuhan Fungsional \(Functional Requirements\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (1. **EMVCo QRIS Generator & Parser**: Pembangkitan QRIS Dinamis \(Point of Initiation 12\) dan Statis \(11\), parsing data TLV \(Tag 00-63\), serta perhitungan checksum CRC-16 otomatis.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (2. **BI-FAST ISO 20022 Switcher Engine**: Parser dan builder pesan keuangan internasional `pacs.008` \(Credit Transfer\), `pacs.002` \(Status\), dan `camt.053` \(Statement\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (3. **AI Fraud Detection System \(FDS\)**: Velocity rule limit, deteksi impossible travel geografis, dan penyaringan blacklist rekening judi online OJK/PPATK.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (4. **HSM Cryptographic Key Vault**: Manajemen kunci enkripsi LMK, ZPK, dan proteksi PIN Block berbasis standar PCI-DSS.) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 842 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (3. Batasan Non-Fungsional \(Non-Functional Requirements\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- **Ketersediaan**: SLA 99.999% \(maksimal downtime 5 menit per tahun\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- **Kapasitas**: 50.000 TPS dengan konsumsi memori < 100 MB.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- **Kepatuhan**: Regulasi Bank Indonesia \(PBI SNAP\) dan UU P2SK.) Tj ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000174 00000 n 
+0000000271 00000 n 
+0000000373 00000 n 
+0000001321 00000 n 
+0000001423 00000 n 
+0000002488 00000 n 
+0000002590 00000 n 
+0000003986 00000 n 
+0000004090 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R /Info << /Title (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-06-WIDYAPAY\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261001221606Z) >> >>
+startxref
+4983
+%%EOF

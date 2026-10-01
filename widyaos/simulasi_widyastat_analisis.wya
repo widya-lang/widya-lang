@@ -1,0 +1,168 @@
+// ============================================================================
+// SIMULASI: WIDYASTAT SUITE ANALISIS STATISTIKA INFERENSIAL
+// Verifikasi Uji-t, One-Way ANOVA, Chi-Square, Cronbach's Alpha, & Multiple Regression
+// (Setara IBM SPSS Statistics, Stata, Minitab, & SAS)
+// ============================================================================
+
+impor "widyaos/modul/widyastat_engine.wya";
+
+fungsi utama() {
+    tulis("====================================================================");
+    tulis("📊  SIMULASI: WIDYASTAT INFERENTIAL STATISTICS & PSYCHOMETRICS SUITE ");
+    tulis("====================================================================");
+    tulis("");
+
+    misal total_pengujian = 5;
+    misal kasus_lolos = 0;
+
+    // -------------------------------------------------------------------------
+    // KASUS 1: Paired Samples t-Test (Eksperimen Pembelajaran Interaktif IFP)
+    // -------------------------------------------------------------------------
+    tulis("[1] Uji-t Sampel Berpasangan (Pre-test vs Post-test Intervensi IFP):");
+    misal nilai_pre =  [55.0, 60.0, 65.0, 58.0, 70.0, 62.0];
+    misal nilai_post = [78.0, 85.0, 88.0, 80.0, 92.0, 87.0];
+
+    misal uji_paired = widyastat_uji_t_berpasangan(nilai_pre, nilai_post);
+    tulis("  • Rata-rata Peningkatan (D) : + " + uji_paired.beda_rata + " poin");
+    tulis("  • Nilai t-hitung             : " + uji_paired.t_hitung);
+    tulis("  • Derajat Kebebasan (df)     : " + uji_paired.df);
+    tulis("  • Estimasi p-value           : " + uji_paired.p_value_taksiran);
+    tulis("  • 95% Confidence Interval    : [" + uji_paired.ci_bawah_95 + " s.d. " + uji_paired.ci_atas_95 + "]");
+    tulis("  • Ukuran Efek (Cohen's d)    : " + uji_paired.cohen_d);
+    tulis("  • Kesimpulan                 : " + uji_paired.interpretasi);
+
+    jika uji_paired.t_hitung > 15.0 dan uji_paired.p_value_taksiran <= 0.01 dan uji_paired.df == 5 {
+        tulis("  ✅ PASS: Uji-t Sampel Berpasangan Terbukti Signifikan Sangat Kuat (p < 0.01)!");
+        kasus_lolos = kasus_lolos + 1;
+    } lainnya {
+        tulis("  ❌ FAIL: Kalkulasi uji-t berpasangan tidak akurat!");
+    }
+    tulis("");
+
+    // -------------------------------------------------------------------------
+    // KASUS 2: Independent Samples t-Test (Kelompok MBG vs Non-MBG)
+    // -------------------------------------------------------------------------
+    tulis("[2] Uji-t Sampel Independen (Fokus Belajar Siswa MBG vs Non-MBG):");
+    misal skor_mbg = [85.0, 90.0, 88.0, 92.0, 86.0];
+    misal skor_non_mbg = [65.0, 70.0, 72.0, 68.0, 75.0];
+
+    misal uji_indep = widyastat_uji_t_independen(skor_mbg, skor_non_mbg);
+    tulis("  • Selisih Rata-rata          : " + uji_indep.beda_rata);
+    tulis("  • Nilai t-hitung             : " + uji_indep.t_hitung);
+    tulis("  • Derajat Kebebasan (df)     : " + uji_indep.df);
+    tulis("  • Estimasi p-value           : " + uji_indep.p_value_taksiran);
+    tulis("  • Cohen's d Effect Size      : " + uji_indep.cohen_d);
+    tulis("  • Kesimpulan                 : " + uji_indep.interpretasi);
+
+    jika uji_indep.t_hitung > 5.0 dan uji_indep.df == 8 dan uji_indep.p_value_taksiran <= 0.01 {
+        tulis("  ✅ PASS: Uji-t Independen Memvalidasi Beda Signifikan Kelompok (p < 0.01)!");
+        kasus_lolos = kasus_lolos + 1;
+    } lainnya {
+        tulis("  ❌ FAIL: Uji-t independen gagal menghitung derajat kebebasan / pooled variance!");
+    }
+    tulis("");
+
+    // -------------------------------------------------------------------------
+    // KASUS 3: One-Way ANOVA (3 Metode Pembelajaran)
+    // -------------------------------------------------------------------------
+    tulis("[3] Analisis Varians Satu Arah (One-Way ANOVA: 3 Metode Pembelajaran):");
+    // Kelompok 1: Ceramah Tradisional
+    misal grp_ceramah = [60.0, 65.0, 62.0, 68.0];
+    // Kelompok 2: IFP Interaktif
+    misal grp_ifp = [80.0, 85.0, 82.0, 88.0];
+    // Kelompok 3: Hybrid DePIN Lab
+    misal grp_depin = [90.0, 92.0, 89.0, 95.0];
+
+    misal uji_anova = widyastat_anova_satu_arah([grp_ceramah, grp_ifp, grp_depin]);
+    tulis("  • Sum of Squares Between (SSB) : " + uji_anova.sum_sq_between);
+    tulis("  • Sum of Squares Within (SSW)  : " + uji_anova.sum_sq_within);
+    tulis("  • Derajat Kebebasan (df)       : Between=" + uji_anova.df_between + ", Within=" + uji_anova.df_within);
+    tulis("  • Nilai F-hitung               : " + uji_anova.f_hitung);
+    tulis("  • Estimasi p-value             : " + uji_anova.p_value_taksiran);
+    tulis("  • Ukuran Efek (Eta-squared η²) : " + uji_anova.eta_squared);
+    tulis("  • Kesimpulan                   : " + uji_anova.interpretasi);
+
+    jika uji_anova.f_hitung > 50.0 dan uji_anova.df_between == 2 dan uji_anova.df_within == 9 dan uji_anova.eta_squared > 0.80 {
+        tulis("  ✅ PASS: One-Way ANOVA Berhasil Menghasilkan F-Statistik Signifikan & Kuat!");
+        kasus_lolos = kasus_lolos + 1;
+    } lainnya {
+        tulis("  ❌ FAIL: Perhitungan ANOVA menyimpang dari formula matematika!");
+    }
+    tulis("");
+
+    // -------------------------------------------------------------------------
+    // KASUS 4: Uji Reliabilitas Psikometrika Cronbach's Alpha (Instrumen Soal)
+    // -------------------------------------------------------------------------
+    tulis("[4] Uji Reliabilitas Cronbach's Alpha (Kuesioner / Butir Soal Asesmen):");
+    // 5 Responden menjawab 4 butir soal skala Likert (1 - 5)
+    misal respon_soal = [
+        [5, 4, 5, 4],
+        [4, 4, 4, 5],
+        [3, 3, 4, 3],
+        [2, 2, 3, 2],
+        [1, 2, 2, 1]
+    ];
+
+    misal uji_alpha = widyastat_uji_reliabilitas_alpha(respon_soal);
+    tulis("  • Jumlah Butir Soal (k)      : " + uji_alpha.jumlah_butir_k);
+    tulis("  • Varians Total Skor         : " + uji_alpha.varians_total);
+    tulis("  • Koefisien Cronbach's Alpha : " + uji_alpha.alpha_cronbach);
+    tulis("  • Kategori Reliabilitas      : " + uji_alpha.kategori_reliabilitas);
+
+    jika uji_alpha.jumlah_butir_k == 4 dan uji_alpha.alpha_cronbach >= 0.80 {
+        tulis("  ✅ PASS: Cronbach's Alpha Berhasil Mengonfirmasi Instrumen Sangat Andal (Alpha >= 0.80)!");
+        kasus_lolos = kasus_lolos + 1;
+    } lainnya {
+        tulis("  ❌ FAIL: Perhitungan Cronbach's Alpha tidak akurat!");
+    }
+    tulis("");
+
+    // -------------------------------------------------------------------------
+    // KASUS 5: Chi-Square Test & Multiple Regression dengan VIF
+    // -------------------------------------------------------------------------
+    tulis("[5] Uji Asosiasi Chi-Square & Regresi Berganda Ekonometrika (VIF):");
+    // Tabel Kontingensi 2x2: Partisipasi MBG vs Presensi Belajar (Rajin vs Kurang)
+    //               Rajin   Kurang
+    // Ikut MBG     [ 45  ,    5   ]
+    // Tidak MBG    [ 15  ,   35   ]
+    misal kontingensi = [
+        [45, 5],
+        [15, 35]
+    ];
+    misal uji_chi = widyastat_uji_chi_square(kontingensi);
+    tulis("  • Nilai Chi-Square (χ²)      : " + uji_chi.chi_square_hitung);
+    tulis("  • Derajat Kebebasan (df)     : " + uji_chi.df);
+    tulis("  • Koefisien Cramér's V       : " + uji_chi.cramer_v);
+    tulis("  • Kesimpulan Chi-Square      : " + uji_chi.interpretasi);
+
+    // Regresi Berganda: Y = Nilai Ujian, X1 = Jam Belajar Mandiri, X2 = Persentase Kehadiran
+    // Model Ideal: Y = 20 + 5*X1 + 0.4*X2 (Non-kolinier, VIF < 5.0)
+    misal y_data  = [64.0, 68.0, 61.0, 75.0, 73.0];
+    misal x1_data = [ 2.0,  4.0,  1.0,  5.0,  3.0];
+    misal x2_data = [85.0, 70.0, 90.0, 75.0, 95.0];
+
+    misal reg_ganda = widyastat_regresi_berganda_2var(y_data, x1_data, x2_data);
+    tulis("  • Koefisien Intercept (b0)   : " + reg_ganda.koefisien_beta_0 + " (Harus 20.0)");
+    tulis("  • Koefisien Jam Belajar (b1) : " + reg_ganda.koefisien_beta_1 + " (Harus 5.0)");
+    tulis("  • Koefisien Presensi (b2)    : " + reg_ganda.koefisien_beta_2 + " (Harus 0.4)");
+    tulis("  • Koefisien Determinasi R²   : " + reg_ganda.r_squared + " (Fit Sempurna)");
+    tulis("  • Nilai VIF Multikolinieritas: " + reg_ganda.vif_x1_x2 + " (Sangat Sehat < 5.0)");
+    tulis("  • Durbin-Watson Autokorelasi : " + reg_ganda.durbin_watson);
+
+    jika uji_chi.chi_square_hitung > 30.0 dan reg_ganda.r_squared > 0.99 dan reg_ganda.vif_x1_x2 < 5.0 {
+        tulis("  ✅ PASS: Uji Chi-Square & Model Regresi Berganda Terverifikasi Sempurna (VIF < 5.0)!");
+        kasus_lolos = kasus_lolos + 1;
+    } lainnya {
+        tulis("  ❌ FAIL: Chi-Square atau regresi berganda menghasilkan galat numerik!");
+    }
+    tulis("");
+
+    // -------------------------------------------------------------------------
+    // REKAPITULASI
+    // -------------------------------------------------------------------------
+    tulis("====================================================================");
+    tulis("🏆 HASIL SIMULASI:  " + kasus_lolos + " / " + total_pengujian + "  KASUS WIDYASTAT LULUS ( " + ((kasus_lolos * 100) / total_pengujian) + " %)");
+    tulis("====================================================================");
+}
+
+utama();

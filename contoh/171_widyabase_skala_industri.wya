@@ -1,0 +1,101 @@
+// ============================================================================
+// CONTOH 171: WIDYABASE - MESIN BASIS DATA MANDIRI SKALA INDUSTRI
+// ============================================================================
+// Mendemonstrasikan seluruh pilar keunggulan WidyaBase:
+// 1. Inisialisasi Storage Engine Slotted-Page 4KB & Buffer Pool
+// 2. DDL & DML Menggunakan SQL Versi Bahasa Indonesia
+// 3. Eksekusi Kueri Dwibahasa Simetris (Nusantara & Standar Global)
+// 4. Fungsi Agregasi Analitik (HITUNG, JUMLAH, RATA_RATA, MIN, MAKS)
+// 5. Transaksi ACID, Write-Ahead Logging (WAL) & Checkpoint
+// ============================================================================
+
+impor "./modul/widyabase.wya";
+
+fungsi utama() {
+    cetak("============================================================");
+    cetak("🗄️  DEMO WIDYABASE v1.0.0: MESIN BASIS DATA BERDAULAT");
+    cetak("============================================================");
+
+    // 1. Inisialisasi Basis Data
+    misal db_path = "target/pos_nusantara.wdb";
+    misal db = BukaWidyaBase(db_path);
+    cetak("✓ Basis data berhasil dibuka: " + db.path_db);
+
+    // 2. DDL Menggunakan SQL Bahasa Indonesia (BUAT_TABEL)
+    cetak("\n[1] Membuat Skema Tabel Menggunakan SQL Bahasa Indonesia...");
+    misal ddl = "
+        BUAT_TABEL transaksi_kasir (
+            id INT KUNCI_UTAMA,
+            nomor_struk TEKS,
+            kasir TEKS,
+            total_bayar ANGKA,
+            metode_bayar TEKS
+        );
+    ";
+    misal res_ddl = db.eksekusi(ddl);
+    cetak("    Hasil DDL: " + res_ddl["pesan"]);
+
+    // 3. DML Menggunakan SQL Bahasa Indonesia (SISIP_KE & NILAI)
+    cetak("\n[2] Menyisipkan Data Transaksi Kasir Menggunakan SISIP_KE & NILAI...");
+    db.eksekusi("SISIP_KE transaksi_kasir (id, nomor_struk, kasir, total_bayar, metode_bayar) NILAI (1, 'TRX-2026-001', 'Budi', 85000, 'QRIS_ASPI');");
+    db.eksekusi("SISIP_KE transaksi_kasir (id, nomor_struk, kasir, total_bayar, metode_bayar) NILAI (2, 'TRX-2026-002', 'Siti', 125000, 'QRIS_ASPI');");
+    db.eksekusi("SISIP_KE transaksi_kasir (id, nomor_struk, kasir, total_bayar, metode_bayar) NILAI (3, 'TRX-2026-003', 'Budi', 45000, 'TUNAI');");
+    db.eksekusi("SISIP_KE transaksi_kasir (id, nomor_struk, kasir, total_bayar, metode_bayar) NILAI (4, 'TRX-2026-004', 'Andi', 210000, 'QRIS_ASPI');");
+    db.eksekusi("SISIP_KE transaksi_kasir (id, nomor_struk, kasir, total_bayar, metode_bayar) NILAI (5, 'TRX-2026-005', 'Siti', 95000, 'TUNAI');");
+    cetak("    ✓ 5 transaksi kasir berhasil dicatat ke dalam halaman Slotted-Page 4KB.");
+
+    // 4. Kueri Menggunakan SQL Bahasa Indonesia (PILIH ... DARI ... DIMANA ... URUTKAN BERDASARKAN ... TURUN)
+    cetak("\n[3] Mengeksekusi Kueri SQL Bahasa Indonesia (PILIH ... DARI ... DIMANA):");
+    misal q_indo = "
+        PILIH nomor_struk, kasir, total_bayar, metode_bayar
+        DARI transaksi_kasir
+        DIMANA total_bayar >= 85000
+        URUTKAN BERDASARKAN total_bayar TURUN;
+    ";
+    misal baris_indo = db.kueri(q_indo);
+    cetak("    ┌────────────────────────────────────────────────────────┐");
+    cetak("    │ STRUK        \t| KASIR \t| TOTAL (Rp) \t| METODE     │");
+    cetak("    ├────────────────────────────────────────────────────────┤");
+    untuk baris dalam baris_indo {
+        cetak("    │ " + baris["nomor_struk"] + " \t| " + baris["kasir"] + " \t| " + ke_teks(baris["total_bayar"]) + "    \t| " + baris["metode_bayar"]);
+    }
+    cetak("    └────────────────────────────────────────────────────────┘");
+
+    // 5. Fungsi Agregasi Analitik (HITUNG, JUMLAH, RATA_RATA, MIN, MAKS)
+    cetak("\n[4] Laporan Analitik Agregasi Harian:");
+    misal q_agg = "
+        PILIH 
+            HITUNG(*) SEBAGAI jumlah_transaksi,
+            JUMLAH(total_bayar) SEBAGAI omzet_kotor,
+            RATA_RATA(total_bayar) SEBAGAI rata_rata_omzet,
+            MIN(total_bayar) SEBAGAI transaksi_terkecil,
+            MAKS(total_bayar) SEBAGAI transaksi_terbesar
+        DARI transaksi_kasir;
+    ";
+    misal lap_agg = db.kueri(q_agg);
+    jika (panjang(lap_agg) > 0) {
+        misal row = lap_agg[0];
+        cetak("    • Total Transaksi Selesai : " + ke_teks(row["COUNT(Wildcard)"]));
+        cetak("    • Total Omzet Kasir Kotor : Rp " + ke_teks(row["SUM(Column(\"total_bayar\"))"]));
+        cetak("    • Rata-rata Nilai Belanja : Rp " + ke_teks(row["AVG(Column(\"total_bayar\"))"]));
+        cetak("    • Belanja Terkecil (Min)  : Rp " + ke_teks(row["MIN(Column(\"total_bayar\"))"]));
+        cetak("    • Belanja Terbesar (Maks) : Rp " + ke_teks(row["MAX(Column(\"total_bayar\"))"]));
+    }
+
+    // 6. Sinkronisasi Checkpoint & Laporan Kesehatan
+    cetak("\n[5] Melakukan Sinkronisasi Halaman & Pemeriksaan Kesehatan...");
+    db.simpan(); // Checkpoint flush dirty pages to disk & append WAL checkpoint
+    misal stat = db.status();
+    cetak("    • Total Halaman Alokasi 4KB : " + ke_teks(stat["total_halaman"]));
+    cetak("    • Total Tabel Terdaftar     : " + ke_teks(stat["total_tabel"]));
+    cetak("    • Rekod Transaksi di WAL    : " + ke_teks(stat["total_wal"]));
+    misal status_teks = "PERIKSA ULANG";
+    jika (stat["sehat"]) {
+        status_teks = "SEHAT (100% KONSISTEN ACID)";
+    }
+    cetak("    • Status Integritas Sistem  : " + status_teks);
+
+    cetak("\n🎉 DEMO WIDYABASE SELESAI DENGAN SUKSES 100%!");
+}
+
+utama();

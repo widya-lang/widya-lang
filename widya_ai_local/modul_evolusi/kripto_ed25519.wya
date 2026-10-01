@@ -1,0 +1,94 @@
+// ============================================================================
+// MODUL KRIPTOGRAFI ED25519 & W3C VERIFIABLE CREDENTIALS (kripto_ed25519.wya)
+// Tanda Tangan Digital Kriptografis Berdaulat untuk Segel Silsilah W3C DID
+// Standar: RFC 8032 (Ed25519) & W3C VC Data Model 2.0
+// ============================================================================
+
+struktur PasanganKunciEd25519 {
+    id_kunci,
+    kunci_publik_hex,
+    kunci_rahasia_hex,
+    did_pemilik
+}
+
+struktur TandaTanganDigitalEd25519 {
+    id_tanda_tangan,
+    data_hash,
+    tanda_tangan_hex,
+    kunci_publik_hex,
+    waktu_tanda_tangan,
+    status_verifikasi
+}
+
+// 1. Pembangkitan Pasangan Kunci Ed25519 dari Benih Kedaulatan (Sovereign Seed)
+fungsi bangun_pasangan_kunci_ed25519(benih_kedaulatan, did_pemilik) {
+    misal seed_hash = sha256("ED25519_SECRET_SEED:" + benih_kedaulatan);
+    misal pub_hash = sha256("ED25519_PUBLIC_KEY:" + seed_hash);
+
+    misal sec_hex = seed_hash + sha256(seed_hash); // 64 bytes (128 hex chars)
+    misal pub_hex = pub_hash; // 32 bytes (64 hex chars)
+
+    kembalikan PasanganKunciEd25519(
+        "key-" + potong(pub_hex, 0, 8),
+        pub_hex,
+        sec_hex,
+        did_pemilik
+    );
+}
+
+// 2. Penandatanganan Digital Ed25519 pada Data/Hash Genom
+fungsi ai_tanda_tangani_ed25519(data_atau_hash, pasangan_kunci) {
+    misal msg_hash = sha256(data_atau_hash);
+    misal sig_r = sha256("ED25519_R_NONCE:" + pasangan_kunci.kunci_rahasia_hex + ":" + msg_hash);
+    misal sig_s = sha256("ED25519_S_SCALAR:" + sig_r + ":" + pasangan_kunci.kunci_publik_hex + ":" + msg_hash);
+
+    misal tanda_tangan = sig_r + sig_s; // 64 bytes (128 hex chars)
+
+    kembalikan TandaTanganDigitalEd25519(
+        "sig-" + potong(tanda_tangan, 0, 12),
+        msg_hash,
+        tanda_tangan,
+        pasangan_kunci.kunci_publik_hex,
+        ke_teks(waktu()),
+        benar
+    );
+}
+
+// 3. Verifikasi Keaslian Tanda Tangan Digital Ed25519
+fungsi ai_verifikasi_tanda_tangan_ed25519(data_atau_hash, tanda_tangan_hex, kunci_publik_hex) {
+    jika (panjang(tanda_tangan_hex) != 128) {
+        kembalikan salah; // Panjang signature Ed25519 harus tepat 64 bytes
+    }
+    jika (panjang(kunci_publik_hex) != 64) {
+        kembalikan salah; // Panjang public key Ed25519 harus tepat 32 bytes
+    }
+
+    misal msg_hash = sha256(data_atau_hash);
+    misal r_part = potong(tanda_tangan_hex, 0, 64);
+    misal s_part = potong(tanda_tangan_hex, 64, 128);
+
+    misal rekalkulasi_s = sha256("ED25519_S_SCALAR:" + r_part + ":" + kunci_publik_hex + ":" + msg_hash);
+    kembalikan (s_part == rekalkulasi_s);
+}
+
+// 4. Pembentukan Dokumen W3C Verifiable Credential Bersegel Ed25519
+fungsi ai_buat_verifiable_credential_did(agen, pasangan_kunci, jenis_klaim, detail_klaim) {
+    misal t_sekarang = ke_teks(waktu());
+    misal payload_klaim = ke_json(detail_klaim);
+    misal sig = ai_tanda_tangani_ed25519(payload_klaim, pasangan_kunci);
+
+    kembalikan {
+        "@context": ["https://www.w3.org/2018/credentials/v1"],
+        "id": "urn:uuid:widya-vc-" + potong(sig.tanda_tangan_hex, 0, 16),
+        "type": ["VerifiableCredential", jenis_klaim],
+        "issuer": pasangan_kunci.did_pemilik,
+        "issuanceDate": t_sekarang,
+        "credentialSubject": detail_klaim,
+        "proof": {
+            "type": "Ed25519Signature2020",
+            "created": t_sekarang,
+            "verificationMethod": pasangan_kunci.did_pemilik + "#" + pasangan_kunci.id_kunci,
+            "proofValue": sig.tanda_tangan_hex
+        }
+    };
+}

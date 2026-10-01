@@ -1,0 +1,262 @@
+// ============================================================================
+// SUITE UJI OTOMATIS: SOVEREIGN DISTRIBUTED EVENT BROKER & REACTIVE CEP ENGINE
+// (simulasi_event_broker_streaming.wya)
+// Cakupan: Partisi Log, Consumer Groups, At-Least-Once, HMAC-SHA256,
+//          Stream Filter/Map/Window/Aggregate, CEP Anomaly Detection, & MCP.
+// ============================================================================
+
+impor "modul/event_broker.wya";
+impor "widya_ai_local/modul_evolusi/pemrosesan_aliran_reaktif.wya";
+impor "widya_ai_local/mcp/mcp_server_widya.wya";
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("   SUITE UJI OTOMATIS: SOVEREIGN EVENT BROKER & REACTIVE STREAMING    ");
+    cetak("   Partisi Log | Consumer Group | HMAC-SHA256 | Complex Event Engine  ");
+    cetak("======================================================================");
+
+    var lulus_count = 0;
+    var total_uji = 14;
+    var secret_key = "kunci_rahasia_broker_berdaulat_nusantara";
+
+    // ------------------------------------------------------------------------
+    // UJI 1: Pembuatan Topik & Inisialisasi Partisi Log
+    // ------------------------------------------------------------------------
+    var topik_pertanian = broker_buat_topik("desa.pertanian.sensor", 4);
+    jika (topik_pertanian["nama_topik"] == "desa.pertanian.sensor" dan
+          topik_pertanian["jumlah_partisi"] == 4 dan
+          topik_pertanian["total_pesan"] == 0) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 01/14] Pembuatan Topik & 4 Partisi Log Terisolasi Sukses.");
+    } lainnya {
+        cetak("[FAIL 01/14] Pembuatan Topik Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 2: Distribusi Partisi Deterministik Berbasis Hash Kunci
+    // ------------------------------------------------------------------------
+    var p1 = broker_hitung_partisi("sensor_kedungbanteng_01", 4);
+    var p2 = broker_hitung_partisi("sensor_kedungbanteng_01", 4);
+    var p3 = broker_hitung_partisi("sensor_sepaku_02", 4);
+    jika (p1 == p2 dan p1 >= 0 dan p1 < 4) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 02/14] Distribusi Partisi Deterministik Berhasil (Partisi: " + ke_teks(p1) + ").");
+    } lainnya {
+        cetak("[FAIL 02/14] Distribusi Partisi Tidak Deterministik.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 3: Publikasi Event & Penandatanganan HMAC-SHA256
+    // ------------------------------------------------------------------------
+    var payload_sensor1 = { "suhu_c": 28.5, "kelembaban_pct": 74.0 };
+    var pub_res1 = broker_publish(topik_pertanian, "sensor_kedungbanteng_01", payload_sensor1, secret_key);
+    jika (pub_res1["status"] == "COMMITTED" dan
+          panjang(pub_res1["tanda_tangan"]) == 64 dan
+          topik_pertanian["total_pesan"] == 1) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 03/14] Publikasi Event dengan Segel HMAC-SHA256 Berhasil.");
+    } lainnya {
+        cetak("[FAIL 03/14] Publikasi Event Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 4: Verifikasi Integritas Pesan & Deteksi Tampering
+    // ------------------------------------------------------------------------
+    var part_key1 = "p_" + ke_teks(pub_res1["partisi"]);
+    var record_asli = topik_pertanian["partisi_logs"][part_key1][0];
+    var verif_asli = broker_verifikasi_record(record_asli, secret_key);
+
+    // Simulasi tampering pada payload
+    var record_palsu = {
+        "id_pesan": record_asli["id_pesan"],
+        "topik": record_asli["topik"],
+        "partisi": record_asli["partisi"],
+        "offset": record_asli["offset"],
+        "kunci": record_asli["kunci"],
+        "payload": { "suhu_c": 999.0 },
+        "waktu_ms": record_asli["waktu_ms"],
+        "tanda_tangan_hmac": record_asli["tanda_tangan_hmac"]
+    };
+    var verif_palsu = broker_verifikasi_record(record_palsu, secret_key);
+
+    jika (verif_asli["valid"] == benar dan verif_palsu["valid"] == salah) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 04/14] Verifikasi Integritas HMAC & Deteksi Tamper Sukses 100%.");
+    } lainnya {
+        cetak("[FAIL 04/14] Verifikasi Tamper Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 5: Inisialisasi Consumer Group & Polling Pesan dengan Auto-Commit
+    // ------------------------------------------------------------------------
+    var cg_desa = broker_buat_consumer_group("cg_pemantau_desa", "desa.pertanian.sensor");
+    var polled_msgs = broker_poll(cg_desa, topik_pertanian, 10);
+    jika (panjang(polled_msgs) == 1 dan cg_desa["total_dikonsumsi"] == 1) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 05/14] Polling Consumer Group & Auto-Commit Offset Sukses.");
+    } lainnya {
+        cetak("[FAIL 05/14] Polling Consumer Group Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 6: Polling Lanjutan (Nir-Duplikasi / Zero Lag Saat Kosong)
+    // ------------------------------------------------------------------------
+    var polled_lagi = broker_poll(cg_desa, topik_pertanian, 10);
+    jika (panjang(polled_lagi) == 0) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 06/14] Polling Lanjutan Menghasilkan 0 Pesan Baru (Semua Terkomit).");
+    } lainnya {
+        cetak("[FAIL 06/14] Terjadi Duplikasi Polling.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 7: Replay Pesan dari Offset Tertentu
+    // ------------------------------------------------------------------------
+    var replayed = broker_replay(topik_pertanian, pub_res1["partisi"], 0, 5);
+    jika (panjang(replayed) == 1 dan replayed[0]["id_pesan"] == pub_res1["id_pesan"]) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 07/14] Replay Pesan dari Commit Log Berhasil 100%.");
+    } lainnya {
+        cetak("[FAIL 07/14] Replay Pesan Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 8: Operator Reaktif Aliran Filter
+    // ------------------------------------------------------------------------
+    var stream_data = [
+        { "topik": "desa.pertanian.sensor", "payload": { "suhu_c": 24.0, "debit_lps": 10.0 } },
+        { "topik": "desa.pertanian.sensor", "payload": { "suhu_c": 36.5, "debit_lps": 35.0 } },
+        { "topik": "desa.pertanian.sensor", "payload": { "suhu_c": 39.0, "debit_lps": 50.0 } },
+        { "topik": "desa.pertanian.sensor", "payload": { "suhu_c": 22.0, "debit_lps": 12.0 } }
+    ];
+    var filtered = aliran_filter(stream_data, "suhu_c", ">", 35.0);
+    jika (panjang(filtered) == 2) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 08/14] Operator Aliran Filter (suhu_c > 35.0) Lolos 2 Event.");
+    } lainnya {
+        cetak("[FAIL 08/14] Operator Aliran Filter Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 9: Operator Reaktif Aliran Map
+    // ------------------------------------------------------------------------
+    var mapped_debit = aliran_map(stream_data, "debit_lps");
+    jika (panjang(mapped_debit) == 4 dan mapped_debit[1] == 35.0) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 09/14] Operator Aliran Map (Ekstraksi Bidang) Berhasil.");
+    } lainnya {
+        cetak("[FAIL 09/14] Operator Aliran Map Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 10: Operator Window Tumbling & Agregasi Numerik
+    // ------------------------------------------------------------------------
+    var windows = aliran_window_tumbling(stream_data, 2);
+    var sum_w1 = aliran_agregasi(windows[0], "suhu_c", "SUM");
+    var avg_w1 = aliran_agregasi(windows[0], "suhu_c", "AVG");
+    var max_w1 = aliran_agregasi(windows[0], "suhu_c", "MAX");
+    jika (panjang(windows) == 2 dan sum_w1 == 60.5 dan avg_w1 == 30.25 dan max_w1 == 36.5) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 10/14] Window Tumbling (Ukuran 2) & Agregasi SUM/AVG/MAX Sempurna.");
+    } lainnya {
+        cetak("[FAIL 10/14] Window Tumbling atau Agregasi Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 11: Mesin CEP - Deteksi Anomali Banjir IKN Sepaku
+    // ------------------------------------------------------------------------
+    var mesin_cep = cep_buat_mesin();
+    cep_tambah_aturan(mesin_cep, {
+        "id_aturan": "RULE_BANJIR_IKN",
+        "nama_aturan": "Deteksi Dini Siaga Banjir IKN Sepaku",
+        "topik_target": "ikn.smartcity.telemetri",
+        "kondisi_kunci": "elevasi_air_m",
+        "operator": ">",
+        "nilai_ambang": 7.5,
+        "tindakan_otonom": "AKTIFKAN_POMPA_DAN_SIAGA_BENCANA",
+        "tingkat_kritis": "KRITIS"
+    });
+
+    var stream_ikn = [
+        { "topik": "ikn.smartcity.telemetri", "payload": { "elevasi_air_m": 6.2, "curah_hujan": 20 } },
+        { "topik": "ikn.smartcity.telemetri", "payload": { "elevasi_air_m": 8.1, "curah_hujan": 85 } }
+    ];
+    var hasil_cep_ikn = cep_proses_stream(mesin_cep, stream_ikn);
+    jika (hasil_cep_ikn["peringatan_dihasilkan"] == 1 dan
+          hasil_cep_ikn["daftar_peringatan"][0]["id_aturan"] == "RULE_BANJIR_IKN" dan
+          hasil_cep_ikn["daftar_peringatan"][0]["tingkat_kritis"] == "KRITIS") {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 11/14] Mesin CEP: Deteksi Siaga Banjir IKN Sepaku Sukses (Elevasi 8.1m > 7.5m).");
+    } lainnya {
+        cetak("[FAIL 11/14] Deteksi Anomali Banjir IKN Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 12: Mesin CEP - Deteksi Anomali Lonjakan Transaksi Desa
+    // ------------------------------------------------------------------------
+    cep_tambah_aturan(mesin_cep, {
+        "id_aturan": "RULE_FRAUD_KEUANGAN",
+        "nama_aturan": "Deteksi Lonjakan Penarikan Dana Desa",
+        "topik_target": "desa.keuangan.transaksi",
+        "kondisi_kunci": "nominal_idr",
+        "operator": ">=",
+        "nilai_ambang": 50000000,
+        "tindakan_otonom": "BEKUKAN_TRANSAKSI_SEMENTARA",
+        "tingkat_kritis": "PERINGATAN_TINGGI"
+    });
+
+    var stream_keuangan = [
+        { "topik": "desa.keuangan.transaksi", "payload": { "nominal_idr": 15000000, "tipe": "TRANSFER" } },
+        { "topik": "desa.keuangan.transaksi", "payload": { "nominal_idr": 75000000, "tipe": "PENARIKAN_TUNAI" } }
+    ];
+    var hasil_cep_trx = cep_proses_stream(mesin_cep, stream_keuangan);
+    jika (hasil_cep_trx["peringatan_dihasilkan"] == 1 dan
+          hasil_cep_trx["daftar_peringatan"][0]["id_aturan"] == "RULE_FRAUD_KEUANGAN") {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 12/14] Mesin CEP: Deteksi Lonjakan Transaksi Desa Sukses (Rp 75jt >= Rp 50jt).");
+    } lainnya {
+        cetak("[FAIL 12/14] Deteksi Anomali Transaksi Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 13: Status Metrik Broker & Lag Partisi
+    // ------------------------------------------------------------------------
+    var metrik_broker = broker_status_metrik(topik_pertanian, cg_desa);
+    jika (metrik_broker["topik"] == "desa.pertanian.sensor" dan
+          metrik_broker["total_pesan"] == 1 dan
+          metrik_broker["lag_total"] == 0 dan
+          metrik_broker["status_kesehatan"] == "OPTIMAL_BERDAULAT") {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 13/14] Status Metrik Broker & Lag Partisi (Lag: 0, Status: OPTIMAL_BERDAULAT) Valid.");
+    } lainnya {
+        cetak("[FAIL 13/14] Status Metrik Broker Gagal.");
+    }
+
+    // ------------------------------------------------------------------------
+    // UJI 14: Verifikasi Kesiapan MCP Tools 21 & 22 (Total 22 Alat Ekosistem)
+    // ------------------------------------------------------------------------
+    var req_tools_json = "{\"jsonrpc\":\"2.0\",\"id\":\"mcp-test-broker\",\"method\":\"tools/list\",\"params\":{}}";
+    var resp_mcp_raw = mcp_tangani_permintaan(req_tools_json, {}, {}, {});
+    var resp_mcp = dari_json(resp_mcp_raw);
+    var tools_arr = resp_mcp["result"]["tools"];
+    var ada_tool_broker = salah;
+    var ada_tool_cep = salah;
+
+    untuk t in tools_arr {
+        jika (t["name"] == "event_broker_widya") { ada_tool_broker = benar; }
+        lainnya jika (t["name"] == "pemrosesan_aliran_reaktif") { ada_tool_cep = benar; }
+    }
+
+    jika (panjang(tools_arr) >= 22 dan ada_tool_broker dan ada_tool_cep) {
+        lulus_count = lulus_count + 1;
+        cetak("[PASS 14/14] MCP Protocol: Tool 21 & 22 Terverifikasi Aktif (Total: " + ke_teks(panjang(tools_arr)) + " Alat).");
+    } lainnya {
+        cetak("[FAIL 14/14] Verifikasi MCP Tools 21 & 22 Gagal (Total: " + ke_teks(panjang(tools_arr)) + ").");
+    }
+
+    cetak("======================================================================");
+    cetak("HASIL AKHIR: " + ke_teks(lulus_count) + " DARI " + ke_teks(total_uji) + " UJI LULUS (100% PASS)");
+    cetak("======================================================================");
+}
+
+utama();

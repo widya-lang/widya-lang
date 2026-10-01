@@ -1,0 +1,141 @@
+// =================================================================
+// Modul Hubungan Industri (DUDI), PKL Vokasi SMK & Tracer Study BMW
+// (Adopsi MOD-11: 8 Aspek Link & Match, Logbook PKL, & Keterserapan Alumni)
+// =================================================================
+
+struktur MitraIndustriDUDI {
+    id_mitra,
+    nama_perusahaan,
+    sektor_industri, // TIK, Otomotif, Perhotelan, Manufaktur
+    nomor_mou_pks,
+    kuota_pkl_tahunan,
+    lat_lokasi,
+    lon_lokasi,
+    radius_geofence_m
+}
+
+struktur PenempatanPKLSiswa {
+    id_penempatan,
+    nisn,
+    nama_siswa,
+    id_mitra,
+    nama_mentor_dudi,
+    nama_guru_pembimbing,
+    durasi_bulan,
+    status_pkp // AKTIF, SELESAI, TERCABUT
+}
+
+struktur LogbookHarianPKL {
+    id_log,
+    id_penempatan,
+    tanggal,
+    aktivitas_pekerjaan,
+    alat_software_digunakan,
+    kehadiran_geofence, // VALID_DALAM_RADIUS atau LUAR_RADIUS
+    status_validasi_mentor
+}
+
+struktur SertifikatPKLSiswa {
+    nomor_sertifikat,
+    nisn,
+    nama_siswa,
+    nama_perusahaan,
+    nilai_hard_skills,
+    nilai_soft_skills_5r_k3,
+    nilai_akhir,
+    predikat,
+    hash_verifikasi_qr
+}
+
+struktur MetrikTracerStudyBMW {
+    total_lulusan,
+    jumlah_bekerja,
+    jumlah_melanjutkan,
+    jumlah_wirausaha,
+    jumlah_mencari_kerja,
+    persen_keterserapan_bmw,
+    rata_rata_masa_tunggu_bulan
+}
+
+// -------------------------------------------------------------
+// [1] Pendaftaran Mitra Industri DUDI & MoU
+// -------------------------------------------------------------
+fungsi dudi_daftarkan_mitra(id, nama, sektor, no_pks, kuota, lat, lon) {
+    kembalikan MitraIndustriDUDI(
+        id,
+        nama,
+        sektor,
+        no_pks,
+        kuota,
+        lat,
+        lon,
+        200 // Radius standar 200 meter
+    );
+}
+
+// -------------------------------------------------------------
+// [2] Plotting Penempatan Siswa PKL SMK
+// -------------------------------------------------------------
+fungsi dudi_tempatkan_siswa_pkl(id_pkl, nisn, nama_siswa, id_mitra, mentor, pembimbing, bulan) {
+    kembalikan PenempatanPKLSiswa(
+        id_pkl,
+        nisn,
+        nama_siswa,
+        id_mitra,
+        mentor,
+        pembimbing,
+        bulan,
+        "AKTIF"
+    );
+}
+
+// -------------------------------------------------------------
+// [3] Penilaian Terpadu PKL & Penerbitan Sertifikat Resmi
+// -------------------------------------------------------------
+fungsi dudi_terbitkan_sertifikat_pkl(id_penempatan, siswa, perusahaan, skor_hard, skor_soft) {
+    // 60% Keterampilan Teknis (Hard Skills) + 40% Budaya Kerja 5R & K3 (Soft Skills)
+    misal nilai_total = (skor_hard * 0.60) + (skor_soft * 0.40);
+    misal predikat = "CUKUP";
+    
+    jika nilai_total >= 90.0 {
+        predikat = "SANGAT_MEMUASKAN_A";
+    } kalau nilai_total >= 80.0 {
+        predikat = "MEMUASKAN_B";
+    } kalau nilai_total >= 70.0 {
+        predikat = "BAIK_C";
+    }
+    
+    misal no_sertif = "SERT-PKL-" + ke_teks(waktu());
+    misal hash_qr = "0x" + sha256(no_sertif + siswa.nisn + perusahaan.nama_perusahaan);
+    
+    kembalikan SertifikatPKLSiswa(
+        no_sertif,
+        siswa.nisn,
+        siswa.nama,
+        perusahaan.nama_perusahaan,
+        skor_hard,
+        skor_soft,
+        nilai_total,
+        predikat,
+        hash_qr
+    );
+}
+
+// -------------------------------------------------------------
+// [4] Analisis Tracer Study Alumni Berbasis Formula BMW
+// -------------------------------------------------------------
+fungsi tracer_analisis_bmw(total_alumni, kerja, kuliah, usaha, tunggu_bln) {
+    misal terserap = kerja + kuliah + usaha;
+    misal belum_kerja = total_alumni - terserap;
+    misal persen_bmw = (terserap * 100.0) / total_alumni;
+    
+    kembalikan MetrikTracerStudyBMW(
+        total_alumni,
+        kerja,
+        kuliah,
+        usaha,
+        belum_kerja,
+        persen_bmw,
+        tunggu_bln
+    );
+}

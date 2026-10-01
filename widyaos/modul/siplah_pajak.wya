@@ -1,0 +1,126 @@
+// =================================================================
+// Modul Pengadaan SIPLah & Smart Tax Splitter (siplah_pajak.wya)
+// Pemotongan Pajak Pusat (PPN/PPh/NTPN) & Pajak Daerah (PBJT Mamin/NTPD)
+// =================================================================
+
+struktur PesananSIPLah {
+    id_pesanan,
+    npsn_sekolah,
+    id_toko_rekanan,
+    nama_barang_jasa,
+    kategori_belanja,
+    kode_kantong_arkas,
+    harga_total_bruto_rp,
+    status_bast,
+    ntpn_pajak_pusat,
+    ntpd_pajak_daerah,
+    rincian_pajak
+}
+
+struktur PerhitunganPajakSIPLah {
+    dpp_rp,
+    ppn_11_rp,
+    pph_pusat_rp,
+    jenis_pph,
+    pbjt_daerah_mamin_rp,
+    bea_meterai_rp,
+    netto_ke_rekanan_rp,
+    tujuan_pajak_daerah
+}
+
+fungsi siplah_hitung_pajak(kategori, total_bruto, toko_npwp, kode_pemda) {
+    misal dpp = total_bruto;
+    misal ppn = 0.0;
+    misal pph = 0.0;
+    misal jenis_pph = "NIHIL";
+    misal pbjt_daerah = 0.0;
+    misal meterai = 0.0;
+
+    // Bea Meterai Elektronik jika belanja >= Rp 5.000.000
+    jika total_bruto >= 5000000.0 {
+        meterai = 10000.0;
+    }
+
+    jika kategori == "BUKU_TEKS" {
+        // Bebas PPN sesuai PMK No. 58/2022
+        ppn = 0.0;
+        pph = 0.0;
+    } lainnya jika kategori == "SARPRAS_TIK" {
+        // PPN 11% + PPh 22 WAPU SIPLah (0.5% tarif UMKM)
+        ppn = dpp * 0.11;
+        pph = dpp * 0.005;
+        jenis_pph = "PPH_PASAL_22_SIPLah_UMKM";
+    } lainnya jika kategori == "JASA_PERBAIKAN" {
+        ppn = dpp * 0.11;
+        jika toko_npwp { pph = dpp * 0.02; }
+        lainnya { pph = dpp * 0.04; }
+        jenis_pph = "PPH_PASAL_23_JASA";
+    } lainnya jika kategori == "KONSUMSI_MAMIN_RAPAT" {
+        // Makanan & Minuman: Objek Pajak Daerah (PBJT 10% ke Bapenda Pemda)
+        ppn = 0.0;
+        pph = 0.0;
+        pbjt_daerah = dpp * 0.10;
+    } lainnya jika kategori == "REVITALISASI_KONSTRUKSI" {
+        ppn = dpp * 0.11;
+        pph = dpp * 0.0175; // PPh Final Konstruksi Kualifikasi Kecil
+        jenis_pph = "PPH_FINAL_JASA_KONSTRUKSI";
+    }
+
+    // Netto yang masuk ke rekening penyedia adalah bruto dikurangi potongan PPh & Pajak Daerah
+    misal dibayar_ke_rekanan = total_bruto - (pph + pbjt_daerah);
+
+    kembalikan PerhitunganPajakSIPLah(
+        dpp,
+        ppn,
+        pph,
+        jenis_pph,
+        pbjt_daerah,
+        meterai,
+        dibayar_ke_rekanan,
+        "KASDA_PEMKAB_PEMKOT_" + kode_pemda
+    );
+}
+
+fungsi siplah_buat_pesanan(npsn, id_toko, nama_item, kategori, kantong_arkas, bruto, toko_npwp, kode_pemda) {
+    misal id_order = "SIPLah-" + npsn + "-" + ke_teks(waktu());
+    misal kalkulasi = siplah_hitung_pajak(kategori, bruto, toko_npwp, kode_pemda);
+
+    kembalikan PesananSIPLah(
+        id_order,
+        npsn,
+        id_toko,
+        nama_item,
+        kategori,
+        kantong_arkas,
+        bruto,
+        "MENUNGGU_PENGIRIMAN",
+        "",
+        "",
+        kalkulasi
+    );
+}
+
+fungsi siplah_selesaikan_bast_dan_disbursement(pesanan, penandatangan_did) {
+    pesanan.status_bast = "BAST_DITANDATANGANI_DIGITAL";
+
+    // Terbitkan NTPN Pajak Pusat jika ada PPN atau PPh
+    jika pesanan.rincian_pajak.ppn_11_rp > 0.0 atau pesanan.rincian_pajak.pph_pusat_rp > 0.0 {
+        pesanan.ntpn_pajak_pusat = "NTPN-DJP-" + sha256(pesanan.id_pesanan + "_DJP_SETOR");
+    }
+
+    // Terbitkan NTPD Pajak Daerah jika ada PBJT Mamin
+    jika pesanan.rincian_pajak.pbjt_daerah_mamin_rp > 0.0 {
+        pesanan.ntpd_pajak_daerah = "NTPD-KASDA-" + sha256(pesanan.id_pesanan + "_BAPENDA_SETOR");
+    }
+
+    kembalikan {
+        "status": "LUNAS_AUTO_SPLIT",
+        "netto_ke_rekanan": pesanan.rincian_pajak.netto_ke_rekanan_rp,
+        "setor_ppn_djp": pesanan.rincian_pajak.ppn_11_rp,
+        "setor_pph_djp": pesanan.rincian_pajak.pph_pusat_rp,
+        "setor_pbjt_pemda": pesanan.rincian_pajak.pbjt_daerah_mamin_rp,
+        "ntpn": pesanan.ntpn_pajak_pusat,
+        "ntpd": pesanan.ntpd_pajak_daerah,
+        "pj_did": penandatangan_did
+    };
+}

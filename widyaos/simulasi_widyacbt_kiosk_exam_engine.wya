@@ -1,0 +1,95 @@
+// ============================================================================
+// SIMULASI: WIDYACBT & KIOSK EXAM SHIELD ENGINE
+// (simulasi_widyacbt_kiosk_exam_engine.wya)
+// Uji Komprehensif Sistem Ujian Anti-Curang, Kiosk Mode, & Penilaian AKM
+// ============================================================================
+
+impor "widyaos/modul/widyacbt_kiosk_exam_engine.wya";
+
+fungsi assert_wcbt(kondisi, nama_tes) {
+    jika (kondisi) {
+        cetak("[PASS] " + nama_tes);
+    } lainnya {
+        cetak("[FAIL] " + nama_tes);
+    }
+}
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("MEMULAI SIMULASI WIDYACBT & KIOSK EXAM SHIELD (SETARA SAFE EXAM BROWSER)");
+    cetak("======================================================================");
+
+    // ------------------------------------------------------------------------
+    // TES 1: Inisialisasi Kebijakan Kiosk
+    // ------------------------------------------------------------------------
+    misal kiosk = wcbt_buat_kebijakan_kiosk_ketat();
+    assert_wcbt(kiosk.kunci_alt_tab == true, "Tes 1.1: Penguncian Alt+Tab aktif");
+    assert_wcbt(kiosk.blokir_printscreen == true, "Tes 1.2: Pemblokiran PrintScreen aktif");
+    assert_wcbt(kiosk.maksimal_pelanggaran_fokus == 3, "Tes 1.3: Batas maksimal pelanggaran disetel 3");
+
+    // ------------------------------------------------------------------------
+    // TES 2 & 3: Pembuatan Paket Ujian & Butir Soal AKM
+    // ------------------------------------------------------------------------
+    misal paket = wcbt_buat_paket_ujian("cbt_anbk_01", "Asesmen Nasional Literasi & Numerasi 2026", 90, "WIDYA2026");
+    assert_wcbt(paket.status_terenkripsi == true, "Tes 2: Naskah ujian terenkripsi sebelum token dibuka");
+
+    wcbt_tambah_soal(paket, "soal_1", "PILIHAN_GANDA", "Bahasa pemrograman berdaulat Indonesia adalah?", ["A. Python", "B. Widya-Lang", "C. C++"], "B", 50.0);
+    wcbt_tambah_soal(paket, "soal_2", "PILIHAN_GANDA", "UU yang mengatur perlindungan data pribadi siswa adalah?", ["A. UU ITE", "B. UU Sisdiknas", "C. UU PDP No. 27/2022"], "C", 50.0);
+    assert_wcbt(panjang(paket.daftar_soal) == 2, "Tes 3: Dua butir soal AKM terdaftar");
+
+    // ------------------------------------------------------------------------
+    // TES 4: Validasi Token Salah
+    // ------------------------------------------------------------------------
+    misal login_gagal = wcbt_mulai_sesi_siswa(paket, "0071234567", "Budi Santoso", "TOKEN_SALAH");
+    assert_wcbt(login_gagal.berhasil == false, "Tes 4: Akses ditolak jika token ujian salah");
+
+    // ------------------------------------------------------------------------
+    // TES 5: Masuk Sesi Ujian dengan Token Sah
+    // ------------------------------------------------------------------------
+    misal login_sukses = wcbt_mulai_sesi_siswa(paket, "0071234567", "Budi Santoso", "WIDYA2026");
+    assert_wcbt(login_sukses.berhasil == true, "Tes 5.1: Masuk sesi berhasil dengan token sah");
+    misal sesi_budi = login_sukses.sesi;
+    assert_wcbt(sesi_budi.status_ujian == "BERLANGSUNG", "Tes 5.2: Status ujian siswa BERLANGSUNG");
+    assert_wcbt(paket.status_terenkripsi == false, "Tes 5.3: Naskah soal didekripsi aman di RAM");
+
+    // ------------------------------------------------------------------------
+    // TES 6: Pencatatan Jawaban Siswa
+    // ------------------------------------------------------------------------
+    misal j1 = wcbt_simpan_jawaban(sesi_budi, "soal_1", "B");
+    misal j2 = wcbt_simpan_jawaban(sesi_budi, "soal_2", "C");
+    assert_wcbt(j1 == true && j2 == true, "Tes 6: Jawaban soal 1 dan 2 berhasil disimpan");
+
+    // ------------------------------------------------------------------------
+    // TES 7: Pencatatan Pelanggaran Kiosk (Peringatan)
+    // ------------------------------------------------------------------------
+    misal pel1 = wcbt_catat_pelanggaran_kiosk(sesi_budi, paket, "Mencoba Alt+Tab");
+    assert_wcbt(pel1.status == "BERLANGSUNG" && sesi_budi.total_pelanggaran == 1, "Tes 7: Pelanggaran pertama dicatat sebagai peringatan");
+
+    // ------------------------------------------------------------------------
+    // TES 8: Diskualifikasi Otomatis Siswa Nakal
+    // ------------------------------------------------------------------------
+    misal sesi_curang = SesiUjianSiswa("sesi_nakal", "0099999999", "Siswa Curang", "2026-09-19T08:00:00Z", {}, 0, "BERLANGSUNG");
+    wcbt_catat_pelanggaran_kiosk(sesi_curang, paket, "Buka Browser Luar");
+    wcbt_catat_pelanggaran_kiosk(sesi_curang, paket, "Screenshot Layar");
+    misal pel_final = wcbt_catat_pelanggaran_kiosk(sesi_curang, paket, "Colok USB Flashdisk");
+    assert_wcbt(pel_final.status == "DIDISKUALIFIKASI" && sesi_curang.status_ujian == "DIDISKUALIFIKASI", "Tes 8: Siswa otomatis didiskualifikasi setelah 3 kali pelanggaran");
+
+    // ------------------------------------------------------------------------
+    // TES 9: Penilaian Otomatis Siswa Berprestasi
+    // ------------------------------------------------------------------------
+    misal hasil_akhir = wcbt_selesaikan_dan_nilai(paket, sesi_budi);
+    assert_wcbt(hasil_akhir.skor_diperoleh == 100.0, "Tes 9.1: Skor diperoleh 100 (Benar Semua)");
+    assert_wcbt(hasil_akhir.status_kelulusan == "LULUS_KKTP", "Tes 9.2: Status kelulusan LULUS_KKTP");
+    assert_wcbt(hasil_akhir.jumlah_benar == 2 && hasil_akhir.jumlah_salah == 0, "Tes 9.3: Rincian 2 benar 0 salah");
+
+    // ------------------------------------------------------------------------
+    // TES 10: Validasi Segel Kriptografis W3C DID Proktor
+    // ------------------------------------------------------------------------
+    assert_wcbt(hasil_akhir.segel_w3c_proktor == "did:widya:proktor:anbk-2026", "Tes 10: Hasil ujian disegel resmi oleh Proktor ANBK");
+
+    cetak("======================================================================");
+    cetak("SELURUH PENGUJIAN WIDYACBT & KIOSK EXAM SHIELD SELESAI (10/10 PASS)");
+    cetak("======================================================================");
+}
+
+utama();

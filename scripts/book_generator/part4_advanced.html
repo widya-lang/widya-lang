@@ -1,0 +1,175 @@
+<!-- BAB 12 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">12</span> Pemrograman Konkuren, Paralelisme & Jaringan Mikroservis</h1>
+
+<h2>12.1 Green Threads & Task Worker: Model Konkurensi Ringan</h2>
+<p>
+Dalam arsitektur komputasi modern, pembuatan thread sistem operasi (<em>OS native thread</em>) memerlukan biaya alokasi memori yang cukup besar (umumnya 1–2 MB per tumpukan thread). Widya-Lang menerapkan model konkurensi <strong>Green Threads (M:N Task Scheduler)</strong> di mana ribuan tugas komputasi independen dijadwalkan secara kooperatif di atas sejumlah kecil thread fisik prosesor. Dengan jejak tumpukan awal hanya 4 KB, sistem dapat menjalankan 100.000 tugas konkuren secara simultan tanpa menghabiskan kapasitas RAM server.
+</p>
+
+<div class="diagram-box">
+  ┌────────────────────────────────────────────────────────┐
+  │  Tugas Konkuren Widya (Green Threads: T1, T2, ... Tn)  │
+  └───────────────────────────┬────────────────────────────┘
+                              ▼
+  ┌────────────────────────────────────────────────────────┐
+  │       Penjadwal Tugas Tingkat Pengguna (Work-Stealing) │
+  └───────────────────────────┬────────────────────────────┘
+                              ▼
+  ┌────────────────────────────────────────────────────────┐
+  │ Thread Prosesor Fisik OS (Core 1, Core 2, Core 3...)   │
+  └────────────────────────────────────────────────────────┘
+</div>
+
+<h2>12.2 Saluran Komunikasi (Channels) Antar-Tugas & Worker Pool</h2>
+<p>
+Pola <strong>Worker Pool</strong> adalah standar industri untuk membatasi konsumsi sumber daya saat memproses ribuan pekerjaan komputasi berat secara paralel:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/konkurensi.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">jalankan_worker_pool</span>(jumlah_pekerja, daftar_tugas) {
+    <span class="kw">misal</span> kanal_tugas = <span class="fn">buat_saluran</span>(<span class="fn">panjang</span>(daftar_tugas));
+    <span class="kw">misal</span> kanal_hasil = <span class="fn">buat_saluran</span>(<span class="fn">panjang</span>(daftar_tugas));
+
+    <span class="com">// Meluncurkan N pekerja (Worker Green Threads)</span>
+    <span class="kw">untuk</span> id_pekerja <span class="kw">dalam</span> <span class="num">1</span>..jumlah_pekerja {
+        <span class="fn">jalankan_tugas</span>(<span class="fn">fungsi</span>() {
+            <span class="kw">selama</span> <span class="kw">benar</span> {
+                <span class="kw">misal</span> tugas = <span class="fn">terima_dari_saluran</span>(kanal_tugas);
+                <span class="kw">jika</span> tugas == <span class="kw">nihil</span> { <span class="kw">henti</span>; }
+                <span class="fn">cetak</span>(<span class="str">"[Pekerja-"</span> + <span class="fn">ke_teks</span>(id_pekerja) + <span class="str">"] Memproses:"</span>, tugas.id);
+                <span class="kw">misal</span> hasil = tugas.nilai * <span class="num">2</span>; <span class="com">// Komputasi</span>
+                <span class="fn">kirim_ke_saluran</span>(kanal_hasil, { <span class="str">"id"</span>: tugas.id, <span class="str">"hasil"</span>: hasil });
+            }
+        });
+    }
+
+    <span class="com">// Menerbitkan tugas ke dalam antrean</span>
+    <span class="kw">untuk</span> t <span class="kw">dalam</span> daftar_tugas {
+        <span class="fn">kirim_ke_saluran</span>(kanal_tugas, t);
+    }
+    <span class="fn">tutup_saluran</span>(kanal_tugas);
+}
+</code></pre>
+
+<h2>12.3 Middleware Otentikasi Token JWT pada Server HTTP</h2>
+<p>
+Mengamankan rute mikroservis dengan memvalidasi tanda tangan JSON Web Token (JWT) secara ketat pada lapisan perantara:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/http_server.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./modul/kripto_aman.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">middleware_jwt_auth</span>(permintaan, respon, handler_berikutnya) {
+    <span class="kw">misal</span> header_auth = permintaan.headers[<span class="str">"Authorization"</span>];
+    <span class="kw">jika</span> header_auth == <span class="kw">nihil</span> <span class="kw">atau</span> <span class="kw">bukan</span> <span class="fn">diawali_dengan</span>(header_auth, <span class="str">"Bearer "</span>) {
+        respon.<span class="fn">kirim_json</span>(<span class="num">401</span>, { <span class="str">"galat"</span>: <span class="str">"Akses Ditolak: Token Bearer Tidak Ditemukan!"</span> });
+        <span class="kw">kembalikan</span>;
+    }
+
+    <span class="kw">misal</span> token = <span class="fn">potong_teks</span>(header_auth, <span class="num">7</span>);
+    <span class="kw">coba</span> {
+        <span class="kw">misal</span> klaim = <span class="fn">VerifikasiTokenJWT</span>(token, <span class="str">"kunci_rahasia_otoritas_2026"</span>);
+        permintaan.konteks_user = klaim;
+        <span class="fn">handler_berikutnya</span>(permintaan, respon);
+    } <span class="kw">tangkap</span> (err) {
+        respon.<span class="fn">kirim_json</span>(<span class="num">403</span>, { <span class="str">"galat"</span>: <span class="str">"Token Tidak Sah atau Telah Kedaluwarsa!"</span> });
+    }
+}
+</code></pre>
+
+<!-- BAB 13 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">13</span> Komputasi Sains, Vektor AI & Data Engineering</h1>
+
+<h2>13.1 Aljabar Linier: Perkalian Matriks Berkinerja Tinggi</h2>
+<p>
+Operasi perkalian matriks adalah fondasi utama lapisan jaringan saraf tiruan (<em>deep learning neural networks</em>). Berikut adalah implementasi algoritma perkalian matriks murni di Widya-Lang:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">perkalian_matriks</span>(mat_a, mat_b) {
+    <span class="kw">misal</span> baris_a = <span class="fn">panjang</span>(mat_a);
+    <span class="kw">misal</span> kolom_a = <span class="fn">panjang</span>(mat_a[<span class="num">0</span>]);
+    <span class="kw">misal</span> kolom_b = <span class="fn">panjang</span>(mat_b[<span class="num">0</span>]);
+
+    <span class="kw">misal</span> hasil = [];
+    <span class="kw">untuk</span> i <span class="kw">dalam</span> <span class="num">0</span>..(baris_a - <span class="num">1</span>) {
+        <span class="kw">misal</span> baris_baru = [];
+        <span class="kw">untuk</span> j <span class="kw">dalam</span> <span class="num">0</span>..(kolom_b - <span class="num">1</span>) {
+            <span class="kw">misal</span> akumulasi = <span class="num">0</span>;
+            <span class="kw">untuk</span> k <span class="kw">dalam</span> <span class="num">0</span>..(kolom_a - <span class="num">1</span>) {
+                akumulasi = akumulasi + (mat_a[i][k] * mat_b[k][j]);
+            }
+            <span class="fn">tambah</span>(baris_baru, akumulasi);
+        }
+        <span class="fn">tambah</span>(hasil, baris_baru);
+    }
+    <span class="kw">kembalikan</span> hasil;
+}
+</code></pre>
+
+<h2>13.2 Navigasi Graf Multi-Lapisan HNSW (Hierarchical Navigable Small World)</h2>
+<p>
+Pencarian vektor HNSW mengorganisasikan data ke dalam lapisan graf bertingkat layaknya jaringan jalan tol ekspres dan jalan raya perkotaan:
+</p>
+
+<div class="diagram-box">
+  Lapisan 2 (Tol Ekspres)    : [ Node A ] ─────────────────────────► [ Node G ]
+                                     │                                      │
+  Lapisan 1 (Jalan Arteri)   : [ Node A ] ────────► [ Node D ] ─────► [ Node G ]
+                                     │                  │                   │
+  Lapisan 0 (Jalan Lingkungan): [ Node A ] ──► [Node B] ──► [Node C] ──► [ Node D ] ...
+</div>
+
+<!-- BAB 14 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">14</span> Kolaborasi Cerdas dengan AI Lokal (WidyaCoder)</h1>
+
+<h2>14.1 Mengoperasikan WidyaCoder di Terminal Lokal</h2>
+<pre><code><span class="com"># Menjalankan model AI lokal yang telah dilatih korpus Widya-Lang</span>
+$ ollama run widya-coder:latest
+&gt;&gt;&gt; Bagaimana cara membuat tabel di WidyaBase dengan kunci utama otomatis?
+
+Kompiler WidyaBase menyediakan sintaksis DDL Dialek Nusantara:
+BUAT_TABEL pengguna (
+    id INT KUNCI_UTAMA,
+    nama_lengkap TEKS,
+    saldo INT
+);
+</code></pre>
+
+<h2>14.2 Siklus Agen AI Otonom Multi-Putaran (Multi-Turn ReAct Loop)</h2>
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/http_klien.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./modul/widyabase.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">agen_cerdas_investigasi</span>(pertanyaan_pengguna) {
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"operasional.wdb"</span>);
+    <span class="kw">misal</span> memori_percakapan = [
+        { <span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"Anda adalah Analis Sistem Widya-Lang berdaulat. Anda dapat mengeksekusi kueri WidyaBase dengan format: [KUERI: sql_command]"</span> }
+    ];
+
+    <span class="fn">tambah</span>(memori_percakapan, { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: pertanyaan_pengguna });
+
+    <span class="com">// Putaran 1: Minta AI Menganalisis Kebutuhan Data</span>
+    <span class="kw">misal</span> respon_ai = <span class="fn">PanggilOllamaChat</span>(<span class="str">"widya-coder:latest"</span>, memori_percakapan);
+    <span class="fn">cetak</span>(<span class="str">"[AI PIKIRAN]:"</span>, respon_ai);
+
+    <span class="com">// Deteksi Pemanggilan Alat (Tool Calling)</span>
+    <span class="kw">jika</span> <span class="fn">mengandung_teks</span>(respon_ai, <span class="str">"[KUERI:"</span>) {
+        <span class="kw">misal</span> perintah_sql = <span class="fn">ekstrak_antara</span>(respon_ai, <span class="str">"[KUERI:"</span>, <span class="str">"]"</span>);
+        <span class="fn">cetak</span>(<span class="str">"[AKSI EKSEKUSI WIDYABASE]:"</span>, perintah_sql);
+        
+        <span class="kw">misal</span> data_tabel = db.<span class="fn">kueri</span>(perintah_sql);
+        <span class="fn">tambah</span>(memori_percakapan, { <span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: respon_ai });
+        <span class="fn">tambah</span>(memori_percakapan, { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"HASIL DATA WIDYABASE:\n"</span> + <span class="fn">ke_json</span>(data_tabel) });
+
+        <span class="com">// Putaran 2: AI Menyusun Jawaban Akhir Berdasarkan Data Riil</span>
+        <span class="kw">misal</span> kesimpulan_akhir = <span class="fn">PanggilOllamaChat</span>(<span class="str">"widya-coder:latest"</span>, memori_percakapan);
+        <span class="fn">cetak</span>(<span class="str">"[KESIMPULAN FINAL AGEN]:\n"</span>, kesimpulan_akhir);
+        <span class="kw">kembalikan</span> kesimpulan_akhir;
+    }
+
+    <span class="kw">kembalikan</span> respon_ai;
+}
+</code></pre>

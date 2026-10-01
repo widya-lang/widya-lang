@@ -1,0 +1,265 @@
+// ==============================================================================
+// config.wya - Konfigurasi Terpusat Sistem Multi-Agent Kantor Digital Widya
+// ==============================================================================
+
+fungsi dapatkan_konfigurasi() {
+    kembalikan {
+        // 1. PENGATURAN OBSIDIAN VAULT
+        // Ganti dengan jalur absolut ke folder vault Obsidian Anda, contoh:
+        // "C:/Users/NamaUser/Documents/ObsidianVault/KantorDigital"
+        // Jika dibiarkan relatif "./obsidian_vault", sistem otomatis membuat folder di proyek ini.
+        "obsidian": {
+            "jalur_vault": "./obsidian_vault",
+            "folder_daily_notes": "DailyNotes",
+            "folder_tasks": "Tasks",
+            "folder_sop": "SOP",
+            "folder_arsip": "Arsip"
+        },
+
+        // 2. PENGATURAN TELEGRAM BOT GATEWAY
+        // 🔒 KEAMANAN: Token disimpan di environment variable, BUKAN hardcoded
+        // Cara set: $env:TELEGRAM_BOT_TOKEN="token-anda" di PowerShell
+        //          atau buat file .env dan load sebelum menjalankan sistem
+        "telegram": {
+            "aktif": benar,
+            "bot_token": baca_env("TELEGRAM_BOT_TOKEN"),  // Set: $env:TELEGRAM_BOT_TOKEN
+            "chat_id": baca_env("TELEGRAM_CHAT_ID"),      // Set: $env:TELEGRAM_CHAT_ID
+            "username_bot": "@WidyaDigitalBot",
+            "parse_mode": "HTML"
+        },
+
+        // 2b. Cadangan / Legacy WhatsApp Gateway
+        "whatsapp": {
+            "aktif": salah,
+            "penyedia": "fonnte", 
+            "endpoint_url": "https://api.fonnte.com/send",
+            "api_token": baca_env("WHATSAPP_API_TOKEN"),        // Set: $env:WHATSAPP_API_TOKEN
+            "nomor_tujuan": baca_env("WHATSAPP_NOMOR_TUJUAN"),  // Set: $env:WHATSAPP_NOMOR_TUJUAN
+            "lokal_url": "http://127.0.0.1:3000/api/send-message"
+        },
+
+        // 3. PENGATURAN AI LLM LOKAL (Ollama / Qwen)
+        "ai_llm": {
+            "aktif": benar,
+            "penyedia": "ollama", // "ollama" atau "heuristik_internal"
+            "endpoint_url": "http://127.0.0.1:11434/api/generate",
+            "model": "widya-coder", // atau "qwen2.5-coder:7b"
+            "timeout_detik": 10
+        },
+
+        // 4. JADWAL RAPAT HARIAN (WIB / Waktu Lokal)
+        "jadwal": {
+            "rapat_pagi_jam": 8,
+            "rapat_pagi_menit": 0,
+            "rapat_malam_jam": 20,
+            "rapat_malam_menit": 0
+        },
+
+        // 5. PENGATURAN WIDYABASE INDUSTRIAL DATABASE
+        "widyabase": {
+            "aktif": benar,
+            "jalur_db": "./kantor_digital.wdb",
+            "jalur_exe": "../target/release/widya",
+            "proyek_aktif": "PRJ-01-KOPERASI",
+            "buffer_pool_size": 512,
+            "port_pg": 5432
+        },
+
+        // 5b. PORTOFOLIO 10 PROYEK INDUSTRI STRATEGIS NASIONAL
+        "proyek": [
+            {
+                "kode": "PRJ-01-KOPERASI",
+                "nama": "Sistem Koperasi Digital Berdaulat (KDMP 7 Pilar)",
+                "kategori": "Fintech & Ledger Core",
+                "p1": "Otentikasi Argon2id & Session Guard Terdesentralisasi",
+                "p2": "Skema Basis Data Simpan Pinjam ACID WidyaBase",
+                "p3": "Pengujian Beban Jalur SSE & Stress-Test Transaksi",
+                "pic_lead": "agen_coder",
+                "target_deadline": "10:00 WIB"
+            },
+            {
+                "kode": "PRJ-02-SMARTCITY",
+                "nama": "Platform Telemetri ISPU & GIS Smart City",
+                "kategori": "IoT & Spatial Geo-intelligence",
+                "p1": "Kalkulasi Standar ISPU PM2.5 Permen LHK No. P.14/2020",
+                "p2": "Geofencing Ray-Casting & Haversine Great-Circle GIS",
+                "p3": "Optimasi Lampu Lalu Lintas Adaptif Rasio V/C",
+                "pic_lead": "agen_arsitek",
+                "target_deadline": "11:00 WIB"
+            },
+            {
+                "kode": "PRJ-03-COLLAB-DOC",
+                "nama": "CRDT Real-Time Collaborative Document Engine",
+                "kategori": "Distributed Systems & Collaboration",
+                "p1": "Fractional Indexing & LWW State Machine CRDT",
+                "p2": "Penyelarasan Multi-Client SSE & WS Room Session",
+                "p3": "Pencegahan Konflik Bersamaan (Zero Conflict Guaranteed)",
+                "pic_lead": "agen_coder",
+                "target_deadline": "12:00 WIB"
+            },
+            {
+                "kode": "PRJ-04-DAPODIK-AUTO",
+                "nama": "Engine Pelaporan Otomatis Dapodik & PDF Generator",
+                "kategori": "Enterprise Office & Compliance",
+                "p1": "Integrasi Parser CSV Dapodik & Validasi Rekor Siswa",
+                "p2": "Penyusunan Format Native ISO 32000-1 PDF Generator",
+                "p3": "Audit Privasi Data NISN & NIK Sesuai UU PDP No. 27/2022",
+                "pic_lead": "agen_keamanan",
+                "target_deadline": "13:00 WIB"
+            },
+            {
+                "kode": "PRJ-05-LATEX-JOURNAL",
+                "nama": "LaTeX Scientific Journal & KaTeX Live Preview",
+                "kategori": "Academic Publishing & Compilers",
+                "p1": "Parser Sintaks LaTeX Matematika & Sitasi BibTeX",
+                "p2": "Pembangkitan Preview KaTeX & Render Formula SVG",
+                "p3": "Verifikasi Kerapian Layout Grid Dua Kolom Standar IEEE",
+                "pic_lead": "agen_analis_data",
+                "target_deadline": "14:00 WIB"
+            },
+            {
+                "kode": "PRJ-06-WIDYAPAY",
+                "nama": "WidyaPay Switcher QRIS EMVCo & BI-FAST Engine",
+                "kategori": "Core Banking & National Payment Gateway",
+                "p1": "Engine Parser ISO 20022 & Validasi QRIS Dinamis Sub-ms",
+                "p2": "Arsitektur High-Throughput Switching 50.000 TPS",
+                "p3": "Stress-Test Fraud Detection & Enkripsi Kunci HSM",
+                "pic_lead": "agen_coder",
+                "target_deadline": "15:00 WIB"
+            },
+            {
+                "kode": "PRJ-07-WIDYAMEDIKA",
+                "nama": "WidyaMedika SIMRS & SatuSehat HL7 FHIR Bridging",
+                "kategori": "HealthTech & Hospital Management",
+                "p1": "Validasi Schema JSON HL7/FHIR & Rekam Medis Elektronik",
+                "p2": "Bridging API BPJS Kesehatan V-Claim & Bridging Antrean",
+                "p3": "Audit Kepatuhan UU PDP Rekam Medis Pasien Level A",
+                "pic_lead": "agen_analis",
+                "target_deadline": "16:00 WIB"
+            },
+            {
+                "kode": "PRJ-08-WIDYAOS",
+                "nama": "WidyaOS Bare-Metal Rust Kernel & OEM Bundling",
+                "kategori": "Operating System & Hardware OEM",
+                "p1": "Memory Manager Paging x86_64 & Multi-Threading Actor",
+                "p2": "Canvas GUI Renderer Kiosk & Lockdown E-Voting/CBT",
+                "p3": "Uji Kompatibilitas Bootloader UEFI di Laptop Axioo/Advan",
+                "pic_lead": "agen_devops",
+                "target_deadline": "16:30 WIB"
+            },
+            {
+                "kode": "PRJ-09-WIDYAAI-BOX",
+                "nama": "WidyaAI Box Offline & Cyber Shield Sandi PQC",
+                "kategori": "Defense Intelligence & Sovereign AI",
+                "p1": "Inferensi LLM On-Premise Tanpa Internet (Air-Gapped)",
+                "p2": "Enklave Kriptografi Pasca-Kuantum (ML-KEM / Dilithium)",
+                "p3": "Penetration Testing OWASP Top 10 & Anti Data Exfiltration",
+                "pic_lead": "agen_keamanan",
+                "target_deadline": "17:00 WIB"
+            },
+            {
+                "kode": "PRJ-10-WIDYALEDGER",
+                "nama": "WidyaLedger Sovereign Blockchain & RWA Tokenization",
+                "kategori": "Web3 & Commodity Asset Tokenization",
+                "p1": "Smart Contract Resi Gudang Komoditas Koperasi Desa",
+                "p2": "Arsitektur Konsensus BFT 100.000 TPS Zero Gas Congestion",
+                "p3": "Simulasi Transaksi Rupiah Digital Proyek Garuda BI",
+                "pic_lead": "agen_arsitek",
+                "target_deadline": "17:30 WIB"
+            }
+        ],
+
+        // 6. IDENTITAS KANTOR DIGITAL
+        "organisasi": {
+            "nama": "Kantor Digital Sovereign Widya",
+            "versi": "1.3.0-GA",
+            "total_agen": 10,
+            "total_proyek_harian": 10
+        },
+
+        // 7. KONFIGURASI MODUL ANALITIKA DATA (agen_analis_data | SOP-10)
+        "analitika": {
+            "aktif": benar,
+            "ambang_merah": 75,          // Skor % di bawah ini dianggap kritis
+            "ambang_kuning": 85,          // Skor % di bawah ini dianggap peringatan
+            "hari_histori": 3,            // Jumlah hari data historis yang dianalisis
+            "kirim_anomali_telegram": benar,
+            "folder_laporan": "Analitika" // Sub-folder di dalam Obsidian Vault
+        },
+
+        // 8. STANDAR PROYEK MANDIRI & GERBANG DOKUMEN PERSIAPAN (SOP-00)
+        "standar_eksekusi_proyek": {
+            "prinsip": "ISOLATED_STANDALONE", // Dilarang monolitik / 1 dashboard
+            "direktori_induk": "./proyek",
+            "gerbang_dokumen_wajib": [
+                "docs/01_PRD.md",
+                "docs/02_ARSITEKTUR_DAN_ERD.md",
+                "docs/03_SECURITY_DAN_KEPATUHAN_PDP.md",
+                "docs/04_RENCANA_PENGUJIAN_QA.md",
+                "docs/05_SOP_DEVOPS_DAN_DEPLOYMENT.md"
+            ],
+            "format_laporan_wajib": [
+                "laporan/LAPORAN_PROGRES.pdf",
+                "laporan/PRESENTASI_PROGRES.pptx"
+            ],
+            "struktur_teknis_wajib": [
+                "web/index.html",
+                "web/style.css",
+                "web/app.js",
+                "database/skema.sql",
+                "database/data.wdb",
+                "server.wya",
+                "README.md"
+            ],
+            "runtime_resmi": "widya web dev web -p <port>"
+        },
+
+        // 9. ENTERPRISE INDUSTRIAL GRADE STACK (7 PILAR SKALA INDUSTRI)
+        "enterprise": {
+            "aktif": benar,
+            "message_bus": {
+                "aktif": benar,
+                "model": "CSP_ACTOR_MAILBOX",
+                "prioritas": ["P1", "P2", "P3"],
+                "dlq_aktif": benar
+            },
+            "sandbox_widya_box": {
+                "aktif": benar,
+                "engine": "WIDYABOX_CONFINEMENT",
+                "batas_memori_mb": 512,
+                "timeout_detik": 30
+            },
+            "iam_multitenant": {
+                "aktif": benar,
+                "default_tenant": "TENANT-NASIONAL-01",
+                "nama_instansi": "Kementerian & Ekosistem Industri Digital Widya",
+                "auth_provider": "OIDC_ARGON2ID_GUARD"
+            },
+            "llm_gateway": {
+                "aktif": benar,
+                "semantic_cache": benar,
+                "token_budget_harian": 500000,
+                "fallback_cascade": ["OLLAMA_LOCAL", "WIDYA_NATIVE_HEURISTIC"]
+            },
+            "dokumen_industri": {
+                "aktif": benar,
+                "pdf_standard": "ISO_32000_1",
+                "pptx_standard": "OPENXML_EXECUTIVE_16_9",
+                "tte_standard": "BSrE_SHA256_PKI",
+                "pdp_auto_redaction": benar
+            },
+            "observability": {
+                "aktif": benar,
+                "tracing": "OPENTELEMETRY_DISTRIBUTED",
+                "audit_mode": "WORM_IMMUTABLE_LEDGER",
+                "metrik": "PROMETHEUS_EXPORTER"
+            },
+            "auto_healing": {
+                "aktif": benar,
+                "supervisor": "ERLANG_OTP_STYLE_TREE",
+                "liveness_probe_detik": 10,
+                "maks_reboot_otomatis": 3
+            }
+        }
+    };
+}

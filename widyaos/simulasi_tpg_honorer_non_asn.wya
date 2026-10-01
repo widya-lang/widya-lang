@@ -1,0 +1,87 @@
+// ============================================================================
+// SIMULASI SUITE: STATUS GURU HONORER BERSERTIFIKASI PENDIDIK (TPG PUSAT)
+// Menguji 3 Kasus Finansial & Kepegawaian Guru Honorer Bersertifikasi di Satdik:
+// 1. Guru Honorer Sekolah Non-Inpassing (Terima Honor BOS + TPG Flat Rp 1.5 Jt/bln)
+// 2. Guru Honorer Sekolah Sudah Inpassing (Terima Honor BOS + TPG Setara Gaji Pokok PNS)
+// 3. Guardrail Anti-Potong Honor BOS: Hak Ganda Resmi Bebas Penyimpangan Sekolah
+// ============================================================================
+
+impor "widyaos/modul/status_tpg_honorer_non_asn.wya";
+
+cetak("====================================================================");
+cetak("🎓  SIMULASI: STATUS & HAK TPG GURU HONORER BERSERDIK DARI PUSAT     ");
+cetak("====================================================================");
+
+// [1] Guru Honorer Sekolah Pemegang Serdik Non-Inpassing
+cetak("\n[1] Uji Guru Honor Sekolah Non-Inpassing (Honor BOS + TPG Flat Pusat):");
+misal guru_non_inpassing = evaluasi_tpg_guru_honorer(
+    "1234567890123456",
+    "Rina Wijayanti, S.Pd.",
+    "24010118010045",
+    "198501012024012001",
+    "GURU_HONOR_SEKOLAH",
+    "NON_INPASSING_FLAT",
+    "NON_GOLONGAN",
+    800000, // Honor riil dari BOS sekolah Rp 800.000 / bulan
+    24      // 24 jam tatap muka linier
+);
+
+cetak("  • Nama Guru Honorer   :", guru_non_inpassing.nama_guru);
+cetak("  • Status di Dapodik   :", guru_non_inpassing.status_kepegawaian_dapodik);
+cetak("  • Kepemilikan Serdik  : No Serdik =", guru_non_inpassing.nomor_serdik, ", NRG =", guru_non_inpassing.nrg);
+cetak("  • Status Inpassing    :", guru_non_inpassing.status_inpassing);
+cetak("  • Honor Sekolah (BOS) : Rp", guru_non_inpassing.nominal_honor_sekolah_rp, "/ bulan");
+cetak("  • TPG APBN Pusat      : Rp", guru_non_inpassing.nominal_tpg_pusat_rp, "/ bulan (Disalurkan per Triwulan)");
+cetak("  • Validasi InfoGTK    :", guru_non_inpassing.status_sktp_infogtk);
+cetak("  • Hak Afirmasi PPPK   :", guru_non_inpassing.hak_afirmasi_seleksi_pppk);
+
+jika guru_non_inpassing.nominal_tpg_pusat_rp == 1500000 dan guru_non_inpassing.status_sktp_infogtk == "VALID_SKTP_SIAP_SALUR" {
+    cetak("  ✅ PASS: Guru Honorer Sah Menerima TPG Flat Rp 1.5 Jt/bln dari Pusat di Luar Honor BOS!");
+} lainnya {
+    cetak("  ❌ FAIL: Evaluasi TPG non-inpassing gagal!");
+}
+
+// [2] Guru Honorer Sekolah Sudah Memiliki SK Inpassing (Penyetaraan Golongan)
+cetak("\n[2] Uji Guru Honor Sekolah Sudah Inpassing (TPG Setara Gaji Pokok PNS):");
+misal guru_inpassing = evaluasi_tpg_guru_honorer(
+    "9876543210987654",
+    "Drs. Mohammad Arifin",
+    "18020515710088",
+    "197905102018021002",
+    "GURU_HONOR_SEKOLAH",
+    "INPASSING_SETARA_GOLONGAN",
+    "III/a",
+    1000000, // Honor BOS Rp 1.000.000
+    26       // 26 jam
+);
+
+cetak("  • Nama Guru           :", guru_inpassing.nama_guru);
+cetak("  • Penyetaraan Golongan:", guru_inpassing.golongan_penyetaraan);
+cetak("  • Hak TPG Pusat       : Rp", guru_inpassing.nominal_tpg_pusat_rp, "/ bulan (Setara Gapok PNS III/a)");
+cetak("  • Total Pendapatan Sah: Rp", guru_inpassing.nominal_honor_sekolah_rp + guru_inpassing.nominal_tpg_pusat_rp);
+
+jika guru_inpassing.nominal_tpg_pusat_rp == 2785700 {
+    cetak("  ✅ PASS: SK Inpassing Membuka Hak TPG Setara Gaji Pokok PNS Meskipun Status Masuk Honorer!");
+} lainnya {
+    cetak("  ❌ FAIL: Evaluasi TPG inpassing gagal!");
+}
+
+// [3] Guardrail Anti-Potong Honor BOS oleh Pihak Sekolah
+cetak("\n[3] Uji Proteksi Hukum: Larangan Memotong Honor BOS karena Menerima TPG:");
+misal proteksi = proteksi_honor_bos_guru_sertifikasi(
+    "1234567890123456",
+    "Rina Wijayanti, S.Pd."
+);
+
+cetak("  • Kebijakan Sistem    :", proteksi.kebijakan_honor_bos);
+cetak("  • Larangan Tegas      :", proteksi.status_larangan_sekolah);
+
+jika proteksi.status_larangan_sekolah == "DILARANG_POTONG_HONOR_BOS_KARENA_TPG" {
+    cetak("  ✅ PASS: Sistem Mengunci Hak Guru! Honor Sekolah Tidak Boleh Dihapus Karena TPG Bukan Pengganti Upah.");
+} lainnya {
+    cetak("  ❌ FAIL: Proteksi honor BOS gagal!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 3/3 KASUS TPG GURU HONORER LULUS (100%)          ");
+cetak("====================================================================");

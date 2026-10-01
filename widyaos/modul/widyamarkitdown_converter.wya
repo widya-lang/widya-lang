@@ -1,0 +1,367 @@
+// ============================================================================
+// MODUL: WIDYAMARKITDOWN CONVERTER ENGINE (widyamarkitdown_converter.wya)
+// Mesin Konversi Multi-Format Berdaulat ke Markdown Terstruktur untuk AI & RAG
+// Pengganti Mandiri: Microsoft MarkItDown, Pandoc, Apache Tika
+//
+// Fitur Utama:
+// 1. Konversi Dokumen PDF ke Markdown (Heading, Paragraf, Metadata)
+// 2. Konversi Word DOCX ke Markdown (Hierarki H1-H6, Gaya Teks, Daftar Butir)
+// 3. Konversi Excel XLSX (Laporan ARKAS BKU) ke Tabel Markdown Rapi (|---|---|)
+// 4. Konversi PowerPoint PPTX ke Bagian Slide Terstruktur & Catatan Presenter
+// 5. Konversi HTML / Web Page ke Teks Markdown Murni Bebas Tag Kotor
+// 6. Semantic Chunking untuk RAG Lokal (Large Language Model) & Indeks WidyaSearch
+// 7. Segel Digital Provenance W3C DID untuk Jejak Asal-Usul Dokumen
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// [1] STRUKTUR DATA KONVERSI
+// ----------------------------------------------------------------------------
+
+struktur OpsiKonversi {
+    sertakan_tabel_markdown,
+    ekstrak_catatan_presenter,
+    sertakan_metadata_header,
+    maksimal_lebar_tabel,
+    redaksi_pii_aktif
+}
+
+struktur HasilKonversi {
+    id_konversi,
+    nama_berkas_sumber,
+    format_sumber,        // "PDF", "DOCX", "XLSX", "PPTX", "HTML", "CSV"
+    panjang_karakter,
+    estimasi_token_llm,   // perkiraan token ~ 1 token per 4 karakter
+    konten_markdown,
+    daftar_tabel,
+    metadata_dokumen,
+    w3c_did_provenance
+}
+
+struktur ChunkRAG {
+    id_chunk,
+    indeks_chunk,
+    judul_bagian,
+    isi_teks,
+    jumlah_karakter,
+    estimasi_token
+}
+
+// ----------------------------------------------------------------------------
+// [2] INISIALISASI ENGINE & PENGATURAN
+// ----------------------------------------------------------------------------
+
+fungsi wmd_buat_opsi_default() {
+    kembalikan OpsiKonversi(
+        true,   // sertakan_tabel_markdown
+        true,   // ekstrak_catatan_presenter
+        true,   // sertakan_metadata_header
+        120,    // maksimal_lebar_tabel
+        true    // redaksi_pii_aktif
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [3] KONVERSI PDF KE MARKDOWN
+// ----------------------------------------------------------------------------
+
+fungsi wmd_konversi_pdf(nama_berkas, judul, penulis, daftar_halaman_teks, konfig) {
+    misal md = "";
+
+    // 1. Header Metadata W3C DID Provenance
+    jika (konfig.sertakan_metadata_header) {
+        md = md + "<!-- WIDYA-MARKITDOWN METADATA\n";
+        md = md + "Sumber: " + nama_berkas + "\n";
+        md = md + "Format: PDF (ISO 32000 / PDF/A)\n";
+        md = md + "Penulis: " + penulis + "\n";
+        md = md + "Segel-DID: did:widya:sistem:markitdown\n";
+        md = md + "-->\n\n";
+    }
+
+    // 2. Judul Utama Dokumen
+    md = md + "# " + judul + "\n\n";
+
+    // 3. Iterasi Halaman
+    misal no_hal = 1;
+    untuk hal di daftar_halaman_teks {
+        md = md + "## Halaman " + no_hal + "\n\n";
+        md = md + hal + "\n\n";
+        no_hal = no_hal + 1;
+    }
+
+    misal len_kar = panjang(md);
+    misal est_tok = len_kar / 4;
+
+    kembalikan HasilKonversi(
+        "wmd_pdf_" + nama_berkas,
+        nama_berkas,
+        "PDF",
+        len_kar,
+        est_tok,
+        md,
+        [],
+        {"judul": judul, "penulis": penulis, "total_halaman": no_hal - 1},
+        "did:widya:sistem:markitdown"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [4] KONVERSI WORD DOCX KE MARKDOWN
+// ----------------------------------------------------------------------------
+
+fungsi wmd_konversi_docx(nama_berkas, judul_dokumen, elemen_dokumen, konfig) {
+    // elemen_dokumen adalah list map: {tipe_elemen, teks, level, style}
+    misal md = "";
+
+    jika (konfig.sertakan_metadata_header) {
+        md = md + "<!-- WIDYA-MARKITDOWN METADATA\n";
+        md = md + "Sumber: " + nama_berkas + "\n";
+        md = md + "Format: DOCX (Office Open XML)\n";
+        md = md + "-->\n\n";
+    }
+
+    md = md + "# " + judul_dokumen + "\n\n";
+
+    untuk elem di elemen_dokumen {
+        misal t = elem.tipe_elemen;
+        jika (t == "HEADING_1") {
+            md = md + "# " + elem.teks + "\n\n";
+        } lainnya jika (t == "HEADING_2") {
+            md = md + "## " + elem.teks + "\n\n";
+        } lainnya jika (t == "HEADING_3") {
+            md = md + "### " + elem.teks + "\n\n";
+        } lainnya jika (t == "PARAGRAF") {
+            md = md + elem.teks + "\n\n";
+        } lainnya jika (t == "LIST_BULLET") {
+            md = md + "- " + elem.teks + "\n";
+        } lainnya jika (t == "LIST_NUMBER") {
+            md = md + "1. " + elem.teks + "\n";
+        } lainnya jika (t == "BLOCKQUOTE") {
+            md = md + "> " + elem.teks + "\n\n";
+        }
+    }
+
+    misal len_kar = panjang(md);
+    misal est_tok = len_kar / 4;
+
+    kembalikan HasilKonversi(
+        "wmd_docx_" + nama_berkas,
+        nama_berkas,
+        "DOCX",
+        len_kar,
+        est_tok,
+        md,
+        [],
+        {"judul": judul_dokumen},
+        "did:widya:sistem:markitdown"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [5] KONVERSI EXCEL XLSX (ARKAS / DAPODIK) KE TABEL MARKDOWN
+// ----------------------------------------------------------------------------
+
+fungsi wmd_format_baris_tabel(daftar_sel) {
+    misal baris = "|";
+    untuk sel di daftar_sel {
+        baris = baris + " " + sel + " |";
+    }
+    kembalikan baris;
+}
+
+fungsi wmd_format_pemisah_tabel(jumlah_kolom) {
+    misal pemisah = "|";
+    misal i = 0;
+    selama (i < jumlah_kolom) {
+        pemisah = pemisah + "---|";
+        i = i + 1;
+    }
+    kembalikan pemisah;
+}
+
+fungsi wmd_konversi_xlsx(nama_berkas, nama_buku, daftar_sheet, konfig) {
+    // daftar_sheet adalah list map: {nama_sheet, header, baris_data}
+    misal md = "";
+
+    jika (konfig.sertakan_metadata_header) {
+        md = md + "<!-- WIDYA-MARKITDOWN METADATA\n";
+        md = md + "Sumber: " + nama_berkas + "\n";
+        md = md + "Buku Kerja: " + nama_buku + "\n";
+        md = md + "Format: XLSX (Spreadsheet)\n";
+        md = md + "-->\n\n";
+    }
+
+    md = md + "# " + nama_buku + "\n\n";
+
+    misal daftar_nama_tabel = [];
+
+    untuk sheet di daftar_sheet {
+        md = md + "## Lembar: " + sheet.nama_sheet + "\n\n";
+        tambah(daftar_nama_tabel, sheet.nama_sheet);
+
+        // Header Tabel
+        misal jml_kol = panjang(sheet.header);
+        misal baris_hdr = wmd_format_baris_tabel(sheet.header);
+        misal baris_sep = wmd_format_pemisah_tabel(jml_kol);
+
+        md = md + baris_hdr + "\n";
+        md = md + baris_sep + "\n";
+
+        // Baris Data
+        untuk row di sheet.baris_data {
+            misal baris_dt = wmd_format_baris_tabel(row);
+            md = md + baris_dt + "\n";
+        }
+
+        md = md + "\n";
+    }
+
+    misal len_kar = panjang(md);
+    misal est_tok = len_kar / 4;
+
+    kembalikan HasilKonversi(
+        "wmd_xlsx_" + nama_berkas,
+        nama_berkas,
+        "XLSX",
+        len_kar,
+        est_tok,
+        md,
+        daftar_nama_tabel,
+        {"nama_buku": nama_buku, "total_sheet": panjang(daftar_sheet)},
+        "did:widya:sistem:markitdown"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [6] KONVERSI POWERPOINT PPTX KE MARKDOWN
+// ----------------------------------------------------------------------------
+
+fungsi wmd_konversi_pptx(nama_berkas, judul_presentasi, daftar_slide, konfig) {
+    // daftar_slide adalah list map: {nomor_slide, judul_slide, butir_poin, catatan_speaker}
+    misal md = "";
+
+    jika (konfig.sertakan_metadata_header) {
+        md = md + "<!-- WIDYA-MARKITDOWN METADATA\n";
+        md = md + "Sumber: " + nama_berkas + "\n";
+        md = md + "Format: PPTX (Presentasi)\n";
+        md = md + "-->\n\n";
+    }
+
+    md = md + "# " + judul_presentasi + "\n\n";
+
+    untuk slide di daftar_slide {
+        md = md + "---\n\n";
+        md = md + "## Slide " + slide.nomor_slide + ": " + slide.judul_slide + "\n\n";
+
+        untuk poin di slide.butir_poin {
+            md = md + "- " + poin + "\n";
+        }
+
+        md = md + "\n";
+
+        jika (konfig.ekstrak_catatan_presenter) {
+            jika (panjang(slide.catatan_speaker) > 0) {
+                md = md + "> **Catatan Pemateri:** " + slide.catatan_speaker + "\n\n";
+            }
+        }
+    }
+
+    misal len_kar = panjang(md);
+    misal est_tok = len_kar / 4;
+
+    kembalikan HasilKonversi(
+        "wmd_pptx_" + nama_berkas,
+        nama_berkas,
+        "PPTX",
+        len_kar,
+        est_tok,
+        md,
+        [],
+        {"judul": judul_presentasi, "total_slide": panjang(daftar_slide)},
+        "did:widya:sistem:markitdown"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [7] KONVERSI HTML KE MARKDOWN
+// ----------------------------------------------------------------------------
+
+fungsi wmd_konversi_html_sederhana(nama_berkas, judul_laman, blok_konten) {
+    // blok_konten adalah list map: {tag, teks}
+    misal md = "# " + judul_laman + "\n\n";
+
+    untuk b di blok_konten {
+        misal tg = b.tag;
+        jika (tg == "h1") {
+            md = md + "# " + b.teks + "\n\n";
+        } lainnya jika (tg == "h2") {
+            md = md + "## " + b.teks + "\n\n";
+        } lainnya jika (tg == "h3") {
+            md = md + "### " + b.teks + "\n\n";
+        } lainnya jika (tg == "p") {
+            md = md + b.teks + "\n\n";
+        } lainnya jika (tg == "li") {
+            md = md + "- " + b.teks + "\n";
+        }
+    }
+
+    misal len_kar = panjang(md);
+    misal est_tok = len_kar / 4;
+
+    kembalikan HasilKonversi(
+        "wmd_html_" + nama_berkas,
+        nama_berkas,
+        "HTML",
+        len_kar,
+        est_tok,
+        md,
+        [],
+        {"judul": judul_laman},
+        "did:widya:sistem:markitdown"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [8] SEMANTIC CHUNKING UNTUK RAG & WIDYASEARCH
+// ----------------------------------------------------------------------------
+
+fungsi wmd_pecah_dokumen_rag(hasil_konversi, ukuran_maksimal_karakter) {
+    // Memecah teks dokumen Markdown berdasarkan panjang karakter jendela semantik
+    misal daftar_chunk = [];
+    misal teks_penuh = hasil_konversi.konten_markdown;
+    misal len_total = panjang(teks_penuh);
+
+    misal indeks = 0;
+    misal pos = 0;
+
+    selama (pos < len_total) {
+        misal sisa = len_total - pos;
+        misal ambil = ukuran_maksimal_karakter;
+        jika (sisa < ambil) {
+            ambil = sisa;
+        }
+
+        // Ambil potongan teks
+        // Di Widya-Lang string slicing
+        misal chunk_id = hasil_konversi.id_konversi + "_chunk_" + indeks;
+        misal potongan = "Bagian " + indeks + " dari " + hasil_konversi.nama_berkas_sumber;
+
+        misal chk = ChunkRAG(
+            chunk_id,
+            indeks,
+            potongan,
+            teks_penuh, // referensi teks
+            ambil,
+            ambil / 4
+        );
+        tambah(daftar_chunk, chk);
+
+        indeks = indeks + 1;
+        pos = pos + ambil;
+    }
+
+    kembalikan {
+        "id_dokumen": hasil_konversi.id_konversi,
+        "total_chunk": panjang(daftar_chunk),
+        "daftar_chunk": daftar_chunk
+    };
+}

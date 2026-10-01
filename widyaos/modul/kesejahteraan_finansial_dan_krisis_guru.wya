@@ -1,0 +1,129 @@
+// ============================================================================
+// MODUL: MITIGASI KRISIS, KESEJAHTERAAN FINANSIAL & PROTEKSI BEBAN GURU
+// Mengatasi Permasalahan Paling Getir Guru di Lapangan Indonesia:
+//
+// 1. Jeratan Pinjol Ilegal & Proteksi Gaji Habis Akibat Agunan SK (Financial Crisis)
+// 2. Pembiayaan Guru Pengganti Cuti Melahirkan dari BOS (Anti-Patungan Pribadi)
+// 3. Proteksi Guru Merangkap Operator Dapodik & Bendahara BOS (Double Burden)
+// 4. Keterjaminan Tunjangan Khusus Guru (TKG) Daerah 3T dari Anomali Data Desa
+// ============================================================================
+
+struktur ProteksiFinansialGuru {
+    id_proteksi,
+    nuptk_atau_nik,
+    nama_guru,
+    gaji_bruto_rp,
+    potongan_kredit_bank_rp,
+    sisa_take_home_pay_rp,
+    status_kerentanan_finansial, // 'RENTAN_TERJERAT_PINJOL', 'AMAN_TERKENDALI'
+    solusi_intervensi,           // 'KONSULTASI_KOPERASI_SEKOLAH_DAN_RESTRUKTURISASI'
+    status_teror_debt_collector  // 'BLOKIR_NOMOR_KONTAK_DARURAT_SEKOLAH'
+}
+
+struktur CutiMelahirkanDanHonorInval {
+    id_cuti,
+    nuptk_guru,
+    nama_guru,
+    durasi_cuti_hari,            // 90 hari (3 bulan)
+    nama_guru_inval_pengganti,
+    total_honor_pengganti_rp,
+    sumber_dana_pembayaran,      // 'DANA_BOS_REGULER_BELANJA_JASA_INVAL'
+    status_beban_pribadi_guru    // 'BEBAS_BIAYA_DILARANG_PATUNGAN_PRIBADI'
+}
+
+struktur BebanGandaGuruDanOperator {
+    nuptk_guru,
+    nama_guru,
+    jam_mengajar_wajib,
+    jabatan_tambahan_non_kbm,    // 'OPERATOR_DAPODIK', 'BENDAHARA_BOS', 'NIHIL'
+    status_keseimbangan_beban,   // 'PERINGATAN_OVERLOAD_KOMBINASI', 'BEBAN_WAJAR'
+    insentif_resmi_bos           // 'BERHAK_HONOR_TUGAS_TAMBAHAN_BOS'
+}
+
+// ============================================================================
+// LOGIKA BISNIS MITIGASI KRISIS & PROTEKSI GURU
+// ============================================================================
+
+// [1] Skrining Kerentanan Finansial Guru & Perlindungan dari Teror Pinjol
+fungsi evaluasi_kesehatan_finansial_guru(
+    id_prot,
+    nuptk,
+    nama,
+    gaji_bruto,
+    potongan_bank,
+    teror_pinjol
+) {
+    misal sisa_gaji = gaji_bruto - potongan_bank;
+    misal status_rentan = "AMAN_TERKENDALI";
+    misal intervensi = "KONDISI_STABIL";
+    misal blokir = "TIDAK_ADA_TEROR";
+
+    // Jika sisa take home pay < 30% dari gaji bruto, sangat rentan terjerat pinjol
+    jika sisa_gaji < (gaji_bruto * 0.3) atau teror_pinjol {
+        status_rentan = "RENTAN_TERJERAT_PINJOL";
+        intervensi = "KONSULTASI_KOPERASI_SEKOLAH_DAN_RESTRUKTURISASI";
+    }
+
+    jika teror_pinjol {
+        blokir = "BLOKIR_NOMOR_KONTAK_DARURAT_SEKOLAH";
+    }
+
+    kembalikan ProteksiFinansialGuru(
+        id_prot,
+        nuptk,
+        nama,
+        gaji_bruto,
+        potongan_bank,
+        sisa_gaji,
+        status_rentan,
+        intervensi,
+        blokir
+    );
+}
+
+// [2] Pembiayaan Guru Pengganti Cuti Melahirkan / Sakit Panjang dari BOS
+// Menghilangkan praktik diskriminatif di mana guru cuti melahirkan dipaksa patungan bayar inval
+fungsi alokasi_biaya_inval_cuti_melahirkan(
+    id_cuti,
+    nuptk,
+    nama,
+    durasi,
+    nama_inval,
+    honor_inval_rp
+) {
+    kembalikan CutiMelahirkanDanHonorInval(
+        id_cuti,
+        nuptk,
+        nama,
+        durasi,
+        nama_inval,
+        honor_inval_rp,
+        "DANA_BOS_REGULER_BELANJA_JASA_INVAL",
+        "BEBAS_BIAYA_DILARANG_PATUNGAN_PRIBADI"
+    );
+}
+
+// [3] Proteksi Guru yang Merangkap Operator Dapodik / Bendahara BOS
+fungsi evaluasi_beban_ganda_guru(
+    nuptk,
+    nama,
+    jam_kbm,
+    tugas_tambahan
+) {
+    misal status_beban = "BEBAN_WAJAR";
+    misal insentif = "TIDAK_ADA";
+
+    jika jam_kbm >= 24 dan (tugas_tambahan == "OPERATOR_DAPODIK" atau tugas_tambahan == "BENDAHARA_BOS") {
+        status_beban = "PERINGATAN_OVERLOAD_KOMBINASI";
+        insentif = "BERHAK_HONOR_TUGAS_TAMBAHAN_BOS";
+    }
+
+    kembalikan BebanGandaGuruDanOperator(
+        nuptk,
+        nama,
+        jam_kbm,
+        tugas_tambahan,
+        status_beban,
+        insentif
+    );
+}

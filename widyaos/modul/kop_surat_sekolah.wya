@@ -1,0 +1,196 @@
+// ============================================================================
+// MODUL: KONFIGURASI KOP SURAT RESMI SATUAN PENDIDIKAN (KEMENDIKDASMEN RI)
+// Tata Naskah Dinas Standar Nasional & Fleksibilitas Kustomisasi Sekolah:
+// 
+// Fitur Utama:
+// 1. Dual-Logo Support (Logo Kiri: Pemda/Kementerian, Logo Kanan: Sekolah/Yayasan)
+// 2. Hierarki Lengkap Naskah Dinas: Pemda/Yayasan, Dinas Pendidikan, Nama Sekolah, NPSN, Akreditasi
+// 3. Alamat Lengkap, Kode Pos, Kontak Telepon, WhatsApp Resmi, Email & Website
+// 4. Kustomisasi Tipografi (Arial, Times New Roman, Bookman Old Style)
+// 5. Model Garis Pembatas (Garis Ganda Tebal-Tipis Baku, Garis Tunggal, Garis Klasik)
+// 6. Template HTML Responsif Siap Cetak Kertas F4 Folio (215 x 330 mm) & A4
+// ============================================================================
+
+struktur KonfigurasiKopSurat {
+    npsn_sekolah,
+    pemerintah_pembina,       // Contoh: 'PEMERINTAH KABUPATEN MOJOKERTO' atau 'YAYASAN MA'ARIF NU'
+    dinas_pembina,             // Contoh: 'DINAS PENDIDIKAN DAN KEBUDAYAAN'
+    cabang_dinas_wilayah,      // Contoh: 'CABANG DINAS PENDIDIKAN WILAYAH MOJOKERTO' (Opsional)
+    nama_sekolah,              // Contoh: 'SMP NEGERI 2 DAWARBLANDONG'
+    status_akreditasi,         // Contoh: 'TERAKREDITASI A (UNGGUL)'
+    nomor_nss,                 // Contoh: '201050201002'
+    alamat_lengkap,            // Contoh: 'Jl. Mayjen Sungkono No. 12, Dawarblandong'
+    kecamatan,                 // Contoh: 'Dawarblandong'
+    kabupaten_kota,            // Contoh: 'Kabupaten Mojokerto'
+    provinsi,                  // Contoh: 'Jawa Timur'
+    kode_pos,                  // Contoh: '61354'
+    nomor_telepon,             // Contoh: '(0321) 361234'
+    nomor_whatsapp,            // Contoh: '081234567890'
+    email_sekolah,             // Contoh: 'smpn2dawarblandong@mojokertokab.go.id'
+    website_sekolah,           // Contoh: 'https://smpn2dawarblandong.sch.id'
+    logo_kiri_path,            // Logo Pemda / Tut Wuri Handayani
+    tampilkan_logo_kiri,
+    logo_kanan_path,           // Logo Sekolah / Yayasan
+    tampilkan_logo_kanan,
+    tinggi_logo_px,
+    jenis_font,                // 'Times New Roman', 'Arial', 'Bookman Old Style'
+    gaya_garis_pembatas,       // 'GARIS_GANDA_TEBAL_TIPIS', 'GARIS_TUNGGAL_TEBAL', 'TANPA_GARIS'
+    warna_teks_kop,            // '#000000' (Hitam Dinas Baku) atau '#002B49' (Navy)
+    posisi_perataan            // 'TENGAH' atau 'KIRI'
+}
+
+// Inisialisasi Konfigurasi Kop Surat Default
+fungsi buat_konfigurasi_kop_default(npsn, nama_sekolah) {
+    kembalikan KonfigurasiKopSurat(
+        npsn,
+        "PEMERINTAH DAERAH / YAYASAN PENYELENGGARA",
+        "DINAS PENDIDIKAN DAN KEBUDAYAAN",
+        "",
+        nama_sekolah,
+        "TERAKREDITASI",
+        "-",
+        "Alamat Sekolah Belum Diatur",
+        "-",
+        "-",
+        "-",
+        "00000",
+        "-",
+        "-",
+        "sekolah@sewidya.id",
+        "https://sewidya.id",
+        "assets/logo_tut_wuri.png",
+        benar,
+        "assets/logo_sekolah.png",
+        benar,
+        85,
+        "Times New Roman",
+        "GARIS_GANDA_TEBAL_TIPIS",
+        "#000000",
+        "TENGAH"
+    );
+}
+
+// Pembaruan Identitas Lembaga & Sekolah
+fungsi perbarui_identitas_lembaga_kop(
+    kop,
+    pemda_yayasan,
+    dinas,
+    cabang,
+    nama_sek,
+    akreditasi,
+    nss
+) {
+    kop.pemerintah_pembina = pemda_yayasan;
+    kop.dinas_pembina = dinas;
+    kop.cabang_dinas_wilayah = cabang;
+    kop.nama_sekolah = nama_sek;
+    kop.status_akreditasi = akreditasi;
+    kop.nomor_nss = nss;
+    kembalikan kop;
+}
+
+// Pembaruan Alamat dan Kontak Resmi
+fungsi perbarui_alamat_kontak_kop(
+    kop,
+    alamat,
+    kec,
+    kab,
+    prov,
+    pos,
+    telp,
+    wa,
+    email,
+    web
+) {
+    kop.alamat_lengkap = alamat;
+    kop.kecamatan = kec;
+    kop.kabupaten_kota = kab;
+    kop.provinsi = prov;
+    kop.kode_pos = pos;
+    kop.nomor_telepon = telp;
+    kop.nomor_whatsapp = wa;
+    kop.email_sekolah = email;
+    kop.website_sekolah = web;
+    kembalikan kop;
+}
+
+// Pengaturan Unggah Logo Sekolah (Kiri Pemda, Kanan Sekolah)
+fungsi perbarui_logo_kop(
+    kop,
+    posisi_logo, // 'KIRI' atau 'KANAN'
+    path_berkas_logo,
+    is_tampilkan,
+    tinggi_px
+) {
+    jika posisi_logo == "KIRI" {
+        kop.logo_kiri_path = path_berkas_logo;
+        kop.tampilkan_logo_kiri = is_tampilkan;
+    } lainnya {
+        kop.logo_kanan_path = path_berkas_logo;
+        kop.tampilkan_logo_kanan = is_tampilkan;
+    }
+    kop.tinggi_logo_px = tinggi_px;
+    kembalikan kop;
+}
+
+// Pengaturan Desain, Tipografi & Garis Pembatas
+fungsi perbarui_tampilan_garis_dan_font_kop(
+    kop,
+    font_keluarga,
+    model_garis,
+    warna_heksadesimal,
+    posisi_align
+) {
+    kop.jenis_font = font_keluarga;
+    kop.gaya_garis_pembatas = model_garis;
+    kop.warna_teks_kop = warna_heksadesimal;
+    kop.posisi_perataan = posisi_align;
+    kembalikan kop;
+}
+
+// Menghasilkan Blok HTML Kop Surat Resmi untuk Dokumen F4/A4
+fungsi render_kop_surat_ke_html(kop) {
+    misal html = "<header class='kop-surat-resmi' style='font-family: " + kop.jenis_font + "; color: " + kop.warna_teks_kop + "; text-align: center;'>";
+    html = html + "<table style='width: 100%; border-collapse: collapse; margin-bottom: 8px;'><tr>";
+
+    // Logo Kiri
+    jika kop.tampilkan_logo_kiri == benar {
+        html = html + "<td style='width: 15%; text-align: center; vertical-align: middle;'>";
+        html = html + "<img src='" + kop.logo_kiri_path + "' style='height: " + ke_teks(kop.tinggi_logo_px) + "px;' alt='Logo Instansi Pembina'/>";
+        html = html + "</td>";
+    }
+
+    // Teks Tengah
+    html = html + "<td style='width: 70%; text-align: center; vertical-align: middle; line-height: 1.25;'>";
+    html = html + "<div style='font-size: 14pt; font-weight: bold; text-transform: uppercase;'>" + kop.pemerintah_pembina + "</div>";
+    html = html + "<div style='font-size: 13pt; font-weight: bold; text-transform: uppercase;'>" + kop.dinas_pembina + "</div>";
+    jika kop.cabang_dinas_wilayah != "" {
+        html = html + "<div style='font-size: 11pt; font-weight: bold; text-transform: uppercase;'>" + kop.cabang_dinas_wilayah + "</div>";
+    }
+    html = html + "<div style='font-size: 16pt; font-weight: bold; text-transform: uppercase; margin: 3px 0;'>" + kop.nama_sekolah + "</div>";
+    html = html + "<div style='font-size: 9pt; font-style: italic;'>" + kop.status_akreditasi + " | NPSN: " + kop.npsn_sekolah + " | NSS: " + kop.nomor_nss + "</div>";
+    html = html + "<div style='font-size: 9pt;'>" + kop.alamat_lengkap + ", Kec. " + kop.kecamatan + ", " + kop.kabupaten_kota + ", " + kop.provinsi + " " + kop.kode_pos + "</div>";
+    html = html + "<div style='font-size: 9pt;'>Telp: " + kop.nomor_telepon + " | Pos-el: " + kop.email_sekolah + " | Laman: " + kop.website_sekolah + "</div>";
+    html = html + "</td>";
+
+    // Logo Kanan
+    jika kop.tampilkan_logo_kanan == benar {
+        html = html + "<td style='width: 15%; text-align: center; vertical-align: middle;'>";
+        html = html + "<img src='" + kop.logo_kanan_path + "' style='height: " + ke_teks(kop.tinggi_logo_px) + "px;' alt='Logo Sekolah'/>";
+        html = html + "</td>";
+    }
+
+    html = html + "</tr></table>";
+
+    // Garis Pembatas Baku Naskah Dinas
+    jika kop.gaya_garis_pembatas == "GARIS_GANDA_TEBAL_TIPIS" {
+        html = html + "<div style='border-top: 3px solid " + kop.warna_teks_kop + "; border-bottom: 1px solid " + kop.warna_teks_kop + "; height: 2px; margin-bottom: 15px;'></div>";
+    } lainnya {
+        jika kop.gaya_garis_pembatas == "GARIS_TUNGGAL_TEBAL" {
+            html = html + "<div style='border-top: 2px solid " + kop.warna_teks_kop + "; margin-bottom: 15px;'></div>";
+        }
+    }
+
+    html = html + "</header>";
+    kembalikan html;
+}

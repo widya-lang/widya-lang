@@ -1,0 +1,243 @@
+// ============================================================================
+// MODUL: ARKAS PEMBAYARAN LISTRIK & LANGGANAN DAYA JASA (arkas_tagihan_langganan.wya)
+// Standar Kepatuhan: Juknis BOSP Kemendikbudristek & SIPD Kemendagri
+//
+// Fitur Utama:
+// 1. Whitelist ID Pelanggan Resmi (Cegah bayar listrik/internet pribadi pakai BOS)
+// 2. Multi-Jenis Langganan: Listrik Pascabayar, Token Prabayar, PDAM, Internet ISP, SaaS
+// 3. Rekonsiliasi Pagu Dinamis: Auto-shift deviasi fluktuasi tagihan bulanan
+// 4. Guardrail Token Prabayar: Anti-penimbunan token di akhir tahun (Anti-Audit Finding)
+// 5. Mesin Pajak Otomatis: Pengecualian PPN PLN/PDAM (UU HPP) & Potongan ISP/SaaS
+// 6. Pencatatan BKU Non-Tunai (CMS Bank) & Cetak SPJ Kuitansi Terpadu
+// ============================================================================
+
+struktur MetadataLanggananSekolah {
+    id_kontrak,
+    jenis_langganan,     // "PLN_PASCABAYAR", "PLN_TOKEN_PRABAYAR", "AIR_PDAM", "INTERNET_ISP", "SOFTWARE_SAAS"
+    id_pelanggan,        // No IDPEL PLN (12 digit), No Sambungan PDAM, No Speedy/IndiHome
+    nama_terdaftar,      // Harus atas nama Satuan Pendidikan / Sekolah
+    lokasi_instalasi,    // Gedung Utama, Lab Komputer, Perpustakaan, dsb.
+    kode_rekening_arkas, // Misal: 5.1.02.02.01.0061 (Listrik), 5.1.02.02.01.0064 (Internet)
+    daya_kecepatan,      // Misal "11000 VA", "100 Mbps", "3/4 Inch"
+    batas_wajar_bulanan_rp
+}
+
+struktur TransaksiTagihanLangganan {
+    id_transaksi,
+    id_pelanggan,
+    periode_bulan,       // "2026-01", "2026-02", dst.
+    tanggal_bayar,
+    nominal_tagihan_pokok,
+    biaya_admin_bank,
+    total_bayar_rp,
+    kwh_pemakaian,       // Khusus listrik
+    metode_bayar,        // "CMS_DEBET_BANK", "TUNAI_LOKET"
+    no_referensi_bank,
+    status_pajak,        // "BEBAS_PPN_DAN_PPH", "KENA_PPN_PPH"
+    nominal_ppn,
+    nominal_pph23,
+    status_validasi,     // "VALID_SIAP_BKU", "DITOLAK_ANOMALI"
+    pesan_audit
+}
+
+// -------------------------------------------------------------
+// ENGINE VALIDASI & OTOMASI PEMBAYARAN LANGGANAN
+// -------------------------------------------------------------
+
+fungsi arkas_registrasi_kontrak_utilitas(daftar_kontrak, kontrak) {
+    daftar_kontrak[kontrak.id_pelanggan] = kontrak;
+    kembalikan benar;
+}
+
+// Validasi Guardrail Keabsahan IDPEL Sekolah
+fungsi arkas_verifikasi_idpel(daftar_kontrak, idpel_input) {
+    jika !ada_kunci(daftar_kontrak, idpel_input) {
+        kembalikan {
+            "valid": salah,
+            "status": "IDPEL_TIDAK_TERDAFTAR",
+            "pesan": "DITOLAK! ID Pelanggan tidak terdaftar dalam basis data Sarpras Sekolah. Indikasi pembayaran listrik/pribadi di luar aset sekolah."
+        };
+    }
+    kembalikan {
+        "valid": benar,
+        "kontrak": daftar_kontrak[idpel_input],
+        "pesan": "ID Pelanggan valid dan terverifikasi milik satuan pendidikan."
+    };
+}
+
+// Engine Pajak Sesuai PMK 59/2022 & UU Harmonisasi Peraturan Perpajakan (HPP)
+fungsi arkas_hitung_pajak_langganan(jenis_langganan, nominal_tagihan) {
+    // 1. Listrik PLN (Pascabayar & Token) dan PDAM Bebas PPN & Bukan Objek PPh 22
+    jika jenis_langganan == "PLN_PASCABAYAR" atau 
+         jenis_langganan == "PLN_TOKEN_PRABAYAR" atau 
+         jenis_langganan == "AIR_PDAM" {
+        kembalikan {
+            "status_pajak": "BEBAS_PPN_DAN_PPH",
+            "ppn_rp": 0.0,
+            "pph23_rp": 0.0,
+            "keterangan": "Bebas PPN (Barang kebutuhan pokok/pelayanan publik UU HPP) & Bebas PPh 22."
+        };
+    }
+
+    // 2. Internet ISP Korporasi (IndiHome / Biznet / Iconnet swasta)
+    // Dikenakan PPN 11% (tercantum di billing invoice) & PPh 23 (2% jika jasa non-BUMN)
+    jika jenis_langganan == "INTERNET_ISP" atau jenis_langganan == "SOFTWARE_SAAS" {
+        misal dpp = nominal_tagihan / 1.11;
+        misal ppn = nominal_tagihan - dpp;
+        misal pph23 = dpp * 0.02; // PPh 23 Jasa 2% dari DPP
+        kembalikan {
+            "status_pajak": "KENA_PPN_PPH",
+            "dpp_rp": dpp,
+            "ppn_rp": ppn,
+            "pph23_rp": pph23,
+            "keterangan": "Objek PPN 11% dan PPh 23 Jasa Telekomunikasi/IT (2% dari DPP)."
+        };
+    }
+
+    kembalikan {
+        "status_pajak": "STANDAR",
+        "ppn_rp": 0.0,
+        "pph23_rp": 0.0,
+        "keterangan": "Pajak standar."
+    };
+}
+
+// Guardrail Pembelian Token Listrik Prabayar (Anti-Penimbunan Akhir Tahun)
+fungsi arkas_validasi_pembelian_token_prabayar(
+    nominal_beli, 
+    sisa_saldo_kwh_meteran, 
+    rata_rata_kwh_bulanan,
+    bulan_transaksi
+) {
+    // Audit finding BPK: Di bulan November/Desember sering ada SPJ token puluhan juta
+    jika bulan_transaksi == "12" atau bulan_transaksi == "11" {
+        jika nominal_beli > 2000000.0 {
+            kembalikan {
+                "lolos": salah,
+                "status": "INDIKASI_PENIMBUNAN_TOKEN",
+                "pesan": "PERINGATAN AUDIT: Pembelian token di akhir tahun melebihi batas kebutuhan wajar (Maks Rp 2.000.000/transaksi). Berpotensi temuan BPK atas penimbunan dana idle!"
+            };
+        }
+    }
+
+    // Jika sisa KWH masih lebih dari 3 bulan rata-rata
+    jika sisa_saldo_kwh_meteran > (rata_rata_kwh_bulanan * 3.0) {
+        kembalikan {
+            "lolos": salah,
+            "status": "STOCK_KWH_BERLEBIHAN",
+            "pesan": "Gagal Beli Token! Saldo KWH meteran masih cukup untuk lebih dari 3 bulan ke depan."
+        };
+    }
+
+    kembalikan {
+        "lolos": benar,
+        "status": "TOKEN_WAJAR",
+        "pesan": "Pembelian token listrik memenuhi prinsip kebutuhan riil kegiatan sekolah."
+    };
+}
+
+// Rekonsiliasi Fluktuasi Tagihan Bulanan terhadap Pagu Kertas Kerja RKAS
+fungsi arkas_rekonsiliasi_pagu_listrik(
+    pagu_anggaran_bulan_rp,
+    tagihan_riil_rp,
+    sisa_pagu_tahunan_rekening_rp
+) {
+    misal selisih = tagihan_riil_rp - pagu_anggaran_bulan_rp;
+
+    jika selisih <= 0.0 {
+        // Tagihan lebih rendah atau sama dengan pagu (misal bulan libur sekolah)
+        kembalikan {
+            "status": "TAGIHAN_DI_BAWAH_PAGU",
+            "selisih_rp": selisih,
+            "tindakan_arkas": "Pencatatan BKU sesuai tagihan riil. Sisa pagu Rp " + ke_teks(-selisih) + " otomatis tersimpan sebagai buffer bulan berikutnya.",
+            "butuh_pergeseran": salah
+        };
+    } lainnya {
+        // Tagihan melonjak (misal bulan ANBK / Ujian Lab Komputer)
+        jika selisih <= sisa_pagu_tahunan_rekening_rp {
+            kembalikan {
+                "status": "TAGIHAN_MELONJAK_TERCOVER",
+                "selisih_rp": selisih,
+                "tindakan_arkas": "Pergeseran Anggaran Otomatis Antar-Bulan (Intra-Rekening Listrik). Cukup pengesahan internal Kepala Satuan Pendidikan.",
+                "butuh_pergeseran": benar,
+                "jenis_pergeseran": "INTRA_REKENING_ANTAR_BULAN"
+            };
+        } lainnya {
+            kembalikan {
+                "status": "OVER_BUDGET_REKENING_TOTAL",
+                "selisih_rp": selisih,
+                "tindakan_arkas": "Pagu tahunan Belanja Listrik tidak mencukupi! Wajib dilakukan Perubahan RKAS dengan persetujuan Dinas Pendidikan.",
+                "butuh_pergeseran": benar,
+                "jenis_pergeseran": "PERUBAHAN_RKAS_DINAS"
+            };
+        }
+    }
+}
+
+// Proses Pembayaran Tagihan & Penerbitan SPJ BKU
+fungsi arkas_proses_pembayaran_tagihan(
+    daftar_kontrak,
+    idpel,
+    periode_bulan,
+    tanggal_bayar,
+    nominal_tagihan,
+    biaya_admin,
+    metode_bayar,
+    no_ref_bank,
+    kwh_pakai,
+    pagu_bulan_rp,
+    sisa_pagu_tahunan_rp
+) {
+    // 1. Verifikasi IDPEL
+    misal cek_id = arkas_verifikasi_idpel(daftar_kontrak, idpel);
+    jika !cek_id.valid {
+        kembalikan TransaksiTagihanLangganan(
+            "TRX-REJECT-" + idpel,
+            idpel,
+            periode_bulan,
+            tanggal_bayar,
+            nominal_tagihan,
+            biaya_admin,
+            0.0,
+            0.0,
+            metode_bayar,
+            no_ref_bank,
+            "TIDAK_VALID",
+            0.0,
+            0.0,
+            "DITOLAK_ANOMALI",
+            cek_id.pesan
+        );
+    }
+
+    misal knt = cek_id.kontrak;
+    misal total_bayar = nominal_tagihan + biaya_admin;
+
+    // 2. Evaluasi Pajak
+    misal pajak = arkas_hitung_pajak_langganan(knt.jenis_langganan, nominal_tagihan);
+
+    // 3. Rekonsiliasi Pagu
+    misal rekon = arkas_rekonsiliasi_pagu_listrik(pagu_bulan_rp, total_bayar, sisa_pagu_tahunan_rp);
+
+    // 4. Buat objek transaksi
+    misal id_trx = "TRX-UTIL-" + knt.jenis_langganan + "-" + periode_bulan + "-" + idpel;
+    misal pesan = "Transaksi Berhasil. " + rekon.tindakan_arkas + " " + pajak.keterangan;
+
+    kembalikan TransaksiTagihanLangganan(
+        id_trx,
+        idpel,
+        periode_bulan,
+        tanggal_bayar,
+        nominal_tagihan,
+        biaya_admin,
+        total_bayar,
+        kwh_pakai,
+        metode_bayar,
+        no_ref_bank,
+        pajak.status_pajak,
+        pajak.ppn_rp,
+        pajak.pph23_rp,
+        "VALID_SIAP_BKU",
+        pesan
+    );
+}

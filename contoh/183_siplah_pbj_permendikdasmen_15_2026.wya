@@ -1,0 +1,98 @@
+// ============================================================================
+// CONTOH WIDYA-LANG 183: INTEGRASI PBJ SIPLAH & ARKAS (PERMENDIKDASMEN 15/2026)
+// Alur 6 Dokumen Wajib: Rencana Belanja, Perbandingan, Negosiasi, SP, BAST, Bayar
+// ============================================================================
+
+fungsi utama() {
+    cetak("============================================================================");
+    cetak("   PENGADAAN BARANG & JASA (PBJ) SIPLAH SESUAI PERMENDIKDASMEN NO. 15/2026   ");
+    cetak("      Terintegrasi Penuh dengan Pagu RKAS & Buku Kas Umum (BKU) ARKAS       ");
+    cetak("============================================================================");
+
+    // Identitas Satuan Pendidikan & Kegiatan RKAS
+    misal npsn = "20301234";
+    misal nama_sekolah = "SD Negeri 1 Somagede";
+    misal kode_kegiatan = "06.01.02 (Pengadaan Laptop & Smart Device Pembelajaran)";
+    misal pagu_rkas = 80000000.0; // Rp 80.000.000 (Sumber Dana: BOSP Reguler)
+
+    cetak("\n[DOKUMEN 1] DOKUMEN RENCANA BELANJA (DRB):");
+    misal no_drb = "DRB-SIPLah/2026/001";
+    misal metode_pbj = "Perbandingan Harga (Nilai Rp 50 Juta s.d Rp 200 Juta)";
+    misal volume_unit = 10;
+    misal hps_satuan = 8000000.0;
+
+    cetak("    - Nomor DRB            : " + no_drb);
+    cetak("    - Kegiatan RKAS        : " + kode_kegiatan);
+    cetak("    - Metode Pengadaan     : " + metode_pbj);
+    cetak("    - Rincian Barang       : 10 Unit Laptop Chromebook Asesmen SNI");
+    cetak("    - Total HPS Perkiraan  : Rp " + teks(pagu_rkas));
+
+    // Dokumen 2: Perbandingan Harga Minimal 2 Penyedia
+    cetak("\n[DOKUMEN 2] DOKUMEN PERBANDINGAN HARGA (DPH):");
+    misal no_dph = "DPH-SIPLah/2026/001";
+    misal penawaran_mitra_a = 79000000.0; // PT Mitra Edukasi (SIPLah Blibli)
+    misal penawaran_mitra_b = 80500000.0; // CV Graha TIK (SIPLah Eureka)
+
+    cetak("    - Nomor DPH            : " + no_dph);
+    cetak("    - Mitra Calon 1        : PT Mitra Edukasi Nusantara (Penawaran: Rp " + teks(penawaran_mitra_a) + " | Rating: 4.9)");
+    cetak("    - Mitra Calon 2        : CV Graha TIK Prima (Penawaran: Rp " + teks(penawaran_mitra_b) + " | Rating: 4.7)");
+    cetak("    - Penyedia Terpilih    : PT Mitra Edukasi Nusantara (Harga Terendah & Layanan Terbaik)");
+
+    // Dokumen 3: Negosiasi Harga Daring
+    cetak("\n[DOKUMEN 3] DOKUMEN NEGOSIASI HARGA (DNH):");
+    misal no_dnh = "DNH-SIPLah/2026/001";
+    misal harga_awal = penawaran_mitra_a;
+    misal harga_sepakat = 77000000.0; // Rp 77.000.000 (Hemat 2 Juta)
+    misal penghematan = harga_awal - harga_sepakat;
+
+    cetak("    - Nomor DNH            : " + no_dnh);
+    cetak("    - Harga Awal Mitra     : Rp " + teks(harga_awal));
+    cetak("    - Harga Akhir Sepakat  : Rp " + teks(harga_sepakat) + " (+ Bonus Mouse & Tas Laptop)");
+    cetak("    - Efisiensi Penghematan: Rp " + teks(penghematan) + " (Kembali ke Saldo Kas Sekolah)");
+
+    // Dokumen 4: Surat Pesanan (SP Digital)
+    cetak("\n[DOKUMEN 4] SURAT PESANAN (SP / PO DIGITAL SIPLAH):");
+    misal no_sp = "SP-SIPLah-20260303-0099";
+    misal ongkir = 200000.0;
+    misal grand_total_sp = harga_sepakat + ongkir;
+    misal va_bank = "8888-01-20301234-01 (Bank Escrow SIPLah)";
+
+    cetak("    - Nomor Surat Pesanan  : " + no_sp);
+    cetak("    - Total Nilai Kontrak  : Rp " + teks(harga_sepakat));
+    cetak("    - Ongkos Kirim Aman    : Rp " + teks(ongkir));
+    cetak("    - Grand Total Tagihan  : Rp " + teks(grand_total_sp));
+    cetak("    - Virtual Account VA   : " + va_bank);
+    cetak("    - Batas Waktu Kirim    : 5 Hari Kerja (Denda: 1/1000 per hari bila telat)");
+
+    // Dokumen 5: BAST Digital & Uji Terima Barang
+    cetak("\n[DOKUMEN 5] BERITA ACARA SERAH TERIMA (BAST ELEKTRONIK) & UJI TERIMA:");
+    misal no_bast = "BAST-SIPLah-20260307-0055";
+    cetak("    - Nomor BAST           : " + no_bast);
+    cetak("    - Tanggal Serah Terima : 07 Maret 2026");
+    cetak("    - Hasil Pemeriksaan    : 10 Unit Laptop Normal, Segel Utuh, Garansi 1 Tahun Resmi [MEMENUHI SYARAT]");
+    cetak("    - Tanda Tangan Digital : SAH (Petugas Pemeriksa Satdik & Kurir Resmi SIPLah)");
+
+    // Dokumen 6: Bukti Pembayaran & Posting Otomatis ke BKU ARKAS
+    cetak("\n[DOKUMEN 6] BUKTI PEMBAYARAN ESCROW & POSTING OTOMATIS KE BKU ARKAS:");
+    misal no_bukti_bayar = "BAYAR-SIPLah-20260308-01";
+    misal tarif_pph_22 = 0.005; // 0.5% (Rekanan ber-NPWP)
+    misal nilai_pph_22 = harga_sepakat * tarif_pph_22;
+    misal tarif_ppn = 0.11; // 11% PPN
+    misal nilai_ppn = harga_sepakat * tarif_ppn;
+
+    misal saldo_awal_bku = 100000000.0;
+    misal saldo_akhir_bku = saldo_awal_bku - grand_total_sp;
+
+    cetak("    - Nomor Bukti Bayar    : " + no_bukti_bayar);
+    cetak("    - Nominal Transfer VA  : Rp " + teks(grand_total_sp) + " [LUNAS TERVERIFIKASI]");
+    cetak("    - PPh Pasal 22 (0.5%)  : Rp " + teks(nilai_pph_22) + " (E-Billing Pajak Terbit)");
+    cetak("    - PPN (11%)            : Rp " + teks(nilai_ppn) + " (E-Faktur Terbit)");
+    cetak("    - Realisasi Saldo BKU  : Rp " + teks(saldo_awal_bku) + " -> Rp " + teks(saldo_akhir_bku));
+    cetak("    - Sinkronisasi SPJ     : OTOMATIS TERPOSTING KE BUKU KAS UMUM (BKU) ARKAS");
+
+    cetak("\n============================================================================");
+    cetak("    SELURUH ALUR PBJ SIPLAH PERMENDIKDASMEN 15/2026 BERHASIL TERPADU!      ");
+    cetak("============================================================================");
+}
+
+utama();

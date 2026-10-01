@@ -1,0 +1,178 @@
+// ==============================================================================
+// rapat/rapat_malam.wya - Mesin Rapat Malam (20:00 WIB: Rekap, Kendala, Usulan Besok)
+// Diperbaiki: Integrasi Task State Machine & Beban Kerja Dinamis
+// ==============================================================================
+
+impor "../integrasi/obsidian_bridge.wya";
+impor "../integrasi/telegram_bridge.wya";
+impor "../integrasi/llm_bridge.wya";
+impor "../integrasi/analitika_bridge.wya";
+impor "../integrasi/lifecycle_engine.wya";
+
+
+fungsi eksekusi_rapat_malam(cfg, tim_agen, tanggal_str) {
+    cetak("\n==================================================================");
+    cetak("🌙 [SIDANG 20:00 WIB] MEMULAI RAPAT MALAM KANTOR DIGITAL WIDYA");
+    cetak("==================================================================");
+
+    cetak("👥 10 Agen hadir lengkap untuk sesi evaluasi.");
+    cetak("📢 [agen_orkestrator] Membuka evaluasi hasil kerja dan verifikasi QA...");
+
+    // Tentukan waktu sekarang untuk log
+    misal waktu_str = tanggal_str + "-20:00";
+
+    // 1. Rekap Capaian Pekerjaan
+    misal pekerjaan_selesai = [
+        "Otentikasi Argon2id & Session Guard [VERIFIED QA - Lolos Audit UU PDP]",
+        "Skema Basis Data SQLite Inventaris [VERIFIED ARCHITECT - Migrasi Berhasil]",
+        "Backup Snapshot Harian Basis Data [VERIFIED DEVOPS - 100% Utuh]"
+    ];
+
+    misal pekerjaan_tertunda = [
+        "Pengujian Beban Jalur SSE [TERTUNDA: Penyesuaian buffer pool simulasi]"
+    ];
+
+    // 2. Analisis Kendala (Blockers)
+    misal kendala_utama = "`agen_qa` melaporkan pengujian beban streaming SSE memerlukan penyesuaian buffer pool memori di modul jaringan sebelum dapat dilanjutkan.";
+
+    // 3. Tiga Usulan Prioritas Utama untuk Esok Hari
+    misal usulan_besok = [
+        "Optimalisasi Buffer Pool & Tuntas Pengujian Beban SSE (PIC: QA & DevOps)",
+        "Pengembangan Antarmuka Web Bertema Obsidian Glassmorphism (PIC: Lead Coder)",
+        "Audit Log Kriptografis HMAC-SHA256 untuk Kesiapan Rilis (PIC: Auditor Keamanan)"
+    ];
+
+    misal skor_efektivitas = 88.5; // Persentase produktivitas hari ini
+
+    cetak("\n✅ PEKERJAAN TERVERIFIKASI & RILIS AGEN:");
+
+    // ---- STANDAR INDUSTRI: RILIS AGEN SATU PER SATU SETELAH VERIFIKASI ----
+    // Agen TIDAK lagi "ngobrol" setelah ini. State → IDLE, beban → 0%
+
+    cetak("\n   [agen_coder] TSK-001 — Argon2id Login:");
+    ajukan_tinjauan(cfg, "agen_coder", "Pengembang Inti", "TSK-001", "tests/auth_argon2id_test.wya passed", waktu_str);
+    cetak("   [agen_qa] Memverifikasi TSK-001...");
+    selesaikan_dan_rilis_agen(cfg, "agen_coder", "Pengembang Inti", "TSK-001", "agen_qa", "Lolos audit UU PDP — nol kerentanan kritis", waktu_str);
+    catat_komunikasi_agen(cfg, "agen_qa", "agen_coder", "RILIS", "TSK-001 VERIFIED — coder dirilis", "TSK-001", "IDLE", waktu_str);
+
+    cetak("   [agen_arsitek] TSK-002 — Skema DB Inventaris:");
+    ajukan_tinjauan(cfg, "agen_arsitek", "Arsitek Sistem", "TSK-002", "migrations/001_inventaris.sql verified", waktu_str);
+    selesaikan_dan_rilis_agen(cfg, "agen_arsitek", "Arsitek Sistem", "TSK-002", "agen_orkestrator", "Skema termigrasi tanpa data loss", waktu_str);
+    catat_komunikasi_agen(cfg, "agen_orkestrator", "agen_arsitek", "RILIS", "TSK-002 VERIFIED — arsitek dirilis", "TSK-002", "IDLE", waktu_str);
+
+    cetak("   [agen_devops] TSK-004 — Backup Snapshot:");
+    ajukan_tinjauan(cfg, "agen_devops", "Insinyur SRE", "TSK-004", "Cron job 02:00 UTC verified", waktu_str);
+    selesaikan_dan_rilis_agen(cfg, "agen_devops", "Insinyur SRE", "TSK-004", "agen_orkestrator", "100% integritas backup — WAL checkpoint clean", waktu_str);
+    catat_komunikasi_agen(cfg, "agen_orkestrator", "agen_devops", "RILIS", "TSK-004 VERIFIED — devops dirilis", "TSK-004", "IDLE", waktu_str);
+
+    cetak("   [agen_keamanan] TSK-005 — Audit UU PDP:");
+    selesaikan_dan_rilis_agen(cfg, "agen_keamanan", "Auditor Siber", "TSK-005", "agen_orkestrator", "Zero Raw Data Leakage — sertifikat LEVEL A", waktu_str);
+    catat_komunikasi_agen(cfg, "agen_orkestrator", "agen_keamanan", "RILIS", "TSK-005 VERIFIED — keamanan dirilis", "TSK-005", "IDLE", waktu_str);
+
+    // TSK-003 (SSE Stress Test) masih IN PROGRESS — agen_qa BELUM dirilis
+    cetak("   [agen_qa] TSK-003 — SSE Stress Test: MASIH IN PROGRESS");
+    aktifkan_tugas(cfg, "agen_qa", "QA Tester", [{ "id_tugas": "TSK-003", "prioritas": "P3" }], waktu_str);
+    cetak("      ⚠️  agen_qa TIDAK dirilis. Beban tetap " + ke_teks(BOBOT_P3) + "% sampai TSK-003 selesai.");
+    catat_komunikasi_agen(cfg, "agen_qa", "agen_orkestrator", "BLOKIR", "TSK-003 membutuhkan penyesuaian buffer pool", "TSK-003", "AKTIF", waktu_str);
+
+    // Rilis agen-agen yang tidak punya tugas aktif tersisa
+    selesaikan_dan_rilis_agen(cfg, "agen_analis", "Analis Bisnis", "TSK-SIT-01", "agen_orkestrator", "Analisis kebutuhan sprint berikutnya selesai", waktu_str);
+    selesaikan_dan_rilis_agen(cfg, "agen_notulis", "Notulis Obsidian", "TSK-NTL-01", "agen_orkestrator", "DailyNotes & Kanban tersinkronisasi", waktu_str);
+    selesaikan_dan_rilis_agen(cfg, "agen_humas", "Humas Telegram", "TSK-HUM-01", "agen_orkestrator", "Briefing Telegram terkirim", waktu_str);
+    selesaikan_dan_rilis_agen(cfg, "agen_analis_data", "Analis Data", "TSK-ANA-01", "agen_orkestrator", "Dashboard KPI harian diterbitkan", waktu_str);
+
+    // Orkestrator adalah terakhir dirilis setelah memimpin seluruh sidang
+    selesaikan_dan_rilis_agen(cfg, "agen_orkestrator", "Mandor Utama", "TSK-ORC-01", "sistem", "Rapat malam selesai — seluruh agen dirilis", waktu_str);
+
+    cetak("\n⚠️ KENDALA UTAMA (BLOCKER):");
+    cetak("  > " + kendala_utama);
+
+    cetak("\n🔮 3 USULAN PRIORITAS UNTUK BESOK:");
+    misal i = 0;
+    selama (i < panjang(usulan_besok)) {
+
+        cetak("  " + ke_teks(i + 1) + ". " + usulan_besok[i]);
+        i = i + 1;
+    }
+    cetak("\n⭐ Skor Efektivitas Tim Hari Ini: " + ke_teks(skor_efektivitas) + "%");
+
+    // 4. Susun Konten Markdown untuk Obsidian
+    misal md_konten = "# 🌙 Risalah Rapat Malam & Evaluasi — " + tanggal_str + " (20:00 WIB)\n\n" +
+        "> **Moderator:** `agen_orkestrator` | **Notulis:** `agen_notulis` | **Skor Efektivitas:** " + ke_teks(skor_efektivitas) + "%\n\n" +
+        "## ✅ Rekapitulasi Capaian Kerja Hari Ini\n";
+
+    i = 0;
+    selama (i < panjang(pekerjaan_selesai)) {
+        md_konten = md_konten + "- [x] " + pekerjaan_selesai[i] + "\n";
+        i = i + 1;
+    }
+    i = 0;
+    selama (i < panjang(pekerjaan_tertunda)) {
+        md_konten = md_konten + "- [-] " + pekerjaan_tertunda[i] + "\n";
+        i = i + 1;
+    }
+
+    md_konten = md_konten + "\n## ⚠️ Kendala & Hambatan Teknis (Blockers)\n" +
+        "> " + kendala_utama + "\n\n" +
+        "## 🔮 Usulan 3 Prioritas Utama Esok Hari\n";
+
+    i = 0;
+    selama (i < panjang(usulan_besok)) {
+        md_konten = md_konten + ke_teks(i + 1) + ". " + usulan_besok[i] + "\n";
+        i = i + 1;
+    }
+
+    md_konten = md_konten + "\n## 📈 Evaluasi Kinerja Tim\n" +
+        "- **Target Disepakati:** 4 Tugas Utama\n" +
+        "- **Tugas Tuntas:** 3 Tugas (75% Realisasi)\n" +
+        "- **Kualitas Kode:** Sangat Baik (Nol Celah Kritis)\n" +
+        "- **Skor Akhir:** **" + ke_teks(skor_efektivitas) + "%** ⭐\n";
+
+    // 5. Arsipkan ke Obsidian Vault
+    misal path_obsidian = obsidian_tulis_catatan_harian(cfg, tanggal_str, "Malam", "Evaluasi Rapat Malam", md_konten, {});
+
+    // 6. Perbarui Papan Kanban: Pindahkan tugas yang selesai ke DONE!
+    misal daftar_done = [
+        "[P1] Coding Rute Login & Argon2id (@agen_coder) - Lulus Audit UU PDP",
+        "[P2] Skema Migrasi SQLite Inventaris (@agen_arsitek) - Berhasil Dimigrasi",
+        "Backup Snapshot Harian Basis Data (@agen_devops) - Terverifikasi Aman"
+    ];
+    misal daftar_progress = [
+        "[P3] Pengujian Beban Jalur SSE (@agen_qa & @agen_devops)"
+    ];
+    obsidian_perbarui_kanban(cfg, tanggal_str, usulan_besok, daftar_progress, daftar_done);
+
+    // 7. Format dan Kirim Pesan Evaluasi ke Telegram Bot Gateway
+    misal pesan_tg = tg_format_pesan_malam(tanggal_str, pekerjaan_selesai, kendala_utama, usulan_besok, skor_efektivitas);
+    tg_kirim_pesan(cfg, pesan_tg);
+
+    // 8. agen_analis_data: Deteksi Anomali KPI & Publish Dashboard Analitika
+    cetak("\n🔍 [agen_analis_data] Menjalankan Pemeriksaan Anomali KPI...");
+    misal skor_kemarin = 85.7; // Data historis dari WidyaBase (simulasi)
+    misal hasil_anomali = analitika_deteksi_anomali(cfg, skor_efektivitas, skor_kemarin);
+
+    cetak("\n📊 [agen_analis_data] Menerbitkan Dashboard Analitika Harian...");
+    misal hasil_dashboard = analitika_susun_dashboard_harian(cfg, tim_agen, tanggal_str, skor_efektivitas);
+
+    // Jika ada anomali: kirim notifikasi darurat ke Telegram
+    jika (hasil_anomali["anomali"] == benar) {
+        cetak("\n🚨 [agen_analis_data → Telegram] Mengirim notifikasi anomali darurat...");
+        misal pesan_darurat = "🚨 <b>PERINGATAN ANALITIKA</b>\n" +
+            hasil_anomali["pesan"] + "\n\n" +
+            "Rekomendasi: " + hasil_dashboard["rekomendasi"] + "\n" +
+            "<i>[ agen_analis_data | Kantor Digital Berdaulat ]</i>";
+        tg_kirim_pesan(cfg, pesan_darurat);
+    }
+
+    cetak("\n✓ [Rapat Malam] Laporan evaluasi malam telah dipublikasikan ke Obsidian & Telegram!");
+    cetak("✓ [agen_analis_data] Dashboard analitika harian tersimpan: " + hasil_dashboard["path_dashboard"]);
+    kembalikan {
+        "status": "SELESAI",
+        "sesi": "malam",
+        "tanggal": tanggal_str,
+        "path_obsidian": path_obsidian,
+        "path_dashboard": hasil_dashboard["path_dashboard"],
+        "skor_efektivitas": skor_efektivitas,
+        "anomali_terdeteksi": hasil_anomali["anomali"]
+    };
+}

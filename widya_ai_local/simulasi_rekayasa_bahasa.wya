@@ -1,0 +1,257 @@
+// ============================================================================
+// SUITE UJI REKAYASA & EVOLUSI BAHASA WIDYA-LANG (simulasi_rekayasa_bahasa.wya)
+// 12 Kasus Uji Otomatis untuk Meta-Compiler & Language Engineer Agent
+// Menguji: Grammar, Stdlib Catalog, Static Linter, Kyber-768 PQC, & MCP Protocol
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/rekayasa_bahasa_widya.wya";
+impor "modul/kripto_post_quantum_kyber.wya";
+impor "widya_ai_local/mcp/mcp_server_widya.wya";
+impor "widya_ai_local/modul_evolusi/manajer_skill.wya";
+impor "widya_ai_local/modul_evolusi/vektor_rag.wya";
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("   SUITE VERIFIKASI REKAYASA & EVOLUSI BAHASA WIDYA-LANG (FASE 7)    ");
+    cetak("======================================================================");
+
+    misal lulus_semua = benar;
+    misal total_lulus = 0;
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 1: Inspeksi Kata Kunci Tata Bahasa Resmi
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 1] Inspeksi Kata Kunci Tata Bahasa Resmi Widya-Lang...");
+    misal kw = dapatkan_kata_kunci_widya();
+    cetak("  -> Total kata kunci resmi terdaftar: " + ke_teks(panjang(kw)));
+    jika (panjang(kw) >= 15) {
+        cetak("  [LULUS] Kata kunci tata bahasa lengkap dan konsisten.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Kata kunci resmi kurang lengkap!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 2: Katalog Pustaka Standar (Stdlib)
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 2] Katalog Pustaka Standar Widya-Lang (modul/)...");
+    misal katalog_modul = dapatkan_katalog_stdlib_widya();
+    cetak("  -> Total modul stdlib terdata: " + ke_teks(panjang(katalog_modul)));
+    jika (panjang(katalog_modul) >= 40) {
+        cetak("  [LULUS] Katalog stdlib terverifikasi mencakup domain industri.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Katalog modul stdlib tidak lengkap!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 3: Diagnostik Kompiler & Peluang Evolusi
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 3] Diagnostik Kompiler & Analisis Peluang Bahasa...");
+    misal rep = ai_inspeksi_bahasa_widya("c:/widya-lang");
+    cetak("  -> Status Kompiler : " + rep.status_kompiler);
+    cetak("  -> Temuan          : " + rep.temuan_diagnostik[0]);
+    cetak("  -> Peluang Evolusi : " + rep.peluang_pengembangan[0]);
+    jika (rep.status_kompiler == "STABIL_DAN_BERDAULAT" dan panjang(rep.peluang_pengembangan) > 0) {
+        cetak("  [LULUS] Diagnostik kompiler komprehensif.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Diagnostik kompiler tidak memenuhi kriteria!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 4: Linter Sintaksis Statis (Kode Valid)
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 4] Validasi Sintaksis Statis (Kode Valid)...");
+    misal kode_valid = "fungsi hitung(a, b) { misal c = a + b; kembalikan c; }";
+    misal lint_res = ai_validasi_sintaks_widya(kode_valid);
+    cetak("  -> Skor Linter : " + ke_teks(lint_res["skor"]) + "/100");
+    cetak("  -> Pesan       : " + lint_res["pesan"]);
+    jika (lint_res["lulus"] == benar dan lint_res["skor"] == 100) {
+        cetak("  [LULUS] Linter berhasil memverifikasi sintaks valid.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Linter gagal pada kode valid!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 5: Linter Sintaksis Statis (Deteksi Kurung Tidak Seimbang)
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 5] Validasi Sintaksis Statis (Deteksi Kurung Kurawal Tidak Seimbang)...");
+    misal kode_rusak = "fungsi rusak() { misal a = 10; jika (a > 5) { cetak(a);";
+    misal lint_rusak = ai_validasi_sintaks_widya(kode_rusak);
+    cetak("  -> Lulus       : " + ke_teks(lint_rusak["lulus"]));
+    cetak("  -> Galat       : " + lint_rusak["galat"]);
+    jika (lint_rusak["lulus"] == salah dan lint_rusak["skor"] < 100) {
+        cetak("  [LULUS] Linter berhasil menangkap kesalahan sintaksis struktur.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Linter gagal mendeteksi kurung tidak seimbang!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 6: Sintesis Mandiri Modul Pustaka Standar Baru
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 6] Sintesis Mandiri Modul Pustaka Standar Baru...");
+    misal sin = ai_kembangkan_modul_widya("kripto_post_quantum_kyber", "ML-KEM-768 Lattice Cryptography");
+    cetak("  -> Modul Disintesis: " + sin.nama_modul + ".wya (" + sin.versi + ")");
+    cetak("  -> Status Uji      : " + sin.status_uji);
+    cetak("  -> Kompilasi       : " + sin.hasil_kompilasi);
+    jika (sin.status_uji == "TERVERIFIKASI_SANDBOX" dan panjang(sin.kode_wya) > 200) {
+        cetak("  [LULUS] Sintesis modul pustaka standar berhasil mandiri.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Sintesis modul gagal!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 7: Pembangkitan Pasangan Kunci Kyber-768 ML-KEM
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 7] Pembangkitan Pasangan Kunci Kyber-768 ML-KEM...");
+    misal pasangan_k = kyber_pembangkitan_kunci("BENIH_SUPER_RAHASIA_IKN_2026");
+    cetak("  -> ID Kunci        : " + pasangan_k.id_kunci);
+    cetak("  -> Standar PQC     : " + pasangan_k.standar);
+    cetak("  -> Kunci Publik Hex: " + potong(pasangan_k.kunci_publik_hex, 0, 32) + "...");
+    jika (pasangan_k.standar == "NIST_FIPS_203_ML_KEM_768" dan panjang(pasangan_k.kunci_publik_hex) == 64) {
+        cetak("  [LULUS] Kunci publik & rahasia Kyber-768 berhasil dibangkitkan.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Pembangkitan kunci Kyber gagal!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 8: Enkapsulasi Kunci Bersama Kyber-768
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 8] Enkapsulasi Teks Sandi & Kunci Bersama Kyber-768...");
+    misal pesan_enkaps = "Pesan Enkapsulasi Kunci Kedaulatan Digital";
+    misal hasil_enkaps = kyber_enkapsulasi(pasangan_k.kunci_publik_hex, pesan_enkaps);
+    cetak("  -> Teks Sandi Hex  : " + potong(hasil_enkaps.teks_sandi_hex, 0, 32) + "...");
+    cetak("  -> Kunci Bersama   : " + potong(hasil_enkaps.kunci_bersama_hex, 0, 32) + "...");
+    jika (panjang(hasil_enkaps.teks_sandi_hex) == 64 dan panjang(hasil_enkaps.kunci_bersama_hex) == 64) {
+        cetak("  [LULUS] Enkapsulasi Kyber-768 berhasil menghasilkan kunci bersama.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Enkapsulasi Kyber-768 gagal!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 9: Dekapsulasi Kunci Bersama Kyber-768
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 9] Dekapsulasi Teks Sandi & Verifikasi Kunci Bersama...");
+    misal hasil_dekaps = kyber_dekapsulasi(hasil_enkaps.teks_sandi_hex, pasangan_k.kunci_rahasia_hex, pasangan_k.kunci_publik_hex, pesan_enkaps);
+    cetak("  -> Kunci Bersama Dekaps: " + potong(hasil_dekaps["kunci_bersama_hex"], 0, 32) + "...");
+    jika (hasil_dekaps["sukses"] == benar dan hasil_dekaps["kunci_bersama_hex"] == hasil_enkaps.kunci_bersama_hex) {
+        cetak("  [LULUS] Kunci bersama identik 100%! Komputasi PQC Kyber-768 sempurna.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Kunci bersama dekapsulasi tidak cocok dengan enkapsulasi!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 10: Integrasi MCP Protocol tools/list (Total 14 Tools)
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 10] MCP Protocol tools/list (Registrasi Tool 13 & 14)...");
+    misal mgr = inisialisasi_manajer_skill();
+    misal idx_v = inisialisasi_basis_vektor_desa();
+    misal agn = { "id": "widya_agent" };
+    misal req_list = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req-tools-list",
+        "method": "tools/list",
+        "params": {}
+    });
+    misal res_list_str = mcp_tangani_permintaan(req_list, mgr, idx_v, agn);
+    misal res_list = dari_json(res_list_str);
+    misal tools_arr = res_list["result"]["tools"];
+    cetak("  -> Total alat MCP terdaftar: " + ke_teks(panjang(tools_arr)));
+    misal ada_insp = salah;
+    misal ada_kemb = salah;
+    untuk t di tools_arr {
+        jika (t["name"] == "inspeksi_widya_lang") { ada_insp = benar; }
+        jika (t["name"] == "kembangkan_widya_lang") { ada_kemb = benar; }
+    }
+    jika (panjang(tools_arr) >= 14 dan ada_insp == benar dan ada_kemb == benar) {
+        cetak("  [LULUS] Tools MCP 'inspeksi_widya_lang' & 'kembangkan_widya_lang' aktif (Total " + ke_teks(panjang(tools_arr)) + " tools).");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Registrasi tools MCP tidak valid!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 11: Eksekusi MCP tools/call (inspeksi_widya_lang)
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 11] MCP tools/call untuk 'inspeksi_widya_lang'...");
+    misal req_call_insp = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req-call-13",
+        "method": "tools/call",
+        "params": {
+            "name": "inspeksi_widya_lang",
+            "arguments": { "path_proyek": "c:/widya-lang" }
+        }
+    });
+    misal res_insp_str = mcp_tangani_permintaan(req_call_insp, mgr, idx_v, agn);
+    misal res_insp = dari_json(res_insp_str);
+    misal txt_insp = res_insp["result"]["content"][0]["text"];
+    cetak("  -> Konten Respon:\n" + txt_insp);
+    jika (res_insp["result"]["isError"] == salah dan panjang(txt_insp) > 50) {
+        cetak("  [LULUS] Pemanggilan MCP 'inspeksi_widya_lang' berhasil dieksekusi.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Pemanggilan MCP 'inspeksi_widya_lang' gagal!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // KASUS UJI 12: Eksekusi MCP tools/call (kembangkan_widya_lang)
+    // ------------------------------------------------------------------------
+    cetak("\n[UJI 12] MCP tools/call untuk 'kembangkan_widya_lang'...");
+    misal req_call_kemb = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req-call-14",
+        "method": "tools/call",
+        "params": {
+            "name": "kembangkan_widya_lang",
+            "arguments": {
+                "nama_modul": "kripto_post_quantum_kyber",
+                "spesifikasi": "Kyber-768 ML-KEM PQC"
+            }
+        }
+    });
+    misal res_kemb_str = mcp_tangani_permintaan(req_call_kemb, mgr, idx_v, agn);
+    misal res_kemb = dari_json(res_kemb_str);
+    misal txt_kemb = res_kemb["result"]["content"][0]["text"];
+    cetak("  -> Konten Respon:\n" + txt_kemb);
+    jika (res_kemb["result"]["isError"] == salah dan panjang(txt_kemb) > 50) {
+        cetak("  [LULUS] Pemanggilan MCP 'kembangkan_widya_lang' berhasil dieksekusi.");
+        total_lulus = total_lulus + 1;
+    } lainnya {
+        cetak("  [GAGAL] Pemanggilan MCP 'kembangkan_widya_lang' gagal!");
+        lulus_semua = salah;
+    }
+
+    // ------------------------------------------------------------------------
+    // RINGKASAN HASIL UJI
+    // ------------------------------------------------------------------------
+    cetak("\n======================================================================");
+    cetak("                    HASIL VERIFIKASI FASE 7                          ");
+    cetak("======================================================================");
+    cetak("Total Kasus Uji  : 12");
+    cetak("Kasus Uji Lulus  : " + ke_teks(total_lulus));
+    misal status_str = "GAGAL";
+    jika (lulus_semua) { status_str = "100% SEMPURNA (PASS)"; }
+    cetak("Status Kelulusan : " + status_str);
+    cetak("======================================================================");
+}
+
+utama();

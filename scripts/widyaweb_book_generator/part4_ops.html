@@ -1,0 +1,737 @@
+<!-- BAB 11 -->
+<div class="page-break"></div>
+<h1>Bab 11: Pekerjaan Latar Belakang (Job Queue), Event Bus & Webhook</h1>
+
+<h2>11.1 Mengapa Website Tidak Boleh "Membeku" Menunggu Tugas Berat?</h2>
+<p>
+Ketika seorang pengunjung menekan tombol <strong>"Beli Sekarang"</strong> atau <strong>"Daftar Akun Baru"</strong> di website Anda, mereka mengharapkan halaman web merespons seketika dalam hitungan kurang dari 1 detik. Namun, bayangkan apa saja yang harus dilakukan oleh server di balik layar:
+</p>
+<ol>
+  <li>Menyimpan data transaksi ke lemari basis data (sangat cepat, hanya butuh 2 milidetik).</li>
+  <li>Membuat berkas struk invoice PDF setebal 5 halaman lengkap dengan gambar barcode (memakan waktu 4 detik).</li>
+  <li>Mengirimkan email verifikasi lewat server pos internet ke penyedia email pengunjung (memakan waktu 3 detik).</li>
+  <li>Menghubungi server gudang logistik eksternal untuk menyiapkan kurir penjemputan barang (memakan waktu 5 detik).</li>
+</ol>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Bahaya Memproses Semua Tugas Sekaligus (Sinkron)</div>
+  Jika keempat tugas di atas diproses secara berurutan saat itu juga di depan pengunjung, maka pengunjung harus menunggu layar berputar-putar (<em>loading freeze</em>) selama <strong>12 detik penuh</strong>! Pengunjung yang tidak sabar akan mengira website Anda rusak atau ponsel mereka sedang macet, lalu mereka akan menekan tombol beli berkali-kali atau menutup peramban mereka.
+</div>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Layanan Cepat Restoran Cepat Saji (Drive-Thru)</div>
+  Perhatikan cara kerja kasir restoran cepat saji:
+  <ul>
+    <li>Anda memesan 5 porsi ayam goreng krispi dan 2 burger ke kasir.</li>
+    <li>Kasir <strong>tidak menyuruh Anda berdiri di depan meja kasir sampai ayam selesai digoreng selama 15 menit</strong>.</li>
+    <li>Kasir segera memberikan struk bukti pembayaran beserta <strong>Nomor Antrean</strong> Anda (Respons Instan HTTP 200). Anda dipersilakan duduk santai di ruang tunggu.</li>
+    <li>Sementara itu, pesanan Anda dikirimkan lewat lembar kertas kecil ke <strong>Dapur Belakang</strong> (Antrean Pekerjaan / <em>Job Queue</em>). Para juru masak di dapur belakang menggoreng ayam Anda tanpa memblokir pelanggan lain yang ingin memesan di meja kasir.</li>
+    <li>Saat ayam matang, pelayan memanggil nomor antrean Anda.</li>
+  </ul>
+</div>
+
+<h2>11.2 Antrean Asinkron (Job Queue) di WidyaWeb</h2>
+<p>
+WidyaWeb menyediakan sistem antrean asinkron bawaan yang disimpan secara persisten di dalam disk komputer. Tugas-tugas berat cukup didorong ke antrean menggunakan perintah <code>antrean_dorong</code>:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// routes/api.wya - Endpoint Pendaftaran yang Sangat Cepat Responsnya</span>
+<span class="fn">POST</span>(router, <span class="str">"/api/v1/pengguna/daftar"</span>, <span class="kw">fungsi</span>(req, res) {
+    <span class="kw">misal</span> data = req[<span class="str">"badan"</span>];
+
+    <span class="comment">// 1. Simpan data pengguna ke basis data SQLite (instan, ~2ms)</span>
+    <span class="fn">db_jalan</span>(<span class="str">"INSERT INTO pengguna (email, nama) VALUES (?, ?)"</span>, [data[<span class="str">"email"</span>], data[<span class="str">"nama"</span>]]);
+
+    <span class="comment">// 2. Lempar tugas berat (kirim email selamat datang) ke antrean dapur belakang!</span>
+    <span class="fn">antrean_dorong</span>(<span class="str">"kirim_email_selamat_datang"</span>, {
+        <span class="str">"email_tujuan"</span>: data[<span class="str">"email"</span>],
+        <span class="str">"nama_penerima"</span>: data[<span class="str">"nama"</span>],
+        <span class="str">"waktu_antre"</span>: <span class="fn">waktu</span>()
+    });
+
+    <span class="comment">// 3. Langsung beri jawaban sukses ke pengunjung tanpa menunggu email terkirim!</span>
+    <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+        <span class="str">"sukses"</span>: <span class="kw">benar</span>,
+        <span class="str">"pesan"</span>: <span class="str">"Pendaftaran berhasil! Email sambutan sedang meluncur ke kotak masuk Anda."</span>
+    }, <span class="num">201</span>);
+});
+</code></pre>
+
+<p>
+Tugas yang dimasukkan ke dalam antrean akan dikerjakan oleh pekerja latar belakang (<em>worker process</em>) secara independen. Anda dapat menjalankan pekerja latar belakang ini kapan saja menggunakan alat baris perintah:
+</p>
+
+<pre><code class="language-powershell"><span class="comment"># Menjalankan pemroses antrean di jendela terminal terpisah</span>
+widya craft.wya antrean:proses
+</code></pre>
+
+<h2>11.3 Event Bus: Sistem Pengeras Suara Internal Aplikasi</h2>
+<p>
+Saat aplikasi Anda berkembang menjadi besar, komponen-komponen program tidak boleh saling mengikat erat satu sama lain (disebut <em>Tightly Coupled</em>). 
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Pengeras Suara Mall (Pusat Perbelanjaan)</div>
+  Bayangkan di sebuah pusat perbelanjaan terdengar pengumuman dari pengeras suara: <em>"Perhatian, seorang anak kecil berbaju merah sedang mencari orang tuanya di pusat informasi."</em>
+  <ul>
+    <li>Petugas keamanan (Satpam) yang mendengar pengumuman itu langsung bersiaga di pintu keluar.</li>
+    <li>Petugas kebersihan tetap menyapu lantai karena itu bukan urusannya.</li>
+    <li>Ibu dari anak tersebut langsung bergegas menuju pusat informasi.</li>
+  </ul>
+  Bagian pusat informasi tidak perlu repot-repot menelepon satpam, petugas kebersihan, dan sang ibu satu per satu secara manual. Mereka cukup menyiarkan satu peristiwa (<em>Event</em>), dan pihak yang berkepentingan akan merespons secara mandiri!
+</div>
+
+<p>
+Di WidyaWeb, Anda cukup menggunakan <code>bus_pancarkan</code> untuk mengumumkan sebuah peristiwa, dan <code>bus_dengarkan</code> untuk meresponsnya:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// 1. Di bagian mana saja yang memproses transaksi sukses:</span>
+<span class="fn">bus_pancarkan</span>(<span class="str">"transaksi_sukses"</span>, {
+    <span class="str">"id_transaksi"</span>: <span class="num">1042</span>,
+    <span class="str">"total"</span>: <span class="num">250000</span>,
+    <span class="str">"pelanggan"</span>: <span class="str">"Budi Santoso"</span>
+});
+
+<span class="comment">// 2. Di modul inventaris (mengurangi stok barang):</span>
+<span class="fn">bus_dengarkan</span>(<span class="str">"transaksi_sukses"</span>, <span class="kw">fungsi</span>(data) {
+    <span class="fn">kurangi_stok_gudang</span>(data[<span class="str">"id_transaksi"</span>]);
+});
+
+<span class="comment">// 3. Di modul telemetri (memperbarui angka penjualan di layar kasir secara real-time):</span>
+<span class="fn">bus_dengarkan</span>(<span class="str">"transaksi_sukses"</span>, <span class="kw">fungsi</span>(data) {
+    <span class="fn">perbarui_grafik_kasir</span>(data[<span class="str">"total"</span>]);
+});
+</code></pre>
+
+<h2>11.4 Webhook Outbound dengan Tanda Tangan Kriptografis HMAC-SHA256</h2>
+<p>
+Bagaimana jika website Anda perlu memberi tahu sistem komputer milik mitra bisnis (misalnya bank penyedia pembayaran QRIS atau jasa kurir ekspedisi)? Cara standar industri untuk melakukannya adalah dengan mengirimkan <strong>Webhook</strong>.
+</p>
+
+<div class="callout security">
+  <div class="callout-title">🛡️ Menjamin Surat Dinas Asli dengan Tanda Tangan Digital</div>
+  Saat server Anda mengirim data transaksi ke server mitra melalui internet terbuka, bagaimana server mitra yakin bahwa kiriman data tersebut benar-benar berasal dari website resmi Anda dan bukan dipalsukan oleh peretas?
+  <br><br>
+  WidyaWeb menandatangani setiap kiriman webhook menggunakan algoritma <strong>HMAC-SHA256</strong> dengan Kunci Rahasia Bersama (<em>Shared Secret Key</em>). Tanda tangan kriptografis ini disertakan pada header <code>X-Hub-Signature-256</code> sehingga tidak dapat dipalsukan sedikit pun oleh peretas di tengah jalan.
+</div>
+
+<pre><code class="language-widya"><span class="comment">// app/webhook.wya - Pengiriman Laporan Transaksi ke Server Mitra</span>
+<span class="kw">fungsi</span> <span class="fn">siarkan_webhook_transaksi</span>(url_mitra, data_transaksi, kunci_rahasia) {
+    <span class="comment">// 1. Ubah paket data transaksi menjadi teks JSON</span>
+    <span class="kw">misal</span> payload_json = <span class="fn">ke_json</span>(data_transaksi);
+
+    <span class="comment">// 2. Buat stempel segel lilin digital (HMAC-SHA256) menggunakan kunci rahasia</span>
+    <span class="kw">misal</span> signature = <span class="fn">hmac_sha256</span>(kunci_rahasia, payload_json);
+
+    <span class="comment">// 3. Luncurkan paket data melalui protokol HTTP POST</span>
+    <span class="kw">misal</span> hasil = <span class="fn">http_post_detil</span>(url_mitra, {
+        <span class="str">"headers"</span>: {
+            <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>,
+            <span class="str">"X-Hub-Signature-256"</span>: <span class="str">"sha256="</span> + signature
+        },
+        <span class="str">"body"</span>: payload_json,
+        <span class="str">"timeout_ms"</span>: <span class="num">5000</span> <span class="comment">// Batas tunggu maksimal 5 detik</span>
+    });
+
+    <span class="kw">kembalikan</span> hasil;
+}
+</code></pre>
+
+<!-- BAB 12 -->
+<div class="page-break"></div>
+<h1>Bab 12: Tongkat Ajaib Pengembang: Perangkat Baris Perintah craft.wya</h1>
+
+<h2>12.1 Apa Itu Perangkat Baris Perintah (CLI) & Mengapa Anda Menyukainya?</h2>
+<p>
+Bagi orang awam, layar hitam terminal (Command Prompt atau PowerShell) sering kali terlihat menakutkan seperti layar film hacker. Namun sebenarnya, terminal adalah sarana komunikasi paling jujur, paling cepat, dan paling hemat tenaga antara Anda dan komputer Anda!
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Tombol Remot Kontrol Khusus Teknisi</div>
+  Bayangkan Anda memiliki sebuah mobil modern:
+  <ul>
+    <li>Saat berkendara santai di jalan, Anda menginjak pedal gas dan memutar setir (ini seperti pengunjung yang mengklik tombol di layar website).</li>
+    <li>Tetapi ketika Anda membawa mobil ke bengkel untuk servis rutin, teknisi bengkel tidak repot-repot duduk di kursi pengemudi. Teknisi menancapkan sebuah alat khusus ke soket komputer mobil, lalu menekan satu tombol: <em>"Cek kondisi oli, cek tekanan ban, bersihkan ruang filter udara!"</em> (ini adalah <strong>CLI / Command-Line Interface</strong>).</li>
+  </ul>
+</div>
+
+<p>
+Di dalam proyek WidyaWeb, alat sakti teknisi tersebut bernama <code>craft.wya</code>. Anda tidak perlu menyentuh lemari basis data secara manual yang berisiko salah hapus data. Cukup ketik perintah satu baris, dan <code>craft.wya</code> akan mengerjakannya untuk Anda dalam 1 detik.
+</p>
+
+<h2>12.2 Kamus Lengkap Perintah Resmi craft.wya</h2>
+<p>
+Semua perintah di bawah ini dijalankan melalui PowerShell atau Terminal di dalam folder proyek Anda:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 35%;">Perintah Terminal</th>
+      <th style="width: 65%;">Fungsi Praktis & Apa yang Terjadi di Balik Layar</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>widya craft.wya migrasi:jalankan</code></td>
+      <td><strong>Membangun Skema Tabel Otomatis</strong>: Mengeksekusi berkas cetak biru database di folder <code>database/migrations/</code> secara berurutan agar tabel-tabel siap digunakan.</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya migrasi:status</code></td>
+      <td><strong>Pengecekan Kesehatan Database</strong>: Menampilkan tabel riwayat migrasi untuk melihat tabel mana yang sudah terpasang dan mana yang belum.</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya seeder:jalankan</code></td>
+      <td><strong>Mengisi Data Uji Coba Seketika</strong>: Memasukkan data awal contoh (seperti akun admin default dan produk sampel) agar website tidak terlihat kosong saat Anda baru mulai menguji.</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya cache:bersihkan</code></td>
+      <td><strong>Menyegarkan Memori Server</strong>: Membuang sisa-sisa cache di memori RAM sehingga data terbaru langsung terambil dari database tanpa tertahan memori lama.</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya antrean:proses</code></td>
+      <td><strong>Menyalakan Mesin Dapur Belakang</strong>: Memulai pekerja asinkron (worker loop) yang bertugas mengeksekusi pengiriman email dan pembuatan PDF yang sedang mengantre.</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya jadwal:detak</code></td>
+      <td><strong>Memicu Tugas Terjadwal (Cron Tick)</strong>: Menjalankan satu putaran tugas berkala otomatis (misalnya penutupan buku harian kasir tepat tengah malam).</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya rute:daftar</code></td>
+      <td><strong>Melihat Peta Seluruh Alamat Web</strong>: Mencetak daftar rapi semua URL yang terdaftar di website Anda lengkap dengan metode HTTP-nya (GET/POST) di layar terminal.</td>
+    </tr>
+    <tr>
+      <td><code>widya craft.wya periksa:kesehatan</code></td>
+      <td><strong>Diagnosa Dokter Sistem</strong>: Memeriksa apakah berkas database bisa diakses, memeriksa sisa ruang penyimpanan harddisk, dan mengukur penggunaan RAM server.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Contoh Alur Kerja Nyata Pengembang Pemula:</h3>
+<p>
+Katakanlah Anda baru saja mengunduh proyek web dari teman kerja Anda atau berpindah ke laptop baru:
+</p>
+<ol>
+  <li>Buka terminal di folder proyek Anda.</li>
+  <li>Ketik <code>widya craft.wya migrasi:jalankan</code> &rarr; <em>Seluruh tabel database langsung terbentuk rapi!</em></li>
+  <li>Ketik <code>widya craft.wya seeder:jalankan</code> &rarr; <em>Data produk contoh dan akun demo langsung terisi!</em></li>
+  <li>Ketik <code>widya main.wya</code> &rarr; <em>Website langsung aktif dan siap dibuka di peramban!</em></li>
+</ol>
+
+<!-- BAB 13 -->
+<div class="page-break"></div>
+<h1>Bab 13: Menjadi Programmer Efisien di VS Code Bersama AI WidyaCoder</h1>
+
+<h2>13.1 Mengatur Visual Studio Code: Nyalakan Server Sekali Klik</h2>
+<p>
+Apakah Anda lelah harus mengetikkan perintah panjang di terminal setiap kali ingin menyalakan server website Anda? Di dalam Visual Studio Code, kita bisa menyetel pintasan tombol (<em>Shortcut</em>) keyboard agar server menyala secara otomatis hanya dengan menekan <strong>Ctrl + Shift + B</strong>!
+</p>
+
+<p>
+Cukup buat berkas bernama <code>tasks.json</code> di dalam folder tersembunyi <code>.vscode/</code> pada proyek Anda, lalu isi dengan teks berikut:
+</p>
+
+<pre><code class="language-json">{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🚀 Jalankan WidyaWeb Server",
+      "type": "shell",
+      "command": "& \"${workspaceFolder}\\widya.exe\" \"main.wya\"",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "🛠️ Eksekusi Migrasi Database",
+      "type": "shell",
+      "command": "& \"${workspaceFolder}\\widya.exe\" \"craft.wya\" \"migrasi:jalankan\""
+    }
+  ]
+}
+</code></pre>
+
+<div class="callout tip">
+  <div class="callout-title">🎯 Cara Menggunakannya di Keyboard Anda</div>
+  Sekarang, setiap kali Anda selesai menulis atau mengubah kode di VS Code, Anda cukup menekan tombol kombinasi:
+  <div style="font-size: 14pt; font-weight: bold; margin: 8px 0; color: #0284c7;">
+    Ctrl + Shift + B
+  </div>
+  Sebuah panel terminal baru akan muncul di bagian bawah editor Anda dan server WidyaWeb langsung menyala detik itu juga!
+</div>
+
+<h2>13.2 Menghubungkan AI Asisten Lokal WidyaCoder (Ollama + Continue)</h2>
+<p>
+Bayangkan Anda memiliki seorang insinyur pemrograman senior tingkat dunia yang duduk tepat di sebelah meja Anda, siap membantu Anda 24 jam sehari, menjawab segala pertanyaan bingung Anda, dan menuliskan kode untuk Anda secara gratis tanpa pernah mengeluh. Itulah <strong>WidyaCoder AI</strong>!
+</p>
+
+<div class="callout security">
+  <div class="callout-title">🔒 Mengapa Menggunakan AI Lokal (Ollama) Lebih Unggul?</div>
+  Banyak programmer ragu menggunakan asisten AI komersial di internet (seperti ChatGPT atau Copilot) karena khawatir kode rahasia proyek mereka atau data pelanggan perusahaan mereka akan diunggah ke server luar negeri. 
+  <br><br>
+  <strong>WidyaCoder</strong> berjalan <strong>100% di komputer laptop Anda sendiri secara offline</strong> menggunakan mesin <strong>Ollama</strong>. Tidak ada satu byte pun data yang bocor ke internet! Selain itu, Anda tidak perlu membayar biaya langganan bulanan sepeser pun.
+</div>
+
+<h3>3 Cara Menggunakan WidyaCoder di Keseharian Anda:</h3>
+
+<ol>
+  <li>
+    <strong>Tanya Jawab di Bilah Samping (Pintasan: <code>Ctrl + L</code>)</strong>:
+    <p>Tekan <code>Ctrl + L</code> untuk membuka kotak obrolan AI di sisi kiri editor. Anda bisa bertanya menggunakan Bahasa Indonesia sehari-hari layaknya berbicara pada sahabat:</p>
+    <div style="background: #0f172a; color: #38bdf8; padding: 10px; border-radius: 6px; font-style: italic; margin-bottom: 8px;">
+      "Tolong buatkan saya rute API metode GET di WidyaWeb untuk menampilkan 5 artikel berita terpopuler beserta tanggal rilisnya."
+    </div>
+    <p>WidyaCoder akan langsung membalas dengan kode lengkap beserta penjelasannya!</p>
+  </li>
+
+  <li>
+    <strong>Memodifikasi Kode Cepat di Tempat (Pintasan: <code>Ctrl + I</code>)</strong>:
+    <p>Sorot (blok) beberapa baris kode yang ingin Anda perbaiki, lalu tekan <code>Ctrl + I</code>. Ketikkan perintah perbaikan, misalnya:</p>
+    <div style="background: #0f172a; color: #a5d6ff; padding: 10px; border-radius: 6px; font-style: italic; margin-bottom: 8px;">
+      "Tambahkan penanganan validasi agar kolom harga tidak boleh diisi angka minus."
+    </div>
+    <p>WidyaCoder akan langsung mengedit kode tersebut tepat di tempat kursor Anda berada!</p>
+  </li>
+
+  <li>
+    <strong>Melanjutkan Pengetikan Otomatis (Tab Autocomplete)</strong>:
+    <p>Saat Anda mengetik di lembar kode, WidyaCoder akan membaca pikiran Anda dan menampilkan saran kode berwarna abu-abu tipis di depan kursor Anda. Jika saran tersebut cocok dengan yang Anda inginkan, Anda cukup menekan tombol <strong>Tab</strong> pada keyboard untuk menerimanya seketika!</p>
+  </li>
+</ol>
+
+<!-- BAB 14 -->
+<div class="page-break"></div>
+<h1>Bab 14: Membawa Website ke Internet Nyata (Hosting VPS, HTTPS & UU PDP)</h1>
+
+<h2>14.1 Dari Komputer Sendiri (Localhost) ke Seluruh Dunia (Public IP & VPS)</h2>
+<p>
+Selama belajar di bab-bab sebelumnya, website Anda beralamat di <code>http://localhost:8080</code> atau <code>http://127.0.0.1:8080</code>. Alamat ini hanya bisa dibuka oleh komputer Anda sendiri. Orang lain di internet belum bisa melihatnya.
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Toko di Garasi Rumah vs Ruko di Jalan Protokol</div>
+  <ul>
+    <li><strong>Localhost (Komputer Anda)</strong> ibaratnya Anda membuka toko roti di dalam garasi rumah Anda sendiri yang pagarnya terkunci rapat. Hanya anggota keluarga di rumah yang bisa melihat dan membeli roti tersebut.</li>
+    <li><strong>Server VPS (Virtual Private Server)</strong> ibaratnya Anda menyewa ruko di pinggir jalan raya protokol yang dilewati ribuan orang setiap menit. Siapa saja dari seluruh penjuru dunia bisa datang, melihat plang nama toko Anda (Nama Domain, misal: <code>www.tokosaya.id</code>), dan masuk berbelanja selama 24 jam sehari 7 hari seminggu.</li>
+  </ul>
+</div>
+
+<p>
+Anda dapat menyewa server VPS Linux murah dari penyedia lokal Indonesia (seperti IDCloudHost, Biznet Gio, atau Niagahoster) dengan biaya sangat terjangkau mulai dari Rp 50.000 hingga Rp 100.000 per bulan.
+</p>
+
+<h2>14.2 Menjaga Server Tetap Menyala 24 Jam Non-Stop dengan systemd</h2>
+<p>
+Di komputer laptop Anda, jika Anda menutup jendela terminal atau mematikan laptop, maka website Anda akan otomatis mati. Di server internet (VPS Linux), website Anda harus tetap menyala siang dan malam bahkan jika server mengalami mati listrik sesaat atau baru saja melakukan restart pembaruan sistem.
+</p>
+<p>
+Untuk itu, kita mendaftarkan aplikasi WidyaWeb sebagai layanan latar belakang resmi Linux yang disebut <strong>Layanan systemd Daemon</strong>.
+</p>
+
+<h3>Membuat Berkas Layanan: /etc/systemd/system/widyaweb.service</h3>
+<pre><code class="language-ini">[Unit]
+Description=Layanan WidyaWeb Enterprise Server Berdaulat
+After=network.target
+
+[Service]
+Type=simple
+User=widya
+WorkingDirectory=/opt/aplikasi_saya
+ExecStart=/opt/widya-lang/widya main.wya
+Restart=always
+RestartSec=3
+Environment=WIDYA_ENV=prod
+Environment=PORT=8080
+
+# Tameng Pengerasan Keamanan Sistem Operasi Linux (Hardening)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+<h3>🔍 Penjelasan Perintah Pengaturan di Atas:</h3>
+<ul>
+  <li><code>Restart=always</code>: Jika aplikasi tiba-tiba crash karena suatu galat tak terduga, Linux akan <em>secara otomatis menyalakan kembali aplikasi dalam waktu 3 detik</em> tanpa perlu Anda bangun tengah malam untuk menyalakannya!</li>
+  <li><code>NoNewPrivileges=true</code>: Mencegah siapapun menggunakan aplikasi Anda untuk mencuri hak akses administrator tertinggi (Root) di server Linux Anda.</li>
+</ul>
+
+<h3>3 Perintah Linux untuk Menyalakan Layanan:</h3>
+<pre><code class="language-bash"><span class="comment"># 1. Beritahu Linux ada layanan baru terdaftar</span>
+sudo systemctl daemon-reload
+
+<span class="comment"># 2. Perintahkan Linux agar menyalakan website otomatis setiap kali server menyala (Auto-boot)</span>
+sudo systemctl enable widyaweb
+
+<span class="comment"># 3. Nyalakan website sekarang juga!</span>
+sudo systemctl start widyaweb
+</code></pre>
+
+<h2>14.3 Mengunci Gembok Hijau (Domain Nama & Sertifikat SSL/HTTPS Gratis)</h2>
+<p>
+Pernahkah Anda membuka sebuah website lalu peramban Google Chrome menampilkan peringatan menakutkan berwarna merah bertuliskan: <em>"Koneksi Anda Tidak Privat / Not Secure"</em>? Itu terjadi karena website tersebut masih menggunakan <strong>HTTP biasa</strong> yang belum memiliki sertifikat enkripsi SSL.
+</p>
+
+<p>
+Di server produksi, kita memasang perantara lalu lintas ringan bernama <strong>Nginx Reverse Proxy</strong> yang dikombinasikan dengan sertifikat digital gembok hijau resmi dari <strong>Let's Encrypt (Certbot)</strong> yang 100% gratis selamanya:
+</p>
+
+<pre><code class="language-bash"><span class="comment"># Memasang sertifikat gembok hijau HTTPS gratis hanya dengan satu perintah:</span>
+sudo certbot --nginx -d tokosaya.id -d www.tokosaya.id
+</code></pre>
+<p>
+Setelah perintah di atas selesai dijalankan, alamat website Anda otomatis berubah menjadi <code>https://tokosaya.id</code> dengan ikon gembok terkunci rapi di bilah peramban pengunjung. Semua data transaksi aman terlindungi dari penyadapan Wi-Fi publik!
+</p>
+
+<h2>14.4 Kepatuhan Hukum Terhadap UU Pelindungan Data Pribadi (UU PDP No. 27/2022)</h2>
+<p>
+Di Indonesia, keselamatan data pengguna bukan lagi sekadar himbauan moral, melainkan telah menjadi <strong>Kewajiban Hukum Negara</strong> yang diatur di dalam Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP). Pelanggaran terhadap keamanan data dapat dikenakan sanksi denda administratif hingga puluhan miliar rupiah serta ancaman pidana kurungan.
+</p>
+
+<div class="callout security">
+  <div class="callout-title">🛡️ 4 Pilar Keamanan WidyaWeb Sesuai Mandat UU PDP</div>
+  <ol>
+    <li>
+      <strong>Enkripsi Data Sensitif Saat Disimpan (Encryption At-Rest)</strong>:
+      Data pribadi seperti Nomor Induk Kependudukan (NIK), nomor telepon seluler, dan nomor rekening perbankan tidak boleh disimpan dalam teks mentah. WidyaWeb menyediakan enkripsi AES-256 bawaan sebelum data ditulis ke dalam basis data SQLite.
+    </li>
+    <li>
+      <strong>Pembersihan Jejak Sensitif pada Berkas Log (Log Masking)</strong>:
+      Mesin pencatat CCTV (Logger) WidyaWeb secara otomatis mengenali dan menyamarkan kata kunci rahasia seperti kata sandi, token otentikasi, dan CVV kartu kredit sehingga berkas log server tetap bersih dan tidak membocorkan privasi pengguna.
+    </li>
+    <li>
+      <strong>Hak untuk Dihapus (Right to Erasure / Account Deletion)</strong>:
+      Sesuai Pasal 8 UU PDP, setiap pemilik data berhak meminta akun dan data pribadi mereka dihapus secara permanen dari sistem Anda. Di WidyaWeb, Anda dapat mengimplementasikan rute penghapusan akun yang menghapus seluruh data terkait secara tuntas.
+    </li>
+    <li>
+      <strong>Audit Trail Kriptografis yang Tidak Dapat Dimanipulasi</strong>:
+      Setiap kali ada petugas admin yang membuka atau mengubah data pengguna, sistem mencatat waktu kejadian, alamat IP pengakses, dan identitas pengubah ke dalam tabel jejak audit (audit log) yang terikat stempel waktu kriptografis.
+    </li>
+  </ol>
+</div>
+
+<!-- BAGIAN V: LAMPIRAN -->
+<div class="page-break"></div>
+<h1>Lampiran A: Kamus Istilah Web untuk Pemula (Glosarium A sampai Z)</h1>
+
+<p>
+Dunia pemrograman web dipenuhi oleh singkatan dan istilah asing yang sering kali membingungkan bagi pemula. Gunakan kamus ringkas ini sebagai panduan cepat saat Anda menemukan kata yang belum Anda pahami:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Istilah</th>
+      <th style="width: 75%;">Penjelasan Sederhana dalam Bahasa Sehari-hari</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>API (Application Programming Interface)</strong></td>
+      <td>Jendela atau loket penghubung yang memungkinkan dua aplikasi komputer saling bertukar data secara teratur (misalnya aplikasi kasir HP mengambil data produk dari server toko Anda).</td>
+    </tr>
+    <tr>
+      <td><strong>Argon2id</strong></td>
+      <td>Algoritma penggiling (hashing) kata sandi teraman di dunia saat ini, dirancang agar superkomputer hacker kehabisan memori jika mencoba menebak kata sandi pengguna Anda.</td>
+    </tr>
+    <tr>
+      <td><strong>Backend</strong></td>
+      <td>Seluruh bagian mesin di balik layar website yang bertugas mengolah logika, memproses data, menjaga keamanan, dan berbicara ke lemari basis data.</td>
+    </tr>
+    <tr>
+      <td><strong>Cookie</strong></td>
+      <td>Sepotong kecil catatan data teks yang dititipkan oleh server ke peramban (browser) pengunjung agar server bisa mengenali siapa yang sedang membuka halaman.</td>
+    </tr>
+    <tr>
+      <td><strong>CORS (Cross-Origin Resource Sharing)</strong></td>
+      <td>Aturan satpam peramban yang membatasi apakah website di alamat A boleh memanggil data dari server di alamat B.</td>
+    </tr>
+    <tr>
+      <td><strong>CRUD (Create, Read, Update, Delete)</strong></td>
+      <td>Empat operasi dasar dalam pengelolaan data: Membuat data baru, Membaca/melihat data, Mengubah data lama, dan Menghapus data.</td>
+    </tr>
+    <tr>
+      <td><strong>Daemon / Service</strong></td>
+      <td>Aplikasi yang berjalan diam-diam di latar belakang sistem operasi tanpa jendela tampilan grafis, menyala 24 jam non-stop melayani pengguna.</td>
+    </tr>
+    <tr>
+      <td><strong>Endpoint</strong></td>
+      <td>Alamat URL spesifik pada server web tempat pengunjung dapat meminta data atau mengirim formulir (misalnya: <code>/api/v1/produk</code>).</td>
+    </tr>
+    <tr>
+      <td><strong>Frontend</strong></td>
+      <td>Bagian visual website yang dilihat, dinikmati, dan diklik langsung oleh mata pengunjung di layar monitor atau layar smartphone mereka.</td>
+    </tr>
+    <tr>
+      <td><strong>HTTP (Hypertext Transfer Protocol)</strong></td>
+      <td>Aturan bahasa komunikasi standar yang digunakan oleh peramban web dan server web untuk saling berkirim surat di jaringan internet.</td>
+    </tr>
+    <tr>
+      <td><strong>HTTPS (HTTP Secure)</strong></td>
+      <td>Versi aman dari protokol HTTP yang dilengkapi enkripsi gembok SSL/TLS sehingga isi kiriman data tidak bisa diintip atau disadap orang lain.</td>
+    </tr>
+    <tr>
+      <td><strong>JSON (JavaScript Object Notation)</strong></td>
+      <td>Format tulisan teks terstruktur yang sangat populer di seluruh dunia untuk mengirim data antar program komputer, menggunakan tanda kurung kurawal <code>{}</code> dan siku <code>[]</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Localhost</strong></td>
+      <td>Sebutan khusus untuk komputer Anda sendiri. Alamat IP standarnya adalah <code>127.0.0.1</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Middleware</strong></td>
+      <td>Fungsi satpam penjaga gerbang yang bertugas mencegat dan memeriksa permintaan pengunjung sebelum permintaan itu sampai ke tujuan akhir.</td>
+    </tr>
+    <tr>
+      <td><strong>ORM (Object-Relational Mapping)</strong></td>
+      <td>Alat penerjemah cerdas yang memungkinkan kita mengelola tabel basis data menggunakan fungsi bahasa pemrograman biasa yang nyaman dibaca tanpa harus mengetik perintah SQL yang kaku.</td>
+    </tr>
+    <tr>
+      <td><strong>Payload / Body</strong></td>
+      <td>Isi paket barang atau data formulir sebenarnya yang dikirimkan di dalam sebuah permintaan atau balasan HTTP.</td>
+    </tr>
+    <tr>
+      <td><strong>Port</strong></td>
+      <td>Nomor pintu gerbang logis pada komputer untuk membedakan aplikasi satu dengan aplikasi lainnya di alamat IP yang sama (misalnya pintu <code>8080</code> untuk web, pintu <code>22</code> untuk SSH).</td>
+    </tr>
+    <tr>
+      <td><strong>RBAC (Role-Based Access Control)</strong></td>
+      <td>Sistem pembagian hak akses berdasarkan jabatan atau peran pengguna (misal: Admin boleh membuka semua halaman, Kasir hanya boleh membuka mesin kasir).</td>
+    </tr>
+    <tr>
+      <td><strong>REST API</strong></td>
+      <td>Gaya arsitektur pembuatan API yang memanfaatkan metode standar web HTTP (GET, POST, PUT, DELETE) secara konsisten dan teratur.</td>
+    </tr>
+    <tr>
+      <td><strong>Routing (Router)</strong></td>
+      <td>Sistem penunjuk jalan yang mengarahkan pengunjung ke fungsi yang tepat sesuai dengan alamat URL yang mereka ketikkan di peramban.</td>
+    </tr>
+    <tr>
+      <td><strong>SQLite</strong></td>
+      <td>Mesin basis data tanpa server yang menyimpan seluruh data tabel ke dalam satu berkas tunggal di harddisk, sangat ringan, cepat, dan tidak memerlukan instalasi aplikasi database terpisah.</td>
+    </tr>
+    <tr>
+      <td><strong>Status Code (Kode Status HTTP)</strong></td>
+      <td>Angka 3 digit balasan server yang memberi tahu apa yang terjadi: <code>200</code> (Sukses), <code>201</code> (Data Berhasil Dibuat), <code>400</code> (Permintaan Rusak), <code>401</code> (Belum Login), <code>403</code> (Dilarang Masuk), <code>404</code> (Halaman Hilang), <code>422</code> (Formulir Salah Isi), <code>500</code> (Server Mengalami Galat).</td>
+    </tr>
+    <tr>
+      <td><strong>VPS (Virtual Private Server)</strong></td>
+      <td>Komputer virtual di pusat data (data center) yang menyala 24 jam dengan koneksi internet kencang dan IP publik, disewa untuk menaruh website agar bisa diakses seluruh dunia.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN B -->
+<div class="page-break"></div>
+<h1>Lampiran B: Lembar Contekan Kode Cepat Siap Salin (Quick Reference)</h1>
+
+<p>
+Simpan halaman ini di dekat meja kerja Anda! Berikut adalah daftar fungsi-fungsi paling sering digunakan di WidyaWeb yang siap Anda salin ke proyek Anda:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 28%;">Nama Fungsi</th>
+      <th style="width: 32%;">Contoh Sintaks Kode</th>
+      <th style="width: 40%;">Tujuan & Kapan Digunakan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>buat_router()</code></td>
+      <td><code>misal r = buat_router();</code></td>
+      <td>Membuat papan penunjuk arah rute HTTP di awal aplikasi.</td>
+    </tr>
+    <tr>
+      <td><code>GET(r, path, fn)</code></td>
+      <td><code>GET(r, "/halo", fungsi(req, res){ ... });</code></td>
+      <td>Mendaftarkan halaman atau API yang membaca data (mengambil halaman/daftar).</td>
+    </tr>
+    <tr>
+      <td><code>POST(r, path, fn)</code></td>
+      <td><code>POST(r, "/simpan", fungsi(req, res){ ... });</code></td>
+      <td>Mendaftarkan endpoint untuk menerima kiriman data formulir baru.</td>
+    </tr>
+    <tr>
+      <td><code>response_json()</code></td>
+      <td><code>response_json(res, {"status": "ok"}, 200);</code></td>
+      <td>Mengirimkan balasan berupa data terstruktur format JSON ke peramban.</td>
+    </tr>
+    <tr>
+      <td><code>response_teks()</code></td>
+      <td><code>response_teks(res, "&lt;h1&gt;Halo&lt;/h1&gt;", 200, "text/html");</code></td>
+      <td>Mengirimkan balasan teks murni atau dokumen halaman web HTML.</td>
+    </tr>
+    <tr>
+      <td><code>db_dari()</code></td>
+      <td><code>db_dari("produk").ambil();</code></td>
+      <td>Memulai pembacaan tabel database menggunakan query builder fluent ORM.</td>
+    </tr>
+    <tr>
+      <td><code>db_jalan()</code></td>
+      <td><code>db_jalan("UPDATE produk SET harga=?", [15000]);</code></td>
+      <td>Mengeksekusi perintah query mentah ke dalam basis data SQLite.</td>
+    </tr>
+    <tr>
+      <td><code>argon2id_hash()</code></td>
+      <td><code>misal h = argon2id_hash("sandi123");</code></td>
+      <td>Menggiling kata sandi menjadi teks hash kriptografis yang aman dan tak terpecahkan.</td>
+    </tr>
+    <tr>
+      <td><code>argon2id_verifikasi()</code></td>
+      <td><code>misal ok = argon2id_verifikasi(sandi, hash);</code></td>
+      <td>Mengecek apakah kata sandi yang diketik cocok dengan hash di basis data.</td>
+    </tr>
+    <tr>
+      <td><code>validasi_skema()</code></td>
+      <td><code>misal g = validasi_skema(data, aturan);</code></td>
+      <td>Memeriksa apakah data formulir kiriman pengguna memenuhi syarat aturan.</td>
+    </tr>
+    <tr>
+      <td><code>buka_kanal_sse()</code></td>
+      <td><code>misal sse = buka_kanal_sse(res);</code></td>
+      <td>Membuka saluran penyiaran data satu arah langsung (real-time) ke layar browser.</td>
+    </tr>
+    <tr>
+      <td><code>antrean_dorong()</code></td>
+      <td><code>antrean_dorong("kirim_email", data);</code></td>
+      <td>Memasukkan tugas komputasi berat ke dalam antrean pekerja latar belakang.</td>
+    </tr>
+    <tr>
+      <td><code>log_info()</code></td>
+      <td><code>log_info("Server mulai menerima koneksi.");</code></td>
+      <td>Mencatat aktivitas positif sistem ke CCTV log dengan warna biru/hijau.</td>
+    </tr>
+    <tr>
+      <td><code>log_peringatan()</code></td>
+      <td><code>log_peringatan("Ada percobaan login gagal.");</code></td>
+      <td>Mencatat peristiwa mencurigakan atau peringatan ke berkas log.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN C -->
+<div class="page-break"></div>
+<h1>Lampiran C: Panduan Mengatasi 15 Pesan Galat yang Sering Ditemui Pemula</h1>
+
+<p>
+Ketika belajar koding, melihat pesan galat (<em>Error Message</em>) berwarna merah di layar monitor adalah hal yang sepenuhnya wajar dan dialami oleh setiap programmer di seluruh dunia. Jangan panik! Pesan galat sebenarnya adalah petunjuk ramah dari komputer yang memberi tahu bagian mana yang perlu diperbaiki.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 5%;">No</th>
+      <th style="width: 30%;">Pesan Galat yang Muncul</th>
+      <th style="width: 30%;">Penyebab Paling Sering</th>
+      <th style="width: 35%;">Solusi Langkah-demi-Langkah</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><code>Alamat port 8080 sudah digunakan oleh aplikasi lain</code></td>
+      <td>Server Widya sebelumnya masih menyala di latar belakang, atau ada aplikasi lain (seperti XAMPP / Tomcat) yang memakai port 8080.</td>
+      <td>Tutup terminal server sebelumnya, atau buka <code>config.base.wya</code> dan ganti nomor port menjadi <code>8081</code> atau <code>9090</code>.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><code>no such table: produk</code></td>
+      <td>Tabel <code>produk</code> belum dibuat di basis data SQLite Anda.</td>
+      <td>Jalankan perintah migrasi di terminal: <code>widya craft.wya migrasi:jalankan</code>.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><code>Karakter tidak dikenal: '﻿'</code></td>
+      <td>Berkas kode disimpan dengan format <em>UTF-8 with BOM</em> oleh teks editor bawaan Windows Notepad / PowerShell lama.</td>
+      <td>Buka berkas di VS Code, lihat pojok kanan bawah, ubah <strong>UTF-8 with BOM</strong> menjadi <strong>UTF-8</strong> biasa, lalu simpan ulang (Ctrl+S).</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><code>Variabel tidak terdefinisi: 'x'</code></td>
+      <td>Anda menggunakan variabel <code>x</code> sebelum mendeklarasikannya dengan kata kunci <code>misal</code>, atau salah ketik huruf besar/kecil.</td>
+      <td>Pastikan Anda menulis <code>misal x = ...;</code> terlebih dahulu sebelum variabel itu dipanggil. Periksa ejaan hurufnya.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><code>JSON tidak valid pada request body</code></td>
+      <td>Pengunjung atau aplikasi luar mengirim teks paket data yang rusak (misalnya lupa tanda petik dua atau koma salah letak).</td>
+      <td>Pastikan format data yang dikirim adalah JSON standar yang valid dengan tanda petik dua di setiap kunci (key).</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><code>Akses ditolak: 403 Forbidden</code></td>
+      <td>Pengguna sudah login, tetapi perannya tidak memenuhi syarat (misal: kasir biasa mencoba membuka menu rahasia admin).</td>
+      <td>Pastikan akun yang digunakan untuk login memiliki peran (role) yang sesuai dengan aturan middleware di rute tersebut.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><code>401 Unauthorized</code></td>
+      <td>Pengunjung mencoba memanggil endpoint yang mewajibkan login tanpa menyertakan tiket sesi (cookie) yang sah.</td>
+      <td>Lakukan login terlebih dahulu melalui endpoint <code>/login</code> untuk mendapatkan tiket sesi yang valid.</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><code>404 Not Found pada browser</code></td>
+      <td>Alamat URL yang diketikkan di browser salah ketik atau belum didaftarkan di dalam fungsi router.</td>
+      <td>Periksa kembali rute yang Anda buat di <code>routes/api.wya</code>. Pastikan alamatnya sama persis (misal: <code>/api/produk</code>).</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><code>Galat sintaks: kekurangan tanda '}'</code></td>
+      <td>Ada blok kode fungsi atau kurung kurawal pembuka <code>{</code> yang lupa ditutup dengan pasangannya <code>}</code>.</td>
+      <td>Periksa baris kode terakhir yang Anda edit di VS Code. Ikuti garis pemandu lekukan kode untuk mencari kurung kurawal yang belum tertutup.</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><code>database is locked</code></td>
+      <td>Ada proses lain (seperti aplikasi SQLite Browser luar) yang sedang mengunci berkas <code>storage/database.sqlite</code>.</td>
+      <td>Tutup aplikasi SQLite Browser pihak ketiga atau pastikan setiap transaksi database ditutup dengan commit/rollback.</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><code>422 Unprocessable Entity</code></td>
+      <td>Data formulir yang Anda kirimkan melanggar aturan validasi skema (misal: panjang NIK kurang dari 16 digit).</td>
+      <td>Lihat array <code>rincian_kesalahan</code> pada balasan JSON untuk melihat kolom formulir mana yang salah isi.</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td><code>Berkas views/layout.html tidak ditemukan</code></td>
+      <td>Folder <code>views/</code> belum dibuat atau nama berkas salah ketik di dalam fungsi view engine.</td>
+      <td>Pastikan struktur folder proyek Anda memiliki direktori <code>views/</code> yang berisi <code>layout.html</code>.</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td><code>Koneksi SSE terputus setelah 60 detik</code></td>
+      <td>Proxy server Nginx di server VPS memutuskan sambungan karena menganggap koneksi sedang menganggur (idle timeout).</td>
+      <td>Tambahkan baris <code>proxy_read_timeout 3600s;</code> pada berkas konfigurasi Nginx Anda untuk saluran SSE.</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td><code>systemd: widyaweb.service failed</code></td>
+      <td>Jalur berkas executable di <code>ExecStart</code> salah atau pengguna (user) tidak memiliki izin membaca folder aplikasi.</td>
+      <td>Periksa log rincian galat Linux dengan mengetikkan perintah: <code>journalctl -u widyaweb.service -e</code>.</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td><code>Ollama connection refused</code></td>
+      <td>Layanan aplikasi Ollama lokal belum menyala di komputer Anda saat VS Code memanggil AI WidyaCoder.</td>
+      <td>Buka aplikasi Ollama di komputer Anda atau ketikkan perintah <code>ollama serve</code> di terminal baru.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout tip">
+  <div class="callout-title">🎉 Selamat! Anda Telah Menyelesaikan Seluruh Buku Panduan Ini</div>
+  Perjalanan Anda dari seorang pemula yang awam tentang seluk-beluk website kini telah mengantarkan Anda menjadi perancang sistem web modern yang mandiri, berdaulat, dan siap bersaing di kancah nasional maupun global.
+  <br><br>
+  Teruslah berlatih, jangan takut membuat kesalahan saat menulis kode, dan bangunlah karya-karya teknologi digital yang bermanfaat bagi masyarakat luas bersama <strong>Widya-Lang</strong> dan <strong>WidyaWeb Framework</strong>!
+</div>

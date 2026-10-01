@@ -1,0 +1,52 @@
+// ============================================================================
+// MODUL PROMOSI ATOMIK (promosi_atomik.wya)
+// Penggantian Genom Aktif secara Atomik Tanpa Downtime Runtime
+// ============================================================================
+
+struktur GenomAktif {
+    id_genom,
+    versi,
+    kode_sumber,
+    hash_sha256,
+    latensi_ms,
+    status_aktif
+}
+
+fungsi ai_promosikan_versi_atomik(agen, kandidat, hasil_uji) {
+    jika (!hasil_uji.layak_promosi) {
+        kembalikan {
+            "sukses": salah,
+            "status": "DITOLAK_OLEH_GATEWAY_KEAMANAN",
+            "alasan": hasil_uji.pesan_evaluasi,
+            "agen": agen
+        };
+    }
+
+    misal hash_baru = sha256(kandidat.kode_baru);
+    misal genom_baru = GenomAktif(
+        "genom-" + kandidat.versi_target,
+        kandidat.versi_target,
+        kandidat.kode_baru,
+        hash_baru,
+        hasil_uji.latensi_kandidat_ms,
+        benar
+    );
+
+    // Perbarui riwayat genom dan versi aktif
+    misal riwayat = agen["riwayat_genom"];
+    tambah(riwayat, genom_baru);
+    agen["riwayat_genom"] = riwayat;
+    agen["genom_aktif"] = genom_baru;
+
+    misal silsilah = agen["silsilah_versi"];
+    tambah(silsilah, kandidat.versi_target);
+    agen["silsilah_versi"] = silsilah;
+
+    kembalikan {
+        "sukses": benar,
+        "status": "BERHASIL_PROMOSI_ATOMIK",
+        "versi_baru": kandidat.versi_target,
+        "hash_sha256": hash_baru,
+        "agen": agen
+    };
+}

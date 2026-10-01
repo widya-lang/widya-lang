@@ -1,0 +1,106 @@
+// =================================================================
+// SIMULASI DETEKSI DINI TEMUAN AUDIT BPK & AUDIT COMPLIANCE SHIELD
+// Menguji Deteksi Otomatis Selisih Kas Opname, Batas Brankas Tunai,
+// Aset Belanja Modal Siluman, dan Tunggakan Setor Pajak
+// =================================================================
+
+impor "widyaos/modul/audit_compliance_shield.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║   === SIMULASI AUDIT COMPLIANCE SHIELD WIDYAOS v1.0 ===          ║");
+cetak("║   Deteksi Dini Temuan BPK RI, BPKP & Inspektorat Daerah          ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+misal npsn_sekolah = "20109999";
+
+// -------------------------------------------------------------
+// [SKENARIO A] KONDISI RIIL DI LAPANGAN (RAWAN TEMUAN AUDIT BPK)
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[SKENARIO A] Uji Deteksi 3 Temuan Klasik Lapangan di Sekolah");
+cetak("================================================================");
+
+// 1. Kas Opname: Brankas Rp 12.000.000 tapi di Buku Pembantu Kas Rp 11.500.000
+// (Ada selisih Rp 500.000 dan saldo brankas melebihi batas regulasi Rp 10.000.000)
+misal opname_rawan = audit_pemeriksaan_kas_opname("BA-OPNAME-01", npsn_sekolah, 11500000.0, 12000000.0);
+cetak("🚨 1. Kas Opname Lapangan : Saldo Buku Rp", opname_rawan.saldo_buku_kas_tunai, "| Fisik Rp", opname_rawan.saldo_fisik_brankas);
+cetak("   Kesesuaian Kas         :", opname_rawan.status_kesesuaian, "(Selisih: Rp " + ke_teks(opname_rawan.selisih_fisik_vs_buku) + ")");
+cetak("   Batas Maksimal Brankas :", opname_rawan.peringatan_limit_tunai);
+
+// 2. Belanja Modal TIK Rp 50 Juta belum dicatat ke KIB B (Aset Siluman)
+misal modal_rawan = audit_validasi_belanja_modal_kib("TRX-ARKAS-001", "5.2.02.01", "30 Unit Laptop Praktik", 50000000.0, "");
+cetak("🚨 2. Belanja Modal ARKAS :", modal_rawan.nama_barang, "(Rp " + ke_teks(modal_rawan.nominal_belanja) + ")");
+cetak("   Status Rekonsiliasi KIB:", modal_rawan.status_kapitalisasi);
+
+// 3. Pajak PBJT Mamin Rapat Rp 300.000 mengendap 14 hari belum disetor ke Bapenda
+misal pajak_rawan = audit_validasi_setor_pajak("PAJAK-01", "PBJT_DAERAH", 300000.0, "", 14);
+cetak("🚨 3. Pemotongan Pajak   :", pajak_rawan.jenis_pajak, "(Rp " + ke_teks(pajak_rawan.nominal_pajak) + ")");
+cetak("   Umur Setoran           :", pajak_rawan.umur_hari_sejak_pungut, "hari -> Status:", pajak_rawan.status_setoran);
+
+// Evaluasi Sistem Audit Shield
+misal evaluasi_rawan = audit_evaluasi_kesiapan_sekolah(npsn_sekolah, opname_rawan, [modal_rawan], [pajak_rawan]);
+cetak("");
+cetak("📋 HASIL AUDIT READINESS (KONDISI LAPANGAN SEBELUM DIBENAHI):");
+cetak("   Indeks Kepatuhan BPK :", evaluasi_rawan.skor_kepatuhan_persen, "%");
+cetak("   Predikat Opini       :", evaluasi_rawan.predikat_audit);
+cetak("   Total Temuan Aktif   :", evaluasi_rawan.total_indikasi_temuan, "temuan");
+cetak("   Status Penguncian BKU:", evaluasi_rawan.status_bku_siap_tutup, "(Mencegah BKU Disahkan Sebelum Bersih!)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika evaluasi_rawan.status_bku_siap_tutup == "DILOCK_WAJIB_PERBAIKAN" dan evaluasi_rawan.total_indikasi_temuan == 4 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1] Proteksi Dini & Penguncian BKU Saat Ada Temuan: LULUS");
+}
+
+// -------------------------------------------------------------
+// [SKENARIO B] KONDISI SETELAH DIKELOLA WIDYAOS (SIAP AUDIT 100% WTP)
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[SKENARIO B] Kepatuhan Penuh Otomatis WidyaOS (Standar 100% WTP)");
+cetak("================================================================");
+
+// 1. Kas Opname Fisik Klop Sempurna & Di bawah Batas 10 Juta
+misal opname_tertib = audit_pemeriksaan_kas_opname("BA-OPNAME-02", npsn_sekolah, 4500000.0, 4500000.0);
+cetak("🛡️ 1. Kas Opname Sesuai   : Saldo Buku Rp", opname_tertib.saldo_buku_kas_tunai, "| Fisik Rp", opname_tertib.saldo_fisik_brankas);
+cetak("   Kesesuaian & Limit     :", opname_tertib.status_kesesuaian, "| Status Limit:", opname_tertib.peringatan_limit_tunai);
+
+// 2. Belanja Modal Terhubung Otomatis ke Registrasi KIB B & Barcode QR
+misal modal_tertib = audit_validasi_belanja_modal_kib("TRX-ARKAS-001", "5.2.02.01", "30 Unit Laptop Praktik", 50000000.0, "REG-KIB-B/2026/0091");
+cetak("🛡️ 2. Belanja Modal       :", modal_tertib.nama_barang);
+cetak("   No Register KIB Aset   :", modal_tertib.kode_register_kib, "-> Status:", modal_tertib.status_kapitalisasi);
+
+// 3. Pajak Auto-Disetor dengan Bukti NTPD Bapenda Resmi
+misal pajak_tertib = audit_validasi_setor_pajak("PAJAK-01", "PBJT_DAERAH", 300000.0, "NTPD-KASDA-8821992", 1);
+cetak("🛡️ 3. Setoran Pajak Daerah:", pajak_tertib.jenis_pajak, "| Bukti NTPD:", pajak_tertib.nomor_ntpn_ntpd);
+cetak("   Status Validasi Pajak  :", pajak_tertib.status_setoran);
+
+// Evaluasi Sistem Audit Shield
+misal evaluasi_tertib = audit_evaluasi_kesiapan_sekolah(npsn_sekolah, opname_tertib, [modal_tertib], [pajak_tertib]);
+cetak("");
+cetak("🏆 HASIL AUDIT READINESS (SETELAH PENGAWALAN OTOMATIS WIDYAOS):");
+cetak("   Indeks Kepatuhan BPK :", evaluasi_tertib.skor_kepatuhan_persen, "%");
+cetak("   Predikat Opini       :", evaluasi_tertib.predikat_audit);
+cetak("   Total Temuan Aktif   :", evaluasi_tertib.total_indikasi_temuan, "temuan");
+cetak("   Status BKU Sekolah   :", evaluasi_tertib.status_bku_siap_tutup, "(Siap Cetak K-1/K-2 & Ditutup Resmi)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika evaluasi_tertib.skor_kepatuhan_persen == 100.0 dan evaluasi_tertib.predikat_audit == "WAJAR_TANPA_PENGECUALIAN_WTP" dan evaluasi_tertib.status_bku_siap_tutup == "BOLEH_TUTUP_BKU" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2] Predikat WTP & Pemenuhan Standar Audit BPK RI: LULUS");
+}
+
+cetak("");
+cetak("================================================================");
+cetak("HASIL EVALUASI AUDIT COMPLIANCE SHIELD WIDYAOS");
+cetak("Total Skenario Diuji :", TOTAL_TEST);
+cetak("Lulus Verifikasi     :", LULUS_TEST);
+cetak("================================================================");
+jika TOTAL_TEST == LULUS_TEST {
+    cetak("🎉 SEMPURNA! SISTEM WIDYAOS MAMPU MENANGKAL SEMUA TEMUAN AUDIT 100%!");
+}

@@ -1,0 +1,67 @@
+// ====================================================================
+// MODUL WIDYAOS: WIDYACAD / WIDYADESIGN (PILAR 15 KEDAULATAN DIGITAL)
+// Engine CAD Rekayasa 2D/3D & Generator G-Code Mesin CNC Vokasi SMK
+// Pengganti Total Ketergantungan AutoCAD, SolidWorks, & SketchUp
+// Kemandirian Industri Vokasi: Teknik Pemesinan, Desain Bangunan, & DKV
+// ====================================================================
+
+struktur PorosTeknikCAD {
+    id_komponen,
+    jenis_pekerjaan,
+    panjang_total_mm,
+    diameter_luar_mm,
+    toleransi_iso,
+    material_logam
+}
+
+struktur ProgramGCodeCNC {
+    id_program,
+    target_mesin,
+    total_blok_instruksi,
+    feed_rate_mm_rev,
+    spindle_speed_rpm,
+    string_gcode,
+    status_kompatibilitas
+}
+
+// Perancangan Geometri Poros Bertingkat Sesuai Standar ISO
+fungsi widyacad_rancang_poros(panjang_mm, diameter_mm, toleransi, material) {
+    kembalikan PorosTeknikCAD(
+        "CAD-POROS-SMK-2026-01",
+        "BUBUT_TINGKAT_PRESISI",
+        panjang_mm,
+        diameter_mm,
+        toleransi,
+        material
+    );
+}
+
+// Generator Instruksi G-Code CNC Mesin Bubut/Milling
+fungsi widyacad_generate_gcode(poros, feed_rate, spindle_rpm) {
+    // Bangun baris instruksi G-code standar industri
+    misal baris1 = "G21 G90 G95;\n"; // Satuan mm, pemrograman absolut, feed per putaran
+    misal baris2 = "M03 S" + spindle_rpm + ";\n"; // Putar spindle searah jarum jam
+    misal baris3 = "G00 X" + (poros.diameter_luar_mm + 2.0) + " Z2.0;\n"; // Gerak cepat ke posisi aman
+    misal baris4 = "G01 Z-" + poros.panjang_total_mm + " F" + feed_rate + ";\n"; // Pembubutan lurus
+    misal baris5 = "G00 X" + (poros.diameter_luar_mm + 5.0) + " Z5.0;\n"; // Penarikan pahat
+    misal baris6 = "M05; M30;"; // Spindle stop & akhir program
+
+    misal full_gcode = baris1 + baris2 + baris3 + baris4 + baris5 + baris6;
+
+    kembalikan ProgramGCodeCNC(
+        "GCODE-PROG-101",
+        "CNC_LATHE_FANUC_SIEMENS_COMPATIBLE",
+        6,
+        feed_rate,
+        spindle_rpm,
+        full_gcode,
+        "SIAP_EKSEKUSI_DI_BENGKEL_CNC_SMK"
+    );
+}
+
+// Audit Penghematan Anggaran Lisensi Software CAD Nasional
+fungsi widyacad_hitung_penghematan_anggaran(total_pc_lab) {
+    // Rata-rata lisensi komersial asing: Rp 35.000.000 / PC / tahun
+    misal penghematan_rupiah = total_pc_lab * 35000000;
+    kembalikan "MENGHEMAT_DEVISA_NEGARA_SEBESAR_RP_" + penghematan_rupiah;
+}

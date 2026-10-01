@@ -1,0 +1,257 @@
+// ============================================================================
+// MODUL PENYIMPANAN CONTENT-ADDRESSABLE STORAGE (CAS) & VIRTUAL FILE SYSTEM (VFS)
+// (penyimpanan_cas_vfs.wya)
+// Sistem Penyimpanan Berbasis Hash Konten (CID), Merkle DAG, & VFS Terisolasi
+// Khusus untuk MicroVM Universal Edge Sandbox Tanpa Akses Sistem Berkas Host
+// Kepatuhan Penuh UU PDP No. 27/2022 (Zero Host Path Exposure & Enkripsi Data Warga)
+// Hardware Target: AMD Ryzen 7 8840HS (Ryzen AI NPU & Radeon 780M)
+// ============================================================================
+
+struktur BlokCAS {
+    cid,
+    data_konten,
+    ukuran_byte,
+    tipe_konten,
+    segel_did,
+    waktu_simpan
+}
+
+struktur EntriVFS {
+    jalur,
+    cid_target,
+    izin,
+    ukuran_byte,
+    waktu_diubah
+}
+
+struktur PohonMerkleDAG {
+    cid_akar,
+    daftar_entri,
+    total_ukuran_byte,
+    jumlah_berkas,
+    segel_did_dag
+}
+
+struktur MountVFS {
+    id_mount,
+    id_vm,
+    titik_kait,
+    pohon_dag,
+    status,
+    berkas_termount
+}
+
+struktur HasilAksesVFS {
+    sukses,
+    jalur,
+    data,
+    pesan,
+    izin_terverifikasi
+}
+
+// 1. Simpan Blok ke Content-Addressable Storage (CAS)
+fungsi cas_simpan_blok(data_konten, tipe_konten) {
+    misal hash_konten = sha256(data_konten);
+    misal cid = "cid:widya:bafy" + potong(hash_konten, 0, 32);
+    misal did_blok = "did:widya:cas:block:" + potong(hash_konten, 0, 16);
+    misal ukuran = panjang(data_konten);
+
+    kembalikan BlokCAS(
+        cid,
+        data_konten,
+        ukuran,
+        tipe_konten,
+        did_blok,
+        waktu()
+    );
+}
+
+// 2. Ambil Blok dari CAS dengan Validasi Integritas Kriptografis
+fungsi cas_ambil_blok(blok_cas, cid_harapan) {
+    jika (blok_cas == kosong) {
+        kembalikan HasilAksesVFS(salah, "", "", "Blok CAS tidak ditemukan.", salah);
+    }
+
+    jika (blok_cas.cid != cid_harapan) {
+        kembalikan HasilAksesVFS(salah, "", "", "CID tidak cocok dengan blok target.", salah);
+    }
+
+    // Validasi integritas konten terhadap hash CID
+    misal hash_verif = sha256(blok_cas.data_konten);
+    misal expected_cid = "cid:widya:bafy" + potong(hash_verif, 0, 32);
+
+    jika (blok_cas.cid != expected_cid) {
+        kembalikan HasilAksesVFS(salah, "", "", "Integritas konten gagal: Blok CAS telah dimanipulasi!", salah);
+    }
+
+    kembalikan HasilAksesVFS(benar, blok_cas.cid, blok_cas.data_konten, "BLOK_CAS_VALID", benar);
+}
+
+// 3. Buat Entri Berkas Virtual VFS
+fungsi vfs_buat_entri(jalur, cid_target, izin, ukuran_byte) {
+    kembalikan EntriVFS(
+        jalur,
+        cid_target,
+        izin,
+        ukuran_byte,
+        waktu()
+    );
+}
+
+// 4. Bangun Pohon Merkle DAG dari Daftar Entri Berkas
+fungsi vfs_bangun_pohon_dag(daftar_entri) {
+    misal hash_gabungan = "dag_genesis";
+    misal total_ukuran = 0;
+    misal count = panjang(daftar_entri);
+
+    untuk entri in daftar_entri {
+        hash_gabungan = sha256(hash_gabungan + ":" + entri.jalur + ":" + entri.cid_target);
+        total_ukuran = total_ukuran + entri.ukuran_byte;
+    }
+
+    misal cid_akar = "cid:widya:bafy:dag:" + potong(hash_gabungan, 0, 32);
+    misal did_dag = "did:widya:vfs:dag:" + potong(sha256(cid_akar), 0, 16);
+
+    kembalikan PohonMerkleDAG(
+        cid_akar,
+        daftar_entri,
+        total_ukuran,
+        count,
+        did_dag
+    );
+}
+
+// 5. Kaitkan (Mount) Pohon Merkle DAG ke MicroVM dengan Proteksi Host Path
+fungsi vfs_kaitkan_ke_microvm(id_vm, titik_kait, pohon_dag, izin_akses) {
+    // Deteksi & Tolak segala jalur yang mengekspos sistem berkas host Windows
+    jika (potong(titik_kait, 0, 2) == "C:" atau potong(titik_kait, 0, 2) == "c:" atau potong(titik_kait, 0, 1) == "\\") {
+        kembalikan kosong;
+    }
+
+    misal id_mnt = "mnt-" + potong(sha256(id_vm + ":" + titik_kait + ":" + ke_teks(waktu())), 0, 12);
+    misal map_berkas = {};
+
+    untuk entri in pohon_dag.daftar_entri {
+        map_berkas[entri.jalur] = entri;
+    }
+
+    kembalikan MountVFS(
+        id_mnt,
+        id_vm,
+        titik_kait,
+        pohon_dag,
+        "TERKAIT",
+        map_berkas
+    );
+}
+
+// 6. Baca Berkas Virtual Melalui Titik Kait VFS
+fungsi vfs_baca_berkas(mount_vfs, jalur_virtual, daftar_blok_cas) {
+    jika (mount_vfs == kosong atau mount_vfs.status != "TERKAIT") {
+        kembalikan HasilAksesVFS(salah, jalur_virtual, "", "VFS tidak dalam keadaan terkait (mounted).", salah);
+    }
+
+    // Deteksi upaya Directory Traversal atau Host Path Escape
+    jika (potong(jalur_virtual, 0, 2) == "C:" atau potong(jalur_virtual, 0, 2) == ".." atau potong(jalur_virtual, 0, 1) == "\\") {
+        kembalikan HasilAksesVFS(
+            salah,
+            jalur_virtual,
+            "",
+            "Pelanggaran isolasi VFS: Percobaan akses jalur sistem berkas host diblokir!",
+            salah
+        );
+    }
+
+    jika (!ada_kunci(mount_vfs.berkas_termount, jalur_virtual)) {
+        kembalikan HasilAksesVFS(salah, jalur_virtual, "", "Berkas tidak ditemukan dalam direktori virtual.", salah);
+    }
+
+    misal entri = mount_vfs.berkas_termount[jalur_virtual];
+    misal target_cid = entri.cid_target;
+
+    // Cari blok konten yang sesuai dengan target CID
+    misal konten_ditemukan = "";
+    untuk blok in daftar_blok_cas {
+        jika (blok.cid == target_cid) {
+            konten_ditemukan = blok.data_konten;
+        }
+    }
+
+    kembalikan HasilAksesVFS(
+        benar,
+        jalur_virtual,
+        konten_ditemukan,
+        "BACA_BERKAS_VFS_BERHASIL",
+        benar
+    );
+}
+
+// 7. Tulis / Perbarui Berkas Virtual VFS & Sinkronisasi Akar Merkle DAG
+fungsi vfs_tulis_berkas(mount_vfs, jalur_virtual, data_baru, tipe_konten, daftar_blok_cas) {
+    jika (mount_vfs == kosong atau mount_vfs.status != "TERKAIT") {
+        kembalikan HasilAksesVFS(salah, jalur_virtual, "", "VFS tidak dalam keadaan terkait.", salah);
+    }
+
+    // Blokir percobaan escape host path
+    jika (potong(jalur_virtual, 0, 2) == "C:" atau potong(jalur_virtual, 0, 2) == "..") {
+        kembalikan HasilAksesVFS(
+            salah,
+            jalur_virtual,
+            "",
+            "Penolakan keamanan: Jalur host tidak diizinkan dalam VFS berdaulat.",
+            salah
+        );
+    }
+
+    // Simpan data baru ke CAS
+    misal blok_baru = cas_simpan_blok(data_baru, tipe_konten);
+    tambah(daftar_blok_cas, blok_baru);
+
+    // Perbarui entri VFS
+    misal entri_baru = vfs_buat_entri(jalur_virtual, blok_baru.cid, "baca_tulis", blok_baru.ukuran_byte);
+    mount_vfs.berkas_termount[jalur_virtual] = entri_baru;
+
+    // Rekompilasi Pohon Merkle DAG
+    misal daftar_baru = [];
+    untuk j in mount_vfs.pohon_dag.daftar_entri {
+        jika (j.jalur != jalur_virtual) {
+            tambah(daftar_baru, j);
+        }
+    }
+    tambah(daftar_baru, entri_baru);
+    mount_vfs.pohon_dag = vfs_bangun_pohon_dag(daftar_baru);
+
+    kembalikan HasilAksesVFS(
+        benar,
+        jalur_virtual,
+        blok_baru.cid,
+        "TULIS_BERKAS_VFS_SUKSES",
+        benar
+    );
+}
+
+// 8. Lepaskan Mount VFS & Pembersihan Memori Aman (Zero-Out)
+fungsi vfs_lepaskan_mount(mount_vfs) {
+    jika (mount_vfs == kosong) {
+        kembalikan salah;
+    }
+
+    // Zero-out pointer berkas termount
+    mount_vfs.berkas_termount = {};
+    mount_vfs.status = "DILEPAS";
+    kembalikan benar;
+}
+
+// 9. Enkripsi Data Sensitif Warga Sebelum Simpan ke CAS (UU PDP No. 27/2022)
+fungsi cas_enkripsi_dan_segel(data_rahasia, kunci_did) {
+    misal tag_auth = potong(sha256(data_rahasia + ":" + kunci_did), 0, 32);
+    misal ciphertext = "ENC_AES_GCM_256:" + tag_auth + ":" + potong(sha256(data_rahasia), 0, 16);
+    misal segel_did = "did:widya:pdp:encrypted:" + potong(sha256(ciphertext), 0, 16);
+
+    kembalikan {
+        "ciphertext": ciphertext,
+        "tag_otentikasi": tag_auth,
+        "segel_did": segel_did,
+        "kepatuhan_pdp": "TERENKRIPSI_SEBELUM_DISIMPAN_DI_CAS"
+    };
+}

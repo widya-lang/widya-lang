@@ -1,0 +1,11 @@
+// ==============================================================================
+// server.wya - Server Mandiri WidyaMedika SIMRS
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("🩺 MEMULAI SERVER MANDIRI: WIDYAMEDIKA SIMRS & SATUSEHAT FHIR");
+cetak("Port Layanan: http://localhost:8004");
+cetak("==================================================================");
+
+misal port = 8004;
+eksekusi("../../target/release/widya web dev ./web -p " + ke_teks(port));

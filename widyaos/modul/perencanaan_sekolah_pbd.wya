@@ -1,0 +1,235 @@
+// =================================================================
+// Modul Perencanaan & Penganggaran Sekolah Terpadu (PBD - RKJM - RKT - RKAS)
+// Mewujudkan Prinsip "Perencanaan Berbasis Data" (PBD) Kemendikdasmen RI
+// Menjamin Benang Merah (Golden Thread): Rapor Mutu -> RKJM -> RKT -> RKAS
+// =================================================================
+
+struktur RekomendasiPBD {
+    id_rekomendasi,
+    indikator_prioritas, // e.g. "A.1 Kemampuan Literasi", "D.4 Iklim Keamanan Sekolah"
+    nilai_capaian,       // "KURANG", "SEDANG", "BAIK"
+    akar_masalah,        // Refleksi
+    kegiatan_benahi      // Solusi Benahi
+}
+
+struktur SasaranStrategisRKJM {
+    id_sasaran,
+    standar_snp, // "STANDAR_PROSES", "STANDAR_SARPRAS", "STANDAR_PTK", dll.
+    uraian_target_4_tahun,
+    tahun_1_target,
+    tahun_2_target,
+    tahun_3_target,
+    tahun_4_target,
+    status_capaian
+}
+
+struktur DokumenRKJM {
+    npsn,
+    periode_tahun_mulai, // e.g. 2024
+    periode_tahun_selesai, // e.g. 2028 (Siklus 4 Tahunan)
+    visi_sekolah,
+    misi_sekolah,
+    daftar_sasaran_snp
+}
+
+struktur ProgramKerjaRKT {
+    id_program_rkt,
+    id_sasaran_rkjm,
+    id_rekomendasi_pbd, // Hubungan langsung ke Rapor Pendidikan (PBD)
+    tahun_ajaran,
+    nama_kegiatan,
+    penanggung_jawab_pic, // e.g. "Waka Kurikulum", "Waka Sarpras", "Kepala Lab"
+    target_output_kualitatif,
+    status_eksekusi
+}
+
+struktur ItemBelanjaRKAS {
+    id_item_rkas,
+    id_program_rkt, // WAJIB ada referensi ke RKT (Anti-Belanja Siluman)
+    sumber_dana,    // "BOSP_REGULER", "BANPEM", "BOSDA", "SPP_KOMITE"
+    kode_sub_kegiatan,
+    uraian_barang_jasa,
+    volume,
+    satuan,
+    harga_satuan_rp,
+    total_anggaran_rp,
+    triwulan_pencairan // 1, 2, 3, 4
+}
+
+struktur DokumenRKT {
+    npsn,
+    tahun_ajaran,
+    daftar_program_tahunan
+}
+
+struktur DokumenRKAS {
+    npsn,
+    tahun_anggaran,
+    total_pagu_pendapatan,
+    daftar_item_belanja,
+    status_pengesahan // "DRAF_USULAN", "DISETUJUI_KOMITE_DAN_DISDIK"
+}
+
+// -----------------------------------------------------------------
+// [1] Inisialisasi Rekomendasi PBD dari Rapor Pendidikan Sekolah
+// Siklus Resmi: Identifikasi -> Refleksi -> Benahi
+// -----------------------------------------------------------------
+fungsi buat_rekomendasi_pbd(id_rek, indikator, nilai, refleksi, benahi) {
+    kembalikan RekomendasiPBD(
+        id_rek,
+        indikator,
+        nilai,
+        refleksi,
+        benahi
+    );
+}
+
+// -----------------------------------------------------------------
+// [2] Penyusunan Dokumen RKJM 4 Tahunan (Payung Strategis Sekolah)
+// -----------------------------------------------------------------
+fungsi inisialisasi_rkjm(npsn, th_mulai, th_selesai, visi, misi) {
+    kembalikan DokumenRKJM(
+        npsn,
+        th_mulai,
+        th_selesai,
+        visi,
+        misi,
+        []
+    );
+}
+
+fungsi tambah_sasaran_rkjm(rkjm, id_sasaran, snp, target_4th, t1, t2, t3, t4) {
+    misal sasaran = SasaranStrategisRKJM(
+        id_sasaran,
+        snp,
+        target_4th,
+        t1,
+        t2,
+        t3,
+        t4,
+        "DALAM_PROGRES"
+    );
+    tambah(rkjm.daftar_sasaran_snp, sasaran);
+    kembalikan sasaran;
+}
+
+// -----------------------------------------------------------------
+// [3] Penjabaran RKT (Rencana Kerja Tahunan) dari RKJM & Rapor PBD
+// -----------------------------------------------------------------
+fungsi inisialisasi_rkt(npsn, tahun_ajaran) {
+    kembalikan DokumenRKT(
+        npsn,
+        tahun_ajaran,
+        []
+    );
+}
+
+fungsi tambah_program_rkt(rkt, id_prog, id_rkjm, id_pbd, nama_keg, pic, target) {
+    misal prog = ProgramKerjaRKT(
+        id_prog,
+        id_rkjm,
+        id_pbd,
+        rkt.tahun_ajaran,
+        nama_keg,
+        pic,
+        target,
+        "TERENCANA"
+    );
+    tambah(rkt.daftar_program_tahunan, prog);
+    kembalikan prog;
+}
+
+// -----------------------------------------------------------------
+// [4] Penyusunan RKAS (Rencana Kegiatan & Anggaran Sekolah)
+// Guardrail: Menolak belanja siluman jika tidak ada referensi program RKT!
+// -----------------------------------------------------------------
+fungsi inisialisasi_rkas(npsn, tahun_anggaran, total_pagu) {
+    kembalikan DokumenRKAS(
+        npsn,
+        tahun_anggaran,
+        total_pagu,
+        [],
+        "DRAF_USULAN"
+    );
+}
+
+fungsi tambah_anggaran_rkas(rkas, rkt, id_item, id_program_rkt, sumber_dana, kode_keg, uraian, vol, sat, tarif, triwulan) {
+    // Validasi Golden Thread: Cek apakah ID program terdaftar resmi di RKT
+    misal program_ditemukan = salah;
+    untuk p in rkt.daftar_program_tahunan {
+        jika p.id_program_rkt == id_program_rkt {
+            program_ditemukan = benar;
+        }
+    }
+    
+    jika program_ditemukan == salah {
+        kembalikan {
+            "sukses": salah,
+            "kode": "BELANJA_SILUMAN_DITOLAK",
+            "pesan": "Ditolak! Kegiatan '" + uraian + "' tidak memiliki keterkaitan dengan Rencana Kerja Tahunan (RKT) yang sah!"
+        };
+    }
+    
+    misal total = vol * tarif;
+    misal item = ItemBelanjaRKAS(
+        id_item,
+        id_program_rkt,
+        sumber_dana,
+        kode_keg,
+        uraian,
+        vol,
+        sat,
+        tarif,
+        total,
+        triwulan
+    );
+    tambah(rkas.daftar_item_belanja, item);
+    kembalikan {
+        "sukses": benar,
+        "data": item
+    };
+}
+
+// -----------------------------------------------------------------
+// [5] Pengesahan Pleno RKAS (Kepala Sekolah, Komite, & Dinas)
+// -----------------------------------------------------------------
+fungsi sahkan_dokumen_rkas(rkas, nomor_berita_acara, did_kepsek, did_komite) {
+    rkas.status_pengesahan = "DISETUJUI_KOMITE_DAN_DISDIK";
+    kembalikan {
+        "npsn": rkas.npsn,
+        "tahun_anggaran": rkas.tahun_anggaran,
+        "nomor_berita_acara": nomor_berita_acara,
+        "total_alokasi_belanja": rkas_hitung_total_belanja(rkas),
+        "status": rkas.status_pengesahan,
+        "tanda_tangan_kepsek": did_kepsek,
+        "tanda_tangan_komite": did_komite
+    };
+}
+
+fungsi rkas_hitung_total_belanja(rkas) {
+    misal total = 0.0;
+    untuk item in rkas.daftar_item_belanja {
+        total = total + item.total_anggaran_rp;
+    }
+    kembalikan total;
+}
+
+// -----------------------------------------------------------------
+// [6] Evaluasi Diri Ketercapaian Tahunan (Closing the Loop)
+// Mengukur serapan anggaran dan capaian fisik untuk siklus tahun depan
+// -----------------------------------------------------------------
+fungsi evaluasi_ketercapaian_rkt_rkas(rkt, rkas, total_realisasi_rp) {
+    misal total_program = panjang(rkt.daftar_program_tahunan);
+    misal total_anggaran_rencana = rkas_hitung_total_belanja(rkas);
+    misal persentase_serapan = (total_realisasi_rp / total_anggaran_rencana) * 100.0;
+    
+    kembalikan {
+        "tahun_evaluasi": rkt.tahun_ajaran,
+        "total_program_terencana": total_program,
+        "total_anggaran_rkas": total_anggaran_rencana,
+        "total_realisasi_spk": total_realisasi_rp,
+        "persentase_serapan": persentase_serapan,
+        "status_akuntabilitas": "AKUNTABEL_TEREVALUASI_PENUH",
+        "rekomendasi_siklus_lanjutan": "Umpan balik otomatis diteruskan ke Rapor Pendidikan dan RKT tahun depan"
+    };
+}

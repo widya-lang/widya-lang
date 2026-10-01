@@ -1,0 +1,321 @@
+<!-- BAB 9 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">9</span> Rekayasa Aplikasi Desktop GUI Modern</h1>
+
+<h2>9.1 Arsitektur WidyaEngine Desktop: Event Loop & Message Dispatcher</h2>
+<p>
+Berbeda dengan ekosistem modern yang sering kali bergantung pada kerangka peramban web tebal (seperti Electron) yang menghabiskan memori ratusan megabita, framework <code>modul/desktop.wya</code> dirancang secara native di atas pustaka grafis sistem operasi berkecepatan tinggi. Dengan konsumsi RAM kurang dari 35 MB, aplikasi desktop Widya-Lang memiliki waktu startup instan (<em>sub-second startup</em>) dan responsivitas antarmuka yang sangat mulus.
+</p>
+
+<div class="diagram-box">
+  ┌────────────────────────────────────────────────────────┐
+  │                 Siklus Hidup Jendela GUI               │
+  │  Inisialisasi Window ──► Pasang Komponen ──► Render UI │
+  └───────────────────────────┬────────────────────────────┘
+                              ▼
+  ┌────────────────────────────────────────────────────────┐
+  │            Event-Driven Loop (Thread Utama)            │
+  │  Peristiwa Masuk (Klik/Ketik/Timer) ──► Dispatcher     │
+  │  Eksekusi Callback ──► Pembaruan DOM GUI ──► Re-Paint  │
+  └────────────────────────────────────────────────────────┘
+</div>
+
+<h2>9.2 Komponen Antarmuka Grafis (UI Widgets)</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Komponen GUI</th>
+      <th>Metode Pembuatan</th>
+      <th>Properti & Perilaku Interaktif</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Jendela Utama (Window)</strong></td>
+      <td><code>AplikasiDesktop(judul, lebar, tinggi)</code></td>
+      <td>Wadah induk aplikasi dengan bilah judul, ikon, dan tombol kontrol standar OS.</td>
+    </tr>
+    <tr>
+      <td><strong>Panel Kontainer</strong></td>
+      <td><code>app.tambah_panel(id, x, y, w, h, bg_color)</code></td>
+      <td>Wadah tata letak untuk mengelompokkan elemen formulir, bilah sisi, atau kartu statistik.</td>
+    </tr>
+    <tr>
+      <td><strong>Label Teks</strong></td>
+      <td><code>app.tambah_label(id, teks, x, y)</code></td>
+      <td>Menampilkan teks statis, judul seksi, atau nilai indikator status.</td>
+    </tr>
+    <tr>
+      <td><strong>Kotak Input Teks</strong></td>
+      <td><code>app.tambah_input(id, placeholder, x, y)</code></td>
+      <td>Bidang input ketikan keyboard untuk SKU barcode, nomor telepon, atau nominal.</td>
+    </tr>
+    <tr>
+      <td><strong>Tombol Aksi (Button)</strong></td>
+      <td><code>app.tambah_tombol(id, label, x, y, fungsi_klik)</code></td>
+      <td>Memicu penanganan aksi ketika tombol diklik oleh pengguna.</td>
+    </tr>
+    <tr>
+      <td><strong>Tabel Data (TableView)</strong></td>
+      <td><code>app.tambah_tabel(id, kolom, x, y, w, h)</code></td>
+      <td>Menampilkan data tabular transaksi berbaris dengan bilah gulir (scroll).</td>
+    </tr>
+    <tr>
+      <td><strong>Kotak Dialog (Modal)</strong></td>
+      <td><code>app.tampilkan_dialog(judul, pesan)</code></td>
+      <td>Jendela pop-up peringatan konfirmasi atau pemberitahuan struk belanja.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>9.3 Studi Kasus Lengkap: WidyaPOS - Aplikasi Kasir Retail UMKM</h2>
+<p>
+Berikut adalah implementasi penuh kode aplikasi kasir retail desktop Point-of-Sale (POS) yang terhubung langsung ke mesin basis data lokal WidyaBase:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/desktop.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./modul/widyabase.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">inisialisasi_kasir_pos</span>() {
+    <span class="com">// 1. Hubungkan ke Database Master Barang Lokal</span>
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"kasir_toko.wdb"</span>);
+    db.<span class="fn">eksekusi</span>(<span class="str">"
+        BUAT_TABEL JIKA_TIDAK_ADA produk (
+            sku TEKS KUNCI_UTAMA,
+            nama TEKS,
+            harga INT,
+            stok INT
+        );
+    "</span>);
+
+    <span class="com">// 2. Buat Jendela Aplikasi Desktop</span>
+    <span class="kw">misal</span> app = <span class="fn">AplikasiDesktop</span>(<span class="str">"WidyaPOS - Kasir Retail Nusantara v1.0"</span>, <span class="num">920</span>, <span class="num">680</span>);
+
+    <span class="com">// 3. Keadaan Internal Keranjang Belanja</span>
+    <span class="kw">misal</span> keranjang_item = [];
+    <span class="kw">misal</span> total_akumulasi = <span class="num">0</span>;
+
+    <span class="com">// Header Judul Aplikasi</span>
+    app.<span class="fn">tambah_label</span>(<span class="str">"hdr_judul"</span>, <span class="str">"🛒 SISTEM KASIR KEDAULATAN NUSANTARA"</span>, <span class="num">30</span>, <span class="num">20</span>);
+
+    <span class="com">// Komponen Input Barcode & Kuantitas</span>
+    app.<span class="fn">tambah_label</span>(<span class="str">"lbl_sku"</span>, <span class="str">"Kode Barcode / SKU:"</span>, <span class="num">30</span>, <span class="num">65</span>);
+    app.<span class="fn">tambah_input</span>(<span class="str">"input_sku"</span>, <span class="str">"Ketik SKU (cth: KOP-01)..."</span>, <span class="num">30</span>, <span class="num">90</span>);
+
+    app.<span class="fn">tambah_label</span>(<span class="str">"lbl_qty"</span>, <span class="str">"Jumlah (Qty):"</span>, <span class="num">350</span>, <span class="num">65</span>);
+    app.<span class="fn">tambah_input</span>(<span class="str">"input_qty"</span>, <span class="str">"1"</span>, <span class="num">350</span>, <span class="num">90</span>);
+
+    <span class="com">// Label Indikator Total Realtime</span>
+    app.<span class="fn">tambah_label</span>(<span class="str">"lbl_total_layar"</span>, <span class="str">"TOTAL TAGIHAN: Rp 0"</span>, <span class="num">550</span>, <span class="num">85</span>);
+
+    <span class="com">// 4. Tombol Tambah Barang ke Keranjang Belanja</span>
+    app.<span class="fn">tambah_tombol</span>(<span class="str">"btn_tambah"</span>, <span class="str">"+ Masukkan Keranjang"</span>, <span class="num">30</span>, <span class="num">140</span>, <span class="fn">fungsi</span>() {
+        <span class="kw">misal</span> kode_sku = app.<span class="fn">ambil_nilai</span>(<span class="str">"input_sku"</span>);
+        <span class="kw">misal</span> kuantitas = <span class="fn">ke_angka</span>(app.<span class="fn">ambil_nilai</span>(<span class="str">"input_qty"</span>));
+
+        <span class="kw">jika</span> kuantitas <= <span class="num">0</span> {
+            app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Peringatan"</span>, <span class="str">"Kuantitas barang harus minimal 1 pcs!"</span>);
+            <span class="kw">kembalikan</span>;
+        }
+
+        <span class="com">// Ambil data barang dari WidyaBase</span>
+        <span class="kw">misal</span> baris = db.<span class="fn">kueri_satu</span>(<span class="str">"PILIH * DARI produk DIMANA sku = '"</span> + kode_sku + <span class="str">"';"</span>);
+        <span class="kw">jika</span> baris == <span class="kw">nihil</span> {
+            <span class="com">// Data sampel otomatis jika barang belum ada</span>
+            baris = { <span class="str">"sku"</span>: kode_sku, <span class="str">"nama"</span>: <span class="str">"Produk Unggulan "</span> + kode_sku, <span class="str">"harga"</span>: <span class="num">25000</span> };
+        }
+
+        <span class="kw">misal</span> subtotal_item = baris[<span class="str">"harga"</span>] * kuantitas;
+        total_akumulasi = total_akumulasi + subtotal_item;
+
+        <span class="fn">tambah</span>(keranjang_item, {
+            <span class="str">"sku"</span>: kode_sku,
+            <span class="str">"nama"</span>: baris[<span class="str">"nama"</span>],
+            <span class="str">"qty"</span>: kuantitas,
+            <span class="str">"harga"</span>: baris[<span class="str">"harga"</span>],
+            <span class="str">"subtotal"</span>: subtotal_item
+        });
+
+        <span class="com">// Perbarui tampilan label total di layar kasir</span>
+        app.<span class="fn">set_teks</span>(<span class="str">"lbl_total_layar"</span>, <span class="str">"TOTAL TAGIHAN: Rp "</span> + <span class="fn">ke_teks</span>(total_akumulasi));
+        app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Sukses"</span>, <span class="str">"Berhasil menambahkan: "</span> + baris[<span class="str">"nama"</span>]);
+    });
+
+    <span class="com">// 5. Tombol Selesaikan Transaksi & Cetak Struk</span>
+    app.<span class="fn">tambah_tombol</span>(<span class="str">"btn_selesai"</span>, <span class="str">"💳 SELESAIKAN PEMBAYARAN & CETAK STRUK"</span>, <span class="num">30</span>, <span class="num">560</span>, <span class="fn">fungsi</span>() {
+        <span class="kw">jika</span> <span class="fn">panjang</span>(keranjang_item) == <span class="num">0</span> {
+            app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Peringatan"</span>, <span class="str">"Keranjang belanja masih kosong!"</span>);
+            <span class="kw">kembalikan</span>;
+        }
+
+        <span class="com">// Mutasi Pengurangan Stok Atomik di Database</span>
+        db.<span class="fn">eksekusi</span>(<span class="str">"MULAI_TRANSAKSI;"</span>);
+        <span class="kw">untuk</span> item <span class="kw">dalam</span> keranjang_item {
+            db.<span class="fn">eksekusi</span>(<span class="str">"PERBARUI produk ATUR stok = stok - "</span> + <span class="fn">ke_teks</span>(item.qty) + <span class="str">" DIMANA sku = '"</span> + item.sku + <span class="str">"';"</span>);
+        }
+        db.<span class="fn">eksekusi</span>(<span class="str">"KOMIT;"</span>);
+
+        <span class="kw">misal</span> pajak_ppn = <span class="fn">ke_angka</span>(total_akumulasi * <span class="num">0.11</span>);
+        <span class="kw">misal</span> total_akhir = total_akumulasi + pajak_ppn;
+
+        <span class="kw">misal</span> pesan_struk = <span class="str">"====================================\n"</span> +
+                           <span class="str">"         STRUK PENJUALAN TOKO        \n"</span> +
+                           <span class="str">"====================================\n"</span> +
+                           <span class="str">"Subtotal Belanja : Rp "</span> + <span class="fn">ke_teks</span>(total_akumulasi) + <span class="str">"\n"</span> +
+                           <span class="str">"Pajak PPN (11%)  : Rp "</span> + <span class="fn">ke_teks</span>(pajak_ppn) + <span class="str">"\n"</span> +
+                           <span class="str">"Total Akhir Bayar: Rp "</span> + <span class="fn">ke_teks</span>(total_akhir) + <span class="str">"\n"</span> +
+                           <span class="str">"Status Transaksi : LUNAS & TERCATAT WAL\n"</span> +
+                           <span class="str">"====================================\n"</span> +
+                           <span class="str">"    Terima Kasih Atas Kunjungan Anda! \n"</span>;
+
+        app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Transaksi Berhasil"</span>, pesan_struk);
+
+        <span class="com">// Reset Keranjang untuk Transaksi Berikutnya</span>
+        keranjang_item = [];
+        total_akumulasi = <span class="num">0</span>;
+        app.<span class="fn">set_teks</span>(<span class="str">"lbl_total_layar"</span>, <span class="str">"TOTAL TAGIHAN: Rp 0"</span>);
+    });
+
+    <span class="com">// 6. Jalankan Loop Antarmuka Desktop</span>
+    app.<span class="fn">jalankan</span>();
+}
+
+<span class="fn">inisialisasi_kasir_pos</span>();
+</code></pre>
+
+<!-- BAB 10 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">10</span> Rekayasa Aplikasi Mobile & Integrasi QRIS ASPI</h1>
+
+<h2>10.1 Standar Nasional QRIS (Quick Response Code Indonesian Standard)</h2>
+<p>
+Sesuai dengan regulasi Bank Indonesia dan Asosiasi Sistem Pembayaran Indonesia (ASPI), seluruh transaksi pembayaran nirsentuh di Indonesia menggunakan spesifikasi <strong>EMVCo Tag-Length-Value (TLV)</strong>. Format ini menyusun seluruh data merchant, nomor akun nasional (NMID), kategori usaha, mata uang Rupiah (Kode ISO 360), dan checksum keamanan dalam satu deret teks terstandarisasi.
+</p>
+
+<h2>10.2 Pembuat Payload QRIS Dinamis Terstandarisasi ASPI</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">buat_payload_qris_dinamis</span>(nmid, nama_toko, kota, nominal_rupiah, invoice_id) {
+    <span class="kw">misal</span> payload = <span class="str">""</span>;
+
+    <span class="com">// Helper pembuat pasangan Tag-Length-Value (TLV)</span>
+    <span class="kw">misal</span> tlv = <span class="fn">fungsi</span>(tag, nilai) {
+        <span class="kw">misal</span> len = <span class="fn">panjang</span>(nilai);
+        <span class="kw">misal</span> len_str = <span class="fn">ke_teks</span>(len);
+        <span class="kw">jika</span> len < <span class="num">10</span> { len_str = <span class="str">"0"</span> + len_str; }
+        <span class="kw">kembalikan</span> tag + len_str + nilai;
+    };
+
+    payload = payload + tlv(<span class="str">"00"</span>, <span class="str">"01"</span>);               <span class="com">// Format Indicator</span>
+    payload = payload + tlv(<span class="str">"01"</span>, <span class="str">"12"</span>);               <span class="com">// Point of Initiation: Dinamis</span>
+    payload = payload + tlv(<span class="str">"26"</span>, <span class="str">"ID.CO.QRIS.WWW01"</span> + tlv(<span class="str">"02"</span>, nmid));
+    payload = payload + tlv(<span class="str">"52"</span>, <span class="str">"5812"</span>);             <span class="com">// Merchant Category Code</span>
+    payload = payload + tlv(<span class="str">"53"</span>, <span class="str">"360"</span>);              <span class="com">// Mata Uang Rupiah (360)</span>
+    payload = payload + tlv(<span class="str">"54"</span>, <span class="fn">ke_teks</span>(nominal_rupiah) + <span class="str">".00"</span>);
+    payload = payload + tlv(<span class="str">"58"</span>, <span class="str">"ID"</span>);               <span class="com">// Kode Negara</span>
+    payload = payload + tlv(<span class="str">"59"</span>, nama_toko);          <span class="com">// Nama Toko</span>
+    payload = payload + tlv(<span class="str">"60"</span>, kota);               <span class="com">// Kota Merchant</span>
+    payload = payload + tlv(<span class="str">"62"</span>, tlv(<span class="str">"01"</span>, invoice_id)); <span class="com">// Nomor Tagihan</span>
+
+    <span class="com">// Tambahkan Tag 63 untuk Checksum CRC-16</span>
+    payload = payload + <span class="str">"6304"</span>;
+    <span class="kw">misal</span> crc = <span class="fn">hitung_crc16_qris</span>(payload);
+    <span class="kw">kembalikan</span> payload + crc;
+}
+</code></pre>
+
+<h2>10.3 Resolusi Konflik Sinkronisasi Multi-Kasir dengan Vector Clocks</h2>
+<p>
+Ketika beberapa kasir bergerak (mobile cashiers) menerima pesanan offline secara bersamaan di area lapangan festival, sinkronisasi data ke cloud sering menghadapi konflik pembaruan ganda. Pola <strong>Vector Clocks</strong> melacak urutan kausalitas mutasi data:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">bandingkan_vector_clock</span>(clock_a, clock_b) {
+    <span class="kw">misal</span> ada_a_lebih_besar = <span class="kw">salah</span>;
+    <span class="kw">misal</span> ada_b_lebih_besar = <span class="kw">salah</span>;
+
+    <span class="kw">untuk</span> kasir_id <span class="kw">dalam</span> [<span class="str">"KASIR-01"</span>, <span class="str">"KASIR-02"</span>, <span class="str">"KASIR-03"</span>] {
+        <span class="kw">misal</span> val_a = clock_a[kasir_id];
+        <span class="kw">misal</span> val_b = clock_b[kasir_id];
+        <span class="kw">jika</span> val_a > val_b { ada_a_lebih_besar = <span class="kw">benar</span>; }
+        <span class="kw">jika</span> val_b > val_a { ada_b_lebih_besar = <span class="kw">benar</span>; }
+    }
+
+    <span class="kw">jika</span> ada_a_lebih_besar <span class="kw">dan</span> (<span class="kw">bukan</span> ada_b_lebih_besar) { <span class="kw">kembalikan</span> <span class="str">"A_MENDOMINASI"</span>; }
+    <span class="kw">jika</span> ada_b_lebih_besar <span class="kw">dan</span> (<span class="kw">bukan</span> ada_a_lebih_besar) { <span class="kw">kembalikan</span> <span class="str">"B_MENDOMINASI"</span>; }
+    <span class="kw">kembalikan</span> <span class="str">"KONFLIK_SEJAJAR"</span>; <span class="com">// Butuh penggabungan (merge) manual</span>
+}
+</code></pre>
+
+<!-- BAB 11 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">11</span> Integrasi Basis Data Mandiri WidyaBase Skala Industri</h1>
+
+<h2>11.1 Arsitektur Internal B-Tree & Pembelahan Halaman (Page Split)</h2>
+<p>
+Ketika jumlah baris data dalam satu halaman B-Tree melebihi kapasitas 4096 bita, WidyaBase melakukan pembelahan halaman (<em>page split</em>) secara atomik. Kunci median dinaikkan ke halaman induk (<em>parent page</em>) untuk mempertahankan kedalaman pohon tetap seimbang (<em>balanced tree depth</em> $O(\log N)$):
+</p>
+
+<div class="diagram-box">
+             [ Halaman Daun Penuh (4 KB) ]
+             [ K1 | K2 | K3 | K4 | K5 | K6 ] ──► Overflow!
+                           │
+             ┌─────────────┴─────────────┐
+             ▼                           ▼
+  [ Halaman Daun Kiri ]       [ Halaman Daun Kanan ]
+     [ K1 | K2 | K3 ]            [ K4 | K5 | K6 ]
+             └─────────────┬─────────────┘
+                           ▼
+              [ Kunci Median K4 Dinaikkan ]
+                [ Halaman Induk (Root) ]
+</div>
+
+<h2>11.2 Kueri Manufaktur Rantai Pasok: Bill of Materials (BOM)</h2>
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/widyabase.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">analisis_kebutuhan_komponen_bom</span>() {
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"pabrik_otomotif.wdb"</span>);
+
+    <span class="com">// CTE Rekursif untuk Menghitung Seluruh Sub-Komponen Kendaraan Listrik</span>
+    <span class="kw">misal</span> sql_bom = <span class="str">"
+        DENGAN REKURSIF rincian_bom SEBAGAI (
+            PILIH id_part, nama_komponen, jumlah, 1 SEBAGAI tingkat_sub
+            DARI komponen_rakitan
+            DIMANA id_induk ADALAH NIHIL
+
+            GABUNG_SEMUA
+
+            PILIH k.id_part, k.nama_komponen, r.jumlah * k.jumlah, r.tingkat_sub + 1
+            DARI komponen_rakitan AS k
+            GABUNG rincian_bom AS r PADA k.id_induk = r.id_part
+        )
+        PILIH * DARI rincian_bom URUTKAN_BERDASARKAN tingkat_sub NAIK;
+    "</span>;
+
+    <span class="kw">misal</span> daftar_komponen = db.<span class="fn">kueri</span>(sql_bom);
+    <span class="kw">untuk</span> p <span class="kw">dalam</span> daftar_komponen {
+        <span class="fn">cetak</span>(<span class="str">"Tingkat:"</span>, p[<span class="str">"tingkat_sub"</span>], <span class="str">"| Part:"</span>, p[<span class="str">"nama_komponen"</span>], <span class="str">"| Total Qty:"</span>, p[<span class="str">"jumlah"</span>]);
+    }
+}
+</code></pre>
+
+<h2>11.3 Kueri Geospasial: Pencarian Armada Taksi Terdekat</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">cari_armada_terdekat</span>(lintang_penumpang, bujur_penumpang) {
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"transportasi_online.wdb"</span>);
+
+    <span class="com">// Menghitung jarak geodesik menggunakan fungsi geometris bawaan WidyaBase</span>
+    <span class="kw">misal</span> sql_jarak = <span class="str">"
+        PILIH 
+            id_driver, 
+            nama_supir, 
+            ST_Jarak(lokasi_gps, ST_Titik("</span> + <span class="fn">ke_teks</span>(lintang_penumpang) + <span class="str">", "</span> + <span class="fn">ke_teks</span>(bujur_penumpang) + <span class="str">")) AS radius_meter
+        DARI armada_taksi
+        DIMANA status_siaga = BENAR
+        URUTKAN_BERDASARKAN radius_meter NAIK
+        BATAS 3;
+    "</span>;
+
+    <span class="kw">misal</span> supir_terpilih = db.<span class="fn">kueri</span>(sql_jarak);
+    <span class="fn">cetak</span>(<span class="str">"=== 3 ARMADA TERDEKAT DENGAN ANDA ==="</span>);
+    <span class="kw">untuk</span> s <span class="kw">dalam</span> supir_terpilih {
+        <span class="fn">cetak</span>(<span class="str">"Supir:"</span>, s[<span class="str">"nama_supir"</span>], <span class="str">"| Jarak:"</span>, s[<span class="str">"radius_meter"</span>], <span class="str">"meter"</span>);
+    }
+}
+</code></pre>

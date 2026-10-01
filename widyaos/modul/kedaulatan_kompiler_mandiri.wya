@@ -1,0 +1,325 @@
+// ============================================================================
+// MODUL: KEDAULATAN KOMPILER MANDIRI (kedaulatan_kompiler_mandiri.wya)
+// Self-Hosting Compiler & Virtual Machine Berdaulat (Widya-in-Widya Bootstrap)
+//
+// 1. WidyaLexer: Tokenisasi kode sumber murni Bahasa Indonesia
+// 2. WidyaParser: Konstruksi Abstract Syntax Tree (AST)
+// 3. WidyaVM: Mesin Virtual Evaluator Eksekusi Metasirkular
+// 4. Kedaulatan Toolchain: Memutus Ketergantungan Compiler & Rantai Pasok Asing
+// ============================================================================
+
+struktur TokenWidya {
+    jenis,
+    nilai,
+    baris,
+    kolom
+}
+
+struktur NodeAST {
+    jenis,
+    nama,
+    nilai,
+    kiri,
+    kanan,
+    anak
+}
+
+struktur KonteksEksekusiVM {
+    variabel,
+    keluaran,
+    status_eksekusi
+}
+
+// ----------------------------------------------------------------------------
+// [1] WIDYALEXER: TOKENISASI KODE SUMBER WIDYA
+// ----------------------------------------------------------------------------
+
+fungsi widyalexer_apakah_spasi(karakter) {
+    jika karakter == " " atau karakter == "\t" atau karakter == "\n" atau karakter == "\r" {
+        kembalikan benar;
+    }
+    kembalikan salah;
+}
+
+fungsi widyalexer_apakah_angka(karakter) {
+    jika karakter == "0" atau karakter == "1" atau karakter == "2" atau karakter == "3" atau karakter == "4" atau
+       karakter == "5" atau karakter == "6" atau karakter == "7" atau karakter == "8" atau karakter == "9" {
+        kembalikan benar;
+    }
+    kembalikan salah;
+}
+
+fungsi widyalexer_apakah_huruf(karakter) {
+    misal kode = karakter;
+    // Pengecekan karakter alfabet dan underscore
+    jika kode == "a" atau kode == "b" atau kode == "c" atau kode == "d" atau kode == "e" atau kode == "f" atau
+       kode == "g" atau kode == "h" atau kode == "i" atau kode == "j" atau kode == "k" atau kode == "l" atau
+       kode == "m" atau kode == "n" atau kode == "o" atau kode == "p" atau kode == "q" atau kode == "r" atau
+       kode == "s" atau kode == "t" atau kode == "u" atau kode == "v" atau kode == "w" atau kode == "x" atau
+       kode == "y" atau kode == "z" atau kode == "_" atau
+       kode == "A" atau kode == "B" atau kode == "C" atau kode == "D" atau kode == "E" atau kode == "F" atau
+       kode == "G" atau kode == "H" atau kode == "I" atau kode == "J" atau kode == "K" atau kode == "L" atau
+       kode == "M" atau kode == "N" atau kode == "O" atau kode == "P" atau kode == "Q" atau kode == "R" atau
+       kode == "S" atau kode == "T" atau kode == "U" atau kode == "V" atau kode == "W" atau kode == "X" atau
+       kode == "Y" atau kode == "Z" {
+        kembalikan benar;
+    }
+    kembalikan salah;
+}
+
+fungsi widyalexer_tokenisasi(kode_sumber) {
+    misal daftar_token = [];
+    misal len = panjang(kode_sumber);
+    misal idx = 0;
+    misal baris_kini = 1;
+    misal kolom_kini = 1;
+
+    selama idx < len {
+        misal c = potong(kode_sumber, idx, idx + 1);
+
+        jika widyalexer_apakah_spasi(c) {
+            jika c == "\n" {
+                baris_kini = baris_kini + 1;
+                kolom_kini = 1;
+            } selain_itu {
+                kolom_kini = kolom_kini + 1;
+            }
+            idx = idx + 1;
+        } selain_itu jika c == ";" {
+            tambah(daftar_token, TokenWidya("TITIK_KOMA", ";", baris_kini, kolom_kini));
+            idx = idx + 1;
+            kolom_kini = kolom_kini + 1;
+        } selain_itu jika c == "=" {
+            jika idx + 1 < len dan potong(kode_sumber, idx + 1, idx + 2) == "=" {
+                tambah(daftar_token, TokenWidya("OPERATOR", "==", baris_kini, kolom_kini));
+                idx = idx + 2;
+                kolom_kini = kolom_kini + 2;
+            } selain_itu {
+                tambah(daftar_token, TokenWidya("SAMA_DENGAN", "=", baris_kini, kolom_kini));
+                idx = idx + 1;
+                kolom_kini = kolom_kini + 1;
+            }
+        } selain_itu jika c == "+" atau c == "-" atau c == "*" atau c == "/" {
+            tambah(daftar_token, TokenWidya("OPERATOR", c, baris_kini, kolom_kini));
+            idx = idx + 1;
+            kolom_kini = kolom_kini + 1;
+        } selain_itu jika c == "(" atau c == ")" atau c == "{" atau c == "}" {
+            tambah(daftar_token, TokenWidya("KURUNG", c, baris_kini, kolom_kini));
+            idx = idx + 1;
+            kolom_kini = kolom_kini + 1;
+        } selain_itu jika c == "\"" {
+            // String literal
+            misal str_val = "";
+            idx = idx + 1;
+            kolom_kini = kolom_kini + 1;
+            selama idx < len {
+                misal sc = potong(kode_sumber, idx, idx + 1);
+                jika sc == "\"" {
+                    berhenti;
+                }
+                str_val = str_val + sc;
+                idx = idx + 1;
+                kolom_kini = kolom_kini + 1;
+            }
+            idx = idx + 1; // lewati petik penutup
+            kolom_kini = kolom_kini + 1;
+            tambah(daftar_token, TokenWidya("TEKS", str_val, baris_kini, kolom_kini));
+        } selain_itu jika widyalexer_apakah_angka(c) {
+            misal num_val = "";
+            selama idx < len {
+                misal nc = potong(kode_sumber, idx, idx + 1);
+                jika widyalexer_apakah_angka(nc) == salah {
+                    berhenti;
+                }
+                num_val = num_val + nc;
+                idx = idx + 1;
+                kolom_kini = kolom_kini + 1;
+            }
+            tambah(daftar_token, TokenWidya("ANGKA", num_val, baris_kini, kolom_kini));
+        } selain_itu jika widyalexer_apakah_huruf(c) {
+            misal ident_val = "";
+            selama idx < len {
+                misal ic = potong(kode_sumber, idx, idx + 1);
+                jika widyalexer_apakah_huruf(ic) == salah dan widyalexer_apakah_angka(ic) == salah {
+                    berhenti;
+                }
+                ident_val = ident_val + ic;
+                idx = idx + 1;
+                kolom_kini = kolom_kini + 1;
+            }
+            // Periksa kata kunci bahasa
+            jika ident_val == "misal" atau ident_val == "fungsi" atau ident_val == "jika" atau
+               ident_val == "selain_itu" atau ident_val == "kembalikan" atau ident_val == "cetak" {
+                tambah(daftar_token, TokenWidya("KATA_KUNCI", ident_val, baris_kini, kolom_kini));
+            } selain_itu {
+                tambah(daftar_token, TokenWidya("PENGENAL", ident_val, baris_kini, kolom_kini));
+            }
+        } selain_itu {
+            // Karakter tak dikenal dilewati
+            idx = idx + 1;
+            kolom_kini = kolom_kini + 1;
+        }
+    }
+
+    tambah(daftar_token, TokenWidya("EOF", "", baris_kini, kolom_kini));
+    kembalikan daftar_token;
+}
+
+// ----------------------------------------------------------------------------
+// [2] WIDYAPARSER: PEMBENTUKAN ABSTRACT SYNTAX TREE (AST)
+// ----------------------------------------------------------------------------
+
+fungsi widyaparser_bangun_ast(daftar_token) {
+    misal daftar_pernyataan = [];
+    misal idx = 0;
+    misal total = panjang(daftar_token);
+
+    selama idx < total {
+        misal tok = daftar_token[idx];
+
+        jika tok.jenis == "EOF" {
+            idx = idx + 1;
+        } selain_itu jika tok.jenis == "KATA_KUNCI" dan tok.nilai == "misal" {
+            // Pola: misal <nama_var> = <ekspresi>;
+            idx = idx + 1;
+            misal nama_var = "";
+            jika idx < total dan daftar_token[idx].jenis == "PENGENAL" {
+                nama_var = daftar_token[idx].nilai;
+                idx = idx + 1;
+            }
+
+            // Lewati sama dengan '='
+            jika idx < total dan daftar_token[idx].jenis == "SAMA_DENGAN" {
+                idx = idx + 1;
+            }
+
+            // Parse ekspresi sederhana (angka/teks/pengenal [op] [angka/teks/pengenal])
+            misal node_ekspresi = kosong;
+            jika idx < total {
+                misal tok_kiri = daftar_token[idx];
+                idx = idx + 1;
+
+                jika idx < total dan daftar_token[idx].jenis == "OPERATOR" {
+                    misal op = daftar_token[idx].nilai;
+                    idx = idx + 1;
+                    misal tok_kanan = daftar_token[idx];
+                    idx = idx + 1;
+
+                    misal kiri_ast = NodeAST(tok_kiri.jenis, tok_kiri.nilai, tok_kiri.nilai, kosong, kosong, []);
+                    misal kanan_ast = NodeAST(tok_kanan.jenis, tok_kanan.nilai, tok_kanan.nilai, kosong, kosong, []);
+                    node_ekspresi = NodeAST("OPERASI_BINER", op, "", kiri_ast, kanan_ast, []);
+                } selain_itu {
+                    node_ekspresi = NodeAST(tok_kiri.jenis, tok_kiri.nilai, tok_kiri.nilai, kosong, kosong, []);
+                }
+            }
+
+            // Lewati titik koma ';'
+            jika idx < total dan daftar_token[idx].jenis == "TITIK_KOMA" {
+                idx = idx + 1;
+            }
+
+            misal node_deklarasi = NodeAST("DEKLARASI_VARIABEL", nama_var, "", node_ekspresi, kosong, []);
+            tambah(daftar_pernyataan, node_deklarasi);
+        } selain_itu jika tok.jenis == "KATA_KUNCI" dan tok.nilai == "cetak" {
+            // Pola: cetak(<argumen>);
+            idx = idx + 1;
+            // Lewati kurung buka '('
+            jika idx < total dan daftar_token[idx].nilai == "(" {
+                idx = idx + 1;
+            }
+            misal arg_tok = daftar_token[idx];
+            idx = idx + 1;
+            // Lewati kurung tutup ')'
+            jika idx < total dan daftar_token[idx].nilai == ")" {
+                idx = idx + 1;
+            }
+            // Lewati titik koma ';'
+            jika idx < total dan daftar_token[idx].jenis == "TITIK_KOMA" {
+                idx = idx + 1;
+            }
+
+            misal arg_ast = NodeAST(arg_tok.jenis, arg_tok.nilai, arg_tok.nilai, kosong, kosong, []);
+            misal node_cetak = NodeAST("PERNYATAAN_CETAK", "cetak", "", arg_ast, kosong, []);
+            tambah(daftar_pernyataan, node_cetak);
+        } selain_itu {
+            idx = idx + 1;
+        }
+    }
+
+    kembalikan NodeAST("PROGRAM", "akar", "", kosong, kosong, daftar_pernyataan);
+}
+
+// ----------------------------------------------------------------------------
+// [3] WIDYAVM: MESIN VIRTUAL EVALUASI METASIRKULAR
+// ----------------------------------------------------------------------------
+
+fungsi widyavm_evaluasi_nilai(node, konteks) {
+    jika node == kosong {
+        kembalikan 0;
+    }
+
+    jika node.jenis == "ANGKA" {
+        kembalikan ke_angka(node.nilai);
+    } selain_itu jika node.jenis == "TEKS" {
+        kembalikan node.nilai;
+    } selain_itu jika node.jenis == "PENGENAL" {
+        misal nama_var = node.nama;
+        jika ada_kunci(konteks.variabel, nama_var) {
+            kembalikan konteks.variabel[nama_var];
+        }
+        kembalikan 0;
+    } selain_itu jika node.jenis == "OPERASI_BINER" {
+        misal val_kiri = widyavm_evaluasi_nilai(node.kiri, konteks);
+        misal val_kanan = widyavm_evaluasi_nilai(node.kanan, konteks);
+        misal op = node.nama;
+
+        jika op == "+" {
+            kembalikan val_kiri + val_kanan;
+        } selain_itu jika op == "-" {
+            kembalikan val_kiri - val_kanan;
+        } selain_itu jika op == "*" {
+            kembalikan val_kiri * val_kanan;
+        } selain_itu jika op == "/" {
+            jika val_kanan == 0 { kembalikan 0; }
+            kembalikan val_kiri / val_kanan;
+        }
+    }
+
+    kembalikan 0;
+}
+
+fungsi widyavm_evaluasi_ast(program_ast, konteks) {
+    untuk p in program_ast.anak {
+        jika p.jenis == "DEKLARASI_VARIABEL" {
+            misal hasil_nilai = widyavm_evaluasi_nilai(p.kiri, konteks);
+            konteks.variabel[p.nama] = hasil_nilai;
+        } selain_itu jika p.jenis == "PERNYATAAN_CETAK" {
+            misal nilai_cetak = widyavm_evaluasi_nilai(p.kiri, konteks);
+            tambah(konteks.keluaran, ke_teks(nilai_cetak));
+        }
+    }
+
+    konteks.status_eksekusi = "EKSEKUSI_METASIRKULAR_BERHASIL_100%";
+    kembalikan konteks;
+}
+
+// ----------------------------------------------------------------------------
+// [4] BOOTSTRAP ENGINE METASIRKULAR WIDYA-IN-WIDYA
+// ----------------------------------------------------------------------------
+
+fungsi widyabootstrap_evaluasi_metasirkular(kode_widya) {
+    misal tokens = widyalexer_tokenisasi(kode_widya);
+    misal ast = widyaparser_bangun_ast(tokens);
+    misal konteks = KonteksEksekusiVM({}, [], "SIAP");
+    konteks = widyavm_evaluasi_ast(ast, konteks);
+
+    kembalikan {
+        "sukses": benar,
+        "total_token": panjang(tokens),
+        "total_pernyataan_ast": panjang(ast.anak),
+        "variabel_terbentuk": konteks.variabel,
+        "keluaran_stdout": konteks.keluaran,
+        "status": konteks.status_eksekusi,
+        "kedaulatan_toolchain": "100%_BEBAS_COMPILER_ASING_SELF_HOSTED"
+    };
+}

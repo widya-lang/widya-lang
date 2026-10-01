@@ -1,0 +1,270 @@
+// ====================================================================
+// MASTER AUDIT: ARSITEKTUR SERVER KEMENTERIAN WIDYAOS (PUSDATIN STACK)
+// Verifikasi Standar Industri Tier-IV, BSSN RI, BPK RI, & UU PDP No. 27/2022
+//
+// 1. WidyaOrchestrator: Kluster Bare-Metal Multi-DC (Jakarta, Batam, IKN)
+// 2. WidyaMaster Dapodik Hub: Ingesti Data Masif & Validasi Dukcapil
+// 3. WidyaMaster Guardrail: Penolakan Siswa Fiktif NIK Ganda (Anti-Ghost)
+// 4. WidyaKliring BOSP: Penyaluran Kas Nasional via BI-FAST ISO 20022
+// 5. WidyaKliring Guardrail: Proteksi Anti-Double Disbursement Anggaran
+// 6. WidyaSentinel AI: Deteksi Fraud Kemahalan Harga Belanja di Atas SSH
+// 7. WidyaSentinel AI: Audit MBG BGN (Porsi Diklaim vs Presensi Siswa)
+// 8. WidyaTrust Root CA: Penerbitan Segel Ijazah Nasional HSM PQC BSSN
+// 9. WidyaVault Disaster Recovery: Failover Instan Jakarta -> IKN (RPO=0)
+// 10. WidyaVault WORM Air-Gap: Imunitas Mutlak Serangan Ransomware
+// ====================================================================
+
+impor "widyaos/modul/pusdatin_server_enterprise_stack.wya";
+
+fungsi utama() {
+    tulis("====================================================================");
+    tulis("🇮🇩  AUDIT MASTER: ARSITEKTUR SERVER SPBE (WALIDATA & PRODUSEN DATA) ");
+    tulis("    Kedaulatan Cloud Nasional: Tier-IV, BSSN, BPK, & Perpres 95/2018  ");
+    tulis("====================================================================");
+    tulis("");
+
+    misal kasus_lolos = 0;
+    misal total_uji = 10;
+
+    // ----------------------------------------------------------------
+    // [1] WidyaOrchestrator: Kluster Bare-Metal Multi-DC & Auto-Scaling
+    // ----------------------------------------------------------------
+    tulis("[1] Audit WidyaOrchestrator: Multi-DC Segitiga Emas & Auto-Scaling:");
+    misal kluster = pusdatin_orkestrator_buat_kluster();
+    misal total_node = panjang(kluster);
+    misal scaling_test = pusdatin_orkestrator_auto_scaling(150000);
+
+    tulis("  • Total Node Terdaftar: " + ke_teks(total_node) + " Node (Jakarta Cipete, Sentul, Batam, & IKN)");
+    tulis("  • Uji Beban Puncak    : 150.000 RPS (Peak PPDB/ANBK)");
+    tulis("  • Status Auto-Scaling : " + scaling_test["status_scaling"] + " (+" + ke_teks(scaling_test["node_tambahan"]) + " Node Baru)");
+    tulis("  • Penjelasan          : " + scaling_test["alasan"]);
+
+    jika total_node == 4 dan scaling_test["status_scaling"] == "AUTO_SCALED_UP" {
+        tulis("  ✅ PASS: Orkestrator Cloud Nasional Mengelola Multi-DC & Auto-Scaling Elastis!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Orkestrator Multi-DC gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [2] WidyaMaster Dapodik Hub: Ingesti Data Masif & Validasi Dukcapil
+    // ----------------------------------------------------------------
+    tulis("[2] Audit WidyaMaster Dapodik Hub: Ingesti & Validasi Silang Dukcapil:");
+    misal daftar_nik_terdaftar = [];
+    misal siswa_valid = pusdatin_dapodik_validasi_dukcapil(
+        daftar_nik_terdaftar,
+        "20209123",
+        "0089123456",
+        "3201012010050001",
+        "Muhammad Farhan"
+    );
+
+    tulis("  • Siswa Terdaftar : " + siswa_valid.nama_siswa + " (NISN: " + siswa_valid.nisn + ")");
+    tulis("  • Status Dukcapil : " + siswa_valid.status_dukcapil);
+    tulis("  • Kelayakan BOS   : " + siswa_valid.status_kelayakan_bos);
+
+    jika siswa_valid.status_dukcapil == "TERVALIDASI_PADAN_DUKCAPIL_KEMENDAGRI" dan siswa_valid.status_kelayakan_bos == "DISAHKAN_PENERIMA_DANA_BOS_REGULER" {
+        tulis("  ✅ PASS: Data Pokok Tervalidasi Padan 100% dengan Database Kependudukan Kemendagri!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Ingesti Dapodik Valid gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [3] WidyaMaster Guardrail: Penolakan Siswa Fiktif NIK Ganda
+    // ----------------------------------------------------------------
+    tulis("[3] Audit WidyaMaster Guardrail: Penolakan NIK Ganda (Anti-Ghost Student):");
+    misal nik_eksisting = ["3201012010050001"];
+    misal siswa_fiktif = pusdatin_dapodik_validasi_dukcapil(
+        nik_eksisting,
+        "20209999",
+        "0089999999",
+        "3201012010050001",
+        "Siswa Duplikasi Fiktif"
+    );
+
+    tulis("  • Deteksi Integritas: " + siswa_fiktif.status_dukcapil);
+    tulis("  • Flag Ganda        : " + ke_teks(siswa_fiktif.apakah_ganda));
+    tulis("  • Keputusan BOS     : " + siswa_fiktif.status_kelayakan_bos);
+
+    jika siswa_fiktif.apakah_ganda == benar dan siswa_fiktif.status_kelayakan_bos == "DITOLAK_HAK_BOS_TERDUPLIKASI" {
+        tulis("  ✅ PASS: Guardrail Memblokir Siswa Fiktif & Menyelamatkan Kebocoran Anggaran Negara!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Deteksi Anti-Ghost Student gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [4] WidyaKliring BOSP: Penyaluran Kas Nasional via BI-FAST ISO 20022
+    // ----------------------------------------------------------------
+    tulis("[4] Audit WidyaKliring BOSP: Penyaluran Kas Nasional BI-FAST ISO 20022:");
+    misal daftar_trx = [];
+    misal hasil_kliring = pusdatin_kliring_salurkan_bosp(
+        daftar_trx,
+        "TRX-BOSP-2026-Q3-001",
+        "20209123",
+        "SMKN 1 Garut",
+        "BANK_BJB_JAWA_BARAT",
+        "0012345678901",
+        50000000000.0
+    );
+
+    misal trx_sukses = hasil_kliring["transaksi"];
+    tulis("  • ID Transaksi SPAN  : " + trx_sukses.id_transaksi);
+    tulis("  • Bank Penampung BPD : " + trx_sukses.bank_tujuan);
+    tulis("  • Nominal Tersalurkan: Rp " + ke_teks(trx_sukses.nominal_rupiah));
+    tulis("  • Referensi DJPb     : " + trx_sukses.referensi_span);
+    tulis("  • Status Kliring     : " + trx_sukses.status_kliring);
+
+    jika hasil_kliring["sukses"] == benar dan trx_sukses.status_kliring == "BERHASIL_DIKLIRING_BI_FAST_ISO20022" {
+        tulis("  ✅ PASS: Dana BOSP Triliunan Tersalurkan Cepat & Tepat Waktu Langsung ke Kas BPD Sekolah!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Penyaluran BOSP gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [5] WidyaKliring Guardrail: Proteksi Anti-Double Disbursement Anggaran
+    // ----------------------------------------------------------------
+    tulis("[5] Audit WidyaKliring Guardrail: Proteksi Anti-Double Disbursement:");
+    misal trx_terbayar = [trx_sukses];
+    misal coba_cair_ganda = pusdatin_kliring_salurkan_bosp(
+        trx_terbayar,
+        "TRX-BOSP-2026-Q3-002",
+        "20209123",
+        "SMKN 1 Garut",
+        "BANK_BJB_JAWA_BARAT",
+        "0012345678901",
+        50000000000.0
+    );
+
+    tulis("  • Percobaan Pencairan Ulang: " + coba_cair_ganda["pesan"]);
+    tulis("  • Status Guardrail          : " + coba_cair_ganda["status"]);
+
+    jika coba_cair_ganda["sukses"] == salah dan coba_cair_ganda["status"] == "PENYALURAN_GAGAL_DOUBLE_DISBURSEMENT" {
+        tulis("  ✅ PASS: Anti-Double Disbursement Menggagalkan Pencairan Anggaran Ganda!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Anti-Double Disbursement gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [6] WidyaSentinel AI: Deteksi Fraud Kemahalan Harga Belanja di Atas SSH
+    // ----------------------------------------------------------------
+    tulis("[6] Audit WidyaSentinel AI: Deteksi Fraud Kemahalan Harga Belanja vs SSH:");
+    misal alert_ssh = pusdatin_sentinel_evaluasi_ssh("20209123", "Laptop Laboratorium TIK", 12500000.0, 9500000.0);
+
+    tulis("  • ID Kasus Terdeteksi: " + alert_ssh.id_kasus);
+    tulis("  • Kategori Anomali   : " + alert_ssh.kategori);
+    tulis("  • Deskripsi Fraud    : " + alert_ssh.deskripsi);
+    tulis("  • Tingkat Urgensi    : " + alert_ssh.tingkat_urgensi);
+    tulis("  • Rekomendasi Audit  : " + alert_ssh.rekomendasi_tindakan);
+
+    jika alert_ssh.kategori == "KEMAHALAN_HARGA_DI_ATAS_PLAFON_SSH" dan alert_ssh.tingkat_urgensi == "TINGGI_POTENSI_TEMUAN_BPK" {
+        tulis("  ✅ PASS: Sentinel AI Mendeteksi Kemahalan Harga & Mencegah Temuan Kerugian Negara BPK RI!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Deteksi Fraud SSH gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [7] WidyaSentinel AI: Audit MBG BGN (Porsi Diklaim vs Presensi Siswa)
+    // ----------------------------------------------------------------
+    tulis("[7] Audit WidyaSentinel AI: Audit Silang Presensi Siswa vs Klaim Porsi MBG:");
+    // Presensi riil hadir di sekolah: 300 siswa; Katering mengklaim: 350 porsi (50 porsi fiktif!)
+    misal alert_mbg = pusdatin_sentinel_audit_mbg_porsi(300, 350);
+
+    tulis("  • Kategori Anomali : " + alert_mbg.kategori);
+    tulis("  • Temuan Lapangan  : " + alert_mbg.deskripsi);
+    tulis("  • Urgensi Tindakan : " + alert_mbg.tingkat_urgensi);
+
+    jika alert_mbg.kategori == "KLAIM_PORSI_MELEBIHI_PRESENSI_FISIK_SISWA" dan alert_mbg.tingkat_urgensi == "KRITIS_PENYIMPANGAN_LOGISTIK_BGN" {
+        tulis("  ✅ PASS: Interlock Presensi Mencegah Pembayaran Porsi MBG Siluman/Fiktif!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Audit MBG Sentinel AI gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [8] WidyaTrust Root CA: Penerbitan Segel Ijazah Nasional HSM PQC BSSN
+    // ----------------------------------------------------------------
+    tulis("[8] Audit WidyaTrust Root CA: Penerbitan Segel Ijazah Nasional Abadi:");
+    misal segel_ijazah = pusdatin_root_ca_terbitkan_ijazah(
+        "SMK-2026-32-00891",
+        "0089123456",
+        "20209123",
+        "d7a8fbb307d7809469ca933b02b1f183564b9fe4529f123740"
+    );
+
+    tulis("  • Nomor Seri Ijazah  : " + segel_ijazah.nomor_seri_ijazah);
+    tulis("  • Otoritas CA Induk  : " + segel_ijazah.penandatangan_ca);
+    tulis("  • Algoritma Kripto   : " + segel_ijazah.algoritma_pqc + " (Pascakuantum)");
+    tulis("  • Status Legalitas   : " + segel_ijazah.status_keabsahan);
+
+    jika segel_ijazah.algoritma_pqc == "ML-KEM-1024_CRYSTALS-KYBER_LEVEL_5" dan segel_ijazah.status_keabsahan == "SAH_TERDAFTAR_DI_DATABASE_NASIONAL_KEBAL_PEMALSUAN" {
+        tulis("  ✅ PASS: Ijazah Digital Nasional Tersegel Sempurna dengan Kriptografi Pascakuantum!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Penerbitan Ijazah Root CA gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [9] WidyaVault Disaster Recovery: Failover Instan Jakarta -> IKN (RPO=0)
+    // ----------------------------------------------------------------
+    tulis("[9] Audit WidyaVault Disaster Recovery: Failover Multi-Region Segitiga Emas:");
+    misal failover_drc = pusdatin_vault_simulasi_failover_drc("JAKARTA_CIPETE");
+
+    tulis("  • Insiden Lapangan    : Sentra Data Utama Jakarta Terputus");
+    tulis("  • Pengalihan Otomatis : Pindah ke Sentra Data " + failover_drc.region_cadangan);
+    tulis("  • Metrik RPO          : " + ke_teks(failover_drc.rpo_detik) + " Detik (Zero Data Loss)");
+    tulis("  • Metrik RTO          : " + ke_teks(failover_drc.rto_menit) + " Menit (< 3 Menit)");
+    tulis("  • Status Failover     : " + failover_drc.pesan_drc);
+
+    jika failover_drc.region_cadangan == "IKN_PUSAT" dan failover_drc.rpo_detik == 0 dan failover_drc.rto_menit <= 3 {
+        tulis("  ✅ PASS: Disaster Recovery Center Menjamin Nol Kehilangan Data Pendidikan Nasional!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Disaster Recovery Failover gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [10] WidyaVault WORM Air-Gap: Imunitas Mutlak Serangan Ransomware
+    // ----------------------------------------------------------------
+    tulis("[10] Audit WidyaVault WORM Air-Gap: Imunitas Serangan Ransomware:");
+    misal uji_ransomware = pusdatin_vault_uji_integritas_anti_ransomware("ENKRIPSI_PAKSA");
+    misal status_kedaulatan = pusdatin_audit_kedaulatan_server();
+
+    tulis("  • Simulasi Serangan   : Upaya Enkripsi Paksa File Snapshot");
+    tulis("  • Status Partisi WORM : " + uji_ransomware["status_brankas"]);
+    tulis("  • Respon Perangkat    : " + uji_ransomware["respon"]);
+    tulis("  • Kedaulatan Cloud    : " + status_kedaulatan);
+
+    jika uji_ransomware["status_brankas"] == "WORM_IMMUTABLE_LOCKED" dan (status_kedaulatan == "100_PERSEN_SPBE_WALIDATA_PRODUSEN_DATA_MANDIRI_BEBAS_VENDOR_ASING" atau status_kedaulatan == "100_PERSEN_PUSDATIN_SOVEREIGN_CLOUD_MANDIRI_BEBAS_VENDOR_ASING") {
+        tulis("  ✅ PASS: Brankas WORM Kebal dari Ransomware & Kedaulatan Pusat Data Nasional Terjamin Penuh!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Uji Imunitas Ransomware gagal!");
+    }
+    tulis("");
+
+    tulis("====================================================================");
+    tulis("🏆  HASIL AKHIR AUDIT ARSITEKTUR SERVER SPBE (WALIDATA & PRODUSEN DATA):");
+    tulis("    Lulus: " + ke_teks(kasus_lolos) + " dari " + ke_teks(total_uji) + " Skenario Pengujian Paripurna");
+    tulis("====================================================================");
+
+    jika kasus_lolos == total_uji {
+        tulis("🇮🇩 KELULUSAN SEMPURNA 100%: NUSANTARA MEMILIKI PUSAT DATA PENDIDIKAN BERDAULAT!");
+        tulis("   Keandalan Tier-IV, Tangguh Menghadapi Bencana, dan Kebal Serangan Siber.");
+    }
+}
+
+utama();

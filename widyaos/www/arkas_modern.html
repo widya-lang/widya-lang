@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARKAS Modern Kemendikdasmen RI - Platform Sewidya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-glow: rgba(37, 99, 235, 0.25);
+            --accent: #06b6d4;
+            --accent-glow: rgba(6, 182, 212, 0.2);
+            --bg: #090d16;
+            --surface: #0f172a;
+            --surface-card: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(37, 99, 235, 0.4);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.85rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .brand-title h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-kemen {
+            font-size: 0.65rem;
+            background: rgba(37, 99, 235, 0.2);
+            color: #93c5fd;
+            border: 1px solid rgba(147, 197, 253, 0.3);
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .brand-title p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .user-block {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .school-tag {
+            text-align: right;
+            border-right: 1px solid var(--border);
+            padding-right: 1.25rem;
+        }
+
+        .school-tag h4 {
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .school-tag span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 999px;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .user-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: #34d399;
+            font-weight: 500;
+        }
+
+        /* Nav Tabs */
+        .tab-bar {
+            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 0 16px var(--primary-glow);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Elements */
+        .card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Multi-PIC Grid */
+        .pic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .fund-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .fund-card:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .fund-badge-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .fund-code {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .authority-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .fund-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .pic-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+            margin-bottom: 1rem;
+        }
+
+        .pic-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .pic-text h5 {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pic-text p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .fund-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 0.75rem;
+            text-align: center;
+        }
+
+        .metric-box span {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .metric-box h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Smart Alert Detection */
+        .smart-alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .alert-pergeseran {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #d1fae5;
+        }
+
+        .alert-perubahan {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: #fef3c7;
+        }
+
+        .alert-icon-title {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .alert-icon {
+            font-size: 1.75rem;
+        }
+
+        .alert-content h4 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .alert-content p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .alert-routing {
+            text-align: right;
+            min-width: 220px;
+        }
+
+        .alert-routing span {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+        }
+
+        .alert-routing h3 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: white;
+            margin-top: 2px;
+        }
+
+        /* Side-by-side Matrix Table */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.95);
+            padding: 10px 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        th.group-header {
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th.group-semula {
+            background: rgba(51, 65, 85, 0.5);
+            color: #cbd5e1;
+        }
+
+        th.group-menjadi {
+            background: rgba(30, 58, 138, 0.4);
+            color: #93c5fd;
+        }
+
+        th.group-deviasi {
+            background: rgba(88, 28, 135, 0.4);
+            color: #d8b4fe;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            color: #e2e8f0;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-bertambah { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-berkurang { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-tetap     { background: rgba(148, 163, 184, 0.2); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+        .badge-baru      { background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+        .badge-dihapus   { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+        .positive { color: #34d399; font-weight: 600; }
+        .negative { color: #f87171; font-weight: 600; }
+
+        /* Toggle Component */
+        .toggle-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .switch-label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .switch-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .toggle-btn-group {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            padding: 3px;
+            border-radius: var(--radius-sm);
+        }
+
+        .toggle-choice {
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .toggle-choice.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 0 16px var(--primary-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-highlight);
+            color: #93c5fd;
+        }
+
+        .btn-outline:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Official Print Paper Mode */
+        .print-sheet {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .print-sheet * {
+            color: #0f172a !important;
+        }
+
+        .kop-surat {
+            text-align: center;
+            border-bottom: 3px double #0f172a;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kop-surat h3 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; }
+        .kop-surat h2 { font-size: 1.3rem; text-transform: uppercase; font-weight: 900; margin: 2px 0; }
+        .kop-surat p { font-size: 0.78rem; }
+
+        .ba-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .ba-title h4 {
+            font-size: 1.05rem;
+            text-decoration: underline;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .ba-title span { font-size: 0.82rem; }
+
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .sig-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 140px;
+        }
+
+        .sig-name {
+            font-weight: 700;
+            text-decoration: underline;
+            font-size: 0.85rem;
+        }
+
+        .sig-nip {
+            font-size: 0.75rem;
+        }
+
+        .sig-stamp {
+            border: 1px dashed #10b981;
+            background: #ecfdf5;
+            color: #065f46 !important;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            margin: 0.5rem auto;
+            display: inline-block;
+        }
+
+        @media print {
+            body { background: white !important; }
+            header, .tab-bar, .no-print { display: none !important; }
+            .container { max-width: 100%; margin: 0; padding: 0; }
+            .print-sheet { box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand-block">
+            <div class="logo-badge">W</div>
+            <div class="brand-title">
+                <h1>ARKAS Web Modern <span class="badge-kemen">Kemendikdasmen RI</span></h1>
+                <p>Ekosistem Manajemen Keuangan & Kertas Kerja Sekolah Berdaulat • sewidya.id</p>
+            </div>
+        </div>
+        <div class="user-block">
+            <div class="school-tag">
+                <h4>SMK Negeri 1 Nusantara</h4>
+                <span>NPSN: 20109999 • Provinsi Jawa Barat</span>
+            </div>
+            <div class="user-pill">
+                <div class="avatar">BW</div>
+                <div>
+                    <div class="user-name">Drs. Bambang Wijaya, M.Pd.</div>
+                    <div class="user-role">Kepala Satuan Pendidikan (SewidyaID)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="tab-bar no-print">
+        <button class="tab-btn active" onclick="switchTab('tab-funds', this)">
+            💼 Multi-Sumber Dana & PIC
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-matrix', this)">
+            📊 Matriks Penyandingan Revisi (Diff)
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-config', this)">
+            ⚙️ Opsi APBN & Otoritas
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-print', this)">
+            📜 Berita Acara & Cetak Resmi
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- TAB 1: MULTI-SUMBER DANA & MULTI-PENGELOLA -->
+        <div id="tab-funds" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Multi-Sumber Dana & Multi-Pengelola PIC Mandiri</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+                            Setiap sumber dana dikelola secara independen oleh PIC tersendiri dengan otoritas pengesahan terkonfigurasi.
+                        </p>
+                    </div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: #38bdf8;">
+                        Total Pagu Terpadu: Rp 490.000.000,00
+                    </div>
+                </div>
+
+                <div class="pic-grid">
+                    <!-- 1. BOSP Reguler -->
+                    <div class="fund-card">
+                        <div class="fund-badge-bar">
+                            <span class="fund-code">BOSP_REGULER</span>
+                            <span class="authority-badge">Dinas Pendidikan</span>
+                        </div>
+                        <h3 class="fund-title">BOSP Reguler (Kemendikdasmen)</h3>
+                        <div class="pic-info">
+                            <div class="pic-avatar">AF</div>
+                            <div class="pic-text">
+                                <h5>Ahmad Fauzi, S.Pd.</h5>
+                                <p>Bendahara BOSP Reguler</p>
+                            </div>
+                        </div>
+                        <div class="fund-metrics">
+                            <div class="metric-box">
+                                <span>Pagu Alokasi</span>
+                                <h4>120.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Terplot</span>
+                                <h4 style="color: #60a5fa;">120.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Sisa</span>
+                                <h4 style="color: #34d399;">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Banpem APBN -->
+                    <div class="fund-card" style="border-color: rgba(6, 182, 212, 0.4);">
+                        <div class="fund-badge-bar">
+                            <span class="fund-code" style="color: #22d3ee;">BANPEM_APBN</span>
+                            <span class="authority-badge" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; border-color: rgba(6, 182, 212, 0.3);">
+                                Delegasi Dinas
+                            </span>
+                        </div>
+                        <h3 class="fund-title">Banpem Revitalisasi Lab TIK</h3>
+                        <div class="pic-info">
+                            <div class="pic-avatar" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">HK</div>
+                            <div class="pic-text">
+                                <h5>Hendro Kusumo, S.T.</h5>
+                                <p>Ketua Tim Banpem TIK (Earmarked)</p>
+                            </div>
+                        </div>
+                        <div class="fund-metrics">
+                            <div class="metric-box">
+                                <span>Pagu Alokasi</span>
+                                <h4>250.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Terplot</span>
+                                <h4 style="color: #60a5fa;">250.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Sisa</span>
+                                <h4 style="color: #34d399;">0</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. BOS Kinerja -->
+                    <div class="fund-card">
+                        <div class="fund-badge-bar">
+                            <span class="fund-code">BOS_KINERJA</span>
+                            <span class="authority-badge">Dinas Pendidikan</span>
+                        </div>
+                        <h3 class="fund-title">BOS Kinerja Kemendikdasmen</h3>
+                        <div class="pic-info">
+                            <div class="pic-avatar" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">SR</div>
+                            <div class="pic-text">
+                                <h5>Siti Rahmawati, M.Pd.</h5>
+                                <p>Pengelola BOS Kinerja</p>
+                            </div>
+                        </div>
+                        <div class="fund-metrics">
+                            <div class="metric-box">
+                                <span>Pagu Alokasi</span>
+                                <h4>45.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Terplot</span>
+                                <h4 style="color: #60a5fa;">40.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Sisa</span>
+                                <h4 style="color: #fbbf24;">5.000.000</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. BOSDA APBD -->
+                    <div class="fund-card">
+                        <div class="fund-badge-bar">
+                            <span class="fund-code">BOSDA_APBD</span>
+                            <span class="authority-badge">Dinas Pendidikan</span>
+                        </div>
+                        <h3 class="fund-title">BOSDA (APBD Provinsi)</h3>
+                        <div class="pic-info">
+                            <div class="pic-avatar" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">DL</div>
+                            <div class="pic-text">
+                                <h5>Dewi Lestari, S.E.</h5>
+                                <p>Bendahara BOSDA Daerah</p>
+                            </div>
+                        </div>
+                        <div class="fund-metrics">
+                            <div class="metric-box">
+                                <span>Pagu Alokasi</span>
+                                <h4>35.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Terplot</span>
+                                <h4 style="color: #60a5fa;">32.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Sisa</span>
+                                <h4 style="color: #fbbf24;">3.000.000</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. SPP & Komite -->
+                    <div class="fund-card">
+                        <div class="fund-badge-bar">
+                            <span class="fund-code">SPP_KOMITE</span>
+                            <span class="authority-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                                Kepala Sekolah
+                            </span>
+                        </div>
+                        <h3 class="fund-title">Dana SPP & Sumbangan Komite</h3>
+                        <div class="pic-info">
+                            <div class="pic-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">BS</div>
+                            <div class="pic-text">
+                                <h5>Budi Santoso, S.Kom.</h5>
+                                <p>Pengelola Kas Komite & Sarpras</p>
+                            </div>
+                        </div>
+                        <div class="fund-metrics">
+                            <div class="metric-box">
+                                <span>Pagu Alokasi</span>
+                                <h4>50.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Terplot</span>
+                                <h4 style="color: #60a5fa;">45.000.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Sisa</span>
+                                <h4 style="color: #fbbf24;">5.000.000</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. Mandiri DePIN -->
+                    <div class="fund-card">
+                        <div class="fund-badge-bar">
+                            <span class="fund-code">DEPIN_GRID</span>
+                            <span class="authority-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                                Kepala Sekolah
+                            </span>
+                        </div>
+                        <h3 class="fund-title">Kas Mandiri (Bagi Hasil DePIN)</h3>
+                        <div class="pic-info">
+                            <div class="pic-avatar" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">AF</div>
+                            <div class="pic-text">
+                                <h5>Ahmad Fauzi, S.Pd.</h5>
+                                <p>Unit Komputasi IFP & Server</p>
+                            </div>
+                        </div>
+                        <div class="fund-metrics">
+                            <div class="metric-box">
+                                <span>Hasil DePIN</span>
+                                <h4>150.000</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Terpakai</span>
+                                <h4 style="color: #60a5fa;">0</h4>
+                            </div>
+                            <div class="metric-box">
+                                <span>Saldo Siap</span>
+                                <h4 style="color: #34d399;">150.000</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SIDE-BY-SIDE MATRIX DIFF VIEW -->
+        <div id="tab-matrix" class="tab-content">
+            <!-- Smart Detection Dynamic Banner -->
+            <div id="smart-alert-box" class="smart-alert alert-pergeseran">
+                <div class="alert-icon-title">
+                    <div class="alert-icon" id="alert-icon-sym">💡</div>
+                    <div class="alert-content">
+                        <h4 id="alert-heading">KLASIFIKASI: PERGESERAN ANGGARAN (Intra-Kode Rekening)</h4>
+                        <p id="alert-description">
+                            Perubahan hanya terjadi pada volume/harga satuan dalam kode rekening yang sama. Tidak memerlukan pengesahan Dinas Pendidikan.
+                        </p>
+                    </div>
+                </div>
+                <div class="alert-routing">
+                    <span>Otoritas Pengesahan:</span>
+                    <h3 id="alert-target-auth">CUKUP KEPALA SEKOLAH</h3>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Tampilan Penyandingan Revisi (Side-by-Side Matrix Diff)</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+                            Komparasi matriks Semula vs Menjadi beserta deviasi real-time dan deteksi otomatis inter/intra rekening.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button class="btn btn-outline" onclick="triggerPergeseranDemo()">Simulasi Pergeseran (Intra-Rekening)</button>
+                        <button class="btn" onclick="triggerPerubahanDemo()">Simulasi Perubahan (Inter-Rekening)</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="matrix-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 50px; text-align: center;">No</th>
+                                <th rowspan="2" style="width: 140px;">Kode Rekening</th>
+                                <th rowspan="2" style="min-width: 200px;">Uraian Kegiatan Belanja</th>
+                                <th colspan="4" class="group-header group-semula">SEBELUM REVISI (SEMULA)</th>
+                                <th colspan="4" class="group-header group-menjadi">SESUDAH REVISI (MENJADI)</th>
+                                <th colspan="2" class="group-header group-deviasi">SELISIH / DEVIASI</th>
+                                <th rowspan="2" style="width: 110px; text-align: center;">Status</th>
+                            </tr>
+                            <tr>
+                                <!-- Semula -->
+                                <th class="num group-semula">Vol</th>
+                                <th class="group-semula">Satuan</th>
+                                <th class="num group-semula">Tarif (Rp)</th>
+                                <th class="num group-semula">Total (Rp)</th>
+                                <!-- Menjadi -->
+                                <th class="num group-menjadi">Vol</th>
+                                <th class="group-menjadi">Satuan</th>
+                                <th class="num group-menjadi">Tarif (Rp)</th>
+                                <th class="num group-menjadi">Total (Rp)</th>
+                                <!-- Deviasi -->
+                                <th class="num group-deviasi">Δ Vol</th>
+                                <th class="num group-deviasi">Δ Nominal (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-tbody">
+                            <!-- Injected by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: OPSI APBN & OTORITAS PENGESAHAN -->
+        <div id="tab-config" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Pengaturan Skema Akun Sumber Dana APBN</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+                            Bebas kerumitan mapping SIPD daerah untuk Bantuan Pemerintah (Banpem) yang memiliki pos belanja mandiri.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="toggle-box">
+                    <div>
+                        <div class="switch-label">Skema Kode Rekening Bantuan Pemerintah (Banpem APBN Revitalisasi)</div>
+                        <div class="switch-subtext">
+                            Pilih apakah ingin memetakan ke Kode Rekening Standar SIPD Kemendagri atau menggunakan Komponen Mandiri APBN Kemendikdasmen.
+                        </div>
+                    </div>
+                    <div class="toggle-btn-group">
+                        <button class="toggle-choice" id="btn-sipd" onclick="toggleScheme('SIPD')">Kode Rekening SIPD</button>
+                        <button class="toggle-choice active" id="btn-mandiri" onclick="toggleScheme('MANDIRI')">Komponen Mandiri APBN</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem;">
+                    <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; color: #38bdf8;">
+                        Status Aktif: <span id="scheme-status-text">Komponen Mandiri APBN (Non-SIPD)</span>
+                    </h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+                        Sekolah menginput rencana kegiatan belanja berdasarkan item spesifikasi teknis Petunjuk Teknis Direktorat (misal: <em>Pengadaan Laptop Praktik Siswa</em>, <em>Renovasi Jaringan LAN</em>) tanpa harus memaksakan mapping ke sub-kegiatan kode rekening SIPD daerah yang sering kali tidak sinkron.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Konfigurasi Otoritas Pengesahan Kertas Kerja</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+                            Pengaturan pihak yang ditunjuk untuk mengesahkan usulan Kertas Kerja RKAS per pos dana.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 0.5rem;">Banpem Revitalisasi APBN</label>
+                        <select style="width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; font-size: 0.82rem;">
+                            <option selected>Dinas Pendidikan Provinsi (Delegasi)</option>
+                            <option>Kepala Satuan Pendidikan (Internal)</option>
+                            <option>BBPMP Provinsi</option>
+                            <option>Direktorat SMK Kemendikdasmen</option>
+                        </select>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 0.5rem;">BOSP Reguler</label>
+                        <select style="width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; font-size: 0.82rem;">
+                            <option selected>Dinas Pendidikan Provinsi</option>
+                            <option>Kepala Satuan Pendidikan</option>
+                        </select>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 0.5rem;">Dana SPP & Sumbangan Komite</label>
+                        <select style="width: 100%; background: #1e293b; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; font-size: 0.82rem;">
+                            <option selected>Kepala Satuan Pendidikan (Internal)</option>
+                            <option>Ketua Komite Sekolah</option>
+                            <option>Dinas Pendidikan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: FORMAT CETAK RESMI & BERITA ACARA -->
+        <div id="tab-print" class="tab-content">
+            <div class="no-print" style="margin-bottom: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn" onclick="window.print()">
+                    🖨️ Cetak Dokumen Resmi (Print / PDF)
+                </button>
+            </div>
+
+            <!-- Paper Sheet -->
+            <div class="print-sheet">
+                <div class="kop-surat">
+                    <h3>PEMERINTAH DAERAH PROVINSI JAWA BARAT</h3>
+                    <h3>DINAS PENDIDIKAN</h3>
+                    <h2>SMK NEGERI 1 NUSANTARA</h2>
+                    <p>Jl. Pendidikan Mandiri No. 88, Kota Bandung • Telp: (022) 7654321 • Email: info@smkn1nusantara.sch.id</p>
+                </div>
+
+                <div class="ba-title">
+                    <h4 id="print-ba-title">BERITA ACARA PENGESAHAN PERUBAHAN KERTAS KERJA RKAS</h4>
+                    <span>Nomor: 421.5/BA-ARKAS/2026/089 • Tanggal: 18 September 2026</span>
+                </div>
+
+                <div style="font-size: 0.88rem; line-height: 1.7; margin-bottom: 1.5rem;">
+                    <p style="margin-bottom: 0.75rem;">
+                        Pada hari ini, <strong>Jumat</strong> tanggal <strong>Delapan Belas</strong> bulan <strong>September</strong> tahun <strong>Dua Ribu Dua Puluh Enam</strong>, bertempat di SMK Negeri 1 Nusantara, telah dilaksanakan rapat verifikasi dan validasi atas usulan Kertas Kerja RKAS Tahun Anggaran 2026 dengan rincian sebagai berikut:
+                    </p>
+                    <table style="width: 100%; font-size: 0.82rem; margin-bottom: 1rem; border: 1px solid #cbd5e1;">
+                        <tr style="background: #f1f5f9;">
+                            <td style="width: 220px; font-weight: 700; border: 1px solid #cbd5e1;">Satuan Pendidikan</td>
+                            <td style="border: 1px solid #cbd5e1;">SMK Negeri 1 Nusantara (NPSN: 20109999)</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 700; border: 1px solid #cbd5e1;">Sumber Dana Anggaran</td>
+                            <td style="border: 1px solid #cbd5e1;">BOSP Reguler / Bantuan Pemerintah Revitalisasi APBN</td>
+                        </tr>
+                        <tr style="background: #f1f5f9;">
+                            <td style="font-weight: 700; border: 1px solid #cbd5e1;">Klasifikasi Usulan</td>
+                            <td style="border: 1px solid #cbd5e1; font-weight: 700; color: #0369a1 !important;" id="print-ba-kategori">
+                                PERUBAHAN ANGGARAN (Inter-Kode Rekening SIPD)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 700; border: 1px solid #cbd5e1;">Rekomendasi Otoritas</td>
+                            <td style="border: 1px solid #cbd5e1; font-weight: 700; color: #047857 !important;" id="print-ba-status">
+                                DISETUJUI & DISAHKAN SECARA RESMI OLEH DINAS PENDIDIKAN
+                            </td>
+                        </tr>
+                    </table>
+                    <p>
+                        Berdasarkan hasil penelitian lembar penyandingan matriks Semula-Menjadi, seluruh rincian belanja telah dinyatakan sesuai dengan standar biaya masukan dan pedoman juknis yang berlaku.
+                    </p>
+                </div>
+
+                <div class="signature-grid">
+                    <div class="sig-box">
+                        <div>
+                            <p style="font-size: 0.8rem;">Mengetahui/Menyetujui,</p>
+                            <p style="font-size: 0.82rem; font-weight: 700;">Kepala Satuan Pendidikan</p>
+                            <div class="sig-stamp">SEWIDYA-ID TERVERIFIKASI</div>
+                        </div>
+                        <div>
+                            <div class="sig-name">Drs. Bambang Wijaya, M.Pd.</div>
+                            <div class="sig-nip">NIP. 19750101 200003 1 001</div>
+                        </div>
+                    </div>
+
+                    <div class="sig-box">
+                        <div>
+                            <p style="font-size: 0.8rem;">Mengesahkan,</p>
+                            <p style="font-size: 0.82rem; font-weight: 700;">Verifikator Dinas Pendidikan</p>
+                            <div class="sig-stamp">DISDIK PROV TERVERIFIKASI</div>
+                        </div>
+                        <div>
+                            <div class="sig-name">Ir. Suryanto, M.M.</div>
+                            <div class="sig-nip">NIP. 19710815 199702 1 004</div>
+                        </div>
+                    </div>
+
+                    <div class="sig-box">
+                        <div>
+                            <p style="font-size: 0.8rem;">Penyusun Kertas Kerja,</p>
+                            <p style="font-size: 0.82rem; font-weight: 700;">Bendahara / Pengelola PIC</p>
+                            <div class="sig-stamp">SEWIDYA-ID TERVERIFIKASI</div>
+                        </div>
+                        <div>
+                            <div class="sig-name">Ahmad Fauzi, S.Pd.</div>
+                            <div class="sig-nip">NIP. 19850315 201001 1 012</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Interactive Script -->
+    <script>
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // Data Mockup
+        const dataPergeseran = [
+            {
+                id: 'ITM-001',
+                kode_s: '5.1.02.01.01.0024',
+                kode_m: '5.1.02.01.01.0024',
+                uraian: 'Kertas HVS A4 80gr Sinar Dunia',
+                vol_s: 10, sat_s: 'Rim', tarif_s: 55000, total_s: 550000,
+                vol_m: 15, sat_m: 'Rim', tarif_m: 55000, total_m: 825000,
+                d_vol: 5, d_nom: 275000, badge: 'BERTAMBAH'
+            },
+            {
+                id: 'ITM-002',
+                kode_s: '5.1.02.01.01.0024',
+                kode_m: '5.1.02.01.01.0024',
+                uraian: 'Spidol Whiteboard Hitam Snowman',
+                vol_s: 20, sat_s: 'Buah', tarif_s: 12000, total_s: 240000,
+                vol_m: 10, sat_m: 'Buah', tarif_m: 12000, total_m: 120000,
+                d_vol: -10, d_nom: -120000, badge: 'BERKURANG'
+            },
+            {
+                id: 'ITM-003',
+                kode_s: '5.1.02.02.01.0003',
+                kode_m: '5.1.02.02.01.0003',
+                uraian: 'Langganan Bandwidth Internet Dedicated 100 Mbps',
+                vol_s: 6, sat_s: 'Bulan', tarif_s: 1500000, total_s: 9000000,
+                vol_m: 6, sat_m: 'Bulan', tarif_m: 1500000, total_m: 9000000,
+                d_vol: 0, d_nom: 0, badge: 'TETAP'
+            }
+        ];
+
+        const dataPerubahan = [
+            {
+                id: 'ITM-001',
+                kode_s: '5.1.02.01.01.0024',
+                kode_m: '5.1.02.01.01.0024',
+                uraian: 'Kertas HVS A4 80gr Sinar Dunia',
+                vol_s: 10, sat_s: 'Rim', tarif_s: 55000, total_s: 550000,
+                vol_m: 10, sat_m: 'Rim', tarif_m: 55000, total_m: 550000,
+                d_vol: 0, d_nom: 0, badge: 'TETAP'
+            },
+            {
+                id: 'ITM-002',
+                kode_s: '5.1.02.01.01.0024',
+                kode_m: '5.1.02.01.01.0024',
+                uraian: 'Spidol Whiteboard Hitam Snowman',
+                vol_s: 20, sat_s: 'Buah', tarif_s: 12000, total_s: 240000,
+                vol_m: 20, sat_m: 'Buah', tarif_m: 12000, total_m: 240000,
+                d_vol: 0, d_nom: 0, badge: 'TETAP'
+            },
+            {
+                id: 'ITM-004',
+                kode_s: '-',
+                kode_m: '5.2.02.08.01.0005',
+                uraian: 'Router Mikrotik Cloud Core Lab TKJ (Akun Baru)',
+                vol_s: 0, sat_s: '-', tarif_s: 0, total_s: 0,
+                vol_m: 1, sat_m: 'Unit', tarif_m: 4500000, total_m: 4500000,
+                d_vol: 1, d_nom: 4500000, badge: 'BARU'
+            },
+            {
+                id: 'ITM-003',
+                kode_s: '5.1.02.02.01.0003',
+                kode_m: '-',
+                uraian: 'Langganan Bandwidth Internet Dedicated (Dialihkan)',
+                vol_s: 6, sat_s: 'Bulan', tarif_s: 1500000, total_s: 9000000,
+                vol_m: 0, sat_m: '-', tarif_m: 0, total_m: 0,
+                d_vol: -6, d_nom: -9000000, badge: 'DIHAPUS'
+            }
+        ];
+
+        function renderTable(data, isPerubahan) {
+            const tbody = document.getElementById('matrix-tbody');
+            tbody.innerHTML = '';
+
+            data.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                
+                let badgeClass = 'badge-tetap';
+                if (row.badge === 'BERTAMBAH') badgeClass = 'badge-bertambah';
+                if (row.badge === 'BERKURANG') badgeClass = 'badge-berkurang';
+                if (row.badge === 'BARU') badgeClass = 'badge-baru';
+                if (row.badge === 'DIHAPUS') badgeClass = 'badge-dihapus';
+
+                const dNomClass = row.d_nom > 0 ? 'positive' : (row.d_nom < 0 ? 'negative' : '');
+                const dNomText = row.d_nom > 0 ? `+${row.d_nom.toLocaleString('id-ID')}` : row.d_nom.toLocaleString('id-ID');
+                const dVolText = row.d_vol > 0 ? `+${row.d_vol}` : row.d_vol;
+
+                tr.innerHTML = `
+                    <td style="text-align: center; color: var(--text-muted);">${idx + 1}</td>
+                    <td style="font-family: monospace; font-size: 0.75rem; color: #38bdf8;">${row.kode_m !== '-' ? row.kode_m : row.kode_s}</td>
+                    <td><strong>${row.uraian}</strong></td>
+                    <!-- Semula -->
+                    <td class="num">${row.vol_s}</td>
+                    <td>${row.sat_s}</td>
+                    <td class="num">${row.tarif_s.toLocaleString('id-ID')}</td>
+                    <td class="num" style="font-weight: 600;">${row.total_s.toLocaleString('id-ID')}</td>
+                    <!-- Menjadi -->
+                    <td class="num">${row.vol_m}</td>
+                    <td>${row.sat_m}</td>
+                    <td class="num">${row.tarif_m.toLocaleString('id-ID')}</td>
+                    <td class="num" style="font-weight: 600; color: #93c5fd;">${row.total_m.toLocaleString('id-ID')}</td>
+                    <!-- Deviasi -->
+                    <td class="num ${dNomClass}">${dVolText}</td>
+                    <td class="num ${dNomClass}">${dNomText}</td>
+                    <!-- Badge -->
+                    <td style="text-align: center;"><span class="status-badge ${badgeClass}">${row.badge}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Smart Alert Box
+            const alertBox = document.getElementById('smart-alert-box');
+            const alertIcon = document.getElementById('alert-icon-sym');
+            const alertHeading = document.getElementById('alert-heading');
+            const alertDesc = document.getElementById('alert-description');
+            const alertTarget = document.getElementById('alert-target-auth');
+
+            if (isPerubahan) {
+                alertBox.className = 'smart-alert alert-perubahan';
+                alertIcon.innerText = '🚨';
+                alertHeading.innerText = 'KLASIFIKASI: PERUBAHAN ANGGARAN (Lintas-Kode Rekening / Akun Baru)';
+                alertDesc.innerText = 'Terdeteksi pergeseran dana antar-rekening SIPD atau penambahan rekening belanja baru. Wajib verifikasi & pengesahan Dinas Pendidikan.';
+                alertTarget.innerText = 'WAJIB DINAS PENDIDIKAN';
+
+                document.getElementById('print-ba-title').innerText = 'BERITA ACARA PENGESAHAN PERUBAHAN KERTAS KERJA RKAS';
+                document.getElementById('print-ba-kategori').innerText = 'PERUBAHAN ANGGARAN (Inter-Kode Rekening SIPD)';
+                document.getElementById('print-ba-status').innerText = 'DISETUJUI & DISAHKAN SECARA RESMI OLEH DINAS PENDIDIKAN';
+            } else {
+                alertBox.className = 'smart-alert alert-pergeseran';
+                alertIcon.innerText = '💡';
+                alertHeading.innerText = 'KLASIFIKASI: PERGESERAN ANGGARAN (Intra-Kode Rekening)';
+                alertDesc.innerText = 'Perubahan hanya terjadi pada volume/harga satuan dalam kode rekening yang sama. Cukup pengesahan internal Kepala Satuan Pendidikan.';
+                alertTarget.innerText = 'CUKUP KEPALA SEKOLAH';
+
+                document.getElementById('print-ba-title').innerText = 'BERITA ACARA PENGESAHAN PERGESERAN KERTAS KERJA RKAS';
+                document.getElementById('print-ba-kategori').innerText = 'PERGESERAN ANGGARAN (Intra-Kode Rekening Internal)';
+                document.getElementById('print-ba-status').innerText = 'DISETUJUI OLEH KEPALA SATUAN PENDIDIKAN (INTERNAL)';
+            }
+        }
+
+        function triggerPergeseranDemo() {
+            renderTable(dataPergeseran, false);
+        }
+
+        function triggerPerubahanDemo() {
+            renderTable(dataPerubahan, true);
+        }
+
+        function toggleScheme(scheme) {
+            const btnSipd = document.getElementById('btn-sipd');
+            const btnMandiri = document.getElementById('btn-mandiri');
+            const statusText = document.getElementById('scheme-status-text');
+
+            if (scheme === 'SIPD') {
+                btnSipd.classList.add('active');
+                btnMandiri.classList.remove('active');
+                statusText.innerText = 'Kode Rekening Standar SIPD Kemendagri';
+            } else {
+                btnMandiri.classList.add('active');
+                btnSipd.classList.remove('active');
+                statusText.innerText = 'Komponen Mandiri APBN (Non-SIPD Kemendikdasmen)';
+            }
+        }
+
+        // Init with Pergeseran
+        renderTable(dataPergeseran, false);
+    </script>
+</body>
+</html>

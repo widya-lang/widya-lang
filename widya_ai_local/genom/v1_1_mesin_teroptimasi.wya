@@ -1,0 +1,16 @@
+// ============================================================================
+// GENOM v1.1.0 (v1_1_mesin_teroptimasi.wya)
+// Algoritma Pencarian Indeks Tabel Hash O(1) Disintesis Mandiri oleh AI
+// ============================================================================
+
+fungsi bangun_indeks_desa(daftar_desa) {
+    misal indeks = {};
+    untuk desa di daftar_desa {
+        indeks[desa["id_desa"]] = desa;
+    }
+    kembalikan indeks;
+}
+
+fungsi cari_desa_teroptimasi(tabel_indeks, id_target) {
+    kembalikan tabel_indeks[id_target];
+}

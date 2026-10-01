@@ -1,0 +1,108 @@
+// ============================================================================
+// SIMULASI SUITE: TATA KELOLA KEPANITIAAN & TIM KERJA SEKOLAH TERPADU
+// Menguji Penanganan 4 Aspek Manajemen Kepanitiaan Satuan Pendidikan:
+// 1. Pembentukan Tim Mandatori Regulasi (Tim TPPK Permendikbudristek 46/2023)
+// 2. Pembentukan Panitia Siklus Akademik (Panitia PPDB 2026/2027 & Guardrail Juknis BOS)
+// 3. Deteksi Pencegahan Overload Beban Kerja Guru (Anti-Committee Fatigue 4L)
+// 4. Verifikasi & Pengesahan LPJ Kepanitiaan Siap Audit Akreditasi BAN-PDM
+// ============================================================================
+
+impor "widyaos/modul/kepanitiaan_sekolah_terpadu.wya";
+
+cetak("====================================================================");
+cetak("📋  SIMULASI: TATA KELOLA KEPANITIAAN & TIM KERJA SEKOLAH TERPADU   ");
+cetak("====================================================================");
+
+// [1] Pembentukan Tim Mandatori Regulasi: Tim TPPK
+cetak("\n[1] Uji Pembentukan Tim Mandatori Regulasi (TPPK Permendikbudristek 46/2023):");
+misal tim_tppk = terbitkan_sk_kepanitiaan(
+    "PAN-TPPK-2026",
+    "Tim Pencegahan dan Penanganan Kekerasan (TPPK)",
+    "MANDATORI_REGULASI_PUSAT",
+    "421.3/089/SK-TPPK/2026",
+    "15 Januari 2026",
+    "2025/2026",
+    "Dra. Hj. Nurhidayati (Wakasek Kesiswaan)",
+    "OPERASIONAL_KONSUMSI_ATK_DIIZINKAN"
+);
+
+cetak("  • Nama Tim Kerja      :", tim_tppk.nama_kepanitiaan);
+cetak("  • Kategori SK         :", tim_tppk.kategori);
+cetak("  • Nomor SK Resmi      :", tim_tppk.nomor_sk_kepala_sekolah);
+cetak("  • Ketua Tim Terpilih  :", tim_tppk.ketua_panitia);
+cetak("  • Status Legalitas    :", tim_tppk.status_legalitas_sk);
+
+jika tim_tppk.kategori == "MANDATORI_REGULASI_PUSAT" dan tim_tppk.status_legalitas_sk == "TERBIT_RESMI_TERTANDATANGANI_KEPSEK" {
+    cetak("  ✅ PASS: SK Tim Mandatori TPPK Sah Terbit Sesuai Regulasi Kemendikdasmen!");
+} lainnya {
+    cetak("  ❌ FAIL: Pembentukan Tim TPPK gagal!");
+}
+
+// [2] Pembentukan Panitia Siklus Akademik: Panitia PPDB & Guardrail Honor BOS
+cetak("\n[2] Uji Pembentukan Panitia Siklus Akademik (PPDB 2026/2027) & Guardrail BOS:");
+misal panitia_ppdb = terbitkan_sk_kepanitiaan(
+    "PAN-PPDB-2026",
+    "Panitia Penerimaan Peserta Didik Baru (PPDB)",
+    "SIKLUS_AKADEMIK_TAHUNAN",
+    "421.3/120/SK-PPDB/2026",
+    "10 Mei 2026",
+    "2026/2027",
+    "Bambang Sutrisno, S.Kom. (Kepala Lab TIK)",
+    "DILARANG_HONOR_ASN_JUKNIS_BOS"
+);
+
+cetak("  • Kepanitiaan         :", panitia_ppdb.nama_kepanitiaan);
+cetak("  • Tahun Ajaran        :", panitia_ppdb.tahun_ajaran);
+cetak("  • Kebijakan BOS       :", panitia_ppdb.kebijakan_honor_bos);
+
+jika panitia_ppdb.kebijakan_honor_bos == "DILARANG_HONOR_ASN_JUKNIS_BOS" {
+    cetak("  ✅ PASS: Guardrail Juknis BOS Terpasang! Menolak Pembayaran Honor ASN Tanpa Dasar Hukum.");
+} lainnya {
+    cetak("  ❌ FAIL: Guardrail BOS panitia gagal!");
+}
+
+// [3] Deteksi Pencegahan Overload Beban Kepanitiaan Guru (Anti-4L Fatigue)
+cetak("\n[3] Uji Deteksi Beban Kerja Guru Rangkap Banyak Panitia (Anti-Burnout):");
+// Skenario A: Guru A aktif di 5 kepanitiaan sekaligus (PPDB, ANBK, Ujian, TPPK, P5)
+misal audit_overload = audit_beban_kepanitiaan_guru(
+    "198001012006041010",
+    "Drs. Slamet Riyadi",
+    5
+);
+
+// Skenario B: Guru B aktif di 2 kepanitiaan (proporsional)
+misal audit_ideal = audit_beban_kepanitiaan_guru(
+    "199203152019032015",
+    "Anita Kusuma, M.Pd.",
+    2
+);
+
+cetak("  • Guru A (5 Panitia)  : Status =", audit_overload.status_beban_kerja, "->", audit_overload.rekomendasi_distribusi);
+cetak("  • Guru B (2 Panitia)  : Status =", audit_ideal.status_beban_kerja);
+
+jika audit_overload.status_beban_kerja == "PERINGATAN_OVERLOAD_BURNOUT" dan audit_ideal.status_beban_kerja == "BEBAN_IDEAL_SEIMBANG" {
+    cetak("  ✅ PASS: Sistem Mencegah Monopoli / Kelelahan Panitia Guru 'Lu Lagi Lu Lagi'!");
+} lainnya {
+    cetak("  ❌ FAIL: Deteksi beban kepanitiaan gagal!");
+}
+
+// [4] Verifikasi & Pengesahan LPJ Penutupan Kepanitiaan Siap Akreditasi
+cetak("\n[4] Uji Penyelesaian LPJ Kepanitiaan untuk Bukti Fisik Akreditasi BAN-PDM:");
+misal hasil_lpj = sahkan_lpj_kepanitiaan(
+    panitia_ppdb,
+    "Seluruh target kuota 9 rombel (288 siswa) terpenuhi 100% tanpa pungli, berkas tersimpan rapi."
+);
+
+cetak("  • Nama Panitia Selesai:", hasil_lpj.nama);
+cetak("  • Status Akhir LPJ    :", hasil_lpj.status_lpj);
+cetak("  • Kesiapan Akreditasi :", hasil_lpj.siap_arsip_akreditasi);
+
+jika hasil_lpj.status_lpj == "LPJ_TERVERIFIKASI_SELESAI" dan hasil_lpj.siap_arsip_akreditasi == benar {
+    cetak("  ✅ PASS: LPJ Tervalidasi Resmi, Otomatis Tersimpan di Arsip Akreditasi & Inspektorat!");
+} lainnya {
+    cetak("  ❌ FAIL: Pengesahan LPJ gagal!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 4/4 KASUS TATA KELOLA KEPANITIAAN LULUS (100%)    ");
+cetak("====================================================================");

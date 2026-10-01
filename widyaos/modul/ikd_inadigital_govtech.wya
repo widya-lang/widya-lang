@@ -1,0 +1,110 @@
+// ============================================================================
+// MODUL: INTEGRASI IKD NASIONAL & INA DIGITAL GOVTECH (ikd_inadigital_govtech.wya)
+// Penyelarasan Perpres 82/2023 (Keterpaduan Layanan Digital Nasional)
+//
+// 1. Single Sign-On (SSO) IKD Dukcapil Kemendagri (QR Code Dinamis & Liveness)
+// 2. INA Digital Bridge: Interoperabilitas 9 Layanan Prioritas SPBE Nasional
+// 3. Legalisasi Dokumen Digital 1-Klik Berstempel BSrE BSSN & IKD untuk Warga
+// ============================================================================
+
+struktur KredensialIKD {
+    nik,
+    nama_lengkap,
+    qr_payload_dinamis,
+    stempel_waktu_iso,
+    skor_liveness_biometrik,
+    status_verifikasi
+}
+
+struktur SesiINADigital {
+    id_sesi_govtech,
+    nik_warga,
+    layanan_prioritas_spbe,
+    token_akses_jwt,
+    status_layanan
+}
+
+struktur LegalisasiDokumenIKD {
+    id_dokumen,
+    nomor_surat,
+    nik_pemilik,
+    jenis_dokumen,
+    hash_dokumen,
+    segel_ikd_bsre,
+    status_legalisir
+}
+
+// ----------------------------------------------------------------------------
+// [1] SINGLE SIGN-ON IKD DUKCAPIL KEMENDAGRI
+// ----------------------------------------------------------------------------
+
+fungsi ikd_verifikasi_qr_dinamis(nik, nama, qr_payload, skor_liveness) {
+    // Validasi skema QR dinamis IKD (rotasi setiap 60 detik)
+    misal awalan = potong(qr_payload, 0, 7);
+    jika awalan != "IKD-QR:" {
+        kembalikan KredensialIKD(
+            nik,
+            nama,
+            qr_payload,
+            "2026-09-19T10:00:00Z",
+            skor_liveness,
+            "DITOLAK_FORMAT_QR_IKD_INVALID"
+        );
+    }
+
+    // Validasi skor liveness biometrik wajah (minimal 85%)
+    jika skor_liveness < 85 {
+        kembalikan KredensialIKD(
+            nik,
+            nama,
+            qr_payload,
+            "2026-09-19T10:00:00Z",
+            skor_liveness,
+            "DITOLAK_LIVENESS_BIOMETRIK_GAGAL"
+        );
+    }
+
+    kembalikan KredensialIKD(
+        nik,
+        nama,
+        qr_payload,
+        "2026-09-19T10:00:00Z",
+        skor_liveness,
+        "TERVERIFIKASI_IKD_DUKCAPIL_KEMENDAGRI"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [2] INA DIGITAL BRIDGE (9 LAYANAN PRIORITAS SPBE NASIONAL)
+// ----------------------------------------------------------------------------
+
+fungsi inadigital_buat_sesi_layanan(nik, layanan_spbe) {
+    misal id_sesi = "INA-GOVTECH-" + potong(sha256(nik + layanan_spbe + "2026"), 0, 12);
+    misal jwt_token = "JWT-INADIGITAL-" + potong(sha256(id_sesi + "SECRET_GOVTECH_KEY"), 0, 24);
+
+    kembalikan SesiINADigital(
+        id_sesi,
+        nik,
+        layanan_spbe,
+        jwt_token,
+        "TERHUBUNG_JARINGAN_INA_DIGITAL_NASIONAL"
+    );
+}
+
+// ----------------------------------------------------------------------------
+// [3] LEGALISASI DOKUMEN DIGITAL BERSTEMPEL IKD & BSRE
+// ----------------------------------------------------------------------------
+
+fungsi inadigital_legalisasi_dokumen_warga(id_dok, no_surat, nik, jenis_dok, hash_dok) {
+    misal segel = "BSRE-IKD-SEAL-" + potong(sha256(id_dok + no_surat + nik + hash_dok), 0, 16);
+
+    kembalikan LegalisasiDokumenIKD(
+        id_dok,
+        no_surat,
+        nik,
+        jenis_dok,
+        hash_dok,
+        segel,
+        "LEGALISASI_SAH_BERSTEMPEL_IKD_BSRE"
+    );
+}

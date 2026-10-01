@@ -1,0 +1,69 @@
+{
+  "Function Definition": {
+    "prefix": "fungsi",
+    "body": [
+      "fungsi ${1:nama_fungsi}(${2:parameter}) {",
+      "\t${0:// logika}",
+      "\tkembalikan ${3:hasil};",
+      "}"
+    ],
+    "description": "Mendefinisikan fungsi baru dalam Widya-Lang"
+  },
+  "If Condition": {
+    "prefix": "jika",
+    "body": [
+      "jika (${1:kondisi}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Pernyataan kondisional jika"
+  },
+  "If Else Condition": {
+    "prefix": "jikala",
+    "body": [
+      "jika (${1:kondisi}) {",
+      "\t${2}",
+      "} lainnya {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Pernyataan kondisional jika...lainnya"
+  },
+  "For Loop": {
+    "prefix": "untuk",
+    "body": [
+      "untuk (${1:item} dalam ${2:koleksi}) {",
+      "\t${0:cetak(item);}",
+      "}"
+    ],
+    "description": "Perulangan untuk...dalam"
+  },
+  "Print Output": {
+    "prefix": "cetak",
+    "body": [
+      "cetak(${1:\"Teks output\"});"
+    ],
+    "description": "Mencetak keluaran ke konsol terminal"
+  },
+  "WidyaDesktop App": {
+    "prefix": "desktopapp",
+    "body": [
+      "impor \"./modul/desktop.wya\";",
+      "",
+      "fungsi utama() {",
+      "\tmisal app = BuatAplikasiDesktop(\"${1:Aplikasi Saya}\", ${2:1100}, ${3:720});",
+      "\tapp.pusatkan();",
+      "\tapp.tambah_menu(\"${4:Menu Baru}\", \"${5:Ctrl+M}\");",
+      "\t",
+      "\tapp.daftarkan_rpc(\"${6:ambil_data}\", fungsi(payload) {",
+      "\t\tkembalikan { \"sukses\": benar, \"data\": \"Halo dari Backend!\" };",
+      "\t});",
+      "\t",
+      "\t${0}",
+      "}",
+      "",
+      "utama();"
+    ],
+    "description": "Template inisialisasi aplikasi desktop WidyaDesktop"
+  }
+}

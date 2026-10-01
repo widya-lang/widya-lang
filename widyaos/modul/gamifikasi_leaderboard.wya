@@ -1,0 +1,204 @@
+// =================================================================
+// Modul Gamifikasi Pendidikan & Papan Peringkat (WidyaOS Gamification)
+// Leaderboard Lokal (Kelas/Sekolah), Wilayah (Kab/Kota/Provinsi), & Nasional
+// Mengembangkan Motivasi Belajar Sehat, Literasi, Disiplin, & Nilai Pancasila
+// =================================================================
+
+struktur ProfilGamifikasiSiswa {
+    nisn,
+    nama_lengkap,
+    nama_alias_anonim, // Opsi Privasi UU PDP
+    npsn_sekolah,
+    nama_sekolah,
+    kode_kab_kota,
+    nama_kab_kota,
+    kode_provinsi,
+    nama_provinsi,
+    poin_literasi_buku,
+    poin_lms_sinau,
+    poin_disiplin_presensi,
+    poin_projek_p5,
+    total_edupoints,
+    streak_kehadiran_hari,
+    daftar_lencana
+}
+
+struktur EntriLeaderboard {
+    peringkat,
+    nisn_atau_npsn,
+    nama_tampilan,
+    asal_sekolah_atau_wilayah,
+    skor_edupoints,
+    lencana_tertinggi,
+    kategori_kompetisi // "LOKAL_ROMBEL", "LOKAL_SEKOLAH", "WILAYAH_KABKOTA", "WILAYAH_PROVINSI", "NASIONAL"
+}
+
+struktur PapanPeringkatNasional {
+    tingkat, // "LOKAL", "WILAYAH", "NASIONAL"
+    lingkup_nama,
+    tanggal_pembaruan,
+    daftar_peringkat
+}
+
+// -----------------------------------------------------------------
+// [1] Inisialisasi Profil Gamifikasi Siswa
+// -----------------------------------------------------------------
+fungsi inisialisasi_profil_gamifikasi(nisn, nama, alias, npsn, nama_sek, kab, nama_kab, prov, nama_prov) {
+    kembalikan ProfilGamifikasiSiswa(
+        nisn,
+        nama,
+        alias,
+        npsn,
+        nama_sek,
+        kab,
+        nama_kab,
+        prov,
+        nama_prov,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        []
+    );
+}
+
+fungsi punya_lencana(daftar, nama_lencana) {
+    untuk l in daftar {
+        jika l == nama_lencana {
+            kembalikan benar;
+        }
+    }
+    kembalikan salah;
+}
+
+// -----------------------------------------------------------------
+// [2] Akumulasi Poin Aktivitas Positif & Penganugerahan Lencana
+// -----------------------------------------------------------------
+fungsi tambah_aktivitas_edupoints(profil, aktivitas, poin_tambahan) {
+    jika aktivitas == "BACA_BUKU_PERPUSTAKAAN" {
+        profil.poin_literasi_buku = profil.poin_literasi_buku + poin_tambahan;
+    } kalau aktivitas == "SELESAI_MODUL_LMS" {
+        profil.poin_lms_sinau = profil.poin_lms_sinau + poin_tambahan;
+    } kalau aktivitas == "HADIR_TEPAT_WAKTU_STREAK" {
+        profil.poin_disiplin_presensi = profil.poin_disiplin_presensi + poin_tambahan;
+        profil.streak_kehadiran_hari = profil.streak_kehadiran_hari + 1;
+    } kalau aktivitas == "KARYA_PROJEK_P5" {
+        profil.poin_projek_p5 = profil.poin_projek_p5 + poin_tambahan;
+    }
+    
+    profil.total_edupoints = profil.total_edupoints + poin_tambahan;
+    
+    // Evaluasi Penganugerahan Lencana (*Badges*) - Anti-Duplikasi
+    jika profil.poin_literasi_buku >= 100 dan punya_lencana(profil.daftar_lencana, "LENCANA_KSATRIA_LITERASI") == salah {
+        tambah(profil.daftar_lencana, "LENCANA_KSATRIA_LITERASI");
+    }
+    jika profil.streak_kehadiran_hari >= 20 dan punya_lencana(profil.daftar_lencana, "LENCANA_DISIPLIN_BAJA") == salah {
+        tambah(profil.daftar_lencana, "LENCANA_DISIPLIN_BAJA");
+    }
+    jika profil.poin_projek_p5 >= 150 dan punya_lencana(profil.daftar_lencana, "LENCANA_PELAJAR_PANCASILA") == salah {
+        tambah(profil.daftar_lencana, "LENCANA_PELAJAR_PANCASILA");
+    }
+    
+    kembalikan profil.total_edupoints;
+}
+
+// -----------------------------------------------------------------
+// [3] Pembuatan Leaderboard Lokal (Tingkat Kelas & Sekolah)
+// -----------------------------------------------------------------
+fungsi buat_leaderboard_lokal_sekolah(nama_sekolah, daftar_profil_siswa, gunakan_alias) {
+    misal daftar = [];
+    misal rank = 1;
+    
+    untuk p in daftar_profil_siswa {
+        misal nama_tampil = p.nama_lengkap;
+        jika gunakan_alias == benar {
+            nama_tampil = p.nama_alias_anonim;
+        }
+        
+        misal lencana = "LENCANA_DASAR";
+        jika panjang(p.daftar_lencana) > 0 {
+            lencana = p.daftar_lencana[0];
+        }
+        
+        misal entri = EntriLeaderboard(
+            rank,
+            p.nisn,
+            nama_tampil,
+            p.nama_sekolah,
+            p.total_edupoints,
+            lencana,
+            "LOKAL_SEKOLAH"
+        );
+        tambah(daftar, entri);
+        rank = rank + 1;
+    }
+    
+    kembalikan PapanPeringkatNasional(
+        "LOKAL",
+        nama_sekolah,
+        "2026-09-18",
+        daftar
+    );
+}
+
+// -----------------------------------------------------------------
+// [4] Pembuatan Leaderboard Wilayah (Tingkat Kab/Kota & Provinsi)
+// Menggunakan kode wilayah Kepmen Kemendagri 2025
+// -----------------------------------------------------------------
+fungsi buat_leaderboard_wilayah_provinsi(nama_provinsi, daftar_sekolah_top) {
+    misal daftar = [];
+    misal rank = 1;
+    
+    untuk s in daftar_sekolah_top {
+        misal entri = EntriLeaderboard(
+            rank,
+            s.npsn,
+            s.nama_sekolah,
+            s.nama_kab_kota + ", " + nama_provinsi,
+            s.total_edupoints_sekolah,
+            s.lencana_keunggulan,
+            "WILAYAH_PROVINSI"
+        );
+        tambah(daftar, entri);
+        rank = rank + 1;
+    }
+    
+    kembalikan PapanPeringkatNasional(
+        "WILAYAH",
+        nama_provinsi,
+        "2026-09-18",
+        daftar
+    );
+}
+
+// -----------------------------------------------------------------
+// [5] Pembuatan Leaderboard Nasional (Kemendikdasmen RI)
+// Menampilkan Sekolah & Siswa Teladan Berintegritas Se-Indonesia
+// -----------------------------------------------------------------
+fungsi buat_leaderboard_nasional(daftar_unggulan_nasional) {
+    misal daftar = [];
+    misal rank = 1;
+    
+    untuk u in daftar_unggulan_nasional {
+        misal entri = EntriLeaderboard(
+            rank,
+            u.id_entitas,
+            u.nama_entitas,
+            u.wilayah_provinsi,
+            u.total_skor_nasional,
+            u.lencana_emas,
+            "NASIONAL_KEMENDIKDASMEN"
+        );
+        tambah(daftar, entri);
+        rank = rank + 1;
+    }
+    
+    kembalikan PapanPeringkatNasional(
+        "NASIONAL",
+        "Kementerian Pendidikan Dasar dan Menengah Republik Indonesia",
+        "2026-09-18",
+        daftar
+    );
+}

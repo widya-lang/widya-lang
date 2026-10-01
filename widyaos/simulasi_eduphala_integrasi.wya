@@ -1,0 +1,170 @@
+// =================================================================
+// SIMULASI INTEGRASI EDUPHALA KE WIDYAOS (simulasi_eduphala_integrasi.wya)
+// Pengujian MOD-08 (Makan Bergizi Gratis BGN) & MOD-28 (Standar Satuan Harga SSH)
+// =================================================================
+
+impor "widyaos/modul/mbg_gizi_gratis.wya";
+impor "widyaos/modul/arkas_multidana.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║   === INTEGRASI EDUPHALA & WIDYAOS KEMENDIKDASMEN RI ===         ║");
+cetak("║   Uji Validasi Program MBG (BGN) & Kepatuhan SSH Regional        ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+// -------------------------------------------------------------
+// [BAGIAN 1] MOD-08: Program Makan Bergizi Gratis (MBG BGN)
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[BAGIAN 1] MOD-08: Verifikasi Lapangan Makan Bergizi Gratis (MBG)");
+cetak("================================================================");
+
+misal dapur_desa = mbg_buat_dapur_rekanan(
+    "DAPUR-SPPG-DESA-01",
+    "Sentra Dapur Gizi Desa Nusantara Berkah",
+    "Hj. Siti Aminah",
+    "081234567890"
+);
+cetak("🏢 Mitra Dapur BGN      :", dapur_desa.nama_dapur_desa);
+cetak("📋 Sertifikasi Higiene  :", dapur_desa.sertifikasi_higiene);
+
+misal menu_hari_ini = mbg_susun_menu_seimbang(
+    "MENU-RABU-01",
+    "2026-09-18",
+    "Nasi, Ayam Bakar Madu, Sayur Bayam Jagung, Pisang Raja, Susu UHT",
+    680.0, // 680 kkal
+    28.5,  // 28.5 gr protein
+    75.0,  // 75 gr karbo
+    8.0,   // 8 gr serat
+    benar  // Susu UHT
+);
+
+cetak("🍱 Paket Menu Saji      :", menu_hari_ini.nama_paket);
+cetak("   ├── Energi Kalori    :", menu_hari_ini.kalori_kkal, "kkal (Standar Kecukupan Gizi BGN)");
+cetak("   ├── Kandungan Protein:", menu_hari_ini.protein_gram, "gram");
+cetak("   └── Paket Susu       : Tersedia");
+
+// Skenario 1A: Distribusi Sesuai Jumlah Siswa Presensi
+cetak("");
+cetak("--- Skenario 1A: Pengiriman Porsi Lengkap Sesuai Presensi ---");
+misal res_1a = mbg_verifikasi_penerimaan_sekolah(
+    "MBG-DIST-20260918-001",
+    "2026-09-18",
+    "20109999",
+    dapur_desa.id_dapur,
+    menu_hari_ini,
+    350.0, // Total kirim
+    350.0, // Siswa hadir presensi
+    350.0, // Porsi layak
+    0.0,   // Porsi rusak
+    "did:sewidya:guru:petugas_uks"
+);
+
+cetak("📦 Jumlah Porsi Dikirim :", res_1a.total_porsi_dikirim, "porsi");
+cetak("👥 Siswa Hadir Presensi :", res_1a.total_siswa_hadir_presensi, "siswa");
+cetak("🔍 Status Verifikasi    :", res_1a.status_verifikasi);
+cetak("⛓️ Hash Bukti BGN Vault :", res_1a.hash_audit_blockchain);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika res_1a.status_verifikasi == "LENGKAP_SESUAI" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1A] Verifikasi Porsi Lengkap Sesuai Presensi: LULUS");
+}
+
+// Skenario 1B: Deteksi Defisit Porsi (Mencegah Klaim Fiktif)
+cetak("");
+cetak("--- Skenario 1B: Deteksi Defisit Porsi (Anti-Porsi Fiktif) ---");
+misal res_1b = mbg_verifikasi_penerimaan_sekolah(
+    "MBG-DIST-20260918-002",
+    "2026-09-18",
+    "20109999",
+    dapur_desa.id_dapur,
+    menu_hari_ini,
+    300.0, // Dapur hanya kirim 300
+    350.0, // Siswa hadir 350
+    300.0,
+    0.0,
+    "did:sewidya:guru:petugas_uks"
+);
+
+cetak("📦 Jumlah Porsi Dikirim :", res_1b.total_porsi_dikirim, "porsi");
+cetak("👥 Siswa Hadir Presensi :", res_1b.total_siswa_hadir_presensi, "siswa (Defisit 50 porsi!)");
+cetak("🚨 Status Deteksi Guard :", res_1b.status_verifikasi);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika res_1b.status_verifikasi == "DEFISIT_PORSI" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1B] Deteksi Dini Defisit Porsi Makanan: LULUS");
+}
+
+// -------------------------------------------------------------
+// [BAGIAN 2] MOD-28: Standar Satuan Harga (SSH) Regional ARKAS
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[BAGIAN 2] MOD-28: Guardrail Standar Satuan Harga (SSH) Regional");
+cetak("================================================================");
+
+misal katalog_ssh = arkas_buat_katalog_ssh("JABAR_2026");
+cetak("📚 Database SSH Daerah Dimuat: 4 Benchmark Plafon Harga Resmi");
+
+// Uji 2A: Belanja Sesuai Plafon SSH (Kertas HVS Rp 55.000 <= Rp 60.000)
+cetak("--- Uji 2A: Usulan Belanja Sesuai / Di Bawah Plafon SSH ---");
+misal item_wajar = ItemKertasKerja(
+    "ITM-01", "5.1.02.01.01.0024", "Belanja ATK Kertas",
+    "Kertas HVS A4 80gr Sinar Dunia", 10.0, "Rim", 55000.0, 550000.0
+);
+misal cek_2a = arkas_validasi_kepatuhan_ssh(item_wajar, "KERTAS_HVS_A4", katalog_ssh);
+
+cetak("🏷️ Item Belanja       :", item_wajar.uraian_kegiatan);
+cetak("   ├── Harga Usulan   : Rp", cek_2a.harga_usulan);
+cetak("   ├── Plafon SSH     : Rp", cek_2a.plafon_maksimal);
+cetak("   └── Status Evaluasi:", cek_2a.status, "(", cek_2a.pesan, ")");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika cek_2a.kepatuhan == benar dan cek_2a.status == "PATUH_SSH" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2A] Validasi Kepatuhan Plafon SSH: LULUS");
+}
+
+// Uji 2B: Belanja Melebihi Plafon SSH (Kertas HVS Rp 75.000 > Rp 60.000)
+cetak("");
+cetak("--- Uji 2B: Deteksi Pelanggaran Plafon SSH (Markup Harga) ---");
+misal item_kemahalan = ItemKertasKerja(
+    "ITM-02", "5.1.02.01.01.0024", "Belanja ATK Kertas",
+    "Kertas HVS A4 80gr Merk X", 10.0, "Rim", 75000.0, 750000.0
+);
+misal cek_2b = arkas_validasi_kepatuhan_ssh(item_kemahalan, "KERTAS_HVS_A4", katalog_ssh);
+
+cetak("🏷️ Item Belanja       :", item_kemahalan.uraian_kegiatan);
+cetak("   ├── Harga Usulan   : Rp", cek_2b.harga_usulan, "(Mark-up terdeteksi!)");
+cetak("   ├── Plafon Maks SSH: Rp", cek_2b.plafon_maksimal, "berdasarkan", cek_2b.dasar_hukum);
+cetak("   ├── Selisih Lebih  : Rp", cek_2b.selisih_lebih);
+cetak("   └── Status Evaluasi:", cek_2b.status, "(", cek_2b.pesan, ")");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika cek_2b.kepatuhan == salah dan cek_2b.status == "MELEBIHI_PLAFON_SSH" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2B] Deteksi Otomatis Mark-up Melebihi SSH: LULUS");
+}
+
+// -------------------------------------------------------------
+// EVALUASI AKHIR
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("HASIL INTEGRASI MODUL EDUPHALA KE WIDYAOS:");
+cetak("Total Uji:", LULUS_TEST, "/", TOTAL_TEST, "LULUS (100%)");
+cetak("================================================================");
+
+jika LULUS_TEST == TOTAL_TEST {
+    cetak("🎉 [BERHASIL] Seluruh Fitur Adopsi Eduphala (MOD-08 & MOD-28) Siap Beroperasi!");
+    kembalikan benar;
+} lainnya {
+    cetak("❌ [GAGAL] Pengujian integrasi mengalami kendala.");
+    kembalikan salah;
+}

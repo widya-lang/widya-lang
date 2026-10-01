@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasus Penggunaan Industri • Widya-Lang (Use Cases)</title>
+  <meta name="description" content="Eksplorasi bagaimana Widya-Lang menyelesaikan tantangan enterprise di bidang Fintech QRIS, Retail POS Kasir, Logistik Lapangan, Web Streaming, dan AI Edge.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --bg-surface: #0b1120;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-border: rgba(255, 255, 255, 0.09);
+      --primary: #38bdf8;
+      --secondary: #818cf8;
+      --accent: #34d399;
+      --pink: #f472b6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+    }
+
+    .glow-bg {
+      position: fixed;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1200px; height: 450px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(129, 140, 248, 0.04) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--bg-card-border);
+      z-index: 100;
+    }
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+    .badge-nav {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+    }
+    .btn-github {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--bg-card-border);
+      color: #fff !important;
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+    }
+
+    /* Page Header */
+    .page-header {
+      max-width: 900px;
+      margin: 4rem auto 3rem;
+      padding: 0 1.5rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .badge-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 0.35rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    .page-header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .page-header h1 span {
+      background: linear-gradient(135deg, #34d399, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto 6rem;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Use Case Row Card */
+    .usecase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 20px;
+      padding: 2.75rem;
+      margin-bottom: 2.75rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+    @media (max-width: 960px) {
+      .usecase-card { grid-template-columns: 1fr; padding: 2rem; }
+    }
+
+    .uc-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tag-fintech { background: rgba(52, 211, 153, 0.15); color: var(--accent); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .tag-retail { background: rgba(56, 189, 248, 0.15); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .tag-logistics { background: rgba(244, 114, 182, 0.15); color: var(--pink); border: 1px solid rgba(244, 114, 182, 0.3); }
+    .tag-web { background: rgba(129, 140, 248, 0.15); color: var(--secondary); border: 1px solid rgba(129, 140, 248, 0.3); }
+
+    .usecase-info h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    .usecase-info p {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      margin-bottom: 1.25rem;
+    }
+    .feature-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      margin-bottom: 0.6rem;
+    }
+    .feature-list li span {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* Code Preview Box */
+    .uc-code-box {
+      background: #090e1a;
+      border: 1px solid var(--bg-card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    }
+    .uc-code-header {
+      background: #111827;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--bg-card-border);
+      display: flex;
+      justify-content: space-between;
+    }
+    .uc-code-body {
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: #f1f5f9;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .kw { color: #f472b6; font-weight: 700; }
+    .fn { color: #38bdf8; font-weight: 600; }
+    .str { color: #34d399; }
+    .num { color: #fbbf24; }
+    .comm { color: #64748b; font-style: italic; }
+
+    footer {
+      border-top: 1px solid var(--bg-card-border);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: #040810;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-bg"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span>⚡ Widya-Lang</span>
+        <span class="badge-nav">v1.0.0</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Overview</a>
+        <a href="get-started.html">Get Started</a>
+        <a href="playground.html">Playground</a>
+        <a href="use-cases.html" class="active">Use Cases</a>
+        <a href="apps.html">Apps</a>
+        <a href="resources.html">Resources</a>
+        <a href="https://docs.widya-lang.org" target="_blank">Docs ↗</a>
+        <a href="https://github.com/Bakulcoding/widya-lang" target="_blank" class="btn-github">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="badge-hero">
+      <span>💼 Solusi Rekayasa Perangkat Lunak Industri</span>
+    </div>
+    <h1>Kasus Penggunaan <span>Enterprise</span></h1>
+    <p>Lihat bagaimana Widya-Lang memecahkan tantangan dunia nyata di berbagai industri melalui kinerja native, tipe statis Hindley-Milner, dan pustaka bawaan yang terintegrasi penuh.</p>
+  </header>
+
+  <!-- Cases List -->
+  <main class="container">
+
+    <!-- Use Case 1: Fintech & QRIS -->
+    <article class="usecase-card">
+      <div class="usecase-info">
+        <span class="uc-tag tag-fintech">Fintech & Pembayaran Digital</span>
+        <h2>Pemrosesan QRIS Nasional & Otorisasi Biometrik</h2>
+        <p>
+          Transaksi keuangan membutuhkan akurasi deterministik dan nol ketergantungan rapuh. Mesin parser QRIS standar ASPI/EMVCo bawaan Widya mengurai payload transaksi instan dengan validasi CRC16 dan isolasi token di hardware KeyStore.
+        </p>
+        <ul class="feature-list">
+          <li><span>✓</span> Decoder otomatis Tag 59 (Merchant), 60 (Kota), 54 (Nominal), dan NMID</li>
+          <li><span>✓</span> Otentikasi Biometrik FaceID / Sidik Jari langsung ke Security Enclave</li>
+          <li><span>✓</span> Brankas terenkripsi AES-256 untuk perlindungan token otorisasi</li>
+        </ul>
+      </div>
+      <div class="uc-code-box">
+        <div class="uc-code-header">
+          <span>pembayaran_qris.wya</span>
+          <span style="color: var(--accent);">ASPI Compliant</span>
+        </div>
+        <div class="uc-code-body"><span class="comm">// Urai string QRIS standar Bank Indonesia</span>
+<span class="kw">misal</span> qris = app.<span class="fn">urai_qris</span>(payload_raw);
+
+<span class="kw">jika</span> (qris.crc_valid) {
+    <span class="fn">cetak</span>(<span class="str">"Merchant: "</span> + qris.nama_merchant);
+    <span class="fn">cetak</span>(<span class="str">"Nominal : Rp "</span> + <span class="fn">ke_teks</span>(qris.nominal));
+
+    <span class="comm">// Otorisasi Transaksi Biometrik</span>
+    <span class="kw">misal</span> auth = app.<span class="fn">otentikasi_biometrik</span>(<span class="str">"Bayar ke "</span> + qris.nama_merchant);
+    <span class="kw">jika</span> (auth.sukses) {
+        app.<span class="fn">simpan_rahasia</span>(<span class="str">"TOKEN_AUTH"</span>, <span class="str">"jwt_auth_signed"</span>);
+    }
+}</div>
+      </div>
+    </article>
+
+    <!-- Use Case 2: Retail POS -->
+    <article class="usecase-card">
+      <div class="usecase-info">
+        <span class="uc-tag tag-retail">Retail & Kasir POS UMKM</span>
+        <h2>Printer Thermal Bluetooth POS & Offline Mode</h2>
+        <p>
+          Aplikasi kasir retail seringkali terkendala keterputusan sinyal dan instalasi driver printer yang rumit. WidyaDesktop dan WidyaMobile menyertakan protokol generator biner ESC/POS langsung (58mm/80mm) dengan integrasi Bluetooth BLE.
+        </p>
+        <ul class="feature-list">
+          <li><span>✓</span> Pembangkitan biner ESC/POS langsung tanpa driver pihak ketiga</li>
+          <li><span>✓</span> Pemindaian & pairing perangkat Bluetooth Low Energy (BLE)</li>
+          <li><span>✓</span> Perintah otomatis pemotong kertas (Paper Cut Opcode GS V 66 0)</li>
+        </ul>
+      </div>
+      <div class="uc-code-box">
+        <div class="uc-code-header">
+          <span>kasir_pos.wya</span>
+          <span style="color: var(--primary);">ESC/POS Direct</span>
+        </div>
+        <div class="uc-code-body"><span class="comm">// Hubungkan printer thermal via BLE</span>
+app.<span class="fn">hubungkan_bluetooth</span>(<span class="str">"66:32:B1:88:AC:21"</span>);
+
+<span class="comm">// Format & cetak struk kasir</span>
+<span class="kw">misal</span> hasil = app.<span class="fn">cetak_struk</span>({
+    <span class="str">"nama_toko"</span>: <span class="str">"WARUNG KOPI WIDYA"</span>,
+    <span class="str">"nomor_struk"</span>: <span class="str">"TRX-2026-0044"</span>,
+    <span class="str">"total"</span>: <span class="num">79920.0</span>,
+    <span class="str">"metode_bayar"</span>: <span class="str">"QRIS Dinamis"</span>
+});
+
+<span class="fn">cetak</span>(<span class="str">"Status Cetak: "</span> + <span class="fn">ke_teks</span>(hasil.sukses));</div>
+      </div>
+    </article>
+
+    <!-- Use Case 3: Logistics & GPS -->
+    <article class="usecase-card">
+      <div class="usecase-info">
+        <span class="uc-tag tag-logistics">Logistik & Kurir Lapangan</span>
+        <h2>Pelacakan Armada GPS, Geofence & Outbox Sync</h2>
+        <p>
+          Armada pengiriman kurir membutuhkan telemetri posisi akurat dan jaminan penyimpanan transaksi saat melewati area luar sinyal seluler (*dead zone*). Formula Haversine bawaan dan Antrean Outbox memastikan konsistensi data.
+        </p>
+        <ul class="feature-list">
+          <li><span>✓</span> Kalkulasi jarak geografis Haversine berlatensi sub-milidetik</li>
+          <li><span>✓</span> Geofencing presisi tinggi untuk deteksi kedatangan kurir</li>
+          <li><span>✓</span> Antrean offline outbox dengan jaminan sinkronisasi idempoten</li>
+        </ul>
+      </div>
+      <div class="uc-code-box">
+        <div class="uc-code-header">
+          <span>kurir_lapangan.wya</span>
+          <span style="color: var(--pink);">Haversine Engine</span>
+        </div>
+        <div class="uc-code-body"><span class="comm">// Verifikasi geofence radius 500 meter</span>
+<span class="kw">misal</span> di_toko = app.<span class="fn">apakah_dalam_geofence</span>(<span class="num">-6.2088</span>, <span class="num">106.8456</span>, <span class="num">500.0</span>);
+
+<span class="kw">jika</span> (!app.<span class="fn">status_jaringan</span>().aktif) {
+    <span class="comm">// Sinyal putus: amankan ke antrean offline</span>
+    app.<span class="fn">tambah_antrean_offline</span>(<span class="str">"BUKTI_SERAH"</span>, { <span class="str">"resi"</span>: <span class="str">"KRR-889"</span> });
+} <span class="kw">selain</span> {
+    app.<span class="fn">sinkronkan_offline</span>();
+}</div>
+      </div>
+    </article>
+
+    <!-- Use Case 4: High-throughput Web -->
+    <article class="usecase-card">
+      <div class="usecase-info">
+        <span class="uc-tag tag-web">Layanan Web Real-Time</span>
+        <h2>Microservices Kinerja Tinggi, SSE & Session Guard</h2>
+        <p>
+          Membangun REST API dan sistem streaming Server-Sent Events (SSE) berkecepatan tinggi tanpa overhead garbage collection. Lapisan pertahanan 6-Tier melindungi endpoint dari serangan CSRF dan Session Hijacking.
+        </p>
+        <ul class="feature-list">
+          <li><span>✓</span> Throughput mencapai 850.000+ operasi per detik pada worker threads</li>
+          <li><span>✓</span> Pertahanan Session Hijacking Kriptografis dan IP Allowlist</li>
+          <li><span>✓</span> Server-Sent Events (SSE) dengan auto-reconnect bawaan</li>
+        </ul>
+      </div>
+      <div class="uc-code-box">
+        <div class="uc-code-header">
+          <span>microservice.wya</span>
+          <span style="color: var(--secondary);">WidyaWeb 6-Tier</span>
+        </div>
+        <div class="uc-code-body"><span class="kw">misal</span> app = <span class="fn">BuatAplikasiWeb</span>(<span class="num">8080</span>);
+app.<span class="fn">gunakan</span>(<span class="fn">MiddlewareKeamananTinggi</span>());
+
+<span class="comm">// Endpoint REST API</span>
+app.<span class="fn">rute_get</span>(<span class="str">"/api/v1/metrik"</span>, <span class="kw">fungsi</span>(req) {
+    <span class="kw">kembalikan</span> { <span class="str">"status"</span>: <span class="str">"sehat"</span>, <span class="str">"versi"</span>: <span class="str">"1.0.0"</span> };
+});
+
+<span class="comm">// Realtime Server-Sent Events</span>
+app.<span class="fn">rute_sse</span>(<span class="str">"/api/v1/detak"</span>, <span class="kw">fungsi</span>(klien) {
+    klien.<span class="fn">kirim_event</span>(<span class="str">"telemetri"</span>, { <span class="str">"cpu"</span>: <span class="num">14.2</span> });
+});</div>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Tim Pengembang Widya-Lang (Bakulcoding). Dilisensikan di bawah MIT License.</p>
+  </footer>
+
+</body>
+</html>

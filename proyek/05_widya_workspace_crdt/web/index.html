@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widya Workspace — CRDT Real-Time Collaborative Document & Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="workspace-layout">
+    <!-- TOP TOOLBAR -->
+    <header class="toolbar">
+      <div class="brand">
+        <div class="brand-badge">W-DOCS</div>
+        <div>
+          <h2>Widya Collaborative Workspace</h2>
+          <span class="sub">CRDT LWW State Machine • LaTeX Live Preview • ISO 32000-1 PDF</span>
+        </div>
+      </div>
+      
+      <!-- COLLABORATOR PILLS -->
+      <div class="collaborator-row">
+        <div class="collab-pill user-a">
+          <span class="dot"></span>
+          <span>Lead Coder (Active)</span>
+        </div>
+        <div class="collab-pill user-b">
+          <span class="dot"></span>
+          <span>Sistem Arsitek (Editing L4)</span>
+        </div>
+        <div class="collab-pill user-c">
+          <span class="dot"></span>
+          <span>Notulis AI (Sync)</span>
+        </div>
+        <button class="btn-primary" onclick="eksporPDF()">📄 Ekspor Dokumen Resmi (PDF)</button>
+      </div>
+    </header>
+
+    <!-- MAIN TWO-COLUMN SPLIT -->
+    <div class="split-view">
+      <!-- LEFT: CRDT LIVE EDITOR -->
+      <div class="editor-pane">
+        <div class="pane-header">
+          <span>Editor Markdown & KaTeX Bersama</span>
+          <span class="badge-status">CRDT State: In Sync (0 Conflict)</span>
+        </div>
+        <textarea id="markdown-editor" oninput="renderPreview()"># 📘 PROPOSAL KERJA SAMA: DIGITALISASI KOPERASI MERAH PUTIH (KDMP)
+
+## 1. Latar Belakang & Ringkasan Eksekutif
+Pemerintah Republik Indonesia melalui inisiatif Kedaulatan Digital Nasional mendorong modernisasi 75.000+ Koperasi Desa menjadi entitas ekonomi berbasis komputasi modern.
+
+$$\text{Total Efisiensi} = \sum_{i=1}^{n} \left( \frac{\text{Biaya Manual}_i - \text{Biaya Digital}_i}{\text{Waktu Siklus}_i} \right)$$
+
+## 2. Arsitektur 7 Pilar Usaha
+- **Pilar 1**: Kasir POS & Inventaris Barcode QRIS
+- **Pilar 2**: Simpan Pinjam Bunga Flat 0.8%
+- **Pilar 3**: Integrasi Rekam Medis SatuSehat FHIR
+- **Pilar 4**: Sistem Resi Gudang Komoditas
+
+$$\text{Rasio SHU Anggota} = \frac{\text{Aktivitas Transaksi}_k}{\text{Total Omzet Koperasi}} \times \text{Alokasi SHU}$$
+
+## 3. Garansi Integritas Basis Data WidyaBase
+Sistem menerapkan **Slotted-Page 4KB** dan **Write-Ahead Logging (WAL)** untuk menjamin konsistensi ACID 100% bebas kehilangan data.</textarea>
+      </div>
+
+      <!-- RIGHT: LIVE FORMATTED PREVIEW -->
+      <div class="preview-pane">
+        <div class="pane-header">
+          <span>Live Render Dokumen Ilmiah & KaTeX</span>
+          <span class="badge-status font-mono">Format: IEEE / ISO Standard</span>
+        </div>
+        <div class="preview-paper" id="paper-output">
+          <!-- Rendered HTML injected -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

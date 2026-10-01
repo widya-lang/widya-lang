@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WidyaAI Studio | Asisten AI Lokal & RAG Berdaulat Ruang Kelas</title>
+    <meta name="description" content="Studio Kecerdasan Buatan Lokal Berdaulat Setara Ollama & LM Studio dengan Inferensi On-Device NPU/GPU, RAG Dokumen Kurikulum, dan 100% Bebas Kebocoran Cloud.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0d16;
+            --bg-surface: #101626;
+            --bg-panel: #162035;
+            --bg-chat: #0e1424;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.4);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --secondary: #38bdf8;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-main: 'Outfit', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-base);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 54px;
+            background: #0d1220;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-badge svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary);
+        }
+
+        .brand-badge h1 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .guard-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        .hardware-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: var(--font-code);
+        }
+
+        .hardware-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* Workspace Layout */
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Sidebar: Controls & RAG */
+        .sidebar {
+            width: 300px;
+            background: #0e1424;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .model-select {
+            width: 100%;
+            background: #162035;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .model-select:focus {
+            border-color: var(--primary);
+        }
+
+        .metric-card {
+            background: #141c2e;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .metric-card span.val {
+            font-family: var(--font-code);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .rag-dropzone {
+            border: 1.5px dashed rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rag-dropzone:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+        }
+
+        .rag-file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #141c2e;
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 11.5px;
+        }
+
+        /* Main Chat Area */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-chat);
+            overflow: hidden;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-msg {
+            display: flex;
+            gap: 14px;
+            max-width: 85%;
+        }
+
+        .chat-msg.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .chat-msg.assistant {
+            align-self: flex-start;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .avatar.ai {
+            background: linear-gradient(135deg, #6366f1, #38bdf8);
+            color: #fff;
+        }
+
+        .avatar.user {
+            background: #334155;
+            color: #fff;
+        }
+
+        .msg-bubble {
+            background: #151d30;
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #f1f5f9;
+        }
+
+        .chat-msg.user .msg-bubble {
+            background: #4338ca;
+            border-color: #4f46e5;
+            color: #fff;
+        }
+
+        .citation-box {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid #38bdf8;
+            border-radius: 4px;
+            font-size: 11.5px;
+            color: #93c5fd;
+        }
+
+        /* Quick Prompt Chips */
+        .chip-bar {
+            padding: 8px 24px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            background: #0d1220;
+            border-top: 1px solid var(--border);
+        }
+
+        .chip-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .chip-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Chat Input Box */
+        .chat-input-bar {
+            padding: 16px 24px;
+            background: #0d1220;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #141c2e;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 13.5px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .btn-send {
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-send:hover {
+            background: #4f46e5;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="brand-section">
+            <div class="brand-badge">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <h1>WidyaAI Studio</h1>
+            </div>
+            <div class="guard-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                <span>100% On-Device / Air-Gapped Zero-Cloud Leak</span>
+            </div>
+        </div>
+
+        <div class="hardware-badge">
+            <div class="hardware-dot"></div>
+            <span>NPU Terakselerasi: Smart IFP (65.5 tokens/s)</span>
+            <span style="color: var(--border);">|</span>
+            <span>VRAM: 3.8 / 16.0 GB</span>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <div class="workspace">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="control-group">
+                <div class="control-label">Model Bahasa Lokal:</div>
+                <select class="model-select" id="selModel">
+                    <option value="widya-7b-q4">WidyaLLM Edukasi 7B (GGUF Q4_K_M)</option>
+                    <option value="widya-tutor-3b">WidyaTutor Pembelajaran 3B (Q4)</option>
+                    <option value="widya-code-7b">WidyaCoder Pemrograman 7B (Q8)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Metrik Kinerja Edge:</div>
+                <div class="metric-card">
+                    <span>Kecepatan Inferensi:</span>
+                    <span class="val">65.5 tps</span>
+                </div>
+                <div class="metric-card">
+                    <span>Latensi Token Pertama:</span>
+                    <span class="val">180 ms</span>
+                </div>
+                <div class="metric-card">
+                    <span>Konteks Maksimal:</span>
+                    <span class="val">8,192 tokens</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Basis Pengetahuan RAG Sekolah:</div>
+                <div class="rag-dropzone" onclick="tambahDokumenContoh()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#6366f1" style="margin-bottom: 6px;"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                    <div>Klik untuk Tambah Dokumen RAG (PDF / Markdown)</div>
+                </div>
+
+                <div id="ragFileList">
+                    <div class="rag-file-item">
+                        <span>📄 Juknis_BOSP_2026.pdf</span>
+                        <span style="color: var(--accent-green); font-family: var(--font-code);">32 Chunks</span>
+                    </div>
+                    <div class="rag-file-item">
+                        <span>📄 Modul_Ajar_Informatika.docx</span>
+                        <span style="color: var(--accent-green); font-family: var(--font-code);">18 Chunks</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CHAT -->
+        <main class="chat-main">
+            <div class="chat-history" id="chatHistory">
+                <!-- Message 1 -->
+                <div class="chat-msg assistant">
+                    <div class="avatar ai">W</div>
+                    <div class="msg-bubble">
+                        Halo Bapak/Ibu Guru dan Siswa! Saya <strong>WidyaAI</strong>, asisten kecerdasan buatan berdaulat yang berjalan 100% secara lokal di kelas ini tanpa koneksi internet.
+                        <br><br>
+                        Saya telah membaca dokumen kurikulum sekolah dan siap membantu:
+                        <br>&bull; Menyusun kisi-kisi soal AKM & KKTP otomatis
+                        <br>&bull; Meringkas juknis pengelolaan dana BOSP ARKAS
+                        <br>&bull; Menjelaskan materi sains, matematika, dan pemrograman Widya-Lang
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHIPS -->
+            <div class="chip-bar">
+                <button class="chip-btn" onclick="kirimCepat('Buatkan 3 soal AKM pilihan ganda materi Kedaulatan Digital untuk kelas X')">📝 Buat Soal AKM Kedaulatan Digital</button>
+                <button class="chip-btn" onclick="kirimCepat('Bagaimana mekanisme penyaluran dana BOSP Tahap II sesuai juknis?')">💰 Penyaluran BOSP Tahap II</button>
+                <button class="chip-btn" onclick="kirimCepat('Jelaskan prinsip kedaulatan bahasa pemrograman Widya-Lang')">💻 Bahasa Widya-Lang</button>
+            </div>
+
+            <!-- INPUT -->
+            <div class="chat-input-bar">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Tanyakan apa saja kepada AI lokal sekolah..." onkeydown="handleEnter(event)">
+                <button class="btn-send" onclick="kirimPesan()">
+                    <span>Kirim</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        function handleEnter(e) {
+            if (e.key === 'Enter') kirimPesan();
+        }
+
+        function kirimCepat(teks) {
+            document.getElementById('chatInput').value = teks;
+            kirimPesan();
+        }
+
+        function kirimPesan() {
+            const input = document.getElementById('chatInput');
+            const teks = input.value.trim();
+            if (!teks) return;
+
+            // Render User Msg
+            tambahPesan('user', teks);
+            input.value = '';
+
+            // Simulate Edge LLM Processing
+            setTimeout(() => {
+                let aiBalasan = '';
+                let sitasi = '';
+
+                if (teks.toLowerCase().includes('soal')) {
+                    aiBalasan = `Berikut adalah 3 butir soal AKM materi Kedaulatan Digital untuk Kelas X SMA:<br><br>
+                    <strong>Soal 1 (Pilihan Ganda):</strong><br>
+                    Mengapa sekolah di Indonesia perlu menerapkan sistem operasi dan compiler berdaulat seperti WidyaOS?<br>
+                    A. Mencegah kebocoran data pribadi siswa ke server cloud asing (UU PDP No. 27/2022)<br>
+                    B. Meningkatkan ketergantungan lisensi valuta asing<br>
+                    C. Mengharuskan internet berkecepatan tinggi sepanjang waktu<br>
+                    D. Mengabaikan ketentuan TKDN Inpres No. 2/2022<br>
+                    <em>Kunci Jawaban: A (Pembahasan: WidyaOS beroperasi 100% luring dengan perlindungan privasi anak).</em>`;
+                    sitasi = 'Rujukan: Modul_Ajar_Informatika.docx & UU PDP No. 27/2022';
+                } else if (teks.toLowerCase().includes('bosp')) {
+                    aiBalasan = `Sesuai dengan <strong>Petunjuk Teknis BOSP 2026</strong>, penyaluran dana BOSP Tahap II dilakukan secara langsung dari Rekening Kas Umum Negara (RKUN) ke Rekening Sekolah setelah laporan realisasi BKU ARKAS Tahap I diverifikasi tanpa perantara pihak ketiga.`;
+                    sitasi = 'Rujukan: Juknis_BOSP_2026.pdf (Halaman 14, Pasal 8)';
+                } else {
+                    aiBalasan = `Pertanyaan Anda tentang "${teks}" telah dianalisis oleh model lokal WidyaLLM 7B dengan inferensi on-device NPU Smart IFP. Data tetap aman di lingkungan sekolah tanpa pernah diunggah ke internet.`;
+                    sitasi = 'Rujukan: Basis Pengetahuan Intranet Sekolah';
+                }
+
+                tambahPesan('assistant', aiBalasan, sitasi);
+            }, 500);
+        }
+
+        function tambahPesan(role, teks, sitasi = '') {
+            const history = document.getElementById('chatHistory');
+            const div = document.createElement('div');
+            div.className = `chat-msg ${role}`;
+
+            let sitasiHtml = '';
+            if (sitasi) {
+                sitasiHtml = `<div class="citation-box">📌 <strong>Sitasi RAG:</strong> ${sitasi}</div>`;
+            }
+
+            div.innerHTML = `
+                <div class="avatar ${role === 'user' ? 'user' : 'ai'}">${role === 'user' ? 'U' : 'W'}</div>
+                <div class="msg-bubble">
+                    ${teks}
+                    ${sitasiHtml}
+                </div>
+            `;
+            history.appendChild(div);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        function tambahDokumenContoh() {
+            const nama = prompt('Masukkan nama dokumen PDF/Markdown untuk diindeks RAG:', 'Panduan_Kurikulum_Merdeka_Fase_E.pdf');
+            if (nama) {
+                const list = document.getElementById('ragFileList');
+                const div = document.createElement('div');
+                div.className = 'rag-file-item';
+                div.innerHTML = `
+                    <span>📄 ${nama}</span>
+                    <span style="color: var(--accent-green); font-family: var(--font-code);">24 Chunks</span>
+                `;
+                list.appendChild(div);
+                alert(`Dokumen "${nama}" berhasil diindeks ke memori vektor RAG lokal!`);
+            }
+        }
+    </script>
+</body>
+</html>

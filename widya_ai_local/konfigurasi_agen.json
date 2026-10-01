@@ -1,0 +1,36 @@
+{
+  "id_agen": "widya_sovereign_rsi_01",
+  "nama": "Widya Local Self-Evolving AI Core",
+  "arsitektur": "Recursive Self-Improvement (RSI)",
+  "hardware_lokal": {
+    "cpu": "AMD Ryzen 7 8840HS (8 Cores, 16 Threads, Zen 4)",
+    "gpu": "AMD Radeon 780M RDNA3",
+    "npu": "AMD Ryzen AI XDNA",
+    "compiler": "widya.exe 1.0.0-beta.1",
+    "dataset_lokal": "c:\\widya-lang\\peta_desa_indonesia_kemendagri.gpkg (83.762 Desa/Kelurahan Kemendagri)"
+  },
+  "fitur_jaringan": {
+    "akses_internet_aktif": true,
+    "max_http_timeout_detik": 5,
+    "proteksi_kebocoran_data_lokal": true,
+    "standar_kepatuhan": "UU PDP No. 27/2022"
+  },
+  "fitur_skills": {
+    "sintesis_skill_mandiri_aktif": true,
+    "direktori_skill": "c:\\widya-lang\\widya_ai_local\\skills",
+    "verifikasi_sandbox_wajib": true,
+    "w3c_did_sealing": true
+  },
+  "kebijakan_keamanan": {
+    "sandbox_gate_mandatory": true,
+    "max_allowed_regression_rate": 0.0,
+    "target_minimum_speedup": 0.50,
+    "watchdog_timeout_ms": 100,
+    "auto_rollback_enabled": true,
+    "w3c_did_sealing": true
+  },
+  "status_runtime": {
+    "versi_aktif": "v1.0.0",
+    "mode": "AUTONOMOUS_EVOLUTION_ARMED"
+  }
+}

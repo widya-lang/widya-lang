@@ -1,0 +1,100 @@
+// ============================================================================
+// MODUL: STATUS KEPEGAWAIAN GURU HONORER BERSERTIFIKASI PENDIDIK (TPG PUSAT)
+// Menjawab Paradoks Guru Honorer Sekolah Pemegang Sertifikat Pendidik (Serdik & NRG)
+// 
+// Rujukan Regulasi:
+// 1. UU No. 14 Tahun 2005 tentang Guru dan Dosen (Pasal 16 Hak TPG Non-PNS)
+// 2. Permendikbudristek No. 45 Tahun 2023 & Persesjen Juknis Penyaluran TPG Non-ASN
+// 3. Permendikbud Juknis BOSP (Ketentuan Pembayaran Honor Pendidik Ber-NUPTK)
+// 4. KepmenPAN-RB tentang Afirmasi Sertifikat Pendidik 100% pada Seleksi PPPK
+// ============================================================================
+
+struktur ProfilGuruHonorerSertifikasi {
+    nuptk,
+    nama_guru,
+    nomor_serdik,
+    nrg,                        // Nomor Registrasi Guru dari Kemendikdasmen
+    status_kepegawaian_dapodik, // 'GURU_HONOR_SEKOLAH', 'GURU_HONOR_DAERAH', 'GURU_TETAP_YAYASAN'
+    status_inpassing,           // 'INPASSING_SETARA_GOLONGAN', 'NON_INPASSING_FLAT'
+    golongan_penyetaraan,       // Misal 'III/a' atau 'NON_GOLONGAN'
+    nominal_honor_sekolah_rp,   // Hak gaji bulanan dari BOS / Yayasan
+    nominal_tpg_pusat_rp,       // Hak tunjangan profesi dari APBN Puslapdik Pusat
+    total_jam_linear,           // Wajib minimal 24 jam untuk validasi InfoGTK
+    status_sktp_infogtk,        // 'VALID_SKTP_SIAP_SALUR', 'TIDAK_VALID_KURANG_JAM'
+    hak_afirmasi_seleksi_pppk   // 'AFIRMASI_KOMPETENSI_TEKNIS_100_PERSEN'
+}
+
+struktur GuardrailHonorSekolahBOS {
+    nuptk,
+    nama_guru,
+    status_tpg_pusat,           // 'TERIMA_TPG_PUSAT'
+    kebijakan_honor_bos,        // 'TETAP_DIBAYARKAN_SESUAI_JAM_RIIL'
+    status_larangan_sekolah     // 'DILARANG_POTONG_HONOR_BOS_KARENA_TPG'
+}
+
+// ============================================================================
+// LOGIKA BISNIS MANAJEMEN TPG GURU HONORER
+// ============================================================================
+
+// [1] Validasi Kelayakan TPG Guru Honorer & Perhitungan Hak Finansial Ganda
+fungsi evaluasi_tpg_guru_honorer(
+    nuptk,
+    nama,
+    serdik,
+    nrg,
+    status_dapodik,
+    inpassing,
+    golongan,
+    honor_bos_sekolah,
+    jam_linear
+) {
+    // Menghitung besaran TPG dari APBN Pusat:
+    // A. Inpassing: Setara 1x Gaji Pokok PNS Golongan Penyetaraan (misal III/a = Rp 2.785.700 s.d. Rp 3.000.000+)
+    // B. Non-Inpassing: Nominal Flat Nasional (Rp 1.500.000 per bulan)
+    misal tpg_bulanan = 1500000;
+    jika inpassing == "INPASSING_SETARA_GOLONGAN" {
+        jika golongan == "III/a" {
+            tpg_bulanan = 2785700;
+        } kalau golongan == "III/b" {
+            tpg_bulanan = 2900000;
+        } lainnya {
+            tpg_bulanan = 3000000;
+        }
+    }
+
+    // Syarat SKTP InfoGTK: Wajib linier >= 24 jam tatap muka
+    misal status_sktp = "TIDAK_VALID_KURANG_JAM";
+    jika jam_linear >= 24 {
+        status_sktp = "VALID_SKTP_SIAP_SALUR";
+    }
+
+    kembalikan ProfilGuruHonorerSertifikasi(
+        nuptk,
+        nama,
+        serdik,
+        nrg,
+        status_dapodik,
+        inpassing,
+        golongan,
+        honor_bos_sekolah,
+        tpg_bulanan,
+        jam_linear,
+        status_sktp,
+        "AFIRMASI_KOMPETENSI_TEKNIS_100_PERSEN"
+    );
+}
+
+// [2] Guardrail Perlindungan Honor Sekolah: Dilarang Memotong Honor BOS
+// Memberantas penyimpangan kepala sekolah yang memotong honor hanya karena guru dapat TPG
+fungsi proteksi_honor_bos_guru_sertifikasi(
+    nuptk,
+    nama_guru
+) {
+    kembalikan GuardrailHonorSekolahBOS(
+        nuptk,
+        nama_guru,
+        "TERIMA_TPG_PUSAT",
+        "TETAP_DIBAYARKAN_SESUAI_JAM_RIIL",
+        "DILARANG_POTONG_HONOR_BOS_KARENA_TPG"
+    );
+}

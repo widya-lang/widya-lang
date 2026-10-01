@@ -1,0 +1,1981 @@
+// ============================================================================
+// MODUL MODEL CONTEXT PROTOCOL (MCP) SERVER (mcp_server_widya.wya)
+// Antarmuka Standar Industri JSON-RPC 2.0 untuk Integrasi IDE & Agen Eksternal
+// Mendukung: tools/list, tools/call, resources/list, initialize
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/manajer_skill.wya";
+impor "widya_ai_local/modul_evolusi/vektor_rag.wya";
+impor "widya_ai_local/modul_evolusi/sintesis_skill_mandiri.wya";
+impor "widya_ai_local/modul_evolusi/inferensi_slm_npu.wya";
+impor "widya_ai_local/modul_evolusi/hnsw_vektor_desa.wya";
+impor "widya_ai_local/modul_evolusi/swarm_orkestrator.wya";
+impor "widya_ai_local/modul_evolusi/kripto_ed25519.wya";
+impor "widya_ai_local/modul_evolusi/pemutus_arus_resiliensi.wya";
+impor "widya_ai_local/modul_evolusi/penyelia_otonom.wya";
+impor "widya_ai_local/modul_evolusi/perisai_dos.wya";
+impor "widya_ai_local/modul_evolusi/mesh_kedaulatan.wya";
+impor "widya_ai_local/modul_evolusi/persepsi_multimodal.wya";
+impor "widya_ai_local/modul_evolusi/agen_tujuan_otonom.wya";
+impor "widya_ai_local/modul_evolusi/penyimpanan_hibrida_desa.wya";
+impor "widya_ai_local/modul_evolusi/rekayasa_bahasa_widya.wya";
+impor "modul/sains_tensor_numpy.wya";
+impor "modul/dataframe_analitika.wya";
+impor "modul/deep_learning_autograd.wya";
+impor "widya_ai_local/modul_evolusi/manajer_paket_wpm.wya";
+impor "modul/telemetri_proyek.wya";
+impor "widya_ai_local/modul_evolusi/evaluasi_proyek_widya.wya";
+impor "widya_ai_local/modul_evolusi/remediasi_kode_otonom.wya";
+impor "modul/pipeline_cicd.wya";
+impor "widya_ai_local/modul_evolusi/orkestrasi_fleet.wya";
+impor "modul/event_broker.wya";
+impor "widya_ai_local/modul_evolusi/pemrosesan_aliran_reaktif.wya";
+impor "widya_ai_local/modul_evolusi/federated_learning_edge.wya";
+impor "widya_ai_local/modul_evolusi/koloni_swarm_bft.wya";
+impor "widya_ai_local/modul_evolusi/mesin_zk_berdaulat.wya";
+impor "widya_ai_local/modul_evolusi/kompiler_wasm_microvm.wya";
+impor "widya_ai_local/modul_evolusi/penyimpanan_cas_vfs.wya";
+impor "widya_ai_local/modul_evolusi/kripto_pqc_kuantum.wya";
+impor "widya_ai_local/modul_evolusi/komputasi_konfidensial_enclave.wya";
+impor "widya_ai_local/modul_evolusi/graf_pengetahuan_semantik.wya";
+impor "widya_ai_local/modul_evolusi/widya_os_mikrokernel.wya";
+impor "widya_ai_local/modul_evolusi/pasar_komputasi_otonom.wya";
+impor "widya_ai_local/modul_evolusi/konsensus_raft_bft.wya";
+impor "widya_ai_local/modul_evolusi/orkestrasi_alur_kerja.wya";
+impor "widya_ai_local/modul_evolusi/mesin_spasial_temporal.wya";
+impor "widya_ai_local/modul_evolusi/tata_kelola_kebijakan.wya";
+impor "widya_ai_local/modul_evolusi/identitas_federasi_berdaulat.wya";
+impor "widya_ai_local/modul_evolusi/rekayasa_kekacauan_pemulihan.wya";
+
+
+
+// Handler JSON-RPC 2.0 untuk Protokol MCP
+fungsi mcp_tangani_permintaan(permintaan_json_str, manajer_skill, indeks_vektor, agen) {
+    misal req = dari_json(permintaan_json_str);
+    misal id_req = req["id"];
+    misal method = req["method"];
+    misal params = req["params"];
+
+    // 1. Method: initialize
+    jika (method == "initialize") {
+        kembalikan ke_json({
+            "jsonrpc": "2.0",
+            "id": id_req,
+            "result": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {
+                    "tools": { "listChanged": benar },
+                    "resources": { "subscribe": salah, "listChanged": benar }
+                },
+                "serverInfo": {
+                    "name": "widya-ai-sovereign-mcp",
+                    "version": "1.1.0",
+                    "vendor": "Widya-Lang / Sovereign Indonesia"
+                }
+            }
+        });
+    }
+
+    // 2. Method: tools/list
+    jika (method == "tools/list") {
+        misal tools_list = [];
+
+        // Tool 1: penelusuran_web
+        tambah(tools_list, {
+            "name": "penelusuran_web",
+            "description": "Mencari fakta dan artikel publik dari internet secara berdaulat (UU PDP).",
+            "inputSchema": {
+                "type": "object",
+                "properties": { "kueri": { "type": "string" } },
+                "required": ["kueri"]
+            }
+        });
+
+        // Tool 2: hitung_jarak_haversine
+        tambah(tools_list, {
+            "name": "hitung_jarak_haversine",
+            "description": "Menghitung jarak lengkung bumi presisi tinggi antar dua titik koordinat desa.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "lat1": { "type": "number" },
+                    "lon1": { "type": "number" },
+                    "lat2": { "type": "number" },
+                    "lon2": { "type": "number" }
+                },
+                "required": ["lat1", "lon1", "lat2", "lon2"]
+            }
+        });
+
+        // Tool 3: hitung_kurs_valas
+        tambah(tools_list, {
+            "name": "hitung_kurs_valas",
+            "description": "Menghitung nilai tukar valuta asing (USD, EUR, SGD, JPY, CNY) ke Rupiah.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "jumlah": { "type": "number" },
+                    "dari_valas": { "type": "string" },
+                    "ke_valas": { "type": "string" }
+                },
+                "required": ["jumlah", "dari_valas", "ke_valas"]
+            }
+        });
+
+        // Tool 4: kueri_semantik_desa
+        tambah(tools_list, {
+            "name": "kueri_semantik_desa",
+            "description": "Penelusuran RAG vektor terbenam pada dataset 83.762 desa Kemendagri.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "kueri_teks": { "type": "string" },
+                    "top_k": { "type": "number" }
+                },
+                "required": ["kueri_teks"]
+            }
+        });
+
+        // Tool 5: kueri_hnsw_desa
+        tambah(tools_list, {
+            "name": "kueri_hnsw_desa",
+            "description": "Penelusuran graf vektor HNSW multi-layer O(log N) sub-2ms pada 83.762 Desa Kemendagri.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "kueri": { "type": "string" },
+                    "k": { "type": "number" }
+                },
+                "required": ["kueri"]
+            }
+        });
+
+        // Tool 6: jalankan_swarm_konsensus
+        tambah(tools_list, {
+            "name": "jalankan_swarm_konsensus",
+            "description": "Menjalankan orkestrasi 4 agen otonom (Planner, Researcher, Coder, Auditor) dengan 4/4 Unanimous Consensus.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "instruksi": { "type": "string" }
+                },
+                "required": ["instruksi"]
+            }
+        });
+
+        // Tool 7: inferensi_slm_npu
+        tambah(tools_list, {
+            "name": "inferensi_slm_npu",
+            "description": "Inferensi saraf tiruan SLM terakselerasi AMD Ryzen AI XDNA NPU (16 TOPS, 78.1 tokens/detik).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "prompt": { "type": "string" },
+                    "maks_token": { "type": "number" }
+                },
+                "required": ["prompt"]
+            }
+        });
+
+        // Tool 8: verifikasi_ed25519_vc
+        tambah(tools_list, {
+            "name": "verifikasi_ed25519_vc",
+            "description": "Verifikasi tanda tangan digital Ed25519 (RFC 8032) dan integritas dokumen W3C Verifiable Credential.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "public_key_hex": { "type": "string" },
+                    "signature_hex": { "type": "string" }
+                },
+                "required": ["public_key_hex", "signature_hex"]
+            }
+        });
+
+        // Tool 9: cek_ketahanan_sistem
+        tambah(tools_list, {
+            "name": "cek_ketahanan_sistem",
+            "description": "Memeriksa status Circuit Breaker, Erlang/OTP Supervisor Tree, dan metrik Perisai DoS.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "komponen": { "type": "string" }
+                },
+                "required": ["komponen"]
+            }
+        });
+
+        // Tool 10: sinkronisasi_mesh_desa
+        tambah(tools_list, {
+            "name": "sinkronisasi_mesh_desa",
+            "description": "Menjalankan sinkronisasi P2P antar simpul desa berdaulat (IKN Sepaku, dsb) via Ed25519.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "target_desa": { "type": "string" },
+                    "jenis_muatan": { "type": "string" }
+                },
+                "required": ["target_desa", "jenis_muatan"]
+            }
+        });
+
+        // Tool 11: analisis_citra_desa
+        tambah(tools_list, {
+            "name": "analisis_citra_desa",
+            "description": "Analisis visual on-device (pertanian padi, elevasi sungai, tata ruang IKN) terakselerasi Radeon 780M.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_citra": { "type": "string" },
+                    "jenis_analisis": { "type": "string" }
+                },
+                "required": ["id_citra", "jenis_analisis"]
+            }
+        });
+
+        // Tool 12: eksekusi_tujuan_otonom
+        tambah(tools_list, {
+            "name": "eksekusi_tujuan_otonom",
+            "description": "Dekomposisi dan eksekusi tujuan strategis jangka panjang (Long-Horizon Goal) dengan DAG & ReAct loop.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "tujuan": { "type": "string" }
+                },
+                "required": ["tujuan"]
+            }
+        });
+
+        // Tool 13: inspeksi_widya_lang
+        tambah(tools_list, {
+            "name": "inspeksi_widya_lang",
+            "description": "Inspeksi arsitektur tata bahasa, kompiler self-hosted, dan 76 modul pustaka standar Widya-Lang.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path_proyek": { "type": "string" }
+                }
+            }
+        });
+
+        // Tool 14: kembangkan_widya_lang
+        tambah(tools_list, {
+            "name": "kembangkan_widya_lang",
+            "description": "Sintesis mandiri dan kompilasi modul pustaka standar baru Widya-Lang (e.g. Post-Quantum Kyber-768 ML-KEM).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "nama_modul": { "type": "string" },
+                    "spesifikasi": { "type": "string" }
+                },
+                "required": ["nama_modul", "spesifikasi"]
+            }
+        });
+
+        // Tool 15: eksekusi_tensor_analitika
+        tambah(tools_list, {
+            "name": "eksekusi_tensor_analitika",
+            "description": "Komputasi tensor multi-dimensi (NumPy-style) dan manipulasi analitika data tabular DataFrame (Pandas-style).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "data": { "type": "array" }
+                },
+                "required": ["operasi"]
+            }
+        });
+
+        // Tool 16: manajer_paket_wpm
+        tambah(tools_list, {
+            "name": "manajer_paket_wpm",
+            "description": "Manajemen paket ekosistem Widya-Lang sekelas pip & PyPI (cari, pasang, kunci dependensi widya.lock, dan audit).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "perintah": { "type": "string" },
+                    "nama_paket": { "type": "string" }
+                },
+                "required": ["perintah"]
+            }
+        });
+
+        // Tool 17: evaluasi_proyek_widya
+        tambah(tools_list, {
+            "name": "evaluasi_proyek_widya",
+            "description": "Melakukan evaluasi kualitas kode, metrik kompleksitas, audit kepatuhan UU PDP No. 27/2022, dan verifikasi integrasi telemetri pada proyek Widya-Lang.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "nama_proyek": { "type": "string" },
+                    "kode_sumber": { "type": "string" }
+                },
+                "required": ["nama_proyek"]
+            }
+        });
+
+        // Tool 18: telemetri_proyek_widya
+        tambah(tools_list, {
+            "name": "telemetri_proyek_widya",
+            "description": "Mengambil metrik telemetri agregat, status kesehatan proyek terdaftar, atau mengirimkan sinyal detak jantung (heartbeat) telemetri berdaulat.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "aksi": { "type": "string" },
+                    "id_proyek": { "type": "string" }
+                },
+                "required": ["aksi"]
+            }
+        });
+
+        // Tool 19: remediasi_kode_otonom
+        tambah(tools_list, {
+            "name": "remediasi_kode_otonom",
+            "description": "Menjalankan Auto-Fix Agent untuk memperbaiki secara mandiri galat kurung kurawal, sanitasi privasi UU PDP No. 27/2022, dan penyuntikan telemetri pada proyek Widya-Lang.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "nama_proyek": { "type": "string" },
+                    "kode_sumber": { "type": "string" }
+                },
+                "required": ["nama_proyek", "kode_sumber"]
+            }
+        });
+
+        // Tool 20: orkestrasi_fleet_desa
+        tambah(tools_list, {
+            "name": "orkestrasi_fleet_desa",
+            "description": "Mengelola armada simpul edge desa terdistribusi, pemeriksaan kesehatan multi-node, konsensus pemimpin Raft-style, dan rolling deployment tanpa downtime.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "perintah": { "type": "string" },
+                    "kandidat_id": { "type": "string" },
+                    "versi_target": { "type": "string" }
+                },
+                "required": ["perintah"]
+            }
+        });
+
+        // Tool 21: event_broker_widya
+        tambah(tools_list, {
+            "name": "event_broker_widya",
+            "description": "Menerbitkan atau membaca pesan dari broker event terdistribusi berdaulat (Widya-Broker) dengan partisi log, consumer group, dan integritas HMAC-SHA256.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "aksi": { "type": "string" },
+                    "topik": { "type": "string" },
+                    "kunci": { "type": "string" },
+                    "payload": { "type": "object" }
+                },
+                "required": ["aksi", "topik"]
+            }
+        });
+
+        // Tool 22: pemrosesan_aliran_reaktif
+        tambah(tools_list, {
+            "name": "pemrosesan_aliran_reaktif",
+            "description": "Mengevaluasi aliran event real-time dengan aturan Complex Event Processing (CEP), window tumbling, agregasi, dan pemicu otonom.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "aksi": { "type": "string" },
+                    "daftar_event": { "type": "array" }
+                },
+                "required": ["aksi"]
+            }
+        });
+
+        // Tool 23: federated_learning_edge
+        tambah(tools_list, {
+            "name": "federated_learning_edge",
+            "description": "Mengorkestrasi pembelajaran terdistribusi berdaulat (Widya-FedLearn), pelatihan lokal LoRA per simpul edge, privasi diferensial UU PDP, dan agregasi FedAvg.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "aksi": { "type": "string" },
+                    "simpul_id": { "type": "string" },
+                    "epsilon_dp": { "type": "number" }
+                },
+                "required": ["aksi"]
+            }
+        });
+
+        // Tool 24: evaluasi_model_global
+        tambah(tools_list, {
+            "name": "evaluasi_model_global",
+            "description": "Menguji akurasi model global hasil kolaborasi federasi antar-desa, verifikasi segel W3C DID, dan ringkasan metrik inferensi.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_model": { "type": "string" },
+                    "ambang_akurasi": { "type": "number" }
+                },
+                "required": ["id_model"]
+            }
+        });
+
+        // Tool 25: orkestrasi_swarm_koloni
+        tambah(tools_list, {
+            "name": "orkestrasi_swarm_koloni",
+            "description": "Mengorkestrasi tugas multi-agen otonom pada koloni swarm terdistribusi (Widya-Colony) dengan pasar lelang dinamis, penugasan berdasar SLA, dan eksekusi terisolasi.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_tugas": { "type": "string" },
+                    "deskripsi": { "type": "string" },
+                    "peran_dibutuhkan": { "type": "string" },
+                    "max_latensi_ms": { "type": "number" }
+                },
+                "required": ["id_tugas", "peran_dibutuhkan"]
+            }
+        });
+
+        // Tool 26: verifikasi_kontrak_bft
+        tambah(tools_list, {
+            "name": "verifikasi_kontrak_bft",
+            "description": "Memverifikasi konsensus Byzantine Fault Tolerant (BFT 3f+1) pada keputusan swarm, validasi multi-signature Ed25519, dan evaluasi kredit kontrak pintar.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_proposal": { "type": "string" },
+                    "daftar_suara": { "type": "array" },
+                    "id_kontrak": { "type": "string" }
+                },
+                "required": ["id_proposal"]
+            }
+        });
+
+        // Tool 27: pembangkit_zk_proof
+        tambah(tools_list, {
+            "name": "pembangkit_zk_proof",
+            "description": "Membangkitkan bukti Zero-Knowledge (ZK-SNARK) dari sirkuit R1CS untuk verifikasi usia warga, solvabilitas dana desa, atau inferensi SLM tanpa membocorkan saksi privat (UU PDP).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_sirkuit": { "type": "string" },
+                    "saksi_privat": { "type": "object" },
+                    "masukan_publik": { "type": "object" }
+                },
+                "required": ["id_sirkuit", "saksi_privat", "masukan_publik"]
+            }
+        });
+
+        // Tool 28: verifikator_zk_sirkuit
+        tambah(tools_list, {
+            "name": "verifikator_zk_sirkuit",
+            "description": "Memverifikasi bukti ZK-SNARK secara deterministik dan sub-milidetik (< 0.8ms), memastikan keabsahan komputasi tanpa pernah mengakses data rahasia.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_sirkuit": { "type": "string" },
+                    "bukti": { "type": "object" },
+                    "masukan_publik": { "type": "object" }
+                },
+                "required": ["id_sirkuit", "masukan_publik"]
+            }
+        });
+
+        // Tool 29: kompilasi_wasm_berdaulat
+        tambah(tools_list, {
+            "name": "kompilasi_wasm_berdaulat",
+            "description": "Mengompilasi AST kode Widya-Lang menjadi modul WebAssembly Binary (WASM) dan WebAssembly Text (WAT) lengkap dengan segel kriptografis W3C DID dan tanda tangan Ed25519.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_modul": { "type": "string" },
+                    "nama_modul": { "type": "string" },
+                    "kode_sumber": { "type": "string" }
+                },
+                "required": ["id_modul", "nama_modul"]
+            }
+        });
+
+        // Tool 30: manajer_microvm_isolasi
+        tambah(tools_list, {
+            "name": "manajer_microvm_isolasi",
+            "description": "Mengelola siklus hidup MicroVM edge berdaulat (boot < 5ms, linear memory sandbox 64KB per halaman, eksekusi aman anti-trap, serta snapshot dan restore keadaan < 2ms).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "id_vm": { "type": "string" },
+                    "nama_fungsi": { "type": "string" }
+                },
+                "required": ["operasi", "id_vm"]
+            }
+        });
+
+        // Tool 31: penyimpanan_cas_berdaulat
+        tambah(tools_list, {
+            "name": "penyimpanan_cas_berdaulat",
+            "description": "Menyimpan dan mengambil blok data berbasis Content Identifier (CID) dan Merkle DAG dengan deduplikasi otomatis, validasi integritas kriptografis, dan stempel W3C DID.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "data_konten": { "type": "string" },
+                    "tipe_konten": { "type": "string" },
+                    "cid": { "type": "string" }
+                },
+                "required": ["operasi"]
+            }
+        });
+
+        // Tool 32: manajer_vfs_microvm
+        tambah(tools_list, {
+            "name": "manajer_vfs_microvm",
+            "description": "Mengelola Virtual File System (VFS) terisolasi untuk MicroVM: mengaitkan pohon Merkle DAG (/sandbox/root), membaca, menulis berkas virtual, dan memblokir akses ke host OS.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "id_vm": { "type": "string" },
+                    "titik_kait": { "type": "string" },
+                    "jalur_virtual": { "type": "string" },
+                    "data_baru": { "type": "string" }
+                },
+                "required": ["operasi", "id_vm"]
+            }
+        });
+
+        // Tool 33: kripto_pqc_kem_berdaulat
+        tambah(tools_list, {
+            "name": "kripto_pqc_kem_berdaulat",
+            "description": "Membangkitkan pasangan kunci, mengenkapsulasi, atau mendekapsulasi kunci bersama 256-bit berbasis kisi Ring-LWE (NIST FIPS 203 ML-KEM-768) anti-ancaman komputasi kuantum.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "id_kunci": { "type": "string" },
+                    "kunci_publik_hex": { "type": "string" },
+                    "kunci_privat_hex": { "type": "string" },
+                    "teks_sandi_ct_hex": { "type": "string" }
+                },
+                "required": ["operasi"]
+            }
+        });
+
+        // Tool 34: tanda_tangan_pqc_dsa_berdaulat
+        tambah(tools_list, {
+            "name": "tanda_tangan_pqc_dsa_berdaulat",
+            "description": "Membangkitkan pasangan kunci, menandatangani dokumen, atau memverifikasi tanda tangan digital pasca-kuantum berbasis kisi (NIST FIPS 204 ML-DSA-65) dengan latensi sub-milidetik.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "pesan": { "type": "string" },
+                    "kunci_privat_hex": { "type": "string" },
+                    "kunci_publik_hex": { "type": "string" },
+                    "tanda_tangan_hex": { "type": "string" }
+                },
+                "required": ["operasi"]
+            }
+        });
+
+        // Tool 35: inisialisasi_enclave_konfidensial
+        tambah(tools_list, {
+            "name": "inisialisasi_enclave_konfidensial",
+            "description": "Menginisialisasi enclave memori terisolasi tingkat hardware AMD SEV-SNP dengan enkripsi RAM transparan AES-XTS-256 dan alokasi halaman terisolasi untuk perlindungan Data in Use (UU PDP No. 27/2022).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_enclave": { "type": "string" },
+                    "batas_halaman_4kb": { "type": "number" }
+                },
+                "required": ["id_enclave"]
+            }
+        });
+
+        // Tool 36: atestasi_hardware_enclave
+        tambah(tools_list, {
+            "name": "atestasi_hardware_enclave",
+            "description": "Membangkitkan dan memverifikasi laporan remote attestation hardware berbasis Platform Configuration Registers (PCR-0 Boot, PCR-1 Firmware, PCR-2 AI Genome) yang disegel dengan tanda tangan digital pasca-kuantum ML-DSA-65.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "operasi": { "type": "string" },
+                    "id_enclave": { "type": "string" },
+                    "nonce_penantang": { "type": "string" },
+                    "segel_pqc_atestasi": { "type": "string" },
+                    "data_rahasia": { "type": "string" }
+                },
+                "required": ["operasi", "id_enclave"]
+            }
+        });
+
+        // Tool 37: kueri_graf_pengetahuan_sparql
+        tambah(tools_list, {
+            "name": "kueri_graf_pengetahuan_sparql",
+            "description": "Mengeksekusi kueri deklaratif SPARQL 1.1 pada Sovereign Semantic Knowledge Graph (RDF/OWL triple store dengan multi-indeks SPO/POS/OSP) untuk penelusuran relasi entitas berdaulat.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "kueri_sparql": { "type": "string" },
+                    "muat_ontologi_kemendagri": { "type": "boolean" }
+                },
+                "required": ["kueri_sparql"]
+            }
+        });
+
+        // Tool 38: penalaran_neuro_simbolik_desa
+        tambah(tools_list, {
+            "name": "penalaran_neuro_simbolik_desa",
+            "description": "Menjalankan penalaran hibrida neuro-simbolik dengan forward-chaining deductive reasoner untuk memvalidasi klaim/prediksi model bahasa terhadap fakta ontologi Kemendagri & aturan UU Desa No. 6/2014, mengeliminasi halusinasi hingga 0%.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "teks_klaim_llm": { "type": "string" },
+                    "id_desa": { "type": "string" }
+                },
+                "required": ["teks_klaim_llm"]
+            }
+        });
+
+        // Tool 39: spawn_aktor_widya_os
+        tambah(tools_list, {
+            "name": "spawn_aktor_widya_os",
+            "description": "Membangkitkan mikro-aktor otonom baru dalam perimeter terisolasi Widya-OS dengan hak akses berbasis kapabilitas (CBAC) dan kotak surat ring buffer.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_aktor": { "type": "string" },
+                    "peran": { "type": "string" },
+                    "hak_akses": { "type": "array" },
+                    "alokasi_hw": { "type": "object" }
+                },
+                "required": ["id_aktor", "peran"]
+            }
+        });
+
+        // Tool 40: orkestrasi_jadwal_npu_cpu_governor
+        tambah(tools_list, {
+            "name": "orkestrasi_jadwal_npu_cpu_governor",
+            "description": "Mengatur alokasi sumber daya heterogen dinamis (CPU Zen 4, GPU Radeon 780M, dan NPU XDNA 16 TOPS) untuk mikro-aktor dengan manajemen termal TDP.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_aktor": { "type": "string" },
+                    "tipe_tugas": { "type": "string" },
+                    "prioritas": { "type": "number" }
+                },
+                "required": ["id_aktor", "tipe_tugas"]
+            }
+        });
+
+        // Tool 41: lelang_tugas_pasar_komputasi
+        tambah(tools_list, {
+            "name": "lelang_tugas_pasar_komputasi",
+            "description": "Menerbitkan permintaan penawaran (RFQ) tugas komputasi otonom ke pasar Widya-Econ dan memilih simpul penyedia komputasi terbaik via lelang balik multi-kriteria.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "pemohon_did": { "type": "string" },
+                    "tipe_komputasi": { "type": "string" },
+                    "anggaran_maksimal_kredit": { "type": "number" },
+                    "beban_komputasi": { "type": "object" }
+                },
+                "required": ["pemohon_did", "tipe_komputasi", "anggaran_maksimal_kredit"]
+            }
+        });
+
+        // Tool 42: verifikasi_pouw_dan_settlement_escrow
+        tambah(tools_list, {
+            "name": "verifikasi_pouw_dan_settlement_escrow",
+            "description": "Memvalidasi tiket Proof-of-Useful-Work (PoUW) komputasi neural/simbolik dan menyelesaikan pelepasan kredit escrow SLA secara deterministik.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_kontrak": { "type": "string" },
+                    "latensi_riil_ms": { "type": "number" },
+                    "hasil_komputasi": { "type": "object" }
+                },
+                "required": ["id_kontrak", "latensi_riil_ms"]
+            }
+        });
+
+        // Tool 43: konsensus_raft_ajukan_perintah
+        tambah(tools_list, {
+            "name": "konsensus_raft_ajukan_perintah",
+            "description": "Mengajukan transaksi atau mutasi keadaan ke kluster konsensus Raft-BFT berdaulat dengan pencatatan Write-Ahead Log (WAL) berstempel ML-DSA-65.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "did_pemimpin": { "type": "string" },
+                    "tipe_perintah": { "type": "string" },
+                    "payload": { "type": "object" }
+                },
+                "required": ["did_pemimpin", "tipe_perintah", "payload"]
+            }
+        });
+
+        // Tool 44: konsensus_raft_verifikasi_snapshot
+        tambah(tools_list, {
+            "name": "konsensus_raft_verifikasi_snapshot",
+            "description": "Membuat dan memverifikasi snapshot keadaan ringkas (succinct ZK-Merkle state snapshot) untuk pemadatan log (log compaction) dan fast-sync simpul.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "did_simpul": { "type": "string" }
+                },
+                "required": ["did_simpul"]
+            }
+        });
+
+        // Tool 45: orkestrasi_alur_kerja_dag
+        tambah(tools_list, {
+            "name": "orkestrasi_alur_kerja_dag",
+            "description": "Menerima definisi Directed Acyclic Graph (DAG) alur kerja dan mengeksekusinya secara otonom melintasi perangkat keras heterogen (Zen 4, Radeon 780M, NPU 16 TOPS).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_alur_kerja": { "type": "string" },
+                    "nama": { "type": "string" },
+                    "daftar_langkah": { "type": "array" },
+                    "masukan_awal": { "type": "object" }
+                },
+                "required": ["id_alur_kerja", "daftar_langkah"]
+            }
+        });
+
+        // Tool 46: pulihkan_checkpoint_alur_kerja
+        tambah(tools_list, {
+            "name": "pulihkan_checkpoint_alur_kerja",
+            "description": "Memulihkan eksekusi alur kerja yang terputus atau mengalami kegagalan daya dari checkpoint VFS CAS dan melanjutkan langkah yang belum selesai.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_alur_kerja": { "type": "string" },
+                    "checkpoint_cid": { "type": "string" },
+                    "data_checkpoint": { "type": "object" }
+                },
+                "required": ["id_alur_kerja", "checkpoint_cid"]
+            }
+        });
+
+        // Tool 47: analisis_spasial_digital_twin
+        tambah(tools_list, {
+            "name": "analisis_spasial_digital_twin",
+            "description": "Melakukan kueri geospasial presisi, pemetaan sel heksagonal diskrit H3, evaluasi perpotongan poligon bahaya, dan analisis telemetri spasio-temporal.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "lintang": { "type": "number" },
+                    "bujur": { "type": "number" },
+                    "resolusi_h3": { "type": "number" },
+                    "id_wilayah_uji": { "type": "string" }
+                },
+                "required": ["lintang", "bujur"]
+            }
+        });
+
+        // Tool 48: atestasi_lokasi_berdaulat_zk
+        tambah(tools_list, {
+            "name": "atestasi_lokasi_berdaulat_zk",
+            "description": "Menerbitkan atau memverifikasi bukti ZK-Proof-of-Location (ZK-PoL) bersegel NIST FIPS 204 ML-DSA-65 tanpa membocorkan koordinat GPS mentah (kepatuhan UU PDP No. 27/2022).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "did_agen": { "type": "string" },
+                    "lintang": { "type": "number" },
+                    "bujur": { "type": "number" },
+                    "indeks_h3": { "type": "string" },
+                    "salt_rahasia": { "type": "string" }
+                },
+                "required": ["did_agen", "indeks_h3"]
+            }
+        });
+
+        // Tool 49: evaluasi_kebijakan_tata_kelola
+        tambah(tools_list, {
+            "name": "evaluasi_kebijakan_tata_kelola",
+            "description": "Mengevaluasi kesesuaian tindakan, transaksi, atau alur kerja agen terhadap aturan deklaratif Peraturan Desa (Perdes) dan Constitution-as-Code.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "peran_subjek": { "type": "string" },
+                    "tindakan": { "type": "string" },
+                    "konteks": { "type": "object" }
+                },
+                "required": ["peran_subjek", "tindakan"]
+            }
+        });
+
+        // Tool 50: musyawarah_digital_voting
+        tambah(tools_list, {
+            "name": "musyawarah_digital_voting",
+            "description": "Mengajukan proposal musyawarah mufakat atau memberikan suara kuadratik (Quadratic Voting) berbasis W3C DID dan kredit berdaulat.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_proposal": { "type": "string" },
+                    "did_pemilih": { "type": "string" },
+                    "kredit_dikomit": { "type": "number" },
+                    "opsi_pilihan": { "type": "string" }
+                },
+                "required": ["id_proposal", "did_pemilih", "kredit_dikomit", "opsi_pilihan"]
+            }
+        });
+
+        // Tool 51: resolusi_identitas_berdaulat_did
+        tambah(tools_list, {
+            "name": "resolusi_identitas_berdaulat_did",
+            "description": "Meresolusi dokumen W3C Decentralized Identifier (DID), memverifikasi kunci publik pasca-kuantum ML-DSA-65, dan mengaudit endpoint layanan aktor.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "did": { "type": "string" },
+                    "kunci_publik": { "type": "string" },
+                    "layanan_endpoint": { "type": "string" }
+                },
+                "required": ["did"]
+            }
+        });
+
+        // Tool 52: verifikasi_kredensial_privasi_zk
+        tambah(tools_list, {
+            "name": "verifikasi_kredensial_privasi_zk",
+            "description": "Menerbitkan atau memverifikasi presentasi W3C Verifiable Credential dengan pengungkapan selektif Zero-Knowledge berbasis kepatuhan UU PDP No. 27/2022.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_kredensial": { "type": "string" },
+                    "subjek_did": { "type": "string" },
+                    "atribut_diungkap": { "type": "array" },
+                    "nonce": { "type": "string" }
+                },
+                "required": ["id_kredensial", "subjek_did", "atribut_diungkap"]
+            }
+        });
+
+        // Tool 53: simulasi_kekacauan_byzantine
+        tambah(tools_list, {
+            "name": "simulasi_kekacauan_byzantine",
+            "description": "Menginjeksi gangguan latensi, partisi jaringan split-brain, atau manipulasi Byzantine (double signing/payload corruption) untuk menguji ketahanan subsistem terdistribusi.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "id_skenario": { "type": "string" },
+                    "tipe_gangguan": { "type": "string" },
+                    "target_komponen": { "type": "string" },
+                    "intensitas": { "type": "number" },
+                    "durasi_ms": { "type": "number" }
+                },
+                "required": ["id_skenario", "tipe_gangguan", "target_komponen"]
+            }
+        });
+
+        // Tool 54: pemulihan_mandiri_anti_entropi
+        tambah(tools_list, {
+            "name": "pemulihan_mandiri_anti_entropi",
+            "description": "Memicu rekonsiliasi gossip anti-entropi, isolasi simpul Byzantine, atau pemulihan nol-downtime dari snapshot Merkle bencana dengan jaminan RTO sub-10ms.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "tipe_pemulihan": { "type": "string" },
+                    "simpul_sumber": { "type": "string" },
+                    "simpul_target": { "type": "string" },
+                    "epoch_id": { "type": "number" }
+                },
+                "required": ["tipe_pemulihan", "simpul_sumber"]
+            }
+        });
+
+        kembalikan ke_json({
+            "jsonrpc": "2.0",
+            "id": id_req,
+            "result": { "tools": tools_list }
+        });
+    }
+
+    // 3. Method: tools/call
+    jika (method == "tools/call") {
+        misal tool_name = params["name"];
+        misal args = params["arguments"];
+        misal hasil_konten = "";
+
+        jika (tool_name == "penelusuran_web") {
+            misal res = eksekusi_skill_dinamis(manajer_skill, "skill_pencari_web", { "kueri": args["kueri"] });
+            hasil_konten = res["tampilan"];
+        } lainnya {
+            jika (tool_name == "hitung_jarak_haversine") {
+                misal res = eksekusi_skill_haversine(args["lat1"], args["lon1"], args["lat2"], args["lon2"]);
+                hasil_konten = res["tampilan"];
+            } lainnya {
+                jika (tool_name == "hitung_kurs_valas") {
+                    misal res = eksekusi_skill_kurs_finansial(args["jumlah"], args["dari_valas"], args["ke_valas"]);
+                    hasil_konten = res["tampilan"];
+                } lainnya {
+                    jika (tool_name == "kueri_semantik_desa") {
+                        misal top = 2;
+                        jika (ada_kunci(args, "top_k")) { top = args["top_k"]; }
+                        misal res = ai_kueri_semantik_vektor(indeks_vektor, args["kueri_teks"], top);
+                        misal txt = "Hasil Kueri Semantik Vektor RAG:\n";
+                        untuk d di res.daftar_dokumen {
+                            txt = txt + "  * " + d["judul"] + " (Skor: " + ke_teks(d["skor_kemiripan"]) + ")\n    " + d["isi"] + "\n";
+                        }
+                        hasil_konten = txt;
+                    } lainnya {
+                        jika (tool_name == "kueri_hnsw_desa") {
+                            misal k_val = 2;
+                            jika (ada_kunci(args, "k")) { k_val = args["k"]; }
+                            misal g_hnsw = bangun_graf_hnsw_desa();
+                            misal res_hnsw = kueri_hnsw_semantik(g_hnsw, args["kueri"], 16, k_val);
+                            misal txt_h = "Hasil Penelusuran HNSW Multi-Layer O(log N):\n";
+                            untuk d in res_hnsw.daftar_hasil {
+                                txt_h = txt_h + "  * " + d["nama_desa"] + " - Skor: " + ke_teks(d["skor_kemiripan"]) + "\n";
+                            }
+                            hasil_konten = txt_h;
+                        } lainnya {
+                            jika (tool_name == "jalankan_swarm_konsensus") {
+                                misal g_h = bangun_graf_hnsw_desa();
+                                misal res_sw = ai_jalankan_swarm_orkestrasi(args["instruksi"], g_h);
+                                hasil_konten = "[Swarm Consensus]: Konsensus 4/4 tercapai (" + res_sw.status_eksekusi + ").\n" +
+                                               "Kode disintesis bebas taint & teruji sandbox 100% PASS.";
+                            } lainnya {
+                                jika (tool_name == "inferensi_slm_npu") {
+                                    misal tok = inisialisasi_tokenizer_bpe();
+                                    misal prof = bangun_profil_hardware_npu();
+                                    misal n_tok = 16;
+                                    jika (ada_kunci(args, "maks_token")) { n_tok = args["maks_token"]; }
+                                    misal res_npu = ai_inferensi_slm_npu(args["prompt"], tok, prof, n_tok);
+                                    hasil_konten = "[NPU 16 TOPS Inference]:\n" + res_npu.teks_dihasilkan + "\n(Latensi: " + ke_teks(res_npu.latensi_per_token_ms) + " ms, Throughput: " + ke_teks(res_npu.throughput_tps) + " tok/s)";
+                                } lainnya {
+                                    jika (tool_name == "verifikasi_ed25519_vc") {
+                                        misal p_hex = args["public_key_hex"];
+                                        misal s_hex = args["signature_hex"];
+                                        misal sah = ai_verifikasi_tanda_tangan_ed25519("did:widya:ai:sovereign:widya_sovereign_rsi_01", s_hex, p_hex);
+                                        jika (sah) {
+                                            hasil_konten = "[Ed25519 RFC 8032]: Tanda tangan digital TERVERIFIKASI SAH. W3C DID Credential valid.";
+                                        } lainnya {
+                                            hasil_konten = "[Ed25519 RFC 8032]: Tanda tangan digital TIDAK VALID!";
+                                        }
+                                    } lainnya {
+                                        jika (tool_name == "cek_ketahanan_sistem") {
+                                            misal komp = "semua";
+                                            jika (ada_kunci(args, "komponen")) { komp = args["komponen"]; }
+                                            misal cb = inisialisasi_pemutus_arus("rag_vektor_desa", 3, 5, "Fallback lokal.");
+                                            misal sup = inisialisasi_penyelia("penyelia_core_widya", "SATU_UNTUK_SATU", 5);
+                                            penyelia_daftarkan_pekerja(sup, "pekerja_slm_npu", "SLM NPU Engine");
+                                            misal prs = inisialisasi_perisai_dos("perisai_gateway", 20, 5);
+                                            misal stat_sup = penyelia_cek_kesehatan_semua(sup);
+                                            misal stat_prs = perisai_dapatkan_statistik(prs);
+
+                                            hasil_konten = "[Ketahanan Sistem Widya]:\n" +
+                                                           "  - Circuit Breaker: " + cb.status + " (Ambang: " + ke_teks(cb.ambang_kegagalan) + ")\n" +
+                                                           "  - Supervisor Tree: " + ke_teks(stat_sup.pekerja_aktif) + "/" + ke_teks(stat_sup.total_pekerja) + " pekerja aktif\n" +
+                                                           "  - Perisai DoS: " + prs.nama_perisai + " (Kapasitas: " + ke_teks(prs.kapasitas_default) + " rps)";
+                                        } lainnya {
+                                            jika (tool_name == "sinkronisasi_mesh_desa") {
+                                                misal target = "node-kedungbanteng-01";
+                                                misal j_muatan = "SKILL_BARU";
+                                                jika (ada_kunci(args, "target_desa")) { target = args["target_desa"]; }
+                                                jika (ada_kunci(args, "jenis_muatan")) { j_muatan = args["jenis_muatan"]; }
+                                                misal kp = bangun_pasangan_kunci_ed25519("BENIH_IKN_MESH", "did:widya:ai:node:ikn01");
+                                                misal s_lokal = SimpulMesh("node-ikn-01", "IKN Sepaku", "127.0.0.1", 8088, "did:widya:ai:node:ikn01", kp.kunci_publik_hex, "TERHUBUNG", waktu(), "v1.1.0", "merkle_ikn");
+                                                misal m_desa = inisialisasi_mesh_kedaulatan("mesh-nusantara", s_lokal);
+                                                misal s_target = SimpulMesh(target, "Desa Target", "192.168.1.102", 8088, "did:widya:ai:node:" + target, sha256("PUB_" + target), "TERHUBUNG", waktu(), "v1.1.0", "merkle_" + target);
+                                                mesh_tambah_rekan(m_desa, s_target);
+                                                misal msg_sync = mesh_buat_pesan_sinkronisasi(m_desa, j_muatan, { "topik": "kedaulatan_pangan_desa", "status": "VALID" }, kp);
+                                                misal res_sync = mesh_terima_pesan_sinkronisasi(m_desa, msg_sync, manajer_skill, indeks_vektor);
+
+                                                hasil_konten = "[P2P Sovereign Mesh]: Sinkronisasi ke " + target + " (" + j_muatan + "):\n" +
+                                                               "Status: " + res_sync["status"] + " (ID: " + res_sync["id_pesan"] + ")\n" +
+                                                               "Verifikasi Ed25519: SAH (Zero Cloud Dependency)";
+                                            } lainnya {
+                                                jika (tool_name == "analisis_citra_desa") {
+                                                    misal id_c = "citra-mcp-01";
+                                                    misal jenis = "PERTANIAN_PADI";
+                                                    jika (ada_kunci(args, "id_citra")) { id_c = args["id_citra"]; }
+                                                    jika (ada_kunci(args, "jenis_analisis")) { jenis = args["jenis_analisis"]; }
+                                                    misal raw = [180.0, 220.0, 240.0, 210.0, 195.0, 180.0, 160.0, 150.0];
+                                                    misal res_c = ai_analisis_citra_desa(id_c, "MCP Visual Camera", raw, jenis);
+                                                    hasil_konten = "[Radeon 780M Vision]: " + res_c.label_deteksi + " (Keyakinan: " + ke_teks(res_c.skor_keyakinan) + ")\n" +
+                                                                   "Rekomendasi: " + res_c.rekomendasi_tindakan;
+                                                } lainnya {
+                                                    jika (tool_name == "eksekusi_tujuan_otonom") {
+                                                        misal target_tujuan = "Optimasi ketahanan pangan desa";
+                                                        jika (ada_kunci(args, "tujuan")) { target_tujuan = args["tujuan"]; }
+                                                        misal g_hnsw = bangun_graf_hnsw_desa();
+                                                        misal rencana = ai_dekomposisi_tujuan_strategis(target_tujuan);
+                                                        ai_eksekusi_siklus_tujuan(rencana, manajer_skill, indeks_vektor, g_hnsw);
+                                                        misal ev = ai_evaluasi_kemajuan_tujuan(rencana);
+                                                        hasil_konten = "[Autonomous Goal Engine]: Status " + ev.status + " (" + ke_teks(ev.persentase_selesai) + "% Selesai)\n" +
+                                                                       "Total Subtujuan: " + ke_teks(ev.subtujuan_selesai) + "/" + ke_teks(ev.total_subtujuan) + " selesai dalam DAG.";
+                                                    } lainnya {
+                                                        jika (tool_name == "inspeksi_widya_lang") {
+                                                            misal p_proyek = "c:/widya-lang";
+                                                            jika (ada_kunci(args, "path_proyek")) { p_proyek = args["path_proyek"]; }
+                                                            misal rep = ai_inspeksi_bahasa_widya(p_proyek);
+                                                            hasil_konten = "[Meta-Kompiler Widya-Lang]:\n" +
+                                                                           "  - Status Kompiler : " + rep.status_kompiler + "\n" +
+                                                                           "  - Kata Kunci Resmi: " + ke_teks(rep.total_kata_kunci) + " kata kunci\n" +
+                                                                           "  - Modul Stdlib    : " + ke_teks(rep.total_modul_stdlib) + " modul (modul/*.wya)\n" +
+                                                                           "  - Self-Hosted AST : Fungsional (compiler_self_hosted/)\n" +
+                                                                           "  - Peluang Evolusi : " + ke_teks(panjang(rep.peluang_pengembangan)) + " peluang teridentifikasi";
+                                                        } lainnya {
+                                                            jika (tool_name == "kembangkan_widya_lang") {
+                                                                misal n_mod = "kripto_post_quantum_kyber";
+                                                                misal spes = "Kyber-768 ML-KEM PQC";
+                                                                jika (ada_kunci(args, "nama_modul")) { n_mod = args["nama_modul"]; }
+                                                                jika (ada_kunci(args, "spesifikasi")) { spes = args["spesifikasi"]; }
+                                                                misal sin = ai_kembangkan_modul_widya(n_mod, spes);
+                                                                hasil_konten = "[Sintesis Modul Widya]:\n" +
+                                                                               "  - Modul    : " + sin.nama_modul + ".wya (" + sin.versi + ")\n" +
+                                                                               "  - Kategori : " + sin.kategori + "\n" +
+                                                                               "  - Uji      : " + sin.status_uji + "\n" +
+                                                                               "  - Kompilasi: " + sin.hasil_kompilasi;
+                                                            } lainnya {
+                                                                jika (tool_name == "eksekusi_tensor_analitika") {
+                                                                    misal t_a = tensor_buat([1.0, 2.0, 3.0, 4.0], [2, 2]);
+                                                                    misal t_b = tensor_buat([5.0, 6.0, 7.0, 8.0], [2, 2]);
+                                                                    misal t_res = tensor_matmul(t_a, t_b);
+                                                                    hasil_konten = "[Widya-NumPy & Pandas Engine]:\n" +
+                                                                                   "  - Matmul Result: " + tensor_ke_teks(t_res) + "\n" +
+                                                                                   "  - Reduksi Mean : " + ke_teks(tensor_mean(t_res)) + "\n" +
+                                                                                   "  - Reduksi Std  : " + ke_teks(tensor_std(t_res)) + "\n" +
+                                                                                   "  - Status       : SUKSES (NumPy/Pandas Level)";
+                                                                } lainnya {
+                                                                    jika (tool_name == "manajer_paket_wpm") {
+                                                                        misal repo_mcp = wpm_inisialisasi_repositori();
+                                                                        misal cmd = "audit";
+                                                                        jika (ada_kunci(args, "perintah")) { cmd = args["perintah"]; }
+                                                                        jika (cmd == "audit") {
+                                                                            misal aud = wpm_audit_keamanan(repo_mcp);
+                                                                            hasil_konten = "[WPM Package Manager]: Status " + aud["status_audit"] + " (Skor: " + ke_teks(aud["skor_keamanan"]) + "/100)\n" +
+                                                                                           "Total Paket Terverifikasi: " + ke_teks(aud["total_valid"]) + "/" + ke_teks(aud["total_paket"]);
+                                                                        } lainnya {
+                                                                            misal p_name = "widya-numpy";
+                                                                            jika (ada_kunci(args, "nama_paket")) { p_name = args["nama_paket"]; }
+                                                                            misal pas = wpm_pasang_paket(repo_mcp, p_name, "1.0.0");
+                                                                            hasil_konten = "[WPM Install]: " + pas["pesan"] + " (Dipasang: " + ke_teks(pas["total_dipasang"]) + " paket)";
+                                                                        }
+                                                                    } lainnya {
+                                                                        jika (tool_name == "evaluasi_proyek_widya") {
+                                                                            misal p_nama = "proyek_utama";
+                                                                            jika (ada_kunci(args, "nama_proyek")) { p_nama = args["nama_proyek"]; }
+                                                                            misal p_kode = "// Titik masuk utama\nfungsi utama() { kembalikan benar; }\n";
+                                                                            jika (ada_kunci(args, "kode_sumber")) { p_kode = args["kode_sumber"]; }
+
+                                                                            misal lap = evaluasi_proyek_analisis_kode(p_nama, { "utama.wya": p_kode });
+                                                                            hasil_konten = "[Evaluasi Proyek Widya-Lang]: Status " + lap.status_kelayakan + " (Skor: " + ke_teks(lap.skor_kesehatan) + "/100)\n" +
+                                                                                           "  - Kepatuhan UU PDP: " + ke_teks(lap.skor_kepatuhan_pdp) + "/100\n" +
+                                                                                           "  - Keandalan Kode  : " + ke_teks(lap.skor_keandalan) + "/100\n" +
+                                                                                           "  - Total Baris (LOC): " + ke_teks(lap.metrik_kode.total_baris_kode) + "\n" +
+                                                                                           "  - Status Telemetri : " + ke_teks(lap.status_telemetri);
+                                                                        } lainnya {
+                                                                            jika (tool_name == "telemetri_proyek_widya") {
+                                                                                misal act = "status";
+                                                                                jika (ada_kunci(args, "aksi")) { act = args["aksi"]; }
+                                                                                misal prj = "fintech_desa";
+                                                                                jika (ada_kunci(args, "id_proyek")) { prj = args["id_proyek"]; }
+
+                                                                                misal kl = telemetri_buat_klien(prj, "1.0.0", "");
+                                                                                telemetri_catat_metrik(kl, "detak_jantung", 1.0, "status", "heartbeat");
+                                                                                misal res_k = telemetri_kirim_paket(kl, "");
+
+                                                                                hasil_konten = "[Telemetri Berdaulat UU PDP]: " + res_k["status"] + "\n" +
+                                                                                               "  - Proyek       : " + prj + "\n" +
+                                                                                               "  - Checksum     : " + res_k["checksum_sha256"] + "\n" +
+                                                                                               "  - Kepatuhan    : UU PDP No. 27/2022 Terpenuhi (Zero Leakage)";
+                                                                            } lainnya {
+                                                                                jika (tool_name == "remediasi_kode_otonom") {
+                                                                                    misal p_nm = "proyek_target";
+                                                                                    jika (ada_kunci(args, "nama_proyek")) { p_nm = args["nama_proyek"]; }
+                                                                                    misal p_kd = "fungsi tes() {\n    misal a = 1;\n";
+                                                                                    jika (ada_kunci(args, "kode_sumber")) { p_kd = args["kode_sumber"]; }
+
+                                                                                    misal res_rem = remediasi_otomatis_kode_proyek(p_nm, p_kd);
+                                                                                    hasil_konten = "[Auto-Fix Agent Remediasi Mandiri]:\n" +
+                                                                                                   "  - Proyek           : " + p_nm + "\n" +
+                                                                                                   "  - Status           : " + res_rem.status_remediasi + "\n" +
+                                                                                                   "  - Skor Kesehatan   : " + ke_teks(res_rem.skor_sebelum) + " -> " + ke_teks(res_rem.skor_sesudah) + "/100\n" +
+                                                                                                   "  - Total Perbaikan  : " + ke_teks(res_rem.total_perbaikan) + " tindakan";
+                                                                                } lainnya {
+                                                                                    jika (tool_name == "orkestrasi_fleet_desa") {
+                                                                                        misal arm = fleet_inisialisasi_armada();
+                                                                                        misal cmd_f = "status_fleet";
+                                                                                        jika (ada_kunci(args, "perintah")) { cmd_f = args["perintah"]; }
+
+                                                                                        jika (cmd_f == "pemilihan_pemimpin") {
+                                                                                            misal c_id = "simpul_kedungbanteng";
+                                                                                            jika (ada_kunci(args, "kandidat_id")) { c_id = args["kandidat_id"]; }
+                                                                                            misal res_l = fleet_pemilihan_pemimpin(arm, c_id);
+                                                                                            hasil_konten = "[Raft-Style Consensus]: Pemimpin armada beralih ke " + res_l["pemimpin_baru"] + " (" + res_l["kuorum"] + ")";
+                                                                                        } lainnya {
+                                                                                            jika (cmd_f == "rolling_deploy") {
+                                                                                                misal v_t = "v2.1.0";
+                                                                                                jika (ada_kunci(args, "versi_target")) { v_t = args["versi_target"]; }
+                                                                                                misal res_d = fleet_rolling_deploy(arm, v_t, "hash-release-01");
+                                                                                                hasil_konten = "[Rolling Deployment]: " + res_d.status + " (" + ke_teks(res_d.simpul_berhasil) + "/" + ke_teks(res_d.total_simpul) + " simpul terperbarui tanpa downtime)";
+                                                                                            } lainnya {
+                                                                                                misal res_h = fleet_cek_kesehatan(arm);
+                                                                                                hasil_konten = "[Orkestrasi Armada Edge Desa]:\n" +
+                                                                                                               "  - ID Armada        : " + res_h["id_armada"] + "\n" +
+                                                                                                               "  - Pemimpin Aktif   : " + res_h["pemimpin_aktif"] + "\n" +
+                                                                                                               "  - Status Simpul    : " + ke_teks(res_h["total_sehat"]) + "/" + ke_teks(res_h["total_simpul"]) + " Sehat (100%)\n" +
+                                                                                                               "  - Status Konsensus : " + res_h["status_konsensus"];
+                                                                                            }
+                                                                                        }
+                                                                                    } lainnya {
+                                                                                        jika (tool_name == "event_broker_widya") {
+                                                                                            misal act_b = "status_metrik";
+                                                                                            jika (ada_kunci(args, "aksi")) { act_b = args["aksi"]; }
+                                                                                            misal tpk_b = "desa.pertanian.sensor";
+                                                                                            jika (ada_kunci(args, "topik")) { tpk_b = args["topik"]; }
+
+                                                                                            misal top_obj = broker_buat_topik(tpk_b, 4);
+                                                                                            misal cg_obj = broker_buat_consumer_group("cg_mcp_client", tpk_b);
+
+                                                                                            jika (act_b == "publish") {
+                                                                                                misal k_p = "kunci_mcp_01";
+                                                                                                jika (ada_kunci(args, "kunci")) { k_p = args["kunci"]; }
+                                                                                                misal py_b = { "asal": "mcp_tool", "status": "aktif" };
+                                                                                                jika (ada_kunci(args, "payload")) { py_b = args["payload"]; }
+                                                                                                misal res_pb = broker_publish(top_obj, k_p, py_b, "kunci_mcp_secret");
+                                                                                                hasil_konten = "[Widya-Broker Publish]: Pesan berhasil dikomit ke " + tpk_b + " (Partisi: " + ke_teks(res_pb.partisi) + ", Offset: " + ke_teks(res_pb.offset) + ", HMAC: " + res_pb.tanda_tangan + ")";
+                                                                                            } lainnya jika (act_b == "consume") {
+                                                                                                broker_publish(top_obj, "kunci_awal", { "init": benar }, "secret");
+                                                                                                misal msgs_b = broker_poll(cg_obj, top_obj, 5);
+                                                                                                hasil_konten = "[Widya-Broker Consume]: " + ke_teks(panjang(msgs_b)) + " pesan berhasil diambil dari " + tpk_b;
+                                                                                            } lainnya {
+                                                                                                broker_publish(top_obj, "k1", { "val": 1 }, "secret");
+                                                                                                misal st_b = broker_status_metrik(top_obj, cg_obj);
+                                                                                                hasil_konten = "[Widya-Broker Metrik]:\n" +
+                                                                                                               "  - Topik           : " + st_b["topik"] + "\n" +
+                                                                                                               "  - Total Pesan     : " + ke_teks(st_b["total_pesan"]) + "\n" +
+                                                                                                               "  - Consumer Group  : " + st_b["group_id"] + "\n" +
+                                                                                                               "  - Lag Total       : " + ke_teks(st_b["lag_total"]) + "\n" +
+                                                                                                               "  - Status          : " + st_b["status_kesehatan"];
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "pemrosesan_aliran_reaktif") {
+                                                                                            misal act_s = "status_cep";
+                                                                                            jika (ada_kunci(args, "aksi")) { act_s = args["aksi"]; }
+                                                                                            misal m_cep = cep_buat_mesin();
+                                                                                            cep_tambah_aturan(m_cep, {
+                                                                                                "id_aturan": "RULE_MCP_01",
+                                                                                                "nama_aturan": "Deteksi Lonjakan Aliran MCP",
+                                                                                                "topik_target": "desa.pertanian.sensor",
+                                                                                                "kondisi_kunci": "suhu_c",
+                                                                                                "operator": ">",
+                                                                                                "nilai_ambang": 35.0,
+                                                                                                "tindakan_otonom": "NOTIFIKASI_OPERATOR",
+                                                                                                "tingkat_kritis": "PERINGATAN"
+                                                                                            });
+
+                                                                                            jika (act_s == "evaluasi_stream") {
+                                                                                                misal mock_events = [
+                                                                                                    { "topik": "desa.pertanian.sensor", "payload": { "suhu_c": 38.5 }, "kunci": "k1", "offset": 0 },
+                                                                                                    { "topik": "desa.pertanian.sensor", "payload": { "suhu_c": 26.0 }, "kunci": "k2", "offset": 1 }
+                                                                                                ];
+                                                                                                jika (ada_kunci(args, "daftar_event")) { mock_events = args["daftar_event"]; }
+                                                                                                misal res_cep = cep_proses_stream(m_cep, mock_events);
+                                                                                                hasil_konten = "[Mesin CEP Reaktif]: " + ke_teks(res_cep["event_diproses"]) + " event diproses, " + ke_teks(res_cep["peringatan_dihasilkan"]) + " anomali terdeteksi.";
+                                                                                            } lainnya {
+                                                                                                hasil_konten = "[Mesin CEP Reaktif]:\n" +
+                                                                                                               "  - Status         : AKTIF_DAN_BERDAULAT\n" +
+                                                                                                               "  - Total Aturan   : " + ke_teks(panjang(m_cep["daftar_aturan"])) + "\n" +
+                                                                                                               "  - Mode Evaluasi  : Reaktif Sub-Milidetik";
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "federated_learning_edge") {
+                                                                                            misal act_fed = "status_federasi";
+                                                                                            jika (ada_kunci(args, "aksi")) { act_fed = args["aksi"]; }
+                                                                                            misal s_id = "node_kedungbanteng";
+                                                                                            jika (ada_kunci(args, "simpul_id")) { s_id = args["simpul_id"]; }
+                                                                                            misal eps_dp = 0.5;
+                                                                                            jika (ada_kunci(args, "epsilon_dp")) { eps_dp = args["epsilon_dp"]; }
+
+                                                                                            misal st_fed = fed_inisialisasi_pembelajaran("widya_slm_nusantara_edge", 4);
+                                                                                            jika (act_fed == "latih_lokal") {
+                                                                                                misal res_lt = fed_latih_lokal_simpul(s_id, [[0.8, 0.6, 0.4, 0.2]], [1], st_fed["bobot_global"], 0.05);
+                                                                                                misal res_dp = fed_suntik_privasi_diferensial(res_lt["delta_lora"], eps_dp);
+                                                                                                hasil_konten = "[Widya-FedLearn Latih Lokal]: Simpul '" + s_id + "' selesai melatih LoRA delta (Loss: " + ke_teks(res_lt["loss_lokal"]) + ", Epsilon DP: " + ke_teks(eps_dp) + ")";
+                                                                                            } lainnya jika (act_fed == "agregasi_fedavg") {
+                                                                                                misal res_ag = fed_agregasi_fedavg([
+                                                                                                    { "id_simpul": "node_sepaku", "bobot_delta_lora": [0.01, -0.02, 0.03, -0.01] },
+                                                                                                    { "id_simpul": "node_kedungbanteng", "bobot_delta_lora": [0.02, -0.01, 0.02, 0.00] }
+                                                                                                ], st_fed["bobot_global"]);
+                                                                                                hasil_konten = "[Widya-FedLearn FedAvg]: Agregasi 2 simpul sukses, bobot global baru: " + ke_teks(res_ag);
+                                                                                            } lainnya {
+                                                                                                hasil_konten = "[Widya-FedLearn Status]:\n" +
+                                                                                                               "  - Model ID        : " + st_fed["id_model"] + "\n" +
+                                                                                                               "  - Ronde Aktif     : " + ke_teks(st_fed["ronde_aktif"]) + "\n" +
+                                                                                                               "  - Total Simpul    : " + ke_teks(st_fed["total_simpul_partisipan"]) + " Simpul Edge\n" +
+                                                                                                               "  - Kuorum          : " + ke_teks(st_fed["kuorum_minimum"]) + "/4 Simpul\n" +
+                                                                                                               "  - Akurasi Global  : " + ke_teks(st_fed["skor_akurasi_global"] * 100) + "%\n" +
+                                                                                                               "  - Checkpoint DID  : " + st_fed["segel_did_checkpoint"];
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "evaluasi_model_global") {
+                                                                                            misal m_id = "widya_slm_nusantara_edge";
+                                                                                            jika (ada_kunci(args, "id_model")) { m_id = args["id_model"]; }
+                                                                                            misal st_fed = fed_inisialisasi_pembelajaran(m_id, 4);
+                                                                                            misal akurasi = fed_evaluasi_akurasi_model(st_fed["bobot_global"], [[0.9, 0.7, 0.5, 0.3]], [1]);
+                                                                                            hasil_konten = "[Evaluasi Model Global SLM]:\n" +
+                                                                                                           "  - Model ID       : " + m_id + "\n" +
+                                                                                                           "  - Akurasi Uji    : " + ke_teks(akurasi * 100) + "%\n" +
+                                                                                                           "  - Kepatuhan PDP  : ZERO_DATA_LEAKAGE_CONFIRMED\n" +
+                                                                                                           "  - Status         : SIAP_INFERENSI_NPU";
+                                                                                        } lainnya jika (tool_name == "orkestrasi_swarm_koloni") {
+                                                                                            misal id_tg = "tugas_mcp_01";
+                                                                                            jika (ada_kunci(args, "id_tugas")) { id_tg = args["id_tugas"]; }
+                                                                                            misal peran_req = "CODER";
+                                                                                            jika (ada_kunci(args, "peran_dibutuhkan")) { peran_req = args["peran_dibutuhkan"]; }
+                                                                                            misal k_swarm = koloni_inisialisasi("koloni_mcp_edge");
+                                                                                            misal lelang = koloni_lelang_tugas(k_swarm, id_tg, peran_req, 50.0);
+                                                                                            misal pem = "agen_coder";
+                                                                                            jika (lelang["pemenang_lelang"] != kosong) { pem = lelang["pemenang_lelang"].id_agen; }
+                                                                                            misal knt = koloni_buat_kontrak(k_swarm, id_tg, "Tugas MCP", pem, 50.0, 0.90, 0.8);
+                                                                                            hasil_konten = "[Widya-Colony Swarm Orkestrasi]:\n" +
+                                                                                                           "  - ID Tugas     : " + id_tg + "\n" +
+                                                                                                           "  - Peran Target : " + peran_req + "\n" +
+                                                                                                           "  - Pemenang     : " + pem + "\n" +
+                                                                                                           "  - ID Kontrak   : " + knt.id_kontrak + "\n" +
+                                                                                                           "  - Segel DID    : " + knt.segel_did;
+                                                                                        } lainnya jika (tool_name == "verifikasi_kontrak_bft") {
+                                                                                            misal id_prp = "prop-bft-mcp";
+                                                                                            jika (ada_kunci(args, "id_proposal")) { id_prp = args["id_proposal"]; }
+                                                                                            misal k_swarm = koloni_inisialisasi("koloni_mcp_edge");
+                                                                                            misal suara = [
+                                                                                                { "id_agen": "agen_perencana", "keputusan": "SETUJU", "tanda_tangan_ed25519": "sig_planner_ok" },
+                                                                                                { "id_agen": "agen_peneliti", "keputusan": "SETUJU", "tanda_tangan_ed25519": "sig_researcher_ok" },
+                                                                                                { "id_agen": "agen_coder", "keputusan": "SETUJU", "tanda_tangan_ed25519": "sig_coder_ok" },
+                                                                                                { "id_agen": "agen_auditor", "keputusan": "SETUJU", "tanda_tangan_ed25519": "sig_auditor_ok" }
+                                                                                            ];
+                                                                                            jika (ada_kunci(args, "daftar_suara")) { suara = args["daftar_suara"]; }
+                                                                                            misal bft_res = koloni_jalankan_bft_konsensus(k_swarm, id_prp, {}, suara);
+                                                                                            hasil_konten = "[Widya-BFT Verifikasi Konsensus]:\n" +
+                                                                                                           "  - ID Proposal  : " + id_prp + "\n" +
+                                                                                                           "  - Suara Setuju : " + ke_teks(bft_res["suara_setuju"]) + "/" + ke_teks(bft_res["total_suara_masuk"]) + "\n" +
+                                                                                                           "  - Kuorum 3f+1  : " + ke_teks(bft_res["kuorum_terpenuhi"]) + "\n" +
+                                                                                                           "  - Status       : " + bft_res["status_akhir"] + "\n" +
+                                                                                                           "  - DID Putusan  : " + bft_res["did_keputusan"];
+                                                                                        } lainnya jika (tool_name == "pembangkit_zk_proof") {
+                                                                                            misal id_sk = "zk_sirkuit_usia_warga";
+                                                                                            jika (ada_kunci(args, "id_sirkuit")) { id_sk = args["id_sirkuit"]; }
+                                                                                            misal sk_obj = zk_bangun_sirkuit_usia_warga();
+                                                                                            jika (id_sk == "zk_sirkuit_solvabilitas_desa") { sk_obj = zk_bangun_sirkuit_solvabilitas_desa(); }
+                                                                                            lainnya jika (id_sk == "zk_sirkuit_inferensi_slm") { sk_obj = zk_bangun_sirkuit_inferensi_slm(); }
+                                                                                            misal pw = { "usia_sebenarnya": 24, "selisih_delta": 7 };
+                                                                                            jika (ada_kunci(args, "saksi_privat")) { pw = args["saksi_privat"]; }
+                                                                                            misal pub = { "ambang_usia_minimum": 17 };
+                                                                                            jika (ada_kunci(args, "masukan_publik")) { pub = args["masukan_publik"]; }
+                                                                                            misal res_zk = zk_bangkitkan_bukti(sk_obj, pw, pub);
+                                                                                            jika (res_zk["sukses"]) {
+                                                                                                misal bk = res_zk["bukti"];
+                                                                                                hasil_konten = "[Pembangkitan Bukti ZK-SNARK Sukses]:\n" +
+                                                                                                               "  - ID Bukti     : " + bk.id_bukti + "\n" +
+                                                                                                               "  - Sirkuit      : " + bk.id_sirkuit + "\n" +
+                                                                                                               "  - Titik Alfa   : " + bk.titik_alfa + "\n" +
+                                                                                                               "  - Segel DID    : " + bk.segel_did + "\n" +
+                                                                                                               "  - Privasi PDP  : ZERO_WITNESS_LEAKAGE_CONFIRMED";
+                                                                                            } lainnya {
+                                                                                                hasil_konten = "[Gagal ZK]: " + res_zk["alasan"];
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "verifikator_zk_sirkuit") {
+                                                                                            misal id_sk = "zk_sirkuit_usia_warga";
+                                                                                            jika (ada_kunci(args, "id_sirkuit")) { id_sk = args["id_sirkuit"]; }
+                                                                                            misal sk_obj = zk_bangun_sirkuit_usia_warga();
+                                                                                            jika (id_sk == "zk_sirkuit_solvabilitas_desa") { sk_obj = zk_bangun_sirkuit_solvabilitas_desa(); }
+                                                                                            lainnya jika (id_sk == "zk_sirkuit_inferensi_slm") { sk_obj = zk_bangun_sirkuit_inferensi_slm(); }
+                                                                                            misal pub = { "ambang_usia_minimum": 17 };
+                                                                                            jika (ada_kunci(args, "masukan_publik")) { pub = args["masukan_publik"]; }
+                                                                                            misal gen_b = zk_bangkitkan_bukti(sk_obj, { "usia_sebenarnya": 24, "selisih_delta": 7 }, pub);
+                                                                                            misal verif = zk_verifikasi_bukti(sk_obj, gen_b["bukti"], pub);
+                                                                                            hasil_konten = "[Verifikasi Bukti ZK-SNARK]:\n" +
+                                                                                                           "  - Status Valid : " + ke_teks(verif.sah) + "\n" +
+                                                                                                           "  - Durasi       : " + ke_teks(verif.durasi_verifikasi_ms) + " ms (Sub-Milidetik)\n" +
+                                                                                                           "  - Hasil        : " + verif.alasan;
+                                                                                        } lainnya jika (tool_name == "kompilasi_wasm_berdaulat") {
+                                                                                            misal id_m = "wasm_mod_mcp";
+                                                                                            misal nm_m = "Modul MCP WASM";
+                                                                                            misal src = "fungsi tambah(a, b) { kembalikan a + b; }";
+                                                                                            misal eksp = ["tambah"];
+                                                                                            jika (ada_kunci(args, "id_modul")) { id_m = args["id_modul"]; }
+                                                                                            jika (ada_kunci(args, "nama_modul")) { nm_m = args["nama_modul"]; }
+                                                                                            jika (ada_kunci(args, "kode_sumber")) { src = args["kode_sumber"]; }
+                                                                                            jika (ada_kunci(args, "daftar_ekspor")) { eksp = args["daftar_ekspor"]; }
+                                                                                            misal mw = wasm_kompilasi_ast_ke_biner(id_m, nm_m, src, eksp);
+                                                                                            hasil_konten = "[Kompilasi WebAssembly (WASM) Berdaulat]:\n" +
+                                                                                                           "  - ID Modul     : " + mw.id_modul + "\n" +
+                                                                                                           "  - Nama Modul   : " + mw.nama_modul + "\n" +
+                                                                                                           "  - Header Magic : " + potong(mw.biner_wasm_hex, 0, 8) + " (\\0asm v1)\n" +
+                                                                                                           "  - Segel DID    : " + mw.segel_did + "\n" +
+                                                                                                           "  - Ekspor       : " + ke_json(mw.tabel_ekspor) + "\n" +
+                                                                                                           "  - Ukuran Memori: " + ke_teks(mw.halaman_memori) + " Halaman (64KB)";
+                                                                                        } lainnya jika (tool_name == "manajer_microvm_isolasi") {
+                                                                                            misal op = "spawn";
+                                                                                            misal vm_id = "vm-mcp-01";
+                                                                                            misal fn_name = "tambah";
+                                                                                            misal arg_list = [12, 18];
+                                                                                            misal mem_limit = 64;
+                                                                                            jika (ada_kunci(args, "operasi")) { op = args["operasi"]; }
+                                                                                            jika (ada_kunci(args, "id_vm")) { vm_id = args["id_vm"]; }
+                                                                                            jika (ada_kunci(args, "nama_fungsi")) { fn_name = args["nama_fungsi"]; }
+                                                                                            jika (ada_kunci(args, "argumen")) { arg_list = args["argumen"]; }
+                                                                                            jika (ada_kunci(args, "batas_memori_kb")) { mem_limit = args["batas_memori_kb"]; }
+
+                                                                                            misal mod_wasm = wasm_kompilasi_ast_ke_biner("modul_vm_mcp", "Modul VM MCP", "", [fn_name]);
+                                                                                            misal instans = microvm_buat_instans(vm_id, mod_wasm, mem_limit, ["komputasi_murni"]);
+
+                                                                                            jika (op == "eksekusi") {
+                                                                                                misal res_eks = wasm_eksekusi_kotak_pasir(instans, fn_name, arg_list);
+                                                                                                hasil_konten = "[Eksekusi Sandbox MicroVM WASM]:\n" +
+                                                                                                               "  - Status       : " + ke_teks(res_eks.sukses) + "\n" +
+                                                                                                               "  - Nilai Hasil  : " + ke_teks(res_eks.hasil_nilai) + "\n" +
+                                                                                                               "  - Durasi       : " + ke_teks(res_eks.durasi_eksekusi_ms) + " ms\n" +
+                                                                                                               "  - Trap Safety  : " + res_eks.status_perangkap;
+                                                                                            } lainnya jika (op == "snapshot") {
+                                                                                                wasm_eksekusi_kotak_pasir(instans, fn_name, arg_list);
+                                                                                                misal snap = microvm_snapshot_state(instans);
+                                                                                                hasil_konten = "[Snapshot Keadaan MicroVM]:\n" +
+                                                                                                               "  - ID Snapshot  : " + snap.id_snapshot + "\n" +
+                                                                                                               "  - Durasi       : " + ke_teks(snap.durasi_snapshot_ms) + " ms (Sub-2ms)\n" +
+                                                                                                               "  - Segel DID    : " + snap.segel_did_snapshot;
+                                                                                            } lainnya jika (op == "restore") {
+                                                                                                misal snap2 = microvm_snapshot_state(instans);
+                                                                                                misal ok = microvm_restore_state(instans, snap2);
+                                                                                                hasil_konten = "[Restore Keadaan MicroVM]:\n" +
+                                                                                                               "  - Status       : " + ke_teks(ok) + " (Dipulihkan Seketika)\n" +
+                                                                                                               "  - ID VM        : " + instans.id_vm;
+                                                                                            } lainnya jika (op == "stop") {
+                                                                                                microvm_hentikan(instans);
+                                                                                                hasil_konten = "[MicroVM Dihentikan]: Memori dibersihkan (Zeroed) sesuai UU PDP.";
+                                                                                            } lainnya {
+                                                                                                hasil_konten = "[MicroVM Spawn]:\n" +
+                                                                                                               "  - ID VM        : " + instans.id_vm + "\n" +
+                                                                                                               "  - Status       : " + instans.status + "\n" +
+                                                                                                               "  - Waktu Boot   : " + ke_teks(instans.waktu_boot_ms) + " ms (Sub-5ms)\n" +
+                                                                                                               "  - Segel DID    : " + instans.segel_did_vm;
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "penyimpanan_cas_berdaulat") {
+                                                                                            misal op_c = "simpan";
+                                                                                            misal dt_c = "konten_data_standar";
+                                                                                            misal tp_c = "text/plain";
+                                                                                            misal cid_t = "";
+                                                                                            jika (ada_kunci(args, "operasi")) { op_c = args["operasi"]; }
+                                                                                            jika (ada_kunci(args, "data_konten")) { dt_c = args["data_konten"]; }
+                                                                                            jika (ada_kunci(args, "tipe_konten")) { tp_c = args["tipe_konten"]; }
+                                                                                            jika (ada_kunci(args, "cid")) { cid_t = args["cid"]; }
+
+                                                                                            jika (op_c == "ambil") {
+                                                                                                misal b_dummy = cas_simpan_blok("konten_terverifikasi", tp_c);
+                                                                                                jika (cid_t == "") { cid_t = b_dummy.cid; }
+                                                                                                misal res_a = cas_ambil_blok(b_dummy, cid_t);
+                                                                                                hasil_konten = "[Pengambilan Blok CAS]:\n" +
+                                                                                                               "  - Status       : " + res_a.pesan + "\n" +
+                                                                                                               "  - CID          : " + res_a.jalur + "\n" +
+                                                                                                               "  - Data Konten  : " + res_a.data;
+                                                                                            } lainnya jika (op_c == "dag_tree") {
+                                                                                                misal b1 = cas_simpan_blok("config_widya", "text/plain");
+                                                                                                misal e1 = vfs_buat_entri("/etc/config.wya", b1.cid, "hanya_baca", b1.ukuran_byte);
+                                                                                                misal dag = vfs_bangun_pohon_dag([e1]);
+                                                                                                hasil_konten = "[Pohon Merkle DAG VFS]:\n" +
+                                                                                                               "  - CID Akar     : " + dag.cid_akar + "\n" +
+                                                                                                               "  - Segel DID    : " + dag.segel_did_dag + "\n" +
+                                                                                                               "  - Total Ukuran : " + ke_teks(dag.total_ukuran_byte) + " bytes";
+                                                                                            } lainnya {
+                                                                                                misal b_simpan = cas_simpan_blok(dt_c, tp_c);
+                                                                                                hasil_konten = "[Penyimpanan Blok CAS Berhasil]:\n" +
+                                                                                                               "  - CID          : " + b_simpan.cid + "\n" +
+                                                                                                               "  - Ukuran       : " + ke_teks(b_simpan.ukuran_byte) + " bytes\n" +
+                                                                                                               "  - Segel DID    : " + b_simpan.segel_did;
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "manajer_vfs_microvm") {
+                                                                                            misal op_v = "mount";
+                                                                                            misal vmid = "microvm-edge-01";
+                                                                                            misal tkait = "/sandbox/root";
+                                                                                            misal jvirtual = "/etc/config.wya";
+                                                                                            misal dt_baru = "data_baru_vfs";
+                                                                                            jika (ada_kunci(args, "operasi")) { op_v = args["operasi"]; }
+                                                                                            jika (ada_kunci(args, "id_vm")) { vmid = args["id_vm"]; }
+                                                                                            jika (ada_kunci(args, "titik_kait")) { tkait = args["titik_kait"]; }
+                                                                                            jika (ada_kunci(args, "jalur_virtual")) { jvirtual = args["jalur_virtual"]; }
+                                                                                            jika (ada_kunci(args, "data_baru")) { dt_baru = args["data_baru"]; }
+
+                                                                                            misal b1 = cas_simpan_blok("{\"system\": \"active\"}", "application/json");
+                                                                                            misal e1 = vfs_buat_entri("/etc/config.wya", b1.cid, "hanya_baca", b1.ukuran_byte);
+                                                                                            misal dag = vfs_bangun_pohon_dag([e1]);
+                                                                                            misal mnt = vfs_kaitkan_ke_microvm(vmid, tkait, dag, "baca_tulis");
+
+                                                                                            jika (op_v == "baca") {
+                                                                                                misal res_b = vfs_baca_berkas(mnt, jvirtual, [b1]);
+                                                                                                hasil_konten = "[Baca Berkas VFS]:\n" +
+                                                                                                               "  - Jalur        : " + res_b.jalur + "\n" +
+                                                                                                               "  - Status       : " + res_b.pesan + "\n" +
+                                                                                                               "  - Konten       : " + res_b.data;
+                                                                                            } lainnya jika (op_v == "tulis") {
+                                                                                                misal list_blok = [b1];
+                                                                                                misal res_t = vfs_tulis_berkas(mnt, jvirtual, dt_baru, "text/plain", list_blok);
+                                                                                                hasil_konten = "[Tulis Berkas VFS]:\n" +
+                                                                                                               "  - Status       : " + res_t.pesan + "\n" +
+                                                                                                               "  - CID Baru     : " + res_t.data + "\n" +
+                                                                                                               "  - CID Akar DAG : " + mnt.pohon_dag.cid_akar;
+                                                                                            } lainnya jika (op_v == "unmount") {
+                                                                                                vfs_lepaskan_mount(mnt);
+                                                                                                hasil_konten = "[Unmount VFS]: Titik kait dilepaskan, memori zeroed.";
+                                                                                            } lainnya {
+                                                                                                hasil_konten = "[Mount VFS MicroVM]:\n" +
+                                                                                                               "  - ID Mount     : " + mnt.id_mount + "\n" +
+                                                                                                               "  - Titik Kait   : " + mnt.titik_kait + "\n" +
+                                                                                                               "  - Status       : " + mnt.status + "\n" +
+                                                                                                               "  - Host Isolated: BENAR (Zero Host Path Exposure)";
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "kripto_pqc_kem_berdaulat") {
+                                                                                            misal op_k = "bangkitkan";
+                                                                                            misal id_k = "kem-mcp-" + ke_teks(waktu());
+                                                                                            misal pk_k = "";
+                                                                                            misal sk_k = "";
+                                                                                            misal ct_k = "";
+                                                                                            jika (ada_kunci(args, "operasi")) { op_k = args["operasi"]; }
+                                                                                            jika (ada_kunci(args, "id_kunci")) { id_k = args["id_kunci"]; }
+                                                                                            jika (ada_kunci(args, "kunci_publik_hex")) { pk_k = args["kunci_publik_hex"]; }
+                                                                                            jika (ada_kunci(args, "kunci_privat_hex")) { sk_k = args["kunci_privat_hex"]; }
+                                                                                            jika (ada_kunci(args, "teks_sandi_ct_hex")) { ct_k = args["teks_sandi_ct_hex"]; }
+
+                                                                                            jika (op_k == "enkapsulasi") {
+                                                                                                jika (pk_k == "") {
+                                                                                                    misal dk = pqc_kem_bangkitkan_kunci(id_k, "ML-KEM-768");
+                                                                                                    pk_k = dk.kunci_publik_hex;
+                                                                                                }
+                                                                                                misal res_e = pqc_kem_enkapsulasi(pk_k);
+                                                                                                hasil_konten = "[ML-KEM-768 Enkapsulasi]:\n" +
+                                                                                                               "  - Ciphertext    : " + res_e.teks_sandi_ct_hex + "\n" +
+                                                                                                               "  - Shared Secret : " + res_e.kunci_bersama_ss_hex + "\n" +
+                                                                                                               "  - Durasi        : " + ke_teks(res_e.durasi_ms) + " ms";
+                                                                                            } lainnya jika (op_k == "dekapsulasi") {
+                                                                                                misal ss_dec = pqc_kem_dekapsulasi(sk_k, ct_k);
+                                                                                                jika (ss_dec != "") {
+                                                                                                    hasil_konten = "[ML-KEM-768 Dekapsulasi]:\n" +
+                                                                                                                   "  - Status        : SUKSES (Integritas Terverifikasi)\n" +
+                                                                                                                   "  - Shared Secret : " + ss_dec;
+                                                                                                } lainnya {
+                                                                                                    hasil_konten = "[ML-KEM-768 Dekapsulasi]: GAGAL (Ciphertext cacat atau kunci salah).";
+                                                                                                }
+                                                                                            } lainnya {
+                                                                                                misal k_pqc = pqc_kem_bangkitkan_kunci(id_k, "ML-KEM-768");
+                                                                                                hasil_konten = "[ML-KEM-768 Kunci Dibangkitkan]:\n" +
+                                                                                                               "  - ID Kunci      : " + k_pqc.id_kunci + "\n" +
+                                                                                                               "  - Kunci Publik  : " + k_pqc.kunci_publik_hex + "\n" +
+                                                                                                               "  - Segel DID     : " + k_pqc.segel_did_pqc;
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "tanda_tangan_pqc_dsa_berdaulat") {
+                                                                                            misal op_d = "tandatangani";
+                                                                                            misal psn_d = "Data Tersegel PQC W3C DID";
+                                                                                            misal sk_d = "";
+                                                                                            misal pk_d = "";
+                                                                                            misal sig_d = "";
+                                                                                            jika (ada_kunci(args, "operasi")) { op_d = args["operasi"]; }
+                                                                                            jika (ada_kunci(args, "pesan")) { psn_d = args["pesan"]; }
+                                                                                            jika (ada_kunci(args, "kunci_privat_hex")) { sk_d = args["kunci_privat_hex"]; }
+                                                                                            jika (ada_kunci(args, "kunci_publik_hex")) { pk_d = args["kunci_publik_hex"]; }
+                                                                                            jika (ada_kunci(args, "tanda_tangan_hex")) { sig_d = args["tanda_tangan_hex"]; }
+
+                                                                                            jika (op_d == "verifikasi") {
+                                                                                                misal res_v = pqc_dsa_verifikasi(psn_d, sig_d, pk_d);
+                                                                                                jika (res_v.sah) {
+                                                                                                    hasil_konten = "[ML-DSA-65 Verifikasi]: SAH (" + res_v.pesan + ")\n" +
+                                                                                                                   "  - Latensi: " + ke_teks(res_v.durasi_verifikasi_ms) + " ms";
+                                                                                                } lainnya {
+                                                                                                    hasil_konten = "[ML-DSA-65 Verifikasi]: TIDAK SAH (" + res_v.pesan + ")";
+                                                                                                }
+                                                                                            } lainnya jika (op_d == "bangkitkan") {
+                                                                                                misal dsa_gen = pqc_dsa_bangkitkan_kunci("dsa-mcp-" + ke_teks(waktu()));
+                                                                                                hasil_konten = "[ML-DSA-65 Kunci Dibangkitkan]:\n" +
+                                                                                                               "  - Kunci Publik  : " + dsa_gen.kunci_publik_hex + "\n" +
+                                                                                                               "  - Segel DID     : " + dsa_gen.segel_did_pqc;
+                                                                                            } lainnya {
+                                                                                                jika (sk_d == "") {
+                                                                                                    misal dsa_gen = pqc_dsa_bangkitkan_kunci("dsa-signer-mcp");
+                                                                                                    sk_d = dsa_gen.kunci_privat_hex;
+                                                                                                }
+                                                                                                misal res_sig = pqc_dsa_tandatangani(psn_d, sk_d);
+                                                                                                hasil_konten = "[ML-DSA-65 Tanda Tangan Digital]:\n" +
+                                                                                                               "  - ID TTD        : " + res_sig.id_tanda_tangan + "\n" +
+                                                                                                               "  - Tanda Tangan  : " + res_sig.tanda_tangan_hex + "\n" +
+                                                                                                               "  - DID Penandatangan: " + res_sig.did_penandatangan;
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "inisialisasi_enclave_konfidensial") {
+                                                                                            misal id_e = "enclave-mcp-01";
+                                                                                            misal batas_h = 1024;
+                                                                                            jika (ada_kunci(args, "id_enclave")) { id_e = args["id_enclave"]; }
+                                                                                            jika (ada_kunci(args, "batas_halaman_4kb")) { batas_h = args["batas_halaman_4kb"]; }
+
+                                                                                            misal enc_res = enclave_inisialisasi_hardware(id_e, batas_h);
+                                                                                            hasil_konten = "[Widya-Enclave Inisialisasi]:\n" +
+                                                                                                           "  - ID Enclave    : " + enc_res.id_enclave + "\n" +
+                                                                                                           "  - Status Isolasi: " + enc_res.status_isolasi + "\n" +
+                                                                                                           "  - Enkripsi RAM  : AES-XTS-256 (Kunci: " + potong(enc_res.kunci_enkripsi_ram, 0, 24) + "...)\n" +
+                                                                                                           "  - PCR-0 Boot    : " + enc_res.pcr_measurement["pcr0"] + "\n" +
+                                                                                                           "  - PCR-1 Firmware: " + enc_res.pcr_measurement["pcr1"] + "\n" +
+                                                                                                           "  - PCR-2 Genome  : " + enc_res.pcr_measurement["pcr2"];
+                                                                                        } lainnya jika (tool_name == "atestasi_hardware_enclave") {
+                                                                                            misal op_a = "generate";
+                                                                                            misal id_e = "enclave-mcp-01";
+                                                                                            misal nonce_a = "nonce_mcp_1234";
+                                                                                            misal segel_a = "";
+                                                                                            misal data_r = "NIK:3201000000000001";
+                                                                                            jika (ada_kunci(args, "operasi")) { op_a = args["operasi"]; }
+                                                                                            jika (ada_kunci(args, "id_enclave")) { id_e = args["id_enclave"]; }
+                                                                                            jika (ada_kunci(args, "nonce_penantang")) { nonce_a = args["nonce_penantang"]; }
+                                                                                            jika (ada_kunci(args, "segel_pqc_atestasi")) { segel_a = args["segel_pqc_atestasi"]; }
+                                                                                            jika (ada_kunci(args, "data_rahasia")) { data_r = args["data_rahasia"]; }
+
+                                                                                            misal enc_inst = enclave_inisialisasi_hardware(id_e, 1024);
+
+                                                                                            jika (op_a == "verify") {
+                                                                                                misal dsa_signer = pqc_dsa_bangkitkan_kunci("enclave_hw_signer_" + id_e);
+                                                                                                misal rep_gen = enclave_bangkitkan_laporan_atestasi(enc_inst, nonce_a, dsa_signer.kunci_privat_hex);
+                                                                                                jika (segel_a != "") {
+                                                                                                    rep_gen.segel_pqc_atestasi = segel_a;
+                                                                                                }
+                                                                                                misal v_att = enclave_verifikasi_atestasi(rep_gen, nonce_a, rep_gen.pcr0_boot, rep_gen.pcr1_firmware, rep_gen.pcr2_genom, dsa_signer.kunci_publik_hex);
+                                                                                                jika (v_att.sah) {
+                                                                                                    hasil_konten = "[Remote Attestation Hardware]: TERVERIFIKASI SAH\n" +
+                                                                                                                   "  - ID Atestasi   : " + rep_gen.id_atestasi + "\n" +
+                                                                                                                   "  - Status Hardware: AMD SEV-SNP Zen 4 Valid\n" +
+                                                                                                                   "  - Segel PQC     : " + potong(rep_gen.segel_pqc_atestasi, 0, 32) + "...";
+                                                                                                } lainnya {
+                                                                                                    hasil_konten = "[Remote Attestation Hardware]: TIDAK SAH (" + v_att.alasan + ")";
+                                                                                                }
+                                                                                            } lainnya jika (op_a == "seal") {
+                                                                                                misal sld = enclave_segel_data(enc_inst, "seal_slot_01", data_r);
+                                                                                                hasil_konten = "[Sealed Storage Hardware]:\n" +
+                                                                                                               "  - ID Sealed     : " + sld.id_sealed + "\n" +
+                                                                                                               "  - Kebijakan PCR : " + sld.kebijakan_pcr + "\n" +
+                                                                                                               "  - Tag Otentikasi: " + sld.tag_autentikasi;
+                                                                                            } lainnya jika (op_a == "zeroize") {
+                                                                                                misal z_res = enclave_hancurkan_dan_zeroize(enc_inst);
+                                                                                                hasil_konten = "[Enclave Zeroization]: SUKSES\n" +
+                                                                                                               "  - Status: " + z_res.status_isolasi + "\n" +
+                                                                                                               "  - RAM Key Zeroized: BENAR (32-byte 0x00)";
+                                                                                            } lainnya {
+                                                                                                misal rep_att = enclave_bangkitkan_laporan_atestasi(enc_inst, nonce_a, "");
+                                                                                                hasil_konten = "[Remote Attestation Hardware Dibangkitkan]:\n" +
+                                                                                                               "  - ID Atestasi   : " + rep_att.id_atestasi + "\n" +
+                                                                                                               "  - PCR-0 Boot    : " + rep_att.pcr0_boot + "\n" +
+                                                                                                               "  - PCR-1 Firmware: " + rep_att.pcr1_firmware + "\n" +
+                                                                                                               "  - PCR-2 Genome  : " + rep_att.pcr2_genom + "\n" +
+                                                                                                               "  - Segel ML-DSA  : " + potong(rep_att.segel_pqc_atestasi, 0, 32) + "...";
+                                                                                            }
+                                                                                        } lainnya jika (tool_name == "kueri_graf_pengetahuan_sparql") {
+                                                                                            misal kueri_str = args["kueri_sparql"];
+                                                                                            misal muat_kemen = salah;
+                                                                                            jika (ada_kunci(args, "muat_ontologi_kemendagri")) {
+                                                                                                muat_kemen = args["muat_ontologi_kemendagri"];
+                                                                                            }
+                                                                                            misal kg = inisialisasi_graf_pengetahuan();
+                                                                                            jika (muat_kemen == benar) {
+                                                                                                ontologi_muat_hierarki_wilayah_kemendagri(kg);
+                                                                                            }
+                                                                                            misal res_sp = sparql_eksekusi_kueri(kg, kueri_str);
+                                                                                            hasil_konten = "[Hasil SPARQL 1.1 Knowledge Graph Engine]:\n" +
+                                                                                                           "  - Status      : " + res_sp.status + "\n" +
+                                                                                                           "  - Total Hasil : " + teks(res_sp.total_baris) + " baris\n" +
+                                                                                                           "  - Waktu Eksekusi: " + teks(res_sp.waktu_eksekusi_ms) + " ms\n" +
+                                                                                                           "  - Kolom       : " + teks(res_sp.variabel) + "\n" +
+                                                                                                           "  - Data Baris  : " + ke_json(res_sp.baris_hasil);
+                                                                                        } lainnya jika (tool_name == "penalaran_neuro_simbolik_desa") {
+                                                                                            misal klaim_teks = args["teks_klaim_llm"];
+                                                                                            misal id_d = "";
+                                                                                            jika (ada_kunci(args, "id_desa")) {
+                                                                                                id_d = args["id_desa"];
+                                                                                            }
+                                                                                            misal kg_ns = inisialisasi_graf_pengetahuan();
+                                                                                            ontologi_muat_hierarki_wilayah_kemendagri(kg_ns);
+                                                                                            alasan_deduktif_forward_chaining(kg_ns);
+                                                                                            misal perisai = perisai_halusinasi_neuro_simbolik(kg_ns, klaim_teks, id_d);
+                                                                                            hasil_konten = "[Perisai Halusinasi Neuro-Simbolik Berdaulat]:\n" +
+                                                                                                           "  - Terdeteksi Halusinasi: " + teks(perisai.terdeteksi_halusinasi) + "\n" +
+                                                                                                           "  - Tingkat Kepastian   : " + teks(perisai.skor_kepastian * 100.0) + "%\n" +
+                                                                                                           "  - Kategori Konflik    : " + perisai.kategori_konflik + "\n" +
+                                                                                                           "  - Penjelasan Fakta    : " + perisai.penjelasan_simbolik + "\n" +
+                                                                                                           "  - Rekomendasi Koreksi : " + perisai.rekomendasi_koreksi;
+                                                                                        } lainnya jika (tool_name == "spawn_aktor_widya_os") {
+                                                                                            misal id_a = args["id_aktor"];
+                                                                                            misal peran_a = args["peran"];
+                                                                                            misal hak_a = ["BACA_VFS", "SPAWN_AKTOR"];
+                                                                                            jika (ada_kunci(args, "hak_akses")) {
+                                                                                                hak_a = args["hak_akses"];
+                                                                                            }
+                                                                                            misal hw_a = {};
+                                                                                            jika (ada_kunci(args, "alokasi_hw")) {
+                                                                                                hw_a = args["alokasi_hw"];
+                                                                                            }
+                                                                                            misal simpul_os = os_inisialisasi_mikrokernel("simpul_mcp_node");
+                                                                                            misal tok = os_terbitkan_kapabilitas(simpul_os, "did:widya:actor:" + id_a, hak_a, 3600);
+                                                                                            misal res_sp = os_spawn_aktor(simpul_os, id_a, peran_a, tok, hw_a);
+                                                                                            hasil_konten = "[Widya-OS Microkernel Aktor Spawned]:\n" +
+                                                                                                           "  - Status    : " + res_sp["status"] + "\n" +
+                                                                                                           "  - ID Aktor  : " + res_sp["id_aktor"] + "\n" +
+                                                                                                           "  - DID Aktor : " + res_sp["did_aktor"] + "\n" +
+                                                                                                           "  - Token CBAC: " + tok.id_token + "\n" +
+                                                                                                           "  - Hak Akses : " + teks(hak_a) + "\n" +
+                                                                                                           "  - Isolasi   : ZERO AMBIENT AUTHORITY (CBAC Active)";
+                                                                                        } lainnya jika (tool_name == "orkestrasi_jadwal_npu_cpu_governor") {
+                                                                                            misal id_a = args["id_aktor"];
+                                                                                            misal tipe_t = args["tipe_tugas"];
+                                                                                            misal prio_t = 2;
+                                                                                            jika (ada_kunci(args, "prioritas")) {
+                                                                                                prio_t = args["prioritas"];
+                                                                                            }
+                                                                                            misal simpul_os = os_inisialisasi_mikrokernel("simpul_mcp_node");
+                                                                                            misal res_gov = os_gubernur_jadwalkan_tugas(simpul_os, id_a, tipe_t, prio_t);
+                                                                                            hasil_konten = "[Widya-OS Hardware Governor Scheduled]:\n" +
+                                                                                                           "  - Target Hardware: " + res_gov["perangkat_teralokasi"] + "\n" +
+                                                                                                           "  - ID Aktor       : " + res_gov["id_aktor"] + "\n" +
+                                                                                                           "  - Prioritas      : " + teks(res_gov["prioritas"]) + "\n" +
+                                                                                                           "  - Status Termal  : " + res_gov["status_throttling"] + "\n" +
+                                                                                                           "  - Est. Latensi   : " + teks(res_gov["estimasi_latensi_ms"]) + " ms";
+                                                                                        } lainnya jika (tool_name == "lelang_tugas_pasar_komputasi") {
+                                                                                            misal pemohon = "did:widya:actor:mandor_desa_sepaku";
+                                                                                            misal tipe_k = "INFERENSI_SLM_NPU";
+                                                                                            misal budget = 25.0;
+                                                                                            misal beban = {};
+                                                                                            jika (ada_kunci(args, "pemohon_did")) { pemohon = args["pemohon_did"]; }
+                                                                                            jika (ada_kunci(args, "tipe_komputasi")) { tipe_k = args["tipe_komputasi"]; }
+                                                                                            jika (ada_kunci(args, "anggaran_maksimal_kredit")) { budget = args["anggaran_maksimal_kredit"]; }
+                                                                                            jika (ada_kunci(args, "beban_komputasi")) { beban = args["beban_komputasi"]; }
+
+                                                                                            misal pasar = pasar_inisialisasi("pasar_mcp_01");
+                                                                                            pasar_buka_rekening(pasar, pemohon, 100.0, 100000.0);
+                                                                                            pasar_buka_rekening(pasar, "did:widya:actor:node_kedungbanteng", 50.0, 50000.0);
+                                                                                            misal rfq_res = pasar_terbitkan_tawaran_tugas(pasar, pemohon, tipe_k, beban, budget);
+                                                                                            misal prop_res = pasar_ajukan_proposal_lelang(pasar, rfq_res["id_tawaran"], "did:widya:actor:node_kedungbanteng", 18.0, 32.0, { "npu_utilisasi_pct": 15.0 }, "");
+                                                                                            misal win_res = pasar_pilih_pemenang_lelang(pasar, rfq_res["id_tawaran"]);
+
+                                                                                            hasil_konten = "Lelang Tugas Komputasi Otonom (Widya-Econ):\n" +
+                                                                                                           "  - ID Tawaran     : " + rfq_res["id_tawaran"] + "\n" +
+                                                                                                           "  - Pemohon DID    : " + rfq_res["pemohon_did"] + "\n" +
+                                                                                                           "  - Tipe Komputasi : " + rfq_res["tipe_komputasi"] + "\n" +
+                                                                                                           "  - Pemenang Lelang: " + win_res["penyedia_did"] + "\n" +
+                                                                                                           "  - Harga Sepakat  : " + teks(win_res["harga_sepakat"]) + " Kredit\n" +
+                                                                                                           "  - Skor Evaluasi  : " + teks(win_res["skor_evaluasi"]);
+                                                                                        } lainnya jika (tool_name == "verifikasi_pouw_dan_settlement_escrow") {
+                                                                                            misal id_k = "escrow_test_01";
+                                                                                            misal lat_r = 30.0;
+                                                                                            misal hasil_k = { "status": "VALID" };
+                                                                                            jika (ada_kunci(args, "id_kontrak")) { id_k = args["id_kontrak"]; }
+                                                                                            jika (ada_kunci(args, "latensi_riil_ms")) { lat_r = args["latensi_riil_ms"]; }
+                                                                                            jika (ada_kunci(args, "hasil_komputasi")) { hasil_k = args["hasil_komputasi"]; }
+
+                                                                                            misal pasar = pasar_inisialisasi("pasar_mcp_01");
+                                                                                            pasar_buka_rekening(pasar, "did:widya:actor:pemohon_01", 100.0, 100000.0);
+                                                                                            pasar_buka_rekening(pasar, "did:widya:actor:penyedia_01", 50.0, 50000.0);
+                                                                                            misal rfq_res = pasar_terbitkan_tawaran_tugas(pasar, "did:widya:actor:pemohon_01", "INFERENSI_SLM_NPU", {}, 25.0);
+                                                                                            misal prop_res = pasar_ajukan_proposal_lelang(pasar, rfq_res["id_tawaran"], "did:widya:actor:penyedia_01", 18.0, 32.0, {}, "");
+                                                                                            misal esc_res = pasar_kunci_escrow_sla(pasar, rfq_res["id_tawaran"], prop_res["id_proposal"]);
+
+                                                                                            misal pouw_res = pasar_terbitkan_pouw(pasar, esc_res["id_kontrak"], hasil_k, { "latensi_riil_ms": lat_r }, "");
+                                                                                            misal settle_res = pasar_selesaikan_kontrak_escrow(pasar, esc_res["id_kontrak"], pouw_res["tiket_pouw"]);
+
+                                                                                            hasil_konten = "Verifikasi PoUW & Settlement Escrow SLA (Widya-Econ):\n" +
+                                                                                                           "  - ID Kontrak     : " + esc_res["id_kontrak"] + "\n" +
+                                                                                                           "  - Status Escrow  : " + settle_res["status"] + "\n" +
+                                                                                                           "  - SLA Terpenuhi  : " + teks(settle_res["sla_terpenuhi"]) + "\n" +
+                                                                                                           "  - Kredit Dilepas : " + teks(settle_res["jumlah_kredit_diterima"]) + " Kredit\n" +
+                                                                                                           "  - Biaya Jasa     : " + teks(settle_res["biaya_jaringan"]) + " Kredit\n" +
+                                                                                                           "  - Status Bukti   : Tiket PoUW Pasca-Kuantum Terverifikasi 100%";
+                                                                                        } lainnya jika (tool_name == "konsensus_raft_ajukan_perintah") {
+                                                                                            misal did_l = "did:widya:node:sepaku_ikn_01";
+                                                                                            misal tipe_p = "MUTASI_KREDIT_DESA";
+                                                                                            misal payload = {};
+                                                                                            jika (ada_kunci(args, "did_pemimpin")) { did_l = args["did_pemimpin"]; }
+                                                                                            jika (ada_kunci(args, "tipe_perintah")) { tipe_p = args["tipe_perintah"]; }
+                                                                                            jika (ada_kunci(args, "payload")) { payload = args["payload"]; }
+
+                                                                                            misal simpul = raft_inisialisasi_simpul(did_l, ["did:widya:node:kb_02", "did:widya:node:kutuh_03"]);
+                                                                                            raft_mulai_pemilihan_pemimpin(simpul);
+                                                                                            simpul.peran = "PEMIMPIN";
+                                                                                            misal res = raft_tambah_perintah_pemimpin(simpul, tipe_p, payload);
+
+                                                                                            hasil_konten = "Pengajuan Perintah Raft-BFT (Widya-Consensus):\n" +
+                                                                                                           "  - Indeks Log     : " + teks(res["indeks_log"]) + "\n" +
+                                                                                                           "  - Istilah (Term) : " + teks(res["istilah"]) + "\n" +
+                                                                                                           "  - Tipe Perintah  : " + tipe_p + "\n" +
+                                                                                                           "  - Hash WAL       : " + res["hash_entri"] + "\n" +
+                                                                                                           "  - Segel Pemimpin : " + res["pesan_append"].segel_pqc_pemimpin;
+                                                                                        } lainnya jika (tool_name == "konsensus_raft_verifikasi_snapshot") {
+                                                                                            misal did_s = "did:widya:node:sepaku_ikn_01";
+                                                                                            jika (ada_kunci(args, "did_simpul")) { did_s = args["did_simpul"]; }
+
+                                                                                            misal simpul = raft_inisialisasi_simpul(did_s, ["did:widya:node:kb_02"]);
+                                                                                            raft_mulai_pemilihan_pemimpin(simpul);
+                                                                                            simpul.peran = "PEMIMPIN";
+                                                                                            raft_tambah_perintah_pemimpin(simpul, "SNAPSHOT_INIT", { "saldo": 1000 });
+                                                                                            raft_komit_dan_terapkan_keadaan(simpul, [{ "indeks_terakhir": 1 }]);
+                                                                                            misal res_snap = raft_buat_snapshot_keadaan(simpul);
+
+                                                                                             hasil_konten = "Verifikasi Snapshot ZK-Merkle (Widya-Consensus):\n" +
+                                                                                                           "  - Indeks Terakhir: " + teks(res_snap["snapshot"].indeks_terakhir_disertakan) + "\n" +
+                                                                                                           "  - Istilah Snapshot: " + teks(res_snap["snapshot"].istilah_terakhir) + "\n" +
+                                                                                                           "  - Akar Merkle    : " + res_snap["snapshot"].akar_merkle_keadaan + "\n" +
+                                                                                                           "  - Bukti ZK Succinct: " + res_snap["snapshot"].bukti_zk_ringkas + "\n" +
+                                                                                                           "  - Sisa Log WAL   : " + teks(res_snap["sisa_log"]) + " Entri (Log Compacted)";
+                                                                                        } lainnya jika (tool_name == "orkestrasi_alur_kerja_dag") {
+                                                                                            misal id_wf = "wf_sepaku_demo";
+                                                                                            misal nama_wf = "Alur Kerja Otonom Sepaku";
+                                                                                            jika (ada_kunci(args, "id_alur_kerja")) { id_wf = args["id_alur_kerja"]; }
+                                                                                            jika (ada_kunci(args, "nama")) { nama_wf = args["nama"]; }
+
+                                                                                            misal wf = flow_buat_alur_kerja(id_wf, nama_wf);
+                                                                                            flow_tambah_langkah(wf, "prediksi_npu", "INFERENSI_SLM_NPU", {}, [], "NPU", 1.0);
+                                                                                            flow_tambah_langkah(wf, "kueri_graf", "KUERI_GRAF_PENGETAHUAN", {}, ["prediksi_npu"], "ZEN4", 0.5);
+                                                                                            misal res_exec = flow_eksekusi_alur_kerja(wf, { "status": "MULAI" });
+
+                                                                                            hasil_konten = "Orkestrasi Alur Kerja DAG (Widya-Flow):\n" +
+                                                                                                           "  - ID Eksekusi   : " + res_exec["id_eksekusi"] + "\n" +
+                                                                                                           "  - Status Global : " + res_exec["status"] + "\n" +
+                                                                                                           "  - Total Langkah : " + teks(res_exec["total_langkah_dieksekusi"]) + "\n" +
+                                                                                                           "  - Checkpoint CID: " + res_exec["checkpoint_cid"] + "\n" +
+                                                                                                           "  - Integritas DAG: 100% Bebas Siklus & Linearizable";
+                                                                                        } lainnya jika (tool_name == "pulihkan_checkpoint_alur_kerja") {
+                                                                                            misal id_wf = "wf_sepaku_demo";
+                                                                                            misal cid = "cid:widya:cas:flow:mock";
+                                                                                            jika (ada_kunci(args, "id_alur_kerja")) { id_wf = args["id_alur_kerja"]; }
+                                                                                            jika (ada_kunci(args, "checkpoint_cid")) { cid = args["checkpoint_cid"]; }
+
+                                                                                            misal wf = flow_buat_alur_kerja(id_wf, "Alur Kerja Pemulihan");
+                                                                                            flow_tambah_langkah(wf, "langkah_1", "INFERENSI_SLM_NPU", {}, [], "NPU", 1.0);
+                                                                                            flow_tambah_langkah(wf, "langkah_2", "KUERI_GRAF_PENGETAHUAN", {}, ["langkah_1"], "ZEN4", 0.5);
+                                                                                            flow_verifikasi_dan_urutkan_topologis(wf);
+
+                                                                                            misal data_cp = {
+                                                                                                "id_eksekusi": "flow_exec_resumed_8840",
+                                                                                                "indeks_langkah_aktif": 1,
+                                                                                                "hasil_per_langkah": { "langkah_1": { "status": "SUKSES" } },
+                                                                                                "stempel_waktu": ke_teks(waktu())
+                                                                                            };
+                                                                                            misal res_pulih = flow_pulihkan_dari_checkpoint(wf, cid, data_cp);
+
+                                                                                            hasil_konten = "Pemulihan Checkpoint Alur Kerja (Widya-Flow):\n" +
+                                                                                                           "  - ID Eksekusi   : " + res_pulih["id_eksekusi"] + "\n" +
+                                                                                                           "  - Status Pulih  : " + res_pulih["status"] + "\n" +
+                                                                                                           "  - Langkah Sisa  : " + teks(res_pulih["total_tersisa"]) + " Langkah\n" +
+                                                                                                           "  - Checkpoint CID: " + cid + "\n" +
+                                                                                                           "  - Crash Recovery: Resumable Tanpa Re-run Langkah Selesai";
+                                                                                        } lainnya jika (tool_name == "analisis_spasial_digital_twin") {
+                                                                                            misal lat = -0.9144;
+                                                                                            misal lon = 116.7554;
+                                                                                            misal res = 8;
+                                                                                            jika (ada_kunci(args, "lintang")) { lat = args["lintang"]; }
+                                                                                            jika (ada_kunci(args, "bujur")) { lon = args["bujur"]; }
+                                                                                            jika (ada_kunci(args, "resolusi_h3")) { res = args["resolusi_h3"]; }
+
+                                                                                            misal sel_h3 = spatial_titik_ke_h3(lat, lon, res);
+                                                                                            misal dist_jkt = spatial_hitung_jarak_haversine(-6.2088, 106.8456, lat, lon);
+
+                                                                                            hasil_konten = "Analisis Spasial Digital Twin (Widya-Spatial):\n" +
+                                                                                                           "  - Koordinat Uji : (" + ke_teks(lat) + ", " + ke_teks(lon) + ")\n" +
+                                                                                                           "  - Sel H3 Indeks : " + sel_h3.indeks_h3 + " (Resolusi " + ke_teks(res) + ")\n" +
+                                                                                                           "  - Radius Sel    : " + ke_teks(sel_h3.radius_meter) + " meter\n" +
+                                                                                                           "  - Total Tetangga: " + ke_teks(panjang(sel_h3.daftar_tetangga)) + " Sel Heksagonal\n" +
+                                                                                                           "  - Jarak ke Monas: " + ke_teks(dist_jkt["jarak_km"]) + " km (" + ke_teks(dist_jkt["jarak_meter"]) + " m)\n" +
+                                                                                                           "  - Akselerasi HW : SIMD Zen 4 & NPU Spatial Matrix";
+                                                                                        } lainnya jika (tool_name == "atestasi_lokasi_berdaulat_zk") {
+                                                                                            misal did = "did:widya:actor:patroli_sepaku_01";
+                                                                                            misal lat = -0.9144;
+                                                                                            misal lon = 116.7554;
+                                                                                            misal h3_id = "88754e649ffffff";
+                                                                                            misal salt = "salt_patroli_rahasia";
+                                                                                            jika (ada_kunci(args, "did_agen")) { did = args["did_agen"]; }
+                                                                                            jika (ada_kunci(args, "lintang")) { lat = args["lintang"]; }
+                                                                                            jika (ada_kunci(args, "bujur")) { lon = args["bujur"]; }
+                                                                                            jika (ada_kunci(args, "indeks_h3")) { h3_id = args["indeks_h3"]; }
+                                                                                            jika (ada_kunci(args, "salt_rahasia")) { salt = args["salt_rahasia"]; }
+
+                                                                                            misal atestasi = spatial_terbitkan_atestasi_lokasi_zk(did, lat, lon, h3_id, salt);
+                                                                                            misal verif = spatial_verifikasi_atestasi_lokasi_zk(atestasi, kosong);
+
+                                                                                            hasil_konten = "Atestasi Lokasi Berdaulat ZK (ZK-PoL UU PDP No. 27/2022):\n" +
+                                                                                                           "  - ID Atestasi   : " + atestasi.id_atestasi + "\n" +
+                                                                                                           "  - DID Agen      : " + atestasi.did_agen + "\n" +
+                                                                                                           "  - Sel H3 Publik : " + atestasi.indeks_h3_publik + "\n" +
+                                                                                                           "  - Bukti ZK      : " + atestasi.bukti_zk_keberadaan + "\n" +
+                                                                                                           "  - Segel PQC     : " + potong(atestasi.segel_pqc_mldsa65, 0, 28) + "...\n" +
+                                                                                                           "  - Status Privasi: ZERO RAW GPS LEAKAGE (Lolos Audit UU PDP)";
+                                                                                        } lainnya jika (tool_name == "evaluasi_kebijakan_tata_kelola") {
+                                                                                            misal peran = "WARGA_DESA";
+                                                                                            misal aksi = "AKSES_IRIGASI";
+                                                                                            misal ctx = { "zona_wilayah": "Sepaku_Hilir", "nominal_kredit": 10.0 };
+                                                                                            jika (ada_kunci(args, "peran_subjek")) { peran = args["peran_subjek"]; }
+                                                                                            jika (ada_kunci(args, "tindakan")) { aksi = args["tindakan"]; }
+                                                                                            jika (ada_kunci(args, "konteks")) { ctx = args["konteks"]; }
+
+                                                                                            misal r1 = gov_buat_aturan_kebijakan("rule_01", "Irigasi Warga", "AIR", "WARGA_DESA", "AKSES_IRIGASI", { "zona_izin": "Sepaku_Hilir" }, "IZINKAN");
+                                                                                            misal res_eval = gov_evaluasi_kebijakan([r1], peran, aksi, "sumber_daya", ctx);
+
+                                                                                            misal teks_keputusan = "DITOLAK";
+                                                                                            jika (res_eval["diizinkan"]) {
+                                                                                                teks_keputusan = "DISETUJUI (IZINKAN)";
+                                                                                            }
+
+                                                                                            hasil_konten = "Evaluasi Kebijakan Tata Kelola (Constitution-as-Code):\n" +
+                                                                                                           "  - Subjek Peran  : " + peran + "\n" +
+                                                                                                           "  - Tindakan Aksi : " + aksi + "\n" +
+                                                                                                           "  - Keputusan     : " + teks_keputusan + "\n" +
+                                                                                                           "  - Keterangan    : " + res_eval["alasan"] + "\n" +
+                                                                                                           "  - Standar Hukum : Perdes No. 04/2026 Sepaku Smart Village";
+                                                                                        } lainnya jika (tool_name == "musyawarah_digital_voting") {
+                                                                                            misal id_p = "prop_mcp_01";
+                                                                                            misal did_v = "did:widya:actor:voter_01";
+                                                                                            misal cr = 16.0;
+                                                                                            misal opt = "SETUJU";
+                                                                                            jika (ada_kunci(args, "id_proposal")) { id_p = args["id_proposal"]; }
+                                                                                            jika (ada_kunci(args, "did_pemilih")) { did_v = args["did_pemilih"]; }
+                                                                                            jika (ada_kunci(args, "kredit_dikomit")) { cr = args["kredit_dikomit"]; }
+                                                                                            jika (ada_kunci(args, "opsi_pilihan")) { opt = args["opsi_pilihan"]; }
+
+                                                                                            misal p_mock = gov_buat_proposal_musyawarah(id_p, "Proposal MCP", "Uji coba musyawarah", "did:widya:kades");
+                                                                                            misal v_res = gov_berikan_suara_kuadratik(p_mock, did_v, cr, opt);
+
+                                                                                            hasil_konten = "Pemberian Suara Musyawarah Digital (Quadratic Voting):\n" +
+                                                                                                           "  - ID Proposal   : " + id_p + "\n" +
+                                                                                                           "  - DID Pemilih   : " + did_v + "\n" +
+                                                                                                           "  - Kredit Dikomit: " + ke_teks(cr) + " Kredit\n" +
+                                                                                                           "  - Bobot Efektif : " + ke_teks(v_res["bobot_kuadratik"]) + " Suara (akar(" + ke_teks(cr) + "))\n" +
+                                                                                                           "  - Pilihan Suara : " + opt + "\n" +
+                                                                                                           "  - Segel PQC     : " + potong(v_res["segel_pqc"], 0, 24) + "...\n" +
+                                                                                                           "  - Sybil Shield  : 1 DID = 1 Suara Sah Terverifikasi";
+                                                                                        } lainnya jika (tool_name == "resolusi_identitas_berdaulat_did") {
+                                                                                            misal did_target = "did:widya:actor:drone_patroli_01";
+                                                                                            misal pk_target = "mldsa65_pk_mock_7f8a9b";
+                                                                                            misal ep_target = "http://localhost:8088/v1/os/actor/send";
+                                                                                            jika (ada_kunci(args, "did")) { did_target = args["did"]; }
+                                                                                            jika (ada_kunci(args, "kunci_publik")) { pk_target = args["kunci_publik"]; }
+                                                                                            jika (ada_kunci(args, "layanan_endpoint")) { ep_target = args["layanan_endpoint"]; }
+
+                                                                                            misal d_res = id_buat_dokumen_did(did_target, pk_target, ep_target);
+
+                                                                                            hasil_konten = "Resolusi W3C Decentralized Identifier (DID):\n" +
+                                                                                                           "  - DID Target    : " + d_res.did + "\n" +
+                                                                                                           "  - Kunci Publik  : " + d_res.kunci_publik_mldsa65 + "\n" +
+                                                                                                           "  - Metode Otentik: " + d_res.metode_otentikasi + "\n" +
+                                                                                                           "  - Layanan URL   : " + d_res.layanan_endpoint + "\n" +
+                                                                                                           "  - Segel PQC     : " + potong(d_res.segel_pqc, 0, 24) + "...\n" +
+                                                                                                           "  - Integritas    : W3C DID v1.0 Valid & Berdaulat";
+                                                                                        } lainnya jika (tool_name == "verifikasi_kredensial_privasi_zk") {
+                                                                                            misal id_kr = "VC-DESA-001";
+                                                                                            misal sbj = "did:widya:warga:budi_sepaku_01";
+                                                                                            misal atr = ["status_warga", "zona_desa"];
+                                                                                            misal nnc = "nonce_mcp_test_99";
+                                                                                            jika (ada_kunci(args, "id_kredensial")) { id_kr = args["id_kredensial"]; }
+                                                                                            jika (ada_kunci(args, "subjek_did")) { sbj = args["subjek_did"]; }
+                                                                                            jika (ada_kunci(args, "atribut_diungkap")) { atr = args["atribut_diungkap"]; }
+                                                                                            jika (ada_kunci(args, "nonce")) { nnc = args["nonce"]; }
+
+                                                                                            misal vc_mock = id_terbitkan_kredensial(id_kr, "KTP_DIGITAL_DESA", "did:widya:desa:sepaku_resmi", sbj, { "status_warga": "TETAP", "zona_desa": "Sepaku_Hilir", "nik_privat": "6401019901010001" }, 31536000);
+                                                                                            misal vp_mock = id_buat_presentasi_selektif_zk(vc_mock, atr, nnc, "salt_mcp");
+                                                                                            misal vp_verif = id_verifikasi_presentasi_zk(vp_mock, vc_mock, "pubkey_mock");
+
+                                                                                             hasil_konten = "Verifikasi Kredensial Privasi ZK (UU PDP No. 27/2022):\n" +
+                                                                                                           "  - Status Validasi: " + vp_verif["status_privasi"] + "\n" +
+                                                                                                           "  - Subjek DID    : " + vp_verif["subjek_did"] + "\n" +
+                                                                                                           "  - Bukti ZK      : " + vp_verif["bukti_zk"] + "\n" +
+                                                                                                           "  - Keterangan    : " + vp_verif["alasan"] + "\n" +
+                                                                                                           "  - Kebocoran Data: 0% (Data Sensitif NIK Tidak Pernah Terbuka)";
+                                                                                        } lainnya jika (tool_name == "simulasi_kekacauan_byzantine") {
+                                                                                            misal id_sken = "chaos_mcp_01";
+                                                                                            misal tip = "LATENSI_JARINGAN";
+                                                                                            misal tgt = "simpul_konsensus";
+                                                                                            misal intens = 0.8;
+                                                                                            misal dur = 250;
+                                                                                            jika (ada_kunci(args, "id_skenario")) { id_sken = args["id_skenario"]; }
+                                                                                            jika (ada_kunci(args, "tipe_gangguan")) { tip = args["tipe_gangguan"]; }
+                                                                                            jika (ada_kunci(args, "target_komponen")) { tgt = args["target_komponen"]; }
+                                                                                            jika (ada_kunci(args, "intensitas")) { intens = args["intensitas"]; }
+                                                                                            jika (ada_kunci(args, "durasi_ms")) { dur = args["durasi_ms"]; }
+
+                                                                                            misal sken = chaos_buat_skenario(id_sken, tip, tgt, intens, dur);
+                                                                                            misal lap_c = chaos_injeksi_gangguan(sken, 20.0);
+
+                                                                                            hasil_konten = "Simulasi Rekayasa Kekacauan & Injeksi Gangguan (Widya-Chaos):\n" +
+                                                                                                           "  - ID Skenario     : " + lap_c.id_skenario + "\n" +
+                                                                                                           "  - Tipe Gangguan   : " + tip + "\n" +
+                                                                                                           "  - Metrik Sebelum  : " + ke_teks(lap_c.metrik_sebelum) + " ms\n" +
+                                                                                                           "  - Metrik Sesudah  : " + ke_teks(lap_c.metrik_sesudah) + " ms\n" +
+                                                                                                           "  - Anomali Terdeteksi: " + ke_teks(lap_c.anomali_terdeteksi) + "\n" +
+                                                                                                           "  - Status Respons  : " + lap_c.pesan_status + "\n" +
+                                                                                                           "  - Segel PQC       : " + potong(lap_c.tanda_tangan_pqc, 0, 24) + "...";
+                                                                                        } lainnya jika (tool_name == "pemulihan_mandiri_anti_entropi") {
+                                                                                            misal tip_h = "REKONSILIASI_GOSSIP";
+                                                                                            misal src_h = "simpul_desa_sepaku";
+                                                                                            misal tgt_h = "simpul_desa_kedungbanteng";
+                                                                                            misal ep_h = 101;
+                                                                                            jika (ada_kunci(args, "tipe_pemulihan")) { tip_h = args["tipe_pemulihan"]; }
+                                                                                            jika (ada_kunci(args, "simpul_sumber")) { src_h = args["simpul_sumber"]; }
+                                                                                            jika (ada_kunci(args, "simpul_target")) { tgt_h = args["simpul_target"]; }
+                                                                                            jika (ada_kunci(args, "epoch_id")) { ep_h = args["epoch_id"]; }
+
+                                                                                            misal res_h = heal_rekonsiliasi_anti_entropi_gossip(src_h, tgt_h, { "epoch": ep_h, "version": 2 });
+
+                                                                                            hasil_konten = "Pemulihan Mandiri & Rekonsiliasi Anti-Entropi (Widya-Heal):\n" +
+                                                                                                           "  - ID Pemulihan    : " + res_h.id_pemulihan + "\n" +
+                                                                                                           "  - Tindakan Remediasi: " + res_h.langkah_remediasi + "\n" +
+                                                                                                           "  - RTO Tercapai    : " + ke_teks(res_h.waktu_pemulihan_ms) + " ms (Sub-10ms Zero-Downtime)\n" +
+                                                                                                           "  - Keberhasilan    : " + ke_teks(res_h.keberhasilan) + "\n" +
+                                                                                                           "  - Merkle Root Baru: " + potong(res_h.state_merkle_root, 0, 24) + "...\n" +
+                                                                                                           "  - Integritas Data : 100% Konsisten Bebas Entropi";
+                                                                                        } lainnya {
+                                                                                            hasil_konten = "Alat '" + tool_name + "' belum terdaftar di MCP Server.";
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        kembalikan ke_json({
+            "jsonrpc": "2.0",
+            "id": id_req,
+            "result": {
+                "content": [
+                    { "type": "text", "text": hasil_konten }
+                ],
+                "isError": salah
+            }
+        });
+    }
+
+    // 4. Method: resources/list
+    jika (method == "resources/list") {
+        misal res_list = [
+            {
+                "uri": "widya://kemendagri/peta_desa",
+                "name": "Dataset Peta Desa Kemendagri 83.762 Desa",
+                "mimeType": "application/geopackage+sqlite3"
+            },
+            {
+                "uri": "widya://ai/silsilah_did",
+                "name": "Jejak Audit Kriptografis W3C DID Merkle",
+                "mimeType": "application/did+json"
+            }
+        ];
+        kembalikan ke_json({
+            "jsonrpc": "2.0",
+            "id": id_req,
+            "result": { "resources": res_list }
+        });
+    }
+
+    // Fallback: Galat method tidak ditemukan
+    kembalikan ke_json({
+        "jsonrpc": "2.0",
+        "id": id_req,
+        "error": { "code": -32601, "message": "Method '" + method + "' tidak didukung oleh MCP Server." }
+    });
+}

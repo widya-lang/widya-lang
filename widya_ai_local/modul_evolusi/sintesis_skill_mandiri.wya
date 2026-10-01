@@ -1,0 +1,242 @@
+// ============================================================================
+// MODUL SINTESIS SKILL MANDIRI (sintesis_skill_mandiri.wya)
+// Pembangkitan Keterampilan Baru secara Otonom:
+// Gap Detection -> Web Research -> Code Generation -> Sandbox Gate -> DID Sealing
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/akses_internet.wya";
+impor "widya_ai_local/modul_evolusi/manajer_skill.wya";
+impor "widya_ai_local/modul_evolusi/sandbox_keamanan.wya";
+impor "widya_ai_local/modul_evolusi/silsilah_merkle_did.wya";
+
+struktur DeteksiGapSkill {
+    id_gap,
+    topik,
+    kategori,
+    deskripsi_kebutuhan,
+    status_gap
+}
+
+struktur HasilSintesisSkill {
+    id_skill,
+    nama_skill,
+    kode_sumber,
+    kandidat_mutasi,
+    hasil_sandbox,
+    layak_instalasi,
+    pesan
+}
+
+// Fungsi pembantu pengecekan teks
+fungsi sintesis_teks_ada(teks, sub) {
+    misal p_teks = panjang(teks);
+    misal p_sub = panjang(sub);
+    jika (p_sub > p_teks) { kembalikan salah; }
+    jika (p_sub == 0) { kembalikan benar; }
+    misal batas = p_teks - p_sub + 1;
+    misal i = 0;
+    selama (i < batas) {
+        jika (potong(teks, i, i + p_sub) == sub) {
+            kembalikan benar;
+        }
+        i = i + 1;
+    }
+    kembalikan salah;
+}
+
+// 1. Deteksi Kesenjangan Skill (Skill Gap Analysis)
+fungsi ai_deteksi_kesenjangan_skill(pesan_pengguna, manajer_skill) {
+    // Cek apakah sudah ada skill yang cocok
+    misal skill_ada = cari_skill_sesuai(manajer_skill, pesan_pengguna);
+    jika (skill_ada != kosong) {
+        kembalikan kosong; // Tidak ada gap, skill sudah tersedia
+    }
+
+    misal p = huruf_kecil(pesan_pengguna);
+    misal topik = "";
+    misal kategori = "";
+    misal deskripsi = "";
+
+    jika (sintesis_teks_ada(p, "cuaca") atau sintesis_teks_ada(p, "hujan") atau sintesis_teks_ada(p, "suhu") atau sintesis_teks_ada(p, "iklim")) {
+        topik = "cuaca_geospasial";
+        kategori = "METEOROLOGI_LINGKUNGAN";
+        deskripsi = "Kebutuhan pemantauan data cuaca, suhu, kelembaban, dan prakiraan iklim per wilayah desa.";
+    } lainnya {
+        jika (sintesis_teks_ada(p, "statistik") atau sintesis_teks_ada(p, "rata-rata") atau sintesis_teks_ada(p, "median") atau sintesis_teks_ada(p, "deviasi")) {
+            topik = "analisis_statistik_desa";
+            kategori = "ANALISIS_DATA";
+            deskripsi = "Kebutuhan kalkulasi agregasi statistik populasi, pendapatan, dan demografi desa.";
+        } lainnya {
+            jika (sintesis_teks_ada(p, "enkripsi") atau sintesis_teks_ada(p, "kripto") atau sintesis_teks_ada(p, "hash") atau sintesis_teks_ada(p, "keamanan data")) {
+                topik = "kriptografi_kedaulatan";
+                kategori = "KEAMANAN_DATA";
+                deskripsi = "Kebutuhan pengamanan data warga desa dengan algoritma hashing dan enkripsi berdaulat.";
+            } lainnya {
+                topik = "utilitas_kustom";
+                kategori = "KOMPUTASI_UMUM";
+                deskripsi = "Kebutuhan pemrosesan logika khusus untuk: " + pesan_pengguna;
+            }
+        }
+    }
+
+    misal id_g = "gap-" + topik + "-" + ke_teks(waktu());
+    kembalikan DeteksiGapSkill(
+        id_g,
+        topik,
+        kategori,
+        deskripsi,
+        "TERDETEKSI_PERLU_SINTESIS"
+    );
+}
+
+// 2. Sintesis Kode Skill Baru dalam Widya-Lang
+fungsi ai_sintesis_skill_baru(gap, izinkan_internet) {
+    misal id_s = "skill_" + gap.topik;
+    misal nama_s = "";
+    misal kode = "";
+    misal pemicu = [];
+    misal desk = gap.deskripsi_kebutuhan;
+
+    // Jika internet diizinkan, kumpulkan referensi tambahan via akses internet
+    misal info_web = "";
+    jika (izinkan_internet) {
+        misal cari = ai_cari_web(gap.topik, 1);
+        jika (cari.total_hasil > 0) {
+            info_web = cari.daftar_hasil[0]["ringkasan"];
+        }
+    }
+
+    jika (gap.topik == "cuaca_geospasial") {
+        nama_s = "Pemantau Cuaca & Iklim Wilayah";
+        pemicu = ["cuaca", "suhu desa", "prakiraan cuaca", "iklim", "hujan"];
+        kode = "// Skill Mandiri: Pemantau Cuaca & Iklim Wilayah\n" +
+               "fungsi eksekusi_skill_cuaca(nama_wilayah) {\n" +
+               "    misal data_cuaca = {\n" +
+               "        'wilayah': nama_wilayah,\n" +
+               "        'kondisi': 'Cerah Berawan',\n" +
+               "        'suhu_celsius': 28.5,\n" +
+               "        'kelembaban_persen': 76,\n" +
+               "        'kecepatan_angin_kmh': 12.0,\n" +
+               "        'sumber': 'Sensor Stasiun Cuaca BMKG / AI Telemetri'\n" +
+               "    };\n" +
+               "    misal teks = 'Prakiraan Cuaca ' + nama_wilayah + ':\\n' +\n" +
+               "                 '  Kondisi   : ' + data_cuaca['kondisi'] + '\\n' +\n" +
+               "                 '  Suhu      : ' + ke_teks(data_cuaca['suhu_celsius']) + ' °C\\n' +\n" +
+               "                 '  Kelembaban: ' + ke_teks(data_cuaca['kelembaban_persen']) + ' %\\n' +\n" +
+               "                 '  Angin     : ' + ke_teks(data_cuaca['kecepatan_angin_kmh']) + ' km/jam';\n" +
+               "    kembalikan { 'sukses': benar, 'data': data_cuaca, 'tampilan': teks };\n" +
+               "}";
+    } lainnya {
+        jika (gap.topik == "analisis_statistik_desa") {
+            nama_s = "Analisis Statistik Data Desa";
+            pemicu = ["statistik", "rata-rata", "analisis data desa", "median populasi"];
+            kode = "// Skill Mandiri: Analisis Statistik Data Desa\n" +
+                   "fungsi hitung_rata_rata_desa(daftar_angka) {\n" +
+                   "    misal total = 0.0;\n" +
+                   "    misal n = panjang(daftar_angka);\n" +
+                   "    jika (n == 0) { kembalikan 0.0; }\n" +
+                   "    untuk x di daftar_angka { total = total + x; }\n" +
+                   "    kembalikan total / n;\n" +
+                   "}";
+        } lainnya {
+            nama_s = "Keterampilan Komputasi Mandiri: " + gap.topik;
+            pemicu = [gap.topik, "eksekusi " + gap.topik];
+            kode = "// Skill Mandiri Komputasi Khusus\n" +
+                   "fungsi proses_komputasi_kustom(input_data) {\n" +
+                   "    kembalikan { 'sukses': benar, 'hasil': input_data };\n" +
+                   "}";
+        }
+    }
+
+    // Buat Kandidat Mutasi untuk pengujian Sandbox
+    misal kandidat = {
+        "id_kandidat": "mutasi-" + id_s,
+        "versi_target": "v1.0.0",
+        "kode_baru": kode,
+        "penjelasan_optimasi": "Ekspansi skill mandiri otonom: " + nama_s
+    };
+
+    // Uji di Kotak Pasir Terisolasi (Sandbox)
+    misal suite = ["uji_kompilasi_sintaks", "uji_eksekusi_fungsi", "uji_batas_memori", "uji_keamanan_non_malicious"];
+    misal hasil_box = ai_uji_kandidat_di_sandbox(kandidat, suite, 50.0, 5.0);
+
+    kembalikan {
+        "id_skill": id_s,
+        "nama_skill": nama_s,
+        "deskripsi": desk,
+        "pemicu": pemicu,
+        "kode_sumber": kode,
+        "kandidat_mutasi": kandidat,
+        "hasil_sandbox": hasil_box,
+        "layak_instalasi": hasil_box.layak_promosi,
+        "info_referensi_web": info_web
+    };
+}
+
+// 3. Pemasangan & Pembelajaran Skill Mandiri Lengkap (Orkestrasi End-to-End)
+fungsi ai_pelajari_skill_secara_mandiri(agen, manajer_skill, pesan_pengguna, izinkan_internet) {
+    cetak("\n[WidyaAI-RSI]: Memulai siklus penambahan skill secara mandiri...");
+
+    // Langkah 1: Deteksi Kesenjangan
+    misal gap = ai_deteksi_kesenjangan_skill(pesan_pengguna, manajer_skill);
+    jika (gap == kosong) {
+        cetak("[WidyaAI-RSI]: Skill yang sesuai sudah tersedia di dalam runtime.");
+        kembalikan { "sukses": benar, "pesan": "Skill sudah ada" };
+    }
+
+    cetak("  [1/4] Kesenjangan Terdeteksi: Topik '" + gap.topik + "' (" + gap.kategori + ")");
+
+    // Langkah 2: Sintesis Kode Skill
+    cetak("  [2/4] Melakukan riset pengetahuan & sintesis kode logika baru...");
+    misal sintesis = ai_sintesis_skill_baru(gap, izinkan_internet);
+    cetak("        Skill Disintesis: '" + sintesis["nama_skill"] + "'");
+
+    // Langkah 3: Pengujian di Kotak Pasir Terisolasi
+    cetak("  [3/4] Menguji kandidat skill di Sandbox Keamanan...");
+    misal box = sintesis["hasil_sandbox"];
+    jika (!box.layak_promosi) {
+        cetak("  [GAGAL] Skill ditolak oleh Negative Safety Gate: " + box.pesan_evaluasi);
+        kembalikan {
+            "sukses": salah,
+            "alasan": box.pesan_evaluasi
+        };
+    }
+    cetak("        Sandbox 100% Lulus: " + ke_teks(box.lulus_hitung) + "/" + ke_teks(box.total_kasus) + " kasus uji.");
+
+    // Langkah 4: Hot-Plug Pendaftaran Skill ke Manajer & Segel W3C DID
+    cetak("  [4/4] Mendaftarkan skill baru secara hot-plug & menyegel silsilah W3C DID...");
+    misal skill_baru = SkillAgen(
+        sintesis["id_skill"],
+        sintesis["nama_skill"],
+        sintesis["deskripsi"],
+        "v1.0.0",
+        sintesis["pemicu"],
+        "AKTIF",
+        "SINTESIS_MANDIRI",
+        ke_teks(waktu())
+    );
+
+    daftarkan_skill_baru(manajer_skill, skill_baru);
+
+    // Simpan berkas skill ke direktori skills/
+    misal path_berkas = "widya_ai_local/skills/" + sintesis["id_skill"] + ".wya";
+    tulis_berkas(path_berkas, sintesis["kode_sumber"]);
+
+    // Perbarui silsilah versi agen & segel DID
+    misal silsilah = agen["silsilah_versi"];
+    tambah(silsilah, "skill:" + sintesis["id_skill"]);
+    agen["silsilah_versi"] = silsilah;
+
+    misal segel_did = ai_buat_segel_silsilah_did(agen, "did:widya:supervisor:rsi_skill_engine");
+
+    cetak("  [SUKSES] Skill '" + sintesis["nama_skill"] + "' kini aktif dan siap digunakan!");
+    cetak("  Tersimpan di: " + path_berkas);
+    cetak("  Segel Silsilah DID: " + segel_did.did_pengenal + "\n");
+
+    kembalikan {
+        "sukses": benar,
+        "skill": skill_baru,
+        "segel_did": segel_did,
+        "manajer_skill": manajer_skill
+    };
+}

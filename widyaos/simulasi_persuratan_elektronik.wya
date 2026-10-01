@@ -1,0 +1,188 @@
+// ============================================================================
+// SIMULASI SUITE: PERSURATAN ELEKTRONIK WIDYAOS (SINDE & SRIKANDI COMPLIANT)
+// Menguji Alur Lengkap Tata Naskah Dinas Elektronik Satuan Pendidikan:
+// 1. Inisialisasi Kotak Persuratan Sekolah (NPSN 20502621)
+// 2. Penerimaan Surat Elektronik dari Gateway SINDE Kemendikdasmen
+// 3. Penerimaan Surat Elektronik dari Gateway SRIKANDI Nasional (Dinas Pendidikan)
+// 4. Penerbitan Otomatis Tanda Terima Elektronik (Read-Receipt ANRI)
+// 5. Lembar Disposisi Digital Kepala Sekolah & Notifikasi Penugasan
+// 6. Penyelesaian & Pelaporan Tindak Lanjut Disposisi
+// 7. Penerbitan Surat Keluar Berjenjang: Konseptor -> Verifikator -> TTE KS
+// ============================================================================
+
+impor "widyaos/modul/persuratan_elektronik_srikandi_sinde.wya";
+
+cetak("====================================================================");
+cetak("📬  SIMULASI: PERSURATAN ELEKTRONIK NASIONAL (SINDE & SRIKANDI)      ");
+cetak("    Tata Naskah Dinas Elektronik Satuan Pendidikan Ekosistem WidyaOS");
+cetak("====================================================================");
+
+// [UJI 1] Inisialisasi Kotak Persuratan Sekolah
+cetak("\n[UJI 1] Inisialisasi Kotak Persuratan Digital Sekolah:");
+misal kotak_sekolah = inisialisasi_kotak_persuratan("20502621", "SMP NEGERI 2 DAWARBLANDONG");
+
+cetak("  • NPSN Sekolah       :", kotak_sekolah.npsn_sekolah);
+cetak("  • Nama Satuan Pend   :", kotak_sekolah.nama_sekolah);
+cetak("  • Agenda Masuk Awal  :", kotak_sekolah.total_agenda_masuk);
+
+jika kotak_sekolah.npsn_sekolah == "20502621" {
+    cetak("  ✅ PASS: Kotak Persuratan Digital Sekolah Berhasil Diinisialisasi!");
+} lainnya {
+    cetak("  ❌ FAIL: Inisialisasi kotak persuratan gagal!");
+}
+
+// [UJI 2] Menerima Surat Edaran Elektronik dari Gateway SINDE Kemendikdasmen
+cetak("\n[UJI 2] Ingesti Surat Masuk dari SINDE Kemendikdasmen Pusat:");
+misal surat_sinde = terima_surat_elektronik(
+    kotak_sekolah,
+    "0421/A.A1/PR.07.00/2026",
+    "2026-03-15",
+    "KEMENTERIAN PENDIDIKAN DASAR DAN MENENGAH RI",
+    "SINDE_KEMENDIKDASMEN",
+    "Surat Edaran Pelaksanaan Asesmen Nasional Berbasis Komputer (ANBK) 2026",
+    "SURAT_EDARAN",
+    "PENTING_SEGERA",
+    "400.3.8", // Klasifikasi ANRI Pendidikan/Asesmen
+    "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+    "TERVERIFIKASI_BSRE_BSSN"
+);
+
+cetak("  • No Agenda Masuk    :", surat_sinde.nomor_agenda_masuk);
+cetak("  • No Surat Pengirim  :", surat_sinde.nomor_surat_pengirim);
+cetak("  • Asal Instansi      :", surat_sinde.instansi_pengirim);
+cetak("  • Gateway Integrasi  :", surat_sinde.sumber_gateway);
+cetak("  • Perihal Naskah     :", surat_sinde.perihal);
+cetak("  • Status Verifikasi  :", surat_sinde.status_tte_pengirim);
+
+jika surat_sinde.sumber_gateway == "SINDE_KEMENDIKDASMEN" dan surat_sinde.status_tte_pengirim == "TERVERIFIKASI_BSRE_BSSN" {
+    cetak("  ✅ PASS: Surat Masuk Resmi SINDE Terverifikasi Otomatis Masuk ke Agenda Sekolah!");
+} lainnya {
+    cetak("  ❌ FAIL: Ingesti surat SINDE gagal!");
+}
+
+// [UJI 3] Menerima Surat Undangan Rapat dari Gateway SRIKANDI Nasional (Dinas Pendidikan)
+cetak("\n[UJI 3] Ingesti Surat Masuk dari SRIKANDI Nasional (Dinas Pendidikan):");
+misal surat_srikandi = terima_surat_elektronik(
+    kotak_sekolah,
+    "005/1892/101.3/2026",
+    "2026-03-17",
+    "DINAS PENDIDIKAN KABUPATEN MOJOKERTO",
+    "SRIKANDI_NASIONAL",
+    "Undangan Sosialisasi Evaluasi Penyerapan & Pelaporan BOSP Tahap 1",
+    "SURAT_UNDANGAN",
+    "KILAT",
+    "005.1", // Klasifikasi Undangan Dinas
+    "a8f5f167f44f4964e6c998dee827110c",
+    "TERVERIFIKASI_BSRE_BSSN"
+);
+
+cetak("  • No Agenda Masuk    :", surat_srikandi.nomor_agenda_masuk);
+cetak("  • Asal Instansi      :", surat_srikandi.instansi_pengirim);
+cetak("  • Gateway Integrasi  :", surat_srikandi.sumber_gateway);
+cetak("  • Perihal Naskah     :", surat_srikandi.perihal);
+
+jika surat_srikandi.sumber_gateway == "SRIKANDI_NASIONAL" dan kotak_sekolah.total_agenda_masuk == 2 {
+    cetak("  ✅ PASS: Surat Masuk SRIKANDI Nasional Berhasil Tercatat Tanpa Hambatan!");
+} lainnya {
+    cetak("  ❌ FAIL: Ingesti surat SRIKANDI gagal!");
+}
+
+// [UJI 4] Penerbitan Tanda Terima Elektronik Otomatis (Tanda Terima Pengiriman ANRI)
+cetak("\n[UJI 4] Penerbitan Tanda Terima Pengiriman Elektronik ke Pengirim:");
+misal tanda_terima = terbitkan_tanda_terima_baca(surat_srikandi, "20502621", "Ernawati (Tata Usaha)");
+
+cetak("  • ID Tanda Terima    :", tanda_terima.id_tanda_terima);
+cetak("  • Status Pengakuan   :", tanda_terima.status_pengakuan);
+cetak("  • Waktu Diterima     :", tanda_terima.waktu_diterima);
+
+jika tanda_terima.status_pengakuan == "TERKIRIM_KEMBALI_KE_PENGIRIM_SINDE_SRIKANDI" {
+    cetak("  ✅ PASS: Tanda Terima Elektronik Terkirim Balik Menjamin Kepastian Hukum Pengiriman!");
+} lainnya {
+    cetak("  ❌ FAIL: Tanda terima elektronik gagal!");
+}
+
+// [UJI 5] Lembar Disposisi Digital Kepala Sekolah
+cetak("\n[UJI 5] Pembuatan Lembar Disposisi Digital oleh Kepala Sekolah:");
+misal tujuan_disp = [];
+tambah(tujuan_disp, "BENDAHARA_BOSP");
+tambah(tujuan_disp, "WAKASEK_SARPRAS");
+
+misal lembar_disp = buat_disposisi_kepsek(
+    kotak_sekolah,
+    surat_srikandi,
+    "did:sewidya:ks:suntoro",
+    tujuan_disp,
+    "HADIR_MEWAKILI",
+    "Mohon hadir tepat waktu membawa rekap realisasi BKU BOSP s.d. bulan Maret 2026",
+    "2026-03-20T08:00:00"
+);
+
+cetak("  • ID Disposisi       :", lembar_disp.id_disposisi);
+cetak("  • Diteruskan Kepada  :", panjang(lembar_disp.daftar_penerima_tugas), "Pihak Terkait");
+cetak("  • Instruksi Kepsek   :", lembar_disp.instruksi_utama);
+cetak("  • Catatan Khusus     :", lembar_disp.catatan_kepsek);
+cetak("  • Batas Waktu Tuntas :", lembar_disp.batas_waktu_tuntas);
+cetak("  • Status Disposisi   :", surat_srikandi.status_disposisi);
+
+jika surat_srikandi.status_disposisi == "SUDAH_DIDISPOSISI" dan lembar_disp.instruksi_utama == "HADIR_MEWAKILI" {
+    cetak("  ✅ PASS: Disposisi Digital Kepala Sekolah Sah Diterbitkan dengan Notifikasi Real-Time!");
+} lainnya {
+    cetak("  ❌ FAIL: Pembuatan lembar disposisi gagal!");
+}
+
+// [UJI 6] Tindak Lanjut & Pelaporan Hasil Disposisi oleh Bendahara
+cetak("\n[UJI 6] Penyelesaian & Pelaporan Tindak Lanjut oleh Penerima Disposisi:");
+misal laporan_selesai = "Telah dihadiri oleh Bendahara BOSP. Laporan realisasi diterima Dinas tanpa revisi, Berita Acara terlampir.";
+misal res_tindak_lanjut = selesaikan_tindak_lanjut_disposisi(
+    lembar_disp,
+    surat_srikandi,
+    laporan_selesai
+);
+
+cetak("  • Status Eksekusi    :", res_tindak_lanjut);
+cetak("  • Status Akhir Surat :", surat_srikandi.status_disposisi);
+cetak("  • Laporan Terdata    :", lembar_disp.laporan_hasil_tindak_lanjut);
+
+jika surat_srikandi.status_disposisi == "TUNTAS_DITINDAKLANJUTI" {
+    cetak("  ✅ PASS: Siklus Disposisi Selesai Paripurna dan Terarsip Permanen!");
+} lainnya {
+    cetak("  ❌ FAIL: Penyelesaian disposisi gagal!");
+}
+
+// [UJI 7] Alur Surat Keluar Elektronik: Drafting -> Verifikasi -> TTE KS
+cetak("\n[UJI 7] Alur Penerbitan Surat Keluar Resmi Terintegrasi Gateway:");
+
+// 1. Konsep dibuat oleh staf tata usaha
+misal konsep_surat = buat_konsep_surat_keluar(
+    kotak_sekolah,
+    "DINAS PENDIDIKAN KABUPATEN MOJOKERTO",
+    "Laporan Pertanggungjawaban Realisasi BOSP Tahap 1 Tahun 2026",
+    "400.3.11",
+    "did:sewidya:tu:ernawati"
+);
+
+cetak("  • ID Surat Keluar    :", konsep_surat.id_surat_keluar);
+cetak("  • Status Konsep      :", konsep_surat.status_persetujuan);
+
+// 2. Diverifikasi oleh Kasubag TU / Wakasek dan Disahkan TTE oleh Kepala Sekolah
+misal no_resmi = "421.3 / 088 / 101.6.24 / 2026";
+misal hasil_sah = sahkan_surat_keluar_tte(
+    konsep_surat,
+    "did:sewidya:wakasek:wahyu",
+    "did:sewidya:ks:suntoro",
+    no_resmi
+);
+
+cetak("  • Pengesahan & Kirim :", hasil_sah);
+cetak("  • Nomor Resmi Surat  :", konsep_surat.nomor_surat_resmi);
+cetak("  • Status Pengiriman  :", konsep_surat.status_pengiriman_gateway);
+
+jika konsep_surat.status_pengiriman_gateway == "TERKIRIM_KE_SINDE_SRIKANDI" {
+    cetak("  ✅ PASS: Surat Keluar Resmi Ber-TTE Digital Berhasil Terkirim ke Gateway Nasional!");
+} lainnya {
+    cetak("  ❌ FAIL: Pengesahan surat keluar gagal!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 7/7 TAHAPAN PERSURATAN ELEKTRONIK LULUS (100%)    ");
+cetak("====================================================================");

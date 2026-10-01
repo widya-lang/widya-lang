@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WidyaOS - Sovereign Educational Operating System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-glass: rgba(15, 23, 42, 0.75);
+            --bg-glass-card: rgba(30, 41, 59, 0.65);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+            --dock-bg: rgba(15, 23, 42, 0.85);
+            --window-header: rgba(30, 41, 59, 0.95);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --radius-window: 16px;
+            --radius-btn: 10px;
+        }
+
+        /* LIGHT THEME */
+        body.theme-light {
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --bg-glass-card: rgba(241, 245, 249, 0.85);
+            --border-glass: rgba(0, 0, 0, 0.1);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --dock-bg: rgba(255, 255, 255, 0.9);
+            --window-header: rgba(248, 250, 252, 0.98);
+        }
+
+        /* LITE EDITION (Retro & Low RAM, No Blurs, Solid Colors) */
+        body.edition-lite {
+            --bg-glass: #1e293b !important;
+            --bg-glass-card: #0f172a !important;
+            --border-glass: #334155 !important;
+            --dock-bg: #0f172a !important;
+            --window-header: #334155 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow: none !important;
+        }
+        body.edition-lite * {
+            animation: none !important;
+            transition: none !important;
+            backdrop-filter: none !important;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #090d16 0%, #111827 50%, #1e1b4b 100%);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: background 0.4s ease;
+        }
+
+        /* WALLPAPERS */
+        body.wp-nusantara {
+            background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.15), transparent 40%),
+                        radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.2), transparent 45%),
+                        linear-gradient(135deg, #030712 0%, #0f172a 50%, #1e1b4b 100%);
+        }
+        body.wp-aurora {
+            background: radial-gradient(circle at 50% 10%, rgba(16, 185, 129, 0.25), transparent 50%),
+                        radial-gradient(circle at 80% 90%, rgba(14, 165, 233, 0.3), transparent 50%),
+                        linear-gradient(135deg, #022c22 0%, #064e3b 40%, #0f172a 100%);
+        }
+        body.wp-cyber {
+            background: radial-gradient(circle at 10% 90%, rgba(244, 63, 94, 0.2), transparent 40%),
+                        radial-gradient(circle at 90% 10%, rgba(168, 85, 247, 0.25), transparent 40%),
+                        linear-gradient(135deg, #180324 0%, #2e0854 50%, #0f172a 100%);
+        }
+
+        /* DESKTOP WORKSPACE */
+        #desktop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 100px);
+            grid-auto-rows: 105px;
+            grid-gap: 16px;
+            align-content: start;
+            z-index: 1;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            gap: 6px;
+        }
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            transform: translateY(-2px);
+        }
+        .desktop-icon:active {
+            transform: scale(0.96);
+        }
+        .desktop-icon img, .desktop-icon .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .desktop-icon span {
+            font-size: 11px;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        /* -------------------------------------------------------------
+           TOP BAR (Untuk Layout macOS & WidyaOS Sovereign)
+        ------------------------------------------------------------- */
+        #topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 999;
+            display: none; /* diatur via layout */
+        }
+        .topbar-left, .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .topbar-brand {
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--accent-color);
+        }
+        .topbar-menu-item {
+            cursor: pointer;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+        }
+        .topbar-menu-item:hover {
+            opacity: 1;
+        }
+        .badge-edition {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent-color);
+            border: 1px solid var(--border-glass);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* -------------------------------------------------------------
+           DOCK / TASKBAR
+        ------------------------------------------------------------- */
+        #dock-container {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .dock {
+            background: var(--dock-bg);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .dock-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .dock-item:hover {
+            transform: translateY(-8px) scale(1.15);
+        }
+        .dock-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            width: 5px;
+            height: 5px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--accent-color);
+        }
+        .dock-separator {
+            width: 1px;
+            height: 30px;
+            background: var(--border-glass);
+            margin: 0 4px;
+        }
+
+        /* -------------------------------------------------------------
+           LAYOUT MODES (Zorin-Style Switcher)
+        ------------------------------------------------------------- */
+
+        /* 1. LAYOUT WINDOWS 11 */
+        body.layout-windows #topbar {
+            display: none !important;
+        }
+        body.layout-windows #dock-container {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transform: none;
+            width: 100%;
+        }
+        body.layout-windows .dock {
+            border-radius: 0;
+            width: 100%;
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+            justify-content: center;
+            height: 52px;
+            padding: 0 16px;
+            position: relative;
+        }
+        body.layout-windows .win-tray {
+            position: absolute;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+        }
+        body.layout-windows .window .win-controls-mac {
+            display: none !important;
+        }
+        body.layout-windows .window .win-controls-win {
+            display: flex !important;
+        }
+
+        /* 2. LAYOUT MACOS CUPERTINO */
+        body.layout-macos #topbar {
+            display: flex !important;
+        }
+        body.layout-macos #desktop {
+            top: 36px;
+        }
+        body.layout-macos #dock-container {
+            bottom: 12px;
+        }
+        body.layout-macos .window .win-controls-mac {
+            display: flex !important;
+        }
+        body.layout-macos .window .win-controls-win {
+            display: none !important;
+        }
+
+        /* 3. LAYOUT WIDYA SOVEREIGN (DEFAULT) */
+        body.layout-widya #topbar {
+            display: flex !important;
+        }
+        body.layout-widya #desktop {
+            top: 36px;
+        }
+        body.layout-widya .window .win-controls-mac {
+            display: none !important;
+        }
+        body.layout-widya .window .win-controls-win {
+            display: flex !important;
+        }
+
+        /* 4. LAYOUT MOBILE / TABLET */
+        body.layout-mobile {
+            max-width: 480px;
+            margin: 0 auto;
+            border-left: 2px solid var(--border-glass);
+            border-right: 2px solid var(--border-glass);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+        body.layout-mobile #topbar {
+            display: flex !important;
+            height: 28px;
+            font-size: 11px;
+        }
+        body.layout-mobile #desktop {
+            top: 28px;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 16px 8px;
+        }
+        body.layout-mobile #dock-container {
+            bottom: 8px;
+            width: 90%;
+        }
+        body.layout-mobile .dock {
+            border-radius: 16px;
+            padding: 6px;
+            justify-content: space-around;
+        }
+
+        /* -------------------------------------------------------------
+           WINDOW SYSTEM
+        ------------------------------------------------------------- */
+        .window {
+            position: absolute;
+            background: var(--bg-glass);
+            backdrop-filter: blur(28px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-window);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 100;
+            min-width: 320px;
+            min-height: 240px;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+        }
+        .window.minimized {
+            transform: scale(0.6) translateY(200px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .window.maximized {
+            top: 36px !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: calc(100vh - 36px - 60px) !important;
+            border-radius: 0 !important;
+        }
+
+        .window-header {
+            height: 44px;
+            background: var(--window-header);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            cursor: move;
+        }
+        .window-title {
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mac Traffic Lights */
+        .win-controls-mac {
+            display: flex;
+            gap: 8px;
+        }
+        .traffic-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .traffic-close { background: #ff5f56; }
+        .traffic-min { background: #ffbd2e; }
+        .traffic-max { background: #27c93f; }
+
+        /* Win Controls */
+        .win-controls-win {
+            display: flex;
+            gap: 4px;
+        }
+        .win-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0.7;
+            transition: all 0.15s;
+        }
+        .win-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .win-btn.close:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .window-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            position: relative;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        /* -------------------------------------------------------------
+           APP: WIDYA APPEARANCE (ZORIN-STYLE SWITCHER)
+        ------------------------------------------------------------- */
+        .appearance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .layout-card {
+            background: var(--bg-glass-card);
+            border: 2px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .layout-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        .layout-card.selected {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-glow);
+            background: rgba(56, 189, 248, 0.08);
+        }
+        .layout-mockup {
+            height: 80px;
+            background: #020617;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .layout-title {
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .layout-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        /* Color Pills */
+        .color-pills {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .color-pill {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+        .color-pill:hover { transform: scale(1.2); }
+        .color-pill.active { border-color: white; box-shadow: 0 0 10px white; }
+
+        /* Edition Radio Pills */
+        .edition-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .edition-btn {
+            background: var(--bg-glass-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .edition-btn.active {
+            background: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
+        }
+
+        /* -------------------------------------------------------------
+           START MENU (WINDOWS MODE)
+        ------------------------------------------------------------- */
+        #start-menu {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            width: 480px;
+            height: 520px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(32px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            display: none;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 1001;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+        }
+        #start-menu.open {
+            display: flex;
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+        .start-search {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+            margin-bottom: 20px;
+        }
+        .start-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            flex: 1;
+        }
+
+        /* -------------------------------------------------------------
+           TERMINAL APP
+        ------------------------------------------------------------- */
+        .terminal-box {
+            font-family: var(--font-code);
+            font-size: 12px;
+            line-height: 1.5;
+            color: #4ade80;
+        }
+        .term-prompt {
+            color: #38bdf8;
+        }
+        .term-input {
+            background: transparent;
+            border: none;
+            color: #f8fafc;
+            font-family: var(--font-code);
+            font-size: 12px;
+            outline: none;
+            width: 70%;
+        }
+
+        /* BUTTONS & UTILS */
+        .btn-ui {
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-btn);
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-ui:hover {
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="layout-widya wp-nusantara">
+
+    <!-- TOP BAR (macOS & WidyaOS Sovereign) -->
+    <div id="topbar">
+        <div class="topbar-left">
+            <div class="topbar-brand" onclick="toggleStartMenu()">
+                <span>🦅</span>
+                <span>WidyaOS</span>
+            </div>
+            <span class="badge-edition" id="topbar-edition-badge">PRO ENTERPRISE</span>
+            <span class="topbar-menu-item" onclick="openWindow('win-appearance')">Appearance</span>
+            <span class="topbar-menu-item" onclick="openWindow('win-arkas')">ARKAS</span>
+            <span class="topbar-menu-item" onclick="openWindow('win-sinau')">Sinau LMS</span>
+            <span class="topbar-menu-item" onclick="openWindow('win-terminal')">Terminal</span>
+        </div>
+        <div class="topbar-right">
+            <span id="role-pill" style="font-size: 11px; opacity: 0.8; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 8px;">
+                👤 Guru Mapel & Bendahara BOS
+            </span>
+            <span id="topbar-clock">12:00</span>
+        </div>
+    </div>
+
+    <!-- DESKTOP WORKSPACE ICONS -->
+    <div id="desktop">
+        <div class="desktop-icon" onclick="openWindow('win-appearance')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">🎨</div>
+            <span>Widya Appearance</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-arkas')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">💰</div>
+            <span>ARKAS Multidana</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-sinau')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #059669);">🎓</div>
+            <span>LMS Sinau</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-writer')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📝</div>
+            <span>Widya Office</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-terminal')">
+            <div class="icon-box" style="background: #0f172a; border: 1px solid rgba(255,255,255,0.2);">💻</div>
+            <span>Terminal widya</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-widyabase')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #2563eb, #06b6d4);">🐘</div>
+            <span>WidyaBase DB</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-widyasci')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #0ea5e9, #6366f1);">🔬</div>
+            <span>WidyaSci Studio</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-pusdatin')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">🏛️</div>
+            <span>Pusat Komando</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-widyastat')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #10b981, #0d9488);">📊</div>
+            <span>WidyaStat</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-browser')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">🌐</div>
+            <span>WidyaBrowser</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-kedaulatan')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #ef4444, #f59e0b);">🇮🇩</div>
+            <span>24 Pilar Digital</span>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('win-info')">
+            <div class="icon-box" style="background: linear-gradient(135deg, #6366f1, #4338ca);">ℹ️</div>
+            <span>Info Sistem</span>
+        </div>
+    </div>
+
+    <!-- WINDOW 1: WIDYA APPEARANCE (ZORIN-STYLE SWITCHER) -->
+    <div class="window" id="win-appearance" style="top: 80px; left: 100px; width: 620px; height: 540px;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-appearance')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-appearance')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-appearance')"></div>
+            </div>
+            <div class="window-title">
+                <span>🎨</span>
+                <span>Widya Appearance - Desktop Layout & Edisi</span>
+            </div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-appearance')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-appearance')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-appearance')">✕</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <!-- TATA LETAK ZORIN -->
+            <div class="section-title">Pilih Tata Letak Desktop (Desktop Layout)</div>
+            <div class="appearance-grid">
+                <!-- Layout 1: WidyaOS Sovereign -->
+                <div class="layout-card selected" id="card-layout-widya" onclick="switchLayout('widya')">
+                    <div class="layout-mockup">
+                        <div style="width: 50%; height: 8px; background: var(--accent-color); border-radius: 4px; position: absolute; bottom: 8px;"></div>
+                        <span style="font-size: 20px;">🦅</span>
+                    </div>
+                    <div class="layout-title">WidyaOS Sovereign</div>
+                    <div class="layout-desc">Dock mengambang tengah + Top Bar kaca</div>
+                </div>
+
+                <!-- Layout 2: Windows 11 -->
+                <div class="layout-card" id="card-layout-windows" onclick="switchLayout('windows')">
+                    <div class="layout-mockup">
+                        <div style="width: 100%; height: 10px; background: #334155; position: absolute; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <div style="width: 6px; height: 6px; background: #38bdf8;"></div>
+                            <div style="width: 6px; height: 6px; background: #94a3b8;"></div>
+                        </div>
+                        <span style="font-size: 20px;">🪟</span>
+                    </div>
+                    <div class="layout-title">Windows 11 Layout</div>
+                    <div class="layout-desc">Taskbar bawah penuh, Start menu tengah</div>
+                </div>
+
+                <!-- Layout 3: macOS Cupertino -->
+                <div class="layout-card" id="card-layout-macos" onclick="switchLayout('macos')">
+                    <div class="layout-mockup">
+                        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.2); position: absolute; top: 0;"></div>
+                        <div style="width: 60%; height: 10px; background: rgba(255,255,255,0.3); border-radius: 6px; position: absolute; bottom: 4px;"></div>
+                        <span style="font-size: 20px;">🍎</span>
+                    </div>
+                    <div class="layout-title">macOS Cupertino</div>
+                    <div class="layout-desc">Top Bar global, Traffic light kiri & Dock</div>
+                </div>
+
+                <!-- Layout 4: Mobile / Tablet -->
+                <div class="layout-card" id="card-layout-mobile" onclick="switchLayout('mobile')">
+                    <div class="layout-mockup">
+                        <div style="width: 30px; height: 4px; background: white; border-radius: 2px; position: absolute; bottom: 4px;"></div>
+                        <span style="font-size: 20px;">📱</span>
+                    </div>
+                    <div class="layout-title">Mobile Touch Grid</div>
+                    <div class="layout-desc">Layar sentuh untuk tablet piket & smartphone</div>
+                </div>
+            </div>
+
+            <!-- PILIHAN EDISI SISTEM -->
+            <div class="section-title">Pilih Edisi WidyaOS (Hardware Profile)</div>
+            <div class="edition-grid">
+                <div class="edition-btn active" id="btn-ed-pro" onclick="setEdition('pro')">
+                    PRO ENTERPRISE
+                    <div style="font-size: 9px; opacity: 0.7;">Server / Laptop Baru</div>
+                </div>
+                <div class="edition-btn" id="btn-ed-lite" onclick="setEdition('lite')">
+                    LITE (3T PELOSOK)
+                    <div style="font-size: 9px; opacity: 0.7;">PC Jadul RAM &lt; 512MB</div>
+                </div>
+                <div class="edition-btn" id="btn-ed-mobile" onclick="setEdition('mobile')">
+                    MOBILE TABLET
+                    <div style="font-size: 9px; opacity: 0.7;">Guru Piket &amp; Satpam</div>
+                </div>
+                <div class="edition-btn" id="btn-ed-ifp" onclick="setEdition('ifp')">
+                    IFP SMART BOARD
+                    <div style="font-size: 9px; opacity: 0.7;">Layar Sentuh 65-86"</div>
+                </div>
+            </div>
+
+            <!-- AKSEN WARNA -->
+            <div class="section-title">Aksen Warna &amp; Mode Tampilan</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="color-pills">
+                    <div class="color-pill active" style="background: #38bdf8;" onclick="setAccent('#38bdf8')"></div>
+                    <div class="color-pill" style="background: #10b981;" onclick="setAccent('#10b981')"></div>
+                    <div class="color-pill" style="background: #ef4444;" onclick="setAccent('#ef4444')"></div>
+                    <div class="color-pill" style="background: #a855f7;" onclick="setAccent('#a855f7')"></div>
+                    <div class="color-pill" style="background: #f59e0b;" onclick="setAccent('#f59e0b')"></div>
+                </div>
+                <div>
+                    <button class="btn-ui" onclick="toggleThemeMode()">Ganti Dark / Light</button>
+                </div>
+            </div>
+
+            <!-- WALLPAPER PICKER -->
+            <div class="section-title">Wallpaper Nusantara</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-ui" style="background: #1e1b4b; color: white;" onclick="setWallpaper('wp-nusantara')">Nusantara Blue</button>
+                <button class="btn-ui" style="background: #064e3b; color: white;" onclick="setWallpaper('wp-aurora')">Borneo Emerald</button>
+                <button class="btn-ui" style="background: #2e0854; color: white;" onclick="setWallpaper('wp-cyber')">Cyber Nocturne</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOW 2: ARKAS MULTIDANA -->
+    <div class="window" id="win-arkas" style="top: 100px; left: 160px; width: 560px; height: 420px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-arkas')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-arkas')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-arkas')"></div>
+            </div>
+            <div class="window-title"><span>💰</span><span>ARKAS Multidana 6 Kantong Kas</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-arkas')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-arkas')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-arkas')">✕</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 12px; border-radius: 10px; margin-bottom: 16px;">
+                <div style="font-size: 11px; color: #10b981; font-weight: 700;">BKU IMMUTABLE SHIELD: AKTIF</div>
+                <div style="font-size: 13px; font-weight: 600;">Total Kas Terintegrasi: Rp 276.400.000,00</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                <div style="background: var(--bg-glass-card); padding: 10px; border-radius: 8px;">
+                    <div>BOSP Reguler</div>
+                    <strong style="color: var(--accent-color);">Rp 76.000.000</strong>
+                </div>
+                <div style="background: var(--bg-glass-card); padding: 10px; border-radius: 8px;">
+                    <div>Banpem Revitalisasi</div>
+                    <strong style="color: var(--accent-color);">Rp 200.000.000</strong>
+                </div>
+                <div style="background: var(--bg-glass-card); padding: 10px; border-radius: 8px;">
+                    <div>SPP Komite</div>
+                    <strong style="color: var(--accent-color);">Rp 250.000</strong>
+                </div>
+                <div style="background: var(--bg-glass-card); padding: 10px; border-radius: 8px;">
+                    <div>DePIN Grid Sharing</div>
+                    <strong style="color: var(--accent-color);">Rp 150.000</strong>
+                </div>
+            </div>
+            <div style="margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                <div style="font-size: 11px; font-weight: 700; color: #f59e0b; margin-bottom: 6px;">⚡ TAGIHAN LANGGANAN DAYA & JASA (BOSP)</div>
+                <div style="font-size: 11px; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>💡 Listrik PLN (IDPEL 537311029841):</span>
+                        <strong style="color: #10b981;">Rp 1.853.000 (Lunas - Bebas PPN)</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>🌐 Internet ISP 200Mbps:</span>
+                        <strong style="color: #38bdf8;">Rp 3.330.000 (PPN 11% + PPh 23)</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>🔋 Token Lab Komputer (Prabayar):</span>
+                        <strong style="color: #a855f7;">Rp 500.000 (Sisa 150 kWh)</strong>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 14px; display: flex; gap: 8px;">
+                <button class="btn-ui" onclick="alert('⚡ Simulasi Pembayaran Listrik CMS Bank Berhasil!\n\nIDPEL: 537311029841\nNominal: Rp 1.853.000\nStatus: Lunas Bebas PPN (UU HPP)\nBKU: Tercatat Otomatis!')">Bayar Listrik PLN (CMS)</button>
+                <button class="btn-ui" style="background: rgba(255,255,255,0.1);" onclick="alert('Membuka Berita Acara Rekonsiliasi Kas A4!')">Cetak Rekap BKU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOW 3: LMS SINAU -->
+    <div class="window" id="win-sinau" style="top: 120px; left: 220px; width: 540px; height: 380px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-sinau')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-sinau')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-sinau')"></div>
+            </div>
+            <div class="window-title"><span>🎓</span><span>Sinau LMS - Ruang Kelas Berdaulat</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-sinau')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-sinau')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-sinau')">✕</div>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">Kelas Aktif: Matematika 8A (Geometri Ruang)</div>
+            <div style="background: var(--bg-glass-card); padding: 12px; border-radius: 10px; font-size: 12px; line-height: 1.6;">
+                <div>📡 <strong>Local Edge CDN:</strong> Tersinkron ke Smart IFP Kelas</div>
+                <div>🔒 <strong>Kiosk CBT Lock:</strong> Siap Ujian Tanpa Internet Luar</div>
+                <div>📚 <strong>Tugas Terkumpul:</strong> 31 dari 32 Siswa</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOW 4: TERMINAL WIDYA-LANG -->
+    <div class="window" id="win-terminal" style="top: 150px; left: 300px; width: 500px; height: 320px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-terminal')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-terminal')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-terminal')"></div>
+            </div>
+            <div class="window-title"><span>💻</span><span>widya.exe - Terminal Shell</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-terminal')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-terminal')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-terminal')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="background: #020617; padding: 14px;">
+            <div class="terminal-box" id="term-output">
+                WidyaOS Kernel v6.12-Sovereign (x86_64 / aarch64)<br>
+                Compiler: widya.exe (Widya-Lang v0.1.0-release)<br>
+                Ketik 'help' untuk daftar perintah.<br><br>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="term-prompt">widya@sewidya:~$</span>
+                <input type="text" class="term-input" id="term-cmd" onkeydown="handleTerminal(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOW 5: WIDYA OFFICE STUDIO (DOCS F4, SHEETS CALC, SLIDES IFP) -->
+    <div class="window" id="win-writer" style="top: 45px; left: 65px; width: 1040px; height: 640px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-writer')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-writer')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-writer')"></div>
+            </div>
+            <div class="window-title"><span>📝</span><span>Widya Office Studio - Naskah Dinas F4, Hitung Calc & Tayang IFP</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-writer')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-writer')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-writer')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="widya_office_studio.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- WINDOW 6: INFO SISTEM -->
+    <div class="window" id="win-info" style="top: 140px; left: 240px; width: 440px; height: 320px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-info')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-info')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-info')"></div>
+            </div>
+            <div class="window-title"><span>ℹ️</span><span>Tentang WidyaOS</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-info')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-info')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-info')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="text-align: center; padding: 24px;">
+            <div style="font-size: 48px; margin-bottom: 8px;">🦅</div>
+            <h2 style="font-size: 18px; margin-bottom: 4px;">WidyaOS Sovereign</h2>
+            <div style="font-size: 12px; color: var(--accent-color); font-weight: 700; margin-bottom: 16px;" id="sys-edition-label">EDISI PRO ENTERPRISE</div>
+            <div style="font-size: 12px; line-height: 1.8; color: var(--text-muted); text-align: left; background: var(--bg-glass-card); padding: 12px; border-radius: 10px;">
+                <div>• <strong>Bahasa:</strong> Widya-Lang Native Compiler</div>
+                <div>• <strong>Kementerian:</strong> Kemendikdasmen RI</div>
+                <div>• <strong>Platform:</strong> sewidya.id (W3C DID Verifiable)</div>
+                <div>• <strong>Simulasi Lulus:</strong> 41/41 Test Suites (100%)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOW 7: WIDYABASE DB (POSTGRESQL + NOCODB STUDIO) -->
+    <div class="window" id="win-widyabase" style="top: 60px; left: 80px; width: 920px; height: 560px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-widyabase')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-widyabase')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-widyabase')"></div>
+            </div>
+            <div class="window-title"><span>🐘</span><span>WidyaBase Studio - Database Relasional & No-Code Smart Studio</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-widyabase')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-widyabase')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-widyabase')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="widyabase_studio.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- WINDOW 8: WIDYASCI NOTEBOOK STUDIO -->
+    <div class="window" id="win-widyasci" style="top: 70px; left: 110px; width: 940px; height: 580px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-widyasci')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-widyasci')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-widyasci')"></div>
+            </div>
+            <div class="window-title"><span>🔬</span><span>WidyaSci Studio - Python NumPy/SciPy/Pandas/Scikit-Learn Equivalent</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-widyasci')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-widyasci')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-widyasci')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="widyasci_notebook.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- WINDOW 9: PUSAT KOMANDO NASIONAL KEMENDIKDASMEN -->
+    <div class="window" id="win-pusdatin" style="top: 50px; left: 80px; width: 980px; height: 600px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-pusdatin')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-pusdatin')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-pusdatin')"></div>
+            </div>
+            <div class="window-title"><span>🏛️</span><span>Pusat Komando Telemetri Nasional - Pusdatin Kemendikdasmen RI</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-pusdatin')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-pusdatin')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-pusdatin')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="kemendikdasmen_command_center.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- WINDOW 10: WIDYASTAT STATISTICAL SUITE -->
+    <div class="window" id="win-widyastat" style="top: 60px; left: 90px; width: 980px; height: 610px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-widyastat')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-widyastat')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-widyastat')"></div>
+            </div>
+            <div class="window-title"><span>📊</span><span>WidyaStat Studio - Statistical Analysis Suite (SPSS / Stata / SAS Equivalent)</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-widyastat')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-widyastat')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-widyastat')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="widyastat_studio.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- WINDOW 11: WIDYABROWSER (SOVEREIGN WEB BROWSER) -->
+    <div class="window" id="win-browser" style="top: 50px; left: 70px; width: 1020px; height: 620px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-browser')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-browser')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-browser')"></div>
+            </div>
+            <div class="window-title"><span>🌐</span><span>WidyaBrowser - Peramban Web Berdaulat (Sovereign Web Client)</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-browser')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-browser')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-browser')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="widyabrowser.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- WINDOW 12: 7 PILAR KEDAULATAN DIGITAL TOTAL -->
+    <div class="window" id="win-kedaulatan" style="top: 40px; left: 60px; width: 1080px; height: 680px; display: none;">
+        <div class="window-header">
+            <div class="win-controls-mac">
+                <div class="traffic-btn traffic-close" onclick="closeWindow('win-kedaulatan')"></div>
+                <div class="traffic-btn traffic-min" onclick="minimizeWindow('win-kedaulatan')"></div>
+                <div class="traffic-btn traffic-max" onclick="maximizeWindow('win-kedaulatan')"></div>
+            </div>
+            <div class="window-title"><span>🇮🇩</span><span>WidyaOS - Portal 24 Pilar Kedaulatan Digital Total Peradaban Nusantara</span></div>
+            <div class="win-controls-win">
+                <div class="win-btn" onclick="minimizeWindow('win-kedaulatan')">─</div>
+                <div class="win-btn" onclick="maximizeWindow('win-kedaulatan')">◻</div>
+                <div class="win-btn close" onclick="closeWindow('win-kedaulatan')">✕</div>
+            </div>
+        </div>
+        <div class="window-body" style="padding: 0; overflow: hidden; height: calc(100% - 38px);">
+            <iframe src="widyaportal_kedaulatan.html" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- START MENU (WINDOWS 11 STYLE) -->
+    <div id="start-menu">
+        <input type="text" class="start-search" placeholder="Cari aplikasi, modul ARKAS, atau file persuratan...">
+        <div style="font-size: 11px; text-transform: uppercase; color: var(--accent-color); font-weight: 700; margin-bottom: 12px;">Aplikasi Tersemat</div>
+        <div class="start-grid">
+            <div class="desktop-icon" onclick="openWindow('win-appearance'); toggleStartMenu()">
+                <div class="icon-box" style="background: #8b5cf6;">🎨</div>
+                <span>Appearance</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-arkas'); toggleStartMenu()">
+                <div class="icon-box" style="background: #0284c7;">💰</div>
+                <span>ARKAS</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-widyabase'); toggleStartMenu()">
+                <div class="icon-box" style="background: #2563eb;">🐘</div>
+                <span>WidyaBase</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-widyasci'); toggleStartMenu()">
+                <div class="icon-box" style="background: #6366f1;">🔬</div>
+                <span>WidyaSci</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-pusdatin'); toggleStartMenu()">
+                <div class="icon-box" style="background: #1d4ed8;">🏛️</div>
+                <span>Pusdatin</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-widyastat'); toggleStartMenu()">
+                <div class="icon-box" style="background: #0d9488;">📊</div>
+                <span>WidyaStat</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-sinau'); toggleStartMenu()">
+                <div class="icon-box" style="background: #10b981;">🎓</div>
+                <span>Sinau LMS</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-browser'); toggleStartMenu()">
+                <div class="icon-box" style="background: #0284c7;">🌐</div>
+                <span>WidyaBrowser</span>
+            </div>
+            <div class="desktop-icon" onclick="openWindow('win-writer'); toggleStartMenu()">
+                <div class="icon-box" style="background: #f59e0b;">📝</div>
+                <span>Office</span>
+            </div>
+        </div>
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; color: black; font-weight: 800;">A</div>
+                <div>
+                    <div style="font-size: 12px; font-weight: 700;">Anita Kusuma, S.Pd.</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">anita@sewidya.id</div>
+                </div>
+            </div>
+            <button class="btn-ui" onclick="alert('Beralih Peran Multi-Role!')">Ganti Role</button>
+        </div>
+    </div>
+
+    <!-- DOCK / TASKBAR -->
+    <div id="dock-container">
+        <div class="dock">
+            <div class="dock-item" onclick="toggleStartMenu()" title="Start Launcher">
+                <span style="font-size: 24px;">🦅</span>
+            </div>
+            <div class="dock-separator"></div>
+            <div class="dock-item" onclick="openWindow('win-appearance')" title="Widya Appearance">
+                <span>🎨</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-arkas')" title="ARKAS Multidana">
+                <span>💰</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-widyabase')" title="WidyaBase Database Studio">
+                <span>🐘</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-widyasci')" title="WidyaSci Scientific Notebook">
+                <span>🔬</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-pusdatin')" title="Pusat Komando Pusdatin Kemendikdasmen">
+                <span>🏛️</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-widyastat')" title="WidyaStat Statistical Suite (SPSS / Stata / SAS)">
+                <span>📊</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-browser')" title="WidyaBrowser - Peramban Web Berdaulat">
+                <span>🌐</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-kedaulatan')" title="24 Pilar Kedaulatan Digital Total Peradaban Nusantara">
+                <span>🇮🇩</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-sinau')" title="LMS Sinau">
+                <span>🎓</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-writer')" title="Widya Office">
+                <span>📝</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-terminal')" title="Terminal">
+                <span>💻</span>
+            </div>
+            <div class="dock-item" onclick="openWindow('win-info')" title="Tentang WidyaOS">
+                <span>ℹ️</span>
+            </div>
+
+            <!-- Windows Tray -->
+            <div class="win-tray">
+                <span id="win-clock">12:00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WINDOW DRAG & MANAGER
+        let highestZ = 100;
+
+        function openWindow(id) {
+            const win = document.getElementById(id);
+            if (!win) return;
+            win.style.display = 'flex';
+            win.classList.remove('minimized');
+            highestZ++;
+            win.style.zIndex = highestZ;
+        }
+
+        function closeWindow(id) {
+            const win = document.getElementById(id);
+            if (win) win.style.display = 'none';
+        }
+
+        function minimizeWindow(id) {
+            const win = document.getElementById(id);
+            if (win) win.classList.add('minimized');
+        }
+
+        function maximizeWindow(id) {
+            const win = document.getElementById(id);
+            if (win) win.classList.toggle('maximized');
+        }
+
+        // ZORIN LAYOUT SWITCHER
+        function switchLayout(layoutName) {
+            document.body.classList.remove('layout-widya', 'layout-windows', 'layout-macos', 'layout-mobile');
+            document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
+
+            if (layoutName === 'windows') {
+                document.body.classList.add('layout-windows');
+                document.getElementById('card-layout-windows').classList.add('selected');
+            } else if (layoutName === 'macos') {
+                document.body.classList.add('layout-macos');
+                document.getElementById('card-layout-macos').classList.add('selected');
+            } else if (layoutName === 'mobile') {
+                document.body.classList.add('layout-mobile');
+                document.getElementById('card-layout-mobile').classList.add('selected');
+            } else {
+                document.body.classList.add('layout-widya');
+                document.getElementById('card-layout-widya').classList.add('selected');
+            }
+        }
+
+        // EDITION SWITCHER
+        function setEdition(edName) {
+            document.body.classList.remove('edition-lite');
+            document.querySelectorAll('.edition-btn').forEach(b => b.classList.remove('active'));
+
+            const badge = document.getElementById('topbar-edition-badge');
+            const info = document.getElementById('sys-edition-label');
+
+            if (edName === 'lite') {
+                document.body.classList.add('edition-lite');
+                document.getElementById('btn-ed-lite').classList.add('active');
+                badge.innerText = 'LITE 3T (RAM < 512MB)';
+                info.innerText = 'EDISI LITE RETROFIT 3T';
+            } else if (edName === 'mobile') {
+                document.getElementById('btn-ed-mobile').classList.add('active');
+                badge.innerText = 'MOBILE & TABLET';
+                info.innerText = 'EDISI MOBILE TOUCH COMPANION';
+            } else if (edName === 'ifp') {
+                document.getElementById('btn-ed-ifp').classList.add('active');
+                badge.innerText = 'IFP SMART BOARD 4K';
+                info.innerText = 'EDISI INTERACTIVE FLAT PANEL';
+            } else {
+                document.getElementById('btn-ed-pro').classList.add('active');
+                badge.innerText = 'PRO ENTERPRISE';
+                info.innerText = 'EDISI PRO ENTERPRISE';
+            }
+        }
+
+        // THEME COLORS & ACCENTS
+        function setAccent(color) {
+            document.documentElement.style.setProperty('--accent-color', color);
+            document.documentElement.style.setProperty('--accent-glow', color + '55');
+        }
+
+        function toggleThemeMode() {
+            document.body.classList.toggle('theme-light');
+        }
+
+        function setWallpaper(wpClass) {
+            document.body.classList.remove('wp-nusantara', 'wp-aurora', 'wp-cyber');
+            document.body.classList.add(wpClass);
+        }
+
+        // START MENU TOGGLE
+        function toggleStartMenu() {
+            const sm = document.getElementById('start-menu');
+            sm.classList.toggle('open');
+        }
+
+        // TERMINAL SIMULATOR
+        function handleTerminal(e) {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('term-cmd');
+                const output = document.getElementById('term-output');
+                const cmd = input.value.trim().toLowerCase();
+
+                let res = '';
+                if (cmd === 'help') {
+                    res = 'Perintah: widya --versi, bku status, layout [windows|macos|widya], role, clear';
+                } else if (cmd === 'widya --versi') {
+                    res = 'Widya-Lang Compiler v0.1.0-release (Kemendikdasmen Sovereign Edition)';
+                } else if (cmd === 'bku status') {
+                    res = 'BKU Saldo: Rp 276.400.000 (Terkunci Immutable Shield, 0 Selisih)';
+                } else if (cmd === 'layout windows') {
+                    switchLayout('windows');
+                    res = 'Mengganti tata letak desktop ke Windows 11... Berhasil!';
+                } else if (cmd === 'layout macos') {
+                    switchLayout('macos');
+                    res = 'Mengganti tata letak desktop ke macOS Cupertino... Berhasil!';
+                } else if (cmd === 'layout widya') {
+                    switchLayout('widya');
+                    res = 'Mengganti tata letak desktop ke WidyaOS Sovereign... Berhasil!';
+                } else if (cmd === 'clear') {
+                    output.innerHTML = '';
+                    input.value = '';
+                    return;
+                } else {
+                    res = 'Perintah tidak dikenal: ' + cmd + '. Ketik "help"';
+                }
+
+                output.innerHTML += '<span class="term-prompt">widya@sewidya:~$</span> ' + input.value + '<br>' + res + '<br><br>';
+                input.value = '';
+            }
+        }
+
+        // CLOCK
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('topbar-clock').innerText = timeStr;
+            document.getElementById('win-clock').innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // DRAGGABLE WINDOWS
+        document.querySelectorAll('.window').forEach(win => {
+            const header = win.querySelector('.window-header');
+            let isDragging = false, startX, startY, initX, initY;
+
+            header.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                highestZ++;
+                win.style.zIndex = highestZ;
+                startX = e.clientX;
+                startY = e.clientY;
+                initX = win.offsetLeft;
+                initY = win.offsetTop;
+
+                function onMouseMove(e) {
+                    if (!isDragging) return;
+                    win.style.left = (initX + e.clientX - startX) + 'px';
+                    win.style.top = (initY + e.clientY - startY) + 'px';
+                }
+
+                function onMouseUp() {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    </script>
+</body>
+</html>

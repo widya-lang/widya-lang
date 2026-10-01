@@ -1,0 +1,212 @@
+// ============================================================================
+// SIMULASI MASTER: WIDYAMOBILE FLUTTER ENGINE (DART & FLUTTER EQUIVALENT)
+// Uji Komprehensif Framework Mobile Deklaratif, Standar Industri & Keamanan Tinggi
+// ============================================================================
+
+impor "widyaos/modul/widyamobile_flutter_engine.wya";
+
+tulis("====================================================================");
+tulis("   SIMULASI MASTER: WIDYAMOBILE FLUTTER ENGINE (STANDAR INDUSTRI)   ");
+tulis("====================================================================");
+
+misal total_lulus = 0;
+
+// ----------------------------------------------------------------------------
+// [TEST 1] Uji Arsitektur Tiga Pohon (Widget Tree & Instansiasi Elemen)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 1] Menguji Arsitektur Tiga Pohon (Widget Tree, Element Tree)...");
+
+misal gaya_judul = GayaTeks(18.0, "#1E293B", "tebal", "normal");
+misal widget_judul = wm_teks("txt_judul", "Sewidya Mobile Siswa", gaya_judul);
+
+misal dekor_kartu = DekorasiKotak("#FFFFFF", 12.0, "#CBD5E1", 1.0, "rgba(0,0,0,0.08)", 8.0, 0.0, 4.0);
+misal prop_kartu = {};
+prop_kartu["lebar"] = 320.0;
+prop_kartu["tinggi"] = 180.0;
+prop_kartu["dekorasi"] = dekor_kartu;
+
+misal widget_kartu = wm_kotak("card_profil", prop_kartu, widget_judul);
+
+jika (widget_kartu.tipe_widget == "Container" && panjang(widget_kartu.anak_list) == 1) {
+    tulis("  -> LULUS: Pohon Widget deklaratif terbentuk sempurna dengan hierarki Container -> Text.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Pohon Widget gagal dibentuk.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 2] Uji Komputasi Tata Letak Box Constraints & Flex (Row, Column)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 2] Menguji Komputasi Tata Letak Box Constraints & Flex Engine...");
+
+misal batasan_layar = wm_buat_batasan_longgar(360.0, 640.0);
+misal render_kartu = wm_hitung_tata_letak(widget_kartu, batasan_layar);
+
+jika (render_kartu.ukuran.lebar == 320.0 && render_kartu.ukuran.tinggi == 180.0) {
+    tulis("  -> LULUS: Box Constraints menghitung dimensi RenderBox presisi: 320x180 px.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Perhitungan dimensi tata letak tidak akurat.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 3] Uji Manajemen State Reaktif (ValueNotifier & Dirty Marking)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 3] Menguji Manajemen State Reaktif & Dirty-Repaint Marking...");
+
+misal notifier_saldo = wm_buat_pemberitahu_nilai("vn_saldo_spp", 250000);
+wm_tambah_pendengar(notifier_saldo, "el_teks_saldo");
+
+misal elemen_peta = {};
+elemen_peta["el_teks_saldo"] = WidyaElemen("el_teks_saldo", widget_judul, false, kosong, [], render_kartu);
+
+misal pendengar_terpapar = wm_perbarui_nilai(notifier_saldo, 500000, elemen_peta);
+
+jika (pendengar_terpapar == 1 && elemen_peta["el_teks_saldo"].status_kotor == true && notifier_saldo.nilai_saat_ini == 500000) {
+    tulis("  -> LULUS: Nilai state terbarui (Rp 500.000) dan elemen pendengar berhasil ditandai kotor (dirty).");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Aliran notifikasi state reaktif gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 4] Uji Mesin Render 2D Canvas (Skia / Impeller Vector Pipeline)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 4] Menguji Mesin Render 2D Canvas (DrawRect, DrawRRect, Shadow)...");
+
+misal instruksi_cat = wm_cat_widget(widget_kartu, render_kartu);
+
+misal ada_bayangan = false;
+misal ada_rrect = false;
+
+untuk ins di instruksi_cat {
+    jika (ins.operasi == "DRAW_SHADOW") { ada_bayangan = true; }
+    jika (ins.operasi == "DRAW_RRECT") { ada_rrect = true; }
+}
+
+jika (ada_bayangan && ada_rrect && render_kartu.perlu_cat == false) {
+    tulis("  -> LULUS: Mesin gambar 2D berhasil menerbitkan instruksi render vektor (Shadow & RRect).");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Instruksi cat 2D kanvas tidak lengkap.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 5] Uji Penanganan Gestur Sentuh & Hit-Testing
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 5] Menguji Penanganan Gestur Sentuh & Hit-Testing Dispatcher...");
+
+render_kartu.posisi = TitikOffset(20.0, 50.0); // x: 20..340, y: 50..230
+misal sentuh_dalam = PeristiwaSentuh("KETUK", 100.0, 100.0);
+misal sentuh_luar = PeristiwaSentuh("KETUK", 10.0, 10.0);
+
+misal target_hit = wm_kirim_peristiwa_sentuh(sentuh_dalam, [render_kartu]);
+misal target_miss = wm_kirim_peristiwa_sentuh(sentuh_luar, [render_kartu]);
+
+jika (target_hit == "render_card_profil" && target_miss == kosong) {
+    tulis("  -> LULUS: Hit-testing akurat (titik (100,100) mengenai kartu, titik (10,10) di luar kartu).");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Hit-testing gestur sentuh meleset.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 6] Uji Mesin Animasi Tween & Kurva Easing (60 FPS Interpolasi)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 6] Menguji Mesin Animasi Tween & Kurva Easing (EaseInOut)...");
+
+misal val_awal = 100.0;
+misal val_akhir = 300.0;
+misal val_mid_linear = wm_interpolasi_tween(val_awal, val_akhir, 0.5, "LINEAR");
+misal val_mid_eased = wm_interpolasi_tween(val_awal, val_akhir, 0.5, "EASE_IN_OUT");
+
+// Pada t = 0.5, linear = 200.0, ease_in_out = 200.0
+// Pada t = 0.25, linear = 150.0, ease_in = 100 + 200*0.0625 = 112.5
+misal val_q1_easein = wm_interpolasi_tween(val_awal, val_akhir, 0.25, "EASE_IN");
+
+jika (val_mid_linear == 200.0 && val_q1_easein == 112.5) {
+    tulis("  -> LULUS: Interpolasi Tween 60 FPS dengan kurva Easing terhitung matematis presisi.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Perhitungan interpolasi animasi keliru.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 7] Uji Platform Channels & Hardware Permission Gating
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 7] Menguji Platform Channels & Permission Governor (Kamera & GPS)...");
+
+misal panggil_kamera_tanpa_izin = wm_panggil_kanal_metode("widya/kamera", "ambil_foto", {}, "TIDAK_ADA_IZIN");
+misal panggil_kamera_berizin = wm_panggil_kanal_metode("widya/kamera", "ambil_foto", {}, "IZIN_KAMERA_DIBERIKAN");
+
+jika (panggil_kamera_tanpa_izin.status_sukses == false && panggil_kamera_berizin.status_sukses == true) {
+    tulis("  -> LULUS: Platform Channel mematuhi Least Privilege (akses tanpa izin diblokir, akses berizin lolos).");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Pengamanan izin platform channel gagal.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 8] Uji Mobile Security Shield: Deteksi Root & Hooking (Frida)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 8] Menguji Mobile Security Shield (Deteksi Root, Magisk, & Frida)...");
+
+misal env_aman = {};
+misal audit_aman = wm_audit_keamanan_perangkat(env_aman);
+
+misal env_terkompromi = {};
+env_terkompromi["file_su_ada"] = true;
+env_terkompromi["frida_server_port_open"] = true;
+misal audit_bahaya = wm_audit_keamanan_perangkat(env_terkompromi);
+
+jika (audit_aman.skor_keamanan_persen == 100 && audit_bahaya.terdeteksi_root_jailbreak == true && audit_bahaya.terdeteksi_frida_hooking == true && audit_bahaya.skor_keamanan_persen == 10) {
+    tulis("  -> LULUS: Deteksi Root & Frida Hooking bekerja seketika, menurunkan skor keamanan ke 10%.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Audit proteksi keamanan mobile tidak mendeteksi ancaman.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 9] Uji Keystore Hardware-backed & Proteksi FLAG_SECURE
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 9] Menguji Hardware Keystore AES-256-GCM & Proteksi FLAG_SECURE...");
+
+misal ciphertext = wm_enkripsi_keystore_rahasia("kunci_guru_anita", "TOKEN_AUTORISASI_BOSP_2026");
+
+jika (audit_aman.flag_secure_aktif == true && audit_aman.keystore_hardware_terlindungi == true && panjang(ciphertext) > 20) {
+    tulis("  -> LULUS: Brankas Keystore terenkripsi AES-256 hardware dan FLAG_SECURE aktif anti-screenshot.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Proteksi Keystore atau FLAG_SECURE tidak aktif.");
+}
+
+// ----------------------------------------------------------------------------
+// [TEST 10] Uji Pemaket Mobile Berdaulat (.apk / .wapp) W3C DID (100% GMS-Free)
+// ----------------------------------------------------------------------------
+tulis("\n[TEST 10] Menguji Pemaket Mobile Mandiri Berdaulat (100% GMS-Free APK)...");
+
+misal paket_apk = wm_bangun_paket_mobile(
+    "id.sewidya.mobile.guru",
+    "1.0.0",
+    "did:widya:kemendikdasmen:app:sewidya_guru"
+);
+
+jika (paket_apk.gms_free == true && paket_apk.status_verifikasi == "TERTANDATANGANI_W3C_DID_VALID") {
+    tulis("  -> LULUS: Paket Mobile APK 100% GMS-Free, tervalidasi dengan segel digital W3C DID berdaulat.");
+    total_lulus = total_lulus + 1;
+} lainnya {
+    tulis("  -> GAGAL: Pemaket mobile tidak memenuhi kriteria kedaulatan.");
+}
+
+// ----------------------------------------------------------------------------
+// HASIL AKHIR
+// ----------------------------------------------------------------------------
+tulis("\n====================================================================");
+tulis("HASIL AKHIR SIMULASI: " + total_lulus + "/10 Skenario LULUS (" + (total_lulus * 10) + "%)");
+tulis("====================================================================");
+
+jika (total_lulus == 10) {
+    tulis("STATUS: WIDYAMOBILE FLUTTER ENGINE STANDAR INDUSTRI & KEAMANAN SUKSES PARIPURNA!");
+} lainnya {
+    tulis("STATUS: PENGUJIAN WIDYAMOBILE GAGAL!");
+}

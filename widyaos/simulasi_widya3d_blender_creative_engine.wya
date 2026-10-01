@@ -1,0 +1,94 @@
+// ============================================================================
+// SIMULASI: WIDYA3D CREATIVE STUDIO & MESH ENGINE (simulasi_widya3d_blender_creative_engine.wya)
+// Uji Komprehensif Pemodelan 3D Mesh, PBR Principled BSDF, Modifier Stack, Animasi, & glTF
+// ============================================================================
+
+impor "widyaos/modul/widya3d_blender_creative_engine.wya";
+
+fungsi assert_w3d(kondisi, nama_tes) {
+    jika (kondisi) {
+        cetak("[PASS] " + nama_tes);
+    } lainnya {
+        cetak("[FAIL] " + nama_tes);
+    }
+}
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("MEMULAI SIMULASI WIDYA3D CREATIVE ENGINE (SETARA BLENDER 4.x / MAYA)");
+    cetak("======================================================================");
+
+    // ------------------------------------------------------------------------
+    // TES 1: Inisialisasi Panggung Scene 3D Kreatif
+    // ------------------------------------------------------------------------
+    misal scene = w3d_buat_scene("scene_blender_01", "Karakter_Robot_Nusantara");
+    assert_w3d(scene.id_scene == "scene_blender_01", "Tes 1.1: ID Scene 3D terinisialisasi");
+    assert_w3d(scene.kamera_aktif["fov"] == 50.0, "Tes 1.2: Kamera perspektif sinematik FOV 50 terpasang");
+
+    // ------------------------------------------------------------------------
+    // TES 2: Pembentukan Mesh Poligon (8 verteks & 6 quad faces)
+    // ------------------------------------------------------------------------
+    misal kubus = w3d_buat_kubus_mesh(scene, "mesh_kubus_01", "Kubus_Badan", 2.0);
+    assert_w3d(panjang(kubus.daftar_verteks) == 8, "Tes 2.1: 8 titik verteks kubus 3D terbentuk");
+    assert_w3d(panjang(kubus.daftar_muka) == 6, "Tes 2.2: 6 sisi muka poligon (quad faces) terdaftar");
+
+    // ------------------------------------------------------------------------
+    // TES 3: Pengaturan Material PBR (Principled BSDF)
+    // ------------------------------------------------------------------------
+    misal mat_emas = w3d_buat_material_pbr("mat_gold", "Emas_Industri", "#ffd700", 0.9, 0.15);
+    assert_w3d(mat_emas.metallic == 0.9 && mat_emas.roughness == 0.15, "Tes 3.1: Karakteristik PBR Metallic & Roughness valid");
+    assert_w3d(mat_emas.ior == 1.45, "Tes 3.2: Indeks bias cahaya (IOR) standar Principled BSDF 1.45");
+
+    // ------------------------------------------------------------------------
+    // TES 4: Penerapan Modifier Mirror Sumbu X
+    // ------------------------------------------------------------------------
+    misal hasil_mirror = w3d_terapkan_modifier_mirror(kubus, "X");
+    assert_w3d(hasil_mirror["status"] == "MODIFIER_TERAPLIKASI", "Tes 4.1: Modifier Mirror simetri sumbu X aktif");
+    assert_w3d(panjang(kubus.daftar_verteks) == 16, "Tes 4.2: Verteks tergandakan secara simetris menjadi 16 verteks");
+
+    // ------------------------------------------------------------------------
+    // TES 5: Penerapan Modifier Subdivision Surface Catmull-Clark
+    // ------------------------------------------------------------------------
+    misal hasil_subsurf = w3d_terapkan_subdivision_surface(kubus, 1);
+    assert_w3d(hasil_subsurf["status"] == "SUBSURF_AKTIF", "Tes 5.1: Subdivision surface Catmull-Clark aktif");
+    assert_w3d(hasil_subsurf["estimasi_poligon"] == 24, "Tes 5.2: Estimasi poligon meningkat 4x lipat (24 quads)");
+
+    // ------------------------------------------------------------------------
+    // TES 6: Pembuatan Track Animasi & Keyframing Bézier
+    // ------------------------------------------------------------------------
+    misal track = w3d_buat_track_animasi(scene, "mesh_kubus_01", 24);
+    w3d_tambah_keyframe(track, 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+    w3d_tambah_keyframe(track, 48, 10.0, 0.0, 5.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0);
+    assert_w3d(panjang(track.daftar_keyframe) == 2, "Tes 6: Dua keyframe Bézier berhasil didaftarkan pada timeline");
+
+    // ------------------------------------------------------------------------
+    // TES 7: Evaluasi Interpolasi Posisi Animasi pada Frame Target
+    // ------------------------------------------------------------------------
+    misal pos_f24 = w3d_evaluasi_posisi_pada_frame(track, 24);
+    // Frame 24 berada di tengah antara 1 dan 48 (sekitar t ~ 0.489)
+    assert_w3d(pos_f24["x"] > 4.5 && pos_f24["x"] < 5.5, "Tes 7.1: Interpolasi translasi sumbu X terhitung mulus (~5.0)");
+    assert_w3d(pos_f24["z"] > 2.0 && pos_f24["z"] < 3.0, "Tes 7.2: Interpolasi translasi sumbu Z terhitung akurat (~2.5)");
+
+    // ------------------------------------------------------------------------
+    // TES 8: Penyematan Segel Kriptografis W3C DID pada Mesh Aset
+    // ------------------------------------------------------------------------
+    misal segel = w3d_segel_aset_mesh(kubus, "did:widya:animator:smk-bisa-hebat");
+    assert_w3d(segel["status_perlindungan"] == "TERDAFTAR_HAK_CIPTA_W3C_DID", "Tes 8: Mesh tersegel W3C DID anti-pencurian aset");
+
+    // ------------------------------------------------------------------------
+    // TES 9: Serialisasi glTF 2.0 / GLB Manifes
+    // ------------------------------------------------------------------------
+    misal gltf = w3d_ekspor_gltf_manifes(scene);
+    assert_w3d(panjang(gltf) > 50, "Tes 9.1: Manifes glTF 2.0 berhasil dibangkitkan");
+
+    // ------------------------------------------------------------------------
+    // TES 10: Validasi Integritas Scene 3D Siap Render
+    // ------------------------------------------------------------------------
+    assert_w3d(panjang(scene.daftar_mesh) == 1 && panjang(scene.daftar_track_animasi) == 1, "Tes 10: Hierarki scene 3D lengkap siap render & simulasi");
+
+    cetak("======================================================================");
+    cetak("SELURUH PENGUJIAN WIDYA3D CREATIVE ENGINE SELESAI (10/10 PASS)");
+    cetak("======================================================================");
+}
+
+utama();

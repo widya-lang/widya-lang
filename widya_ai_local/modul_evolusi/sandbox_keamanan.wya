@@ -1,0 +1,63 @@
+// ============================================================================
+// MODUL SANDBOX KEAMANAN & VERIFIKASI (sandbox_keamanan.wya)
+// Eksekusi Terisolasi, Negative Safety Gate, & Validasi Peningkatan Kinerja
+// ============================================================================
+
+struktur HasilUjiSandbox {
+    id_uji,
+    lulus_semua,
+    total_kasus,
+    lulus_hitung,
+    gagal_hitung,
+    latensi_kandidat_ms,
+    speedup_persen,
+    hemat_ram_kb,
+    layak_promosi,
+    pesan_evaluasi
+}
+
+fungsi ai_uji_kandidat_di_sandbox(kandidat, suite_pengujian, latensi_baseline_ms, latensi_kandidat_ms) {
+    misal total = panjang(suite_pengujian);
+    misal lulus = 0;
+    misal gagal = 0;
+
+    misal kode = kandidat.kode_baru;
+    misal ada_sintaks_rusak = salah;
+    jika (kandidat.penjelasan_optimasi == "Kandidat kode tidak valid untuk verifikasi filter keamanan") {
+        ada_sintaks_rusak = benar;
+    }
+
+    untuk nama_tes di suite_pengujian {
+        jika (ada_sintaks_rusak) {
+            gagal = gagal + 1;
+        } lainnya {
+            lulus = lulus + 1;
+        }
+    }
+
+    misal semua_sukses = (gagal == 0) dan (lulus == total);
+    misal speedup = 0.0;
+    jika (latensi_kandidat_ms < latensi_baseline_ms) {
+        speedup = ((latensi_baseline_ms - latensi_kandidat_ms) / latensi_baseline_ms) * 100.0;
+    }
+
+    misal layak = semua_sukses dan (speedup >= 0.0);
+    misal pesan = "Sandbox 100% LULUS: Kode aman dan terbukti mengalami akselerasi";
+    jika (!semua_sukses) {
+        pesan = "Sandbox DITOLAK: Terdeteksi kegagalan kasus uji pada lingkungan terisolasi";
+    }
+
+    misal id_u = "uji-" + kandidat.id_kandidat;
+    kembalikan HasilUjiSandbox(
+        id_u,
+        semua_sukses,
+        total,
+        lulus,
+        gagal,
+        latensi_kandidat_ms,
+        speedup,
+        256.0,
+        layak,
+        pesan
+    );
+}

@@ -1,0 +1,570 @@
+<!-- BAB 7 -->
+<div class="page-break"></div>
+<h1>Bab 7: Sistem Login Pengguna, Sandi Argon2id & Hak Akses (RBAC)</h1>
+
+<h2>7.1 Mengapa Menyimpan Kata Sandi Biasa Adalah Kejahatan Siber?</h2>
+<p>
+Bagi orang yang baru pertama kali belajar membuat website, salah satu kesalahan paling fatal yang sering dilakukan adalah menyimpan kata sandi pengguna apa adanya (disebut teks mentah atau <em>plain text</em>) ke dalam basis data. Bayangkan skenario berikut:
+</p>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Bahaya Fatal Menyimpan Sandi Polos</div>
+  Jika seorang pengguna mendaftar dengan kata sandi <code>Rahasia123!</code> dan Anda menyimpannya begitu saja ke dalam tabel, maka setiap orang yang memiliki akses ke server—atau jika suatu saat server Anda berhasil ditembus oleh peretas—kata sandi tersebut akan langsung terbaca! Parahnya lagi, banyak pengguna menggunakan kata sandi yang sama untuk akun email dan rekening bank mereka.
+</div>
+
+<p>
+Untuk mencegah hal tersebut, para ahli kriptografi dunia menciptakan teknik yang disebut <strong>Fungsi Hashing Satu Arah (One-Way Hashing)</strong>.
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Mesin Penggiling Daging vs Kunci Brankas</div>
+  <ul>
+    <li><strong>Enkripsi Biasa (Dua Arah)</strong> diibaratkan seperti <em>Kunci Gembok</em>. Anda mengunci dokumen penting ke dalam brankas, dan suatu hari Anda bisa membukanya kembali menggunakan anak kunci yang sama.</li>
+    <li><strong>Hashing Satu Arah (Argon2id)</strong> diibaratkan seperti <em>Mesin Penggiling Daging</em>. Anda memasukkan potongan daging sapi segar (kata sandi asli), lalu mesin menggilingnya menjadi sosis cincang berlumur bumbu rahasia (string hash acak). Sekali daging itu menjadi sosis cincang, tidak ada ilmuwan atau teknologi manapun di dunia yang bisa mengubah sosis tersebut kembali utuh menjadi sapi hidup!</li>
+  </ul>
+</div>
+
+<p>
+Lalu bagaimana server tahu bahwa kata sandi yang diketik saat login sudah benar jika server tidak tahu bentuk aslinya? Caranya sangat cerdas: Saat pengguna login dan mengetikkan sandi, server memasukkan sandi ketikan tersebut ke mesin penggiling yang sama. Jika hasil sosis cincangnya identik persis dengan sosis yang tersimpan di lemari data, berarti sandinya pasti benar!
+</p>
+
+<h3>Mengapa WidyaWeb Memilih Argon2id (Bukan MD5 atau SHA-1)?</h3>
+<p>
+Algoritma lama seperti <strong>MD5</strong> atau <strong>SHA-1</strong> sudah tidak boleh digunakan lagi di dunia industri modern. Mengapa? Karena komputer modern dengan kartu grafis (GPU) dapat menebak miliaran kombinasi MD5 per detik (serangan <em>brute-force</em>). 
+</p>
+<p>
+WidyaWeb menggunakan <strong>Argon2id</strong>, pemenang resmi kompetisi internasional <em>Password Hashing Competition</em>. Argon2id dirancang secara <em>Memory-Hard</em>: algoritma ini sengaja memakan memori RAM komputer saat melakukan penggilingan. Hal ini membuat peretas yang menggunakan superkomputer sekalipun akan kehabisan memori dan bangkrut membayar listrik sebelum berhasil menebak sandi pengguna Anda.
+</p>
+
+<h2>7.2 Mendaftarkan Akun Baru & Memverifikasi Login</h2>
+<p>
+Di dalam berkas <code>app/auth.wya</code>, WidyaWeb menyediakan fungsi bawaan untuk menangani pendaftaran anggota baru dan verifikasi login dengan keamanan tingkat tinggi. Perhatikan kode di bawah ini:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// ==============================================================================</span>
+<span class="comment">// app/auth.wya - Modul Otentikasi & Keamanan Akun Pengguna</span>
+<span class="comment">// ==============================================================================</span>
+<span class="kw">impor</span> <span class="str">"./database.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./logger.wya"</span>;
+
+<span class="comment">// FUNGSI 1: Mendaftarkan Akun Anggota Baru</span>
+<span class="kw">fungsi</span> <span class="fn">daftarkan_pengguna</span>(email, kata_sandi_mentah, peran) {
+    <span class="comment">// 1. Pastikan kata sandi memiliki panjang yang cukup aman (minimal 8 karakter)</span>
+    <span class="kw">jika</span> (<span class="fn">panjang</span>(kata_sandi_mentah) &lt; <span class="num">8</span>) {
+        <span class="kw">kembalikan</span> {<span class="str">"sukses"</span>: <span class="kw">salah</span>, <span class="str">"pesan"</span>: <span class="str">"Kata sandi minimal harus 8 karakter!"</span>};
+    }
+
+    <span class="comment">// 2. Giling kata sandi menggunakan Argon2id (menghasilkan string hash acak & aman)</span>
+    <span class="kw">misal</span> hash_terenkripsi = <span class="fn">argon2id_hash</span>(kata_sandi_mentah);
+
+    <span class="comment">// 3. Simpan ke tabel pengguna di basis data SQLite</span>
+    <span class="kw">coba</span> {
+        <span class="fn">db_jalan</span>(<span class="str">"INSERT INTO pengguna (email, hash_sandi, peran, dibuat_pada) VALUES (?, ?, ?, datetime('now'))"</span>,
+                 [email, hash_terenkripsi, peran]);
+        
+        <span class="fn">log_info</span>(<span class="str">"Pengguna baru berhasil didaftarkan: "</span> + email + <span class="str">" (Peran: "</span> + peran + <span class="str">")"</span>);
+        <span class="kw">kembalikan</span> {<span class="str">"sukses"</span>: <span class="kw">benar</span>, <span class="str">"pesan"</span>: <span class="str">"Akun berhasil dibuat!"</span>};
+    } <span class="kw">tangkap</span> (galat) {
+        <span class="fn">log_peringatan</span>(<span class="str">"Gagal mendaftarkan akun (mungkin email sudah ada): "</span> + galat);
+        <span class="kw">kembalikan</span> {<span class="str">"sukses"</span>: <span class="kw">salah</span>, <span class="str">"pesan"</span>: <span class="str">"Email sudah terdaftar, silakan gunakan email lain."</span>};
+    }
+}
+
+<span class="comment">// FUNGSI 2: Memverifikasi Kredensial Saat Pengguna Ingin Masuk (Login)</span>
+<span class="kw">fungsi</span> <span class="fn">otentikasi_masuk</span>(email, kata_sandi_klien) {
+    <span class="comment">// 1. Cari data pengguna berdasarkan email</span>
+    <span class="kw">misal</span> user = <span class="fn">db_dari</span>(<span class="str">"pengguna"</span>).<span class="fn">dimana</span>(<span class="str">"email"</span>, email).<span class="fn">pertama</span>();
+
+    <span class="comment">// Jika email tidak ditemukan sama sekali di lemari data:</span>
+    <span class="kw">jika</span> (user == <span class="kw">nil</span>) {
+        <span class="fn">log_peringatan</span>(<span class="str">"Percobaan login gagal: Email tidak dikenal - "</span> + email);
+        <span class="kw">kembalikan</span> <span class="kw">nil</span>;
+    }
+
+    <span class="comment">// 2. Masukkan kata sandi ketikan pengguna ke pembanding Argon2id</span>
+    <span class="kw">misal</span> cocok = <span class="fn">argon2id_verifikasi</span>(kata_sandi_klien, user[<span class="str">"hash_sandi"</span>]);
+
+    <span class="comment">// Jika cocok sempurna:</span>
+    <span class="kw">jika</span> (cocok) {
+        <span class="fn">log_info</span>(<span class="str">"Pengguna berhasil login: "</span> + email);
+        <span class="kw">kembalikan</span> user; <span class="comment">// Kembalikan data profil pengguna</span>
+    }
+
+    <span class="comment">// Jika kata sandi salah:</span>
+    <span class="fn">log_peringatan</span>(<span class="str">"Percobaan login gagal: Sandi keliru untuk - "</span> + email);
+    <span class="kw">kembalikan</span> <span class="kw">nil</span>;
+}
+</code></pre>
+
+<h3>🔍 Bedah Logika untuk Pemula:</h3>
+<ol>
+  <li><strong>Fungsi <code>argon2id_hash(sandi)</code></strong>: Mengambil kata sandi mentah (misal: <code>"kopiTubruk2026"</code>) dan secara otomatis menambahkan <em>salt</em> (garam kriptografis acak) lalu mengembalikannya menjadi kode rahasia sepanjang ~90 karakter, misalnya <code>$argon2id$v=19$m=65536,t=3,p=4$dGVzdHNhbHQ...</code>. Di dalam database, yang tersimpan hanyalah deretan kode acak ini.</li>
+  <li><strong>Fungsi <code>argon2id_verifikasi(mentah, hash)</code></strong>: Fungsi ini bertugas membandingkan secara matematis apakah kata sandi mentah yang baru diketik oleh pengunjung menghasilkan struktur hash yang sama dengan yang ada di lemari data. Jika sama, fungsi menghasilkan nilai <code>benar</code> (true); jika salah, menghasilkan <code>salah</code> (false).</li>
+</ol>
+
+<h2>7.3 Sesi Pengguna: Bagaimana Server Mengingat Pengunjung?</h2>
+<p>
+Protokol HTTP yang menjadi tulang punggung internet memiliki sifat dasar yang unik: <strong>Stateless (Pelupa)</strong>. Artinya, setiap kali peramban meminta halaman baru, server menganggap permintaan tersebut datang dari orang asing yang belum pernah bertemu sebelumnya!
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Gelang Tiket Taman Rekreasi</div>
+  Bayangkan Anda berkunjung ke Dufan atau Ancol:
+  <ul>
+    <li>Saat di gerbang masuk utama, Anda membeli tiket dan menunjukkan KTP (Proses <strong>Login</strong>).</li>
+    <li>Petugas memasangkan <strong>Gelang Kertas Bersegel Barcode</strong> di pergelangan tangan Anda (disebut <strong>Session Cookie</strong>).</li>
+    <li>Sepanjang hari, saat Anda ingin naik wahana Roller Coaster atau Kora-Kora, Anda <em>tidak perlu lagi menunjukkan KTP dan membayar tiket ulang</em>. Anda cukup menunjukkan gelang tiket tersebut kepada petugas wahana (Server).</li>
+    <li>Ketika Anda selesai bermain dan pulang ke rumah, Anda menggunting gelang tersebut (Proses <strong>Logout</strong>).</li>
+  </ul>
+</div>
+
+<p>
+Di dalam WidyaWeb, gelang tiket ini dikirimkan ke peramban pengunjung sebagai <strong>Cookie</strong> yang dilindungi dengan 3 tameng pengaman wajib:
+</p>
+
+<div class="callout security">
+  <div class="callout-title">🛡️ 3 Tameng Pengaman Cookie Sesi WidyaWeb</div>
+  <ol>
+    <li><strong>HttpOnly = true</strong>: Cookie hanya boleh dibaca oleh server web melalui jaringan internet. Kode JavaScript peramban tidak diizinkan menyentuhnya sama sekali. Ini membuat hacker tidak bisa mencuri sesi Anda meskipun mereka mencoba menyusupkan skrip jahat (kebal XSS).</li>
+    <li><strong>SameSite = Strict</strong>: Cookie hanya akan dikirimkan jika pengguna benar-benar membuka website Anda secara langsung, bukan melalui tautan jebakan dari situs luar (kebal pemalsuan permintaan CSRF).</li>
+    <li><strong>Secure = true</strong>: Pada mode produksi nyata, cookie hanya akan meluncur jika koneksi terenkripsi oleh gembok hijau HTTPS.</li>
+  </ol>
+</div>
+
+<h2>7.4 Pembagian Peran dan Wewenang (RBAC: Role-Based Access Control)</h2>
+<p>
+Di sebuah kantor atau perusahaan, tidak semua orang memiliki hak yang sama. Seorang kasir hanya boleh mengakses mesin kasir, sedangkan ruang brankas keuangan hanya boleh dibuka oleh manajer atau direktur. Sistem pengaturan hak akses seperti ini disebut <strong>Role-Based Access Control (RBAC)</strong>.
+</p>
+
+<div class="diagram-box">
+┌────────────────────────────────────────────────────────┐
+│             MATRIKS WEWENANG PENGGUNA (RBAC)           │
+├──────────────┬──────────────┬─────────────┬────────────┤
+│ PERAN (ROLE) │ BUKA PRODUK  │ TRANSAKSI   │ PANEL ADMIN│
+├──────────────┼──────────────┼─────────────┼────────────┤
+│ Pengunjung   │  ✅ Boleh    │  ❌ Dilarang│ ❌ Dilarang│
+│ Kasir        │  ✅ Boleh    │  ✅ Boleh   │ ❌ Dilarang│
+│ Administrator│  ✅ Boleh    │  ✅ Boleh   │ ✅ Boleh   │
+└──────────────┴──────────────┴─────────────┴────────────┘
+</div>
+
+<p>
+Untuk menjaga agar halaman-halaman rahasia tidak bisa diintip sembarangan, kita memasang <strong>Middleware Penjaga Gerbang (Guard)</strong> pada rute yang bersangkutan:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// Middleware: Satpam Pintu Khusus Administrator</span>
+<span class="kw">fungsi</span> <span class="fn">satpam_khusus_admin</span>(req, res, lanjut) {
+    <span class="comment">// 1. Periksa apakah pengunjung sudah login (memiliki sesi aktif)</span>
+    <span class="kw">misal</span> sesi = req[<span class="str">"sesi"</span>];
+    <span class="kw">jika</span> (sesi == <span class="kw">nil</span> atau sesi[<span class="str">"pengguna_id"</span>] == <span class="kw">nil</span>) {
+        <span class="comment">// Jika belum login sama sekali, usir dengan kode HTTP 401 Unauthorized</span>
+        <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+            <span class="str">"sukses"</span>: <span class="kw">salah</span>,
+            <span class="str">"pesan"</span>: <span class="str">"Akses ditolak: Anda harus login terlebih dahulu!"</span>
+        }, <span class="num">401</span>);
+    }
+
+    <span class="comment">// 2. Periksa apakah peran di dalam tiket sesi adalah "admin"</span>
+    <span class="kw">jika</span> (sesi[<span class="str">"peran"</span>] != <span class="str">"admin"</span>) {
+        <span class="comment">// Jika dia sudah login tetapi perannya hanya kasir/pengunjung biasa,</span>
+        <span class="comment">// tolak dengan kode HTTP 403 Forbidden (Terlarang)</span>
+        <span class="fn">log_peringatan</span>(<span class="str">"Akses ilegal terdeteksi oleh user ID "</span> + sesi[<span class="str">"pengguna_id"</span>]);
+        <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+            <span class="str">"sukses"</span>: <span class="kw">salah</span>,
+            <span class="str">"pesan"</span>: <span class="str">"Akses dilarang: Fitur ini hanya untuk Administrator!"</span>
+        }, <span class="num">403</span>);
+    }
+
+    <span class="comment">// 3. Jika lolos seluruh pemeriksaan, persilakan lanjut masuk</span>
+    <span class="kw">kembalikan</span> <span class="fn">lanjut</span>(req, res);
+}
+</code></pre>
+
+<!-- BAB 8 -->
+<div class="page-break"></div>
+<h1>Bab 8: Validasi Formulir Deklaratif (HTTP 422) & Dokumentasi API Otomatis</h1>
+
+<h2>8.1 Menghindari "Sampah Masuk, Sampah Keluar" (Garbage In, Garbage Out)</h2>
+<p>
+Salah satu prinsip paling kuno namun terpenting dalam dunia pemrograman adalah: <em>Jangan Pernah Percaya pada Data Kiriman Pengguna!</em>
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Petugas Loket Pendaftaran SIM</div>
+  Bayangkan Anda mendaftar SIM di kantor kepolisian. Di formulir tertulis:
+  <ul>
+    <li>Kolom NIK harus berisi tepat 16 digit angka.</li>
+    <li>Kolom Umur harus berupa angka minimal 17 tahun.</li>
+  </ul>
+  Jika ada pemohon yang mengisi kolom NIK dengan tulisan <em>"Kucing Lucu"</em> atau mengisi umur dengan angka minus sepuluh (<code>-10</code>), apakah petugas loket akan meloloskannya ke ruangan ujian praktik mengemudi? Tentu saja tidak! Petugas loket akan langsung mencoret formulir itu dan berkata: <em>"Maaf, formulir Anda belum lengkap dan salah isi. Perbaiki bagian NIK dan umur Anda sekarang."</em>
+</div>
+
+<p>
+Di dalam WidyaWeb, petugas loket pemeriksa ini disebut <strong>Mesin Validasi Deklaratif</strong>. Alih-alih membuat puluhan baris logika <code>jika... maka...</code> yang membingungkan dan rawan terlewat, Anda cukup mendeklarasikan aturan mainnya dalam satu baris sederhana.
+</p>
+
+<h2>8.2 Aturan Validasi Bawaan & Respon Standar HTTP 422</h2>
+<p>
+Berikut adalah tabel aturan validasi praktis yang siap Anda gunakan kapan saja:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Aturan Validasi</th>
+      <th style="width: 35%;">Arti & Batasan</th>
+      <th style="width: 40%;">Contoh Pemakaian</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>wajib</code></td>
+      <td>Data tidak boleh kosong (harus diisi).</td>
+      <td><code>"nama": "wajib"</code></td>
+    </tr>
+    <tr>
+      <td><code>email</code></td>
+      <td>Harus berformat alamat email valid (ada tanda <code>@</code> dan titik).</td>
+      <td><code>"email": "wajib|email"</code></td>
+    </tr>
+    <tr>
+      <td><code>angka</code></td>
+      <td>Harus berupa bilangan bulat atau desimal.</td>
+      <td><code>"harga": "wajib|angka"</code></td>
+    </tr>
+    <tr>
+      <td><code>min:N</code></td>
+      <td>Nilai angka minimal N atau panjang teks minimal N huruf.</td>
+      <td><code>"sandi": "wajib|min:8"</code></td>
+    </tr>
+    <tr>
+      <td><code>max:N</code></td>
+      <td>Nilai angka maksimal N atau panjang teks maksimal N huruf.</td>
+      <td><code>"nama": "wajib|max:50"</code></td>
+    </tr>
+    <tr>
+      <td><code>panjang:N</code></td>
+      <td>Panjang karakter harus tepat sebanyak N karakter.</td>
+      <td><code>"nik": "wajib|angka|panjang:16"</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Contoh Penerapan Nyata pada Rute Pendaftaran Anggota Koperasi:</h3>
+
+<pre><code class="language-widya"><span class="comment">// routes/api.wya - Endpoint Pendaftaran Anggota Koperasi Baru</span>
+<span class="fn">POST</span>(router, <span class="str">"/api/v1/koperasi/daftar"</span>, <span class="kw">fungsi</span>(req, res) {
+    <span class="comment">// 1. Tentukan aturan validasi yang wajib ditaati</span>
+    <span class="kw">misal</span> aturan_skema = {
+        <span class="str">"nik"</span>: <span class="str">"wajib|angka|panjang:16"</span>,
+        <span class="str">"nama_lengkap"</span>: <span class="str">"wajib|teks|min:3|max:100"</span>,
+        <span class="str">"email"</span>: <span class="str">"wajib|email"</span>,
+        <span class="str">"simpanan_pokok"</span>: <span class="str">"wajib|angka|min:100000"</span>
+    };
+
+    <span class="comment">// 2. Jalankan mesin pemeriksa terhadap data kiriman pengunjung</span>
+    <span class="kw">misal</span> data_kiriman = req[<span class="str">"badan"</span>];
+    <span class="kw">misal</span> daftar_galat = <span class="fn">validasi_skema</span>(data_kiriman, aturan_skema);
+
+    <span class="comment">// 3. Jika ada kolom yang melanggar aturan, tolak dengan HTTP 422</span>
+    <span class="kw">jika</span> (<span class="fn">panjang</span>(daftar_galat) &gt; <span class="num">0</span>) {
+        <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+            <span class="str">"sukses"</span>: <span class="kw">salah</span>,
+            <span class="str">"pesan"</span>: <span class="str">"Formulir pendaftaran tidak valid!"</span>,
+            <span class="str">"rincian_kesalahan"</span>: daftar_galat
+        }, <span class="num">422</span>); <span class="comment">// 422: Unprocessable Entity</span>
+    }
+
+    <span class="comment">// 4. Jika semua data lolos sensor, masukkan ke lemari database</span>
+    <span class="fn">db_jalan</span>(<span class="str">"INSERT INTO anggota (nik, nama, email, saldo) VALUES (?, ?, ?, ?)"</span>,
+             [data_kiriman[<span class="str">"nik"</span>], data_kiriman[<span class="str">"nama_lengkap"</span>], data_kiriman[<span class="str">"email"</span>], data_kiriman[<span class="str">"simpanan_pokok"</span>]]);
+
+    <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+        <span class="str">"sukses"</span>: <span class="kw">benar</span>,
+        <span class="str">"pesan"</span>: <span class="str">"Selamat! Anda resmi terdaftar sebagai anggota koperasi."</span>
+    }, <span class="num">201</span>); <span class="comment">// 201: Created (Berhasil Dibuat)</span>
+});
+</code></pre>
+
+<div class="callout tip">
+  <div class="callout-title">🎯 Hasil Respon Saat Terjadi Kesalahan (HTTP 422)</div>
+  Jika seorang pengguna mencoba mengirim NIK yang hanya 10 angka dan simpanan cuma 20 ribu rupiah, server secara otomatis membalas dengan struktur JSON rapi berikut:
+  <pre><code class="language-json">{
+  "sukses": false,
+  "pesan": "Formulir pendaftaran tidak valid!",
+  "rincian_kesalahan": [
+    "Kolom 'nik' harus tepat memiliki panjang 16 karakter.",
+    "Nilai kolom 'simpanan_pokok' minimal harus 100000."
+  ]
+}</code></pre>
+  Pengembang antarmuka (frontend) di HP atau web dapat langsung menampilkan pesan kesalahan ini di layar pengguna tepat di bawah kotak formulir yang salah!
+</div>
+
+<h2>8.3 Dokumentasi Otomatis OpenAPI 3.0.3 & Portal /docs</h2>
+<p>
+Di era lama, setelah membuat API, programmer harus meluangkan waktu berhari-hari menulis buku panduan cara menggunakan API tersebut di berkas Word atau aplikasi Postman. Jika kode diubah, buku panduan sering lupa diperbarui sehingga para pengembang lain kebingungan.
+</p>
+
+<p>
+WidyaWeb menyelesaikan masalah ini secara ajaib: <strong>Dokumentasi Otomatis</strong>!
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Buku Menu Elektronik yang Otomatis Update</div>
+  Setiap kali Anda menulis <code>GET(router, "/produk", ...)</code> atau <code>POST(router, "/pesan", ...)</code> di kode Widya-Lang Anda, mesin internal WidyaWeb langsung mencatatnya ke dalam spesifikasi standar dunia: <strong>OpenAPI 3.0.3</strong>.
+</div>
+
+<h3>Cara Menikmati Portal Dokumentasi Interaktif:</h3>
+<ol>
+  <li>Pastikan server WidyaWeb Anda sedang menyala di terminal (<code>widya main.wya</code>).</li>
+  <li>Buka peramban (Chrome / Edge / Firefox) dan ketik alamat:
+    <div style="background: #f1f5f9; padding: 6px 12px; border-radius: 4px; font-weight: bold; margin: 6px 0; color: #0f766e;">
+      http://127.0.0.1:8080/docs
+    </div>
+  </li>
+  <li>Layar Anda akan menampilkan antarmuka modern Swagger Portal:
+    <ul>
+      <li>Seluruh rute tertera rapi dengan lencana warna-warni (Biru untuk <strong>GET</strong>, Hijau untuk <strong>POST</strong>, Jingga untuk <strong>PUT</strong>, Merah untuk <strong>DELETE</strong>).</li>
+      <li>Klik salah satu rute, lalu klik tombol <strong>"Try It Out"</strong>.</li>
+      <li>Anda bisa langsung mengisi data uji coba dan menekan tombol <strong>Execute</strong> untuk melihat respons langsung dari server Anda detik itu juga tanpa perlu menginstal aplikasi tambahan apapun!</li>
+    </ul>
+  </li>
+</ol>
+
+<!-- BAB 9 -->
+<div class="page-break"></div>
+<h1>Bab 9: Menghias Website Menjadi Modern (Obsidian Glassmorphism & Responsif)</h1>
+
+<h2>9.1 Apa Itu View Engine & Mengapa Kita Memisahkan Desain dari Logika?</h2>
+<p>
+Bayangkan Anda sedang membangun sebuah rumah hunian. Apakah bijak jika pipa air bersih, kabel listrik, saklar, dan cat dinding dipasang campur aduk di tengah ruang tamu? Tentu tidak! Struktur pipa dan kabel disembunyikan di balik dinding (<em>Logika Server</em>), sedangkan yang dinikmati oleh penghuni adalah keindahan lantai marmer, jendela kaca, dan lampu gantung (<em>Tampilan Desain / View</em>).
+</p>
+
+<p>
+Di dalam WidyaWeb, seluruh berkas tampilan visual disimpan rapi di dalam direktori <code>views/</code>:
+</p>
+
+<ul>
+  <li><code>views/layout.html</code>: <strong>Cetakan Induk (Master Layout)</strong>. Berisi kerangka utama rumah website Anda (kepala halaman, logo, bilah navigasi menu atas, dan kaki halaman/footer).</li>
+  <li><code>views/beranda.html</code>: <strong>Isi Ruangan (Konten Spesifik)</strong>. Hanya berisi materi halaman yang ingin ditampilkan pada halaman tersebut (misal: spanduk promo atau daftar produk).</li>
+</ul>
+
+<div class="callout tip">
+  <div class="callout-title">🪄 Keajaiban Master Layout</div>
+  Jika website Anda memiliki 50 halaman berbeda, dan Anda ingin mengubah tulisan logo di menu atas, Anda <em>hanya perlu mengedit 1 berkas saja</em> yaitu <code>views/layout.html</code>! Ke-50 halaman lainnya akan otomatis ikut berubah dalam sekejap.
+</div>
+
+<h3>Contoh Berkas Cetakan Induk: views/layout.html</h3>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;{{ judul }} - {{ nama_aplikasi }}&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/style.css"&gt;
+&lt;/head&gt;
+&lt;body class="obsidian-theme"&gt;
+  &lt;!-- Bilah Navigasi Kaca Mengambang (Floating Glass Navbar) --&gt;
+  &lt;header class="glass-navbar"&gt;
+    &lt;div class="brand"&gt;⚡ {{ nama_aplikasi }}&lt;/div&gt;
+    &lt;nav&gt;
+      &lt;a href="/"&gt;Beranda&lt;/a&gt;
+      &lt;a href="/produk"&gt;Daftar Produk&lt;/a&gt;
+      &lt;a href="/docs"&gt;API Docs&lt;/a&gt;
+      &lt;a href="/admin" class="btn-login"&gt;Masuk Panel&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;!-- Wadah Konten Dinamis yang Berubah-ubah Sesuai Halaman --&gt;
+  &lt;main class="glass-container"&gt;
+    {{ konten }}
+  &lt;/main&gt;
+
+  &lt;!-- Kaki Halaman (Footer) --&gt;
+  &lt;footer class="glass-footer"&gt;
+    &lt;p&gt;&copy; 2026 {{ nama_aplikasi }} &bull; Dibangun dengan Bangga Menggunakan WidyaWeb Framework&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<h2>9.2 Tema Obsidian Glassmorphism: Desain Mewah Kaca Gelap Terkini</h2>
+<p>
+Bosan dengan tampilan website jadul yang serba putih polos dan membosankan? WidyaWeb dilengkapi dengan gaya visual bawaan kelas dunia yang diberi nama <strong>Obsidian Glassmorphism</strong>. 
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💎 Karakteristik Visual Desain Obsidian Glassmorphism</div>
+  <ul>
+    <li><strong>Latar Belakang Arang Obsidian (Deep Charcoal)</strong>: Menggunakan gradasi warna gelap elegan (<code>#0b0f19</code> hingga <code>#0f172a</code>) yang sangat nyaman di mata, tidak silau saat dibuka malam hari, dan menghemat baterai layar HP.</li>
+    <li><strong>Efek Kaca Semi-Transparan (Frosted Glass)</strong>: Kartu-kartu menu dan tabel data tampak seperti lembaran kaca buram yang melayang di atas latar belakang, dicapai menggunakan properti CSS <code>backdrop-filter: blur(16px)</code>.</li>
+    <li><strong>Aksen Kilau Garis Halus (Subtle Border Glow)</strong>: Pinggiran setiap kartu diberi garis tipis semi-transparan yang memantulkan cahaya putih halus (<code>rgba(255, 255, 255, 0.1)</code>).</li>
+    <li><strong>Sentuhan Cahaya Neon Sian & Violet</strong>: Tombol dan tautan aktif dihiasi warna gradasi neon modern yang memikat pandangan pengunjung.</li>
+  </ul>
+</div>
+
+<h3>Cuplikan CSS Murni Siap Pakai (public/css/style.css):</h3>
+<pre><code class="language-css">/* ========================================================================== */
+/* public/css/style.css - Tema Obsidian Glassmorphism Super Ringan            */
+/* ========================================================================== */
+:root {
+  --bg-deep: #0b0f19;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary-glow: #06b6d4;
+  --accent-purple: #8b5cf6;
+}
+
+body.obsidian-theme {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-deep) 70%);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* Navigasi Kaca Melayang */
+.glass-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Wadah Konten Utama */
+.glass-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 30px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Tombol Bercahaya Modern */
+.btn-modern {
+  background: linear-gradient(135deg, var(--primary-glow), var(--accent-purple));
+  color: #ffffff;
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+}
+</code></pre>
+
+<h2>9.3 Desain Mobile-First (Otomatis Menyesuaikan Layar HP)</h2>
+<p>
+Di zaman sekarang, lebih dari 75% pengunjung membuka website melalui smartphone mereka saat di jalan atau santai di sofa. Jika website Anda tampak hancur atau tulisannya terpotong saat dibuka di layar HP kecil, pengunjung akan langsung menutupnya.
+</p>
+<p>
+Dengan teknik <strong>CSS Flexbox & Grid Adaptif</strong> yang diterapkan di template WidyaWeb, seluruh tata letak (seperti 3 kolom produk di layar komputer desktop) secara otomatis akan melipat dirinya menjadi 1 kolom vertikal yang rapi saat dibuka di layar ponsel:
+</p>
+
+<pre><code class="language-css">/* Kisi Produk Fleksibel */
+.grid-produk {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+</code></pre>
+
+<p>
+Perintah <code>repeat(auto-fit, minmax(280px, 1fr))</code> di atas bekerja seperti sihir otomatis: jika layar lebar (seperti monitor laptop), peramban akan memasang 3 atau 4 kartu produk berjajar ke samping. Namun begitu dibuka di HP Android atau iPhone berlayar sempit, setiap kartu akan otomatis melebar memenuhi lebar layar tanpa ada tulisan yang terpotong ke kanan!
+</p>
+
+<!-- BAB 10 -->
+<div class="page-break"></div>
+<h1>Bab 10: Komunikasi Real-Time (Server-Sent Events & WebSocket)</h1>
+
+<h2>10.1 Perbedaan Web Biasa (Klien Bertanya) vs Web Real-Time (Server Menyiarkan)</h2>
+<p>
+Mari kita pelajari perbedaan mendasar antara cara kerja web tradisional dan web modern yang serba langsung (<em>Real-Time</em>):
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Analogi Menunggu Pengumuman Kereta Api</div>
+  <ul>
+    <li><strong>Web Tradisional (Polling Berulang)</strong>: Anda berdiri di depan loket informasi stasiun dan setiap 5 detik Anda bertanya kepada petugas: <em>"Pak, apakah kereta dari Surabaya sudah datang? Belum. Pak, apakah sudah datang? Belum. Pak, apakah sudah datang?"</em>. Tindakan ini membuat Anda capek, petugas stasiun jengkel, dan antrean di loket menjadi macet total.</li>
+    <li><strong>Web Real-Time (Server-Sent Events / Push)</strong>: Petugas stasiun memasang <strong>Pengeras Suara (Loudspeaker)</strong> di ruang tunggu. Anda bisa duduk santai membaca koran tanpa perlu mondar-mandir ke loket. Begitu kereta tiba, petugas membunyikan pengeras suara: <em>"Perhatian, kereta dari Surabaya telah tiba di Jalur 3!"</em>. Suara itu langsung terdengar oleh Anda detik itu juga!</li>
+  </ul>
+</div>
+
+<h2>10.2 Server-Sent Events (SSE): Cara Termudah Mengirim Data Berjalan</h2>
+<p>
+Banyak pemula mengira bahwa untuk membuat fitur data langsung (seperti notifikasi pesanan masuk pada layar kasir restoran, grafik beban CPU server, atau lonceng pemberitahuan pesan baru) kita harus membuat sistem yang rumit. Padahal tidak!
+</p>
+<p>
+WidyaWeb menyediakan teknologi berstandar W3C bernama <strong>Server-Sent Events (SSE)</strong>. Melalui SSE, server menjaga sebuah saluran komunikasi tetap terbuka ke peramban dan bisa mengirimkan data kapan saja:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// app/sse.wya - Endpoint Aliran Notifikasi Kasir Real-Time</span>
+<span class="fn">GET</span>(router, <span class="str">"/api/sse/kasir/notifikasi"</span>, <span class="kw">fungsi</span>(req, res) {
+    <span class="comment">// 1. Buka pipa aliran SSE ke layar peramban kasir</span>
+    <span class="kw">misal</span> pipa_aliran = <span class="fn">buka_kanal_sse</span>(res);
+
+    <span class="comment">// 2. Kirim pesan selamat datang pertama saat terhubung</span>
+    pipa_aliran.<span class="fn">kirim_event</span>(<span class="str">"tersambung"</span>, {
+        <span class="str">"status"</span>: <span class="str">"TERKONEKSI"</span>,
+        <span class="str">"pesan"</span>: <span class="str">"Layar kasir berhasil terhubung ke antena siaran dapur!"</span>,
+        <span class="str">"waktu"</span>: <span class="fn">waktu</span>()
+    });
+
+    <span class="comment">// 3. Pasang telinga pada Bus Peristiwa internal (Event Bus)</span>
+    <span class="comment">// Setiap kali ada pesanan baru masuk dari meja pelanggan:</span>
+    <span class="fn">bus_dengarkan</span>(<span class="str">"pesanan_baru_masuk"</span>, <span class="kw">fungsi</span>(data_pesanan) {
+        <span class="comment">// Siarkan langsung ke layar kasir detik itu juga!</span>
+        pipa_aliran.<span class="fn">kirim_event</span>(<span class="str">"pesanan_masuk"</span>, data_pesanan);
+    });
+
+    <span class="comment">// 4. Tahan koneksi agar tidak ditutup otomatis oleh HTTP biasa</span>
+    <span class="kw">kembalikan</span> pipa_aliran.<span class="fn">tahan_koneksi</span>();
+});
+</code></pre>
+
+<h3>Cara Menangkap Siaran Ini di Layar Browser (JavaScript Sederhana):</h3>
+<p>
+Di halaman web peramban kasir, Anda hanya perlu menulis 5 baris JavaScript super sederhana ini di dalam berkas HTML:
+</p>
+
+<pre><code class="language-html">&lt;script&gt;
+  // Membuka antena penerima sinyal ke server WidyaWeb kita
+  const radio = new EventSource('/api/sse/kasir/notifikasi');
+
+  // Menangkap siaran 'pesanan_masuk'
+  radio.addEventListener('pesanan_masuk', function(event) {
+    const pesanan = JSON.parse(event.data);
+    
+    // Bunyikan notifikasi lonceng atau munculkan pop-up di layar
+    alert("🔔 Pesanan Baru Masuk dari Meja " + pesanan.nomor_meja + ": " + pesanan.nama_menu);
+  });
+&lt;/script&gt;
+</code></pre>
+
+<div class="callout tip">
+  <div class="callout-title">🎯 Kapan Harus Memilih Antara SSE vs WebSocket?</div>
+  <ul>
+    <li><strong>Pilih SSE (Server-Sent Events)</strong>: Jika Anda hanya butuh pengiriman data dari <em>Server ke Klien</em> (Satu Arah). Sangat cocok untuk: Notifikasi lonceng web, live feed twitter/berita, monitoring kasir, ticker harga emas/kripto, atau log aktivitas sistem. Sangat hemat memori dan otomatis menyambung ulang jika internet ponsel sempat putus!</li>
+    <li><strong>Pilih WebSocket</strong>: Jika Anda butuh komunikasi dua arah berkecepatan milidetik tanpa henti. Sangat cocok untuk: Game online tembak-menembak multipemain atau aplikasi video call / live group chat.</li>
+  </ul>
+</div>

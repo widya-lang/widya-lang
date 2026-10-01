@@ -1,0 +1,123 @@
+// ==============================================================================
+// WIDYAOS: MODUL TRIAS UKS & SAFETY GUARD ALERGEN MBG (BGN)
+// Rekam Medis Sekolah, Skrining Antropometri/Stunting & Pencegahan Syok Anafilaksis
+// ==============================================================================
+
+struktur ProfilKesehatanSiswa {
+    nisn,
+    nama,
+    tinggi_cm,
+    berat_kg,
+    indeks_massa_tubuh,
+    status_stunting, // NORMAL_GIZI_BAIK, INDIKASI_STUNTING, KELEBIHAN_BERAT
+    riwayat_alergi_makanan, // KACANG_TANAH, SEAFOOD_UDANG, TELUR, SUSU_SAPI, NIHIL
+    riwayat_penyakit_kronis
+}
+
+struktur MenuDapurMBG {
+    tanggal,
+    nama_menu,
+    kandungan_alergen, // misal: KACANG_TANAH atau NIHIL
+    kalori,
+    protein_gram
+}
+
+struktur SafetyInterlockMBG {
+    nisn,
+    nama_siswa,
+    menu_dapur,
+    status_keamanan, // AMAN_KONSUMSI, BAHAYA_ALERGEN_TERDETEKSI
+    instruksi_dapur, // SAJIKAN_PORSI_STANDAR, BLOKIR_SAJIKAN_SUBSTITUSI
+    menu_pengganti
+}
+
+struktur KunjunganUKS {
+    id_kunjungan,
+    nisn,
+    nama_siswa,
+    keluhan,
+    penanganan,
+    obat_bhp,
+    tindak_lanjut // KEMBALI_KE_KELAS, DIRUJUK_PUSKESMAS, DIJEMPUT_ORANG_TUA
+}
+
+// Skrining Antropometri & Deteksi Dini Stunting
+fungsi skrining_antropometri(
+    nisn,
+    nama,
+    tinggi_cm,
+    berat_kg,
+    alergi,
+    kronis
+) {
+    // Perhitungan IMT: Berat (kg) / (Tinggi (m))^2
+    misal tinggi_meter = tinggi_cm / 100.0;
+    misal imt = berat_kg / (tinggi_meter * tinggi_meter);
+
+    misal status_gizi = "NORMAL_GIZI_BAIK";
+    jika imt < 14.5 {
+        status_gizi = "INDIKASI_STUNTING";
+    } kalau imt > 25.0 {
+        status_gizi = "KELEBIHAN_BERAT";
+    }
+
+    kembalikan ProfilKesehatanSiswa(
+        nisn,
+        nama,
+        tinggi_cm,
+        berat_kg,
+        imt,
+        status_gizi,
+        alergi,
+        kronis
+    );
+}
+
+// Safety Guard: Validasi Alergen Makanan Terhadap Menu MBG Harian
+fungsi validasi_alergen_mbg(
+    siswa,
+    menu,
+    substitusi_aman
+) {
+    // Cek apakah menu dapur mengandung bahan pemicu alergi siswa
+    jika siswa.riwayat_alergi_makanan != "NIHIL" dan siswa.riwayat_alergi_makanan == menu.kandungan_alergen {
+        kembalikan SafetyInterlockMBG(
+            siswa.nisn,
+            siswa.nama,
+            menu.nama_menu,
+            "BAHAYA_ALERGEN_TERDETEKSI",
+            "BLOKIR_SAJIKAN_SUBSTITUSI",
+            substitusi_aman
+        );
+    } lainnya {
+        kembalikan SafetyInterlockMBG(
+            siswa.nisn,
+            siswa.nama,
+            menu.nama_menu,
+            "AMAN_KONSUMSI",
+            "SAJIKAN_PORSI_STANDAR",
+            "TIDAK_PERLU"
+        );
+    }
+}
+
+// Layanan Kunjungan UKS & Penggunaan Bahan Habis Pakai (BHP)
+fungsi catat_layanan_uks(
+    id_visit,
+    nisn,
+    nama,
+    keluhan,
+    penanganan,
+    obat,
+    tindak_lanjut
+) {
+    kembalikan KunjunganUKS(
+        id_visit,
+        nisn,
+        nama,
+        keluhan,
+        penanganan,
+        obat,
+        tindak_lanjut
+    );
+}

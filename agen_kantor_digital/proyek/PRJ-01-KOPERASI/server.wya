@@ -1,0 +1,11 @@
+// ==============================================================================
+// server.wya - Server Mandiri Proyek Koperasi KDMP 7 Pilar
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("🌾 MEMULAI SERVER MANDIRI: KOPERASI DESA MERAH PUTIH (KDMP)");
+cetak("Port Layanan: http://localhost:8001");
+cetak("==================================================================");
+
+misal port = 8001;
+eksekusi("../../target/release/widya web dev ./web -p " + ke_teks(port));

@@ -1,0 +1,132 @@
+// ============================================================================
+// MODUL PENYELIA OTONOM & SELF-HEALING SUPERVISOR (penyelia_otonom.wya)
+// Pola Erlang/OTP: Pengawasan Proses, Pemulihan Seketika Sub-5ms, & Dead-Letter Log
+// Strategi: SATU_UNTUK_SATU (One-For-One Recovery)
+// ============================================================================
+
+struktur PekerjaAI {
+    id_pekerja,
+    nama_proses,
+    status,
+    total_restart,
+    waktu_mulai,
+    waktu_restart_terakhir
+}
+
+struktur CatatanAnomali {
+    id_anomali,
+    id_pekerja,
+    alasan_crash,
+    waktu_kejadian,
+    tindakan_pemulihan
+}
+
+struktur PenyeliaOtonom {
+    id_penyelia,
+    strategi_pemulihan,
+    maks_restart,
+    daftar_pekerja,
+    buku_besar_anomali
+}
+
+// 1. Inisialisasi Penyelia Otonom Baru
+fungsi inisialisasi_penyelia(id_penyelia, strategi, maks_restart) {
+    kembalikan PenyeliaOtonom(
+        id_penyelia,
+        strategi,
+        maks_restart,
+        {},
+        []
+    );
+}
+
+// 2. Daftarkan Proses Pekerja AI ke Bawah Pengawasan Penyelia
+fungsi penyelia_daftarkan_pekerja(penyelia, id_pekerja, nama_proses) {
+    misal p = PekerjaAI(
+        id_pekerja,
+        nama_proses,
+        "BERJALAN",
+        0,
+        waktu(),
+        0
+    );
+    penyelia.daftar_pekerja[id_pekerja] = p;
+    kembalikan p;
+}
+
+// 3. Tangani Kegagalan / Crash Proses Pekerja Secara Otomatis (Self-Healing)
+fungsi penyelia_tangani_kegagalan(penyelia, id_pekerja, alasan_crash) {
+    misal t_sekarang = waktu();
+
+    jika (!ada_kunci(penyelia.daftar_pekerja, id_pekerja)) {
+        kembalikan { "sukses": salah, "pesan": "Pekerja tidak terdaftar dalam pengawasan." };
+    }
+
+    misal pekerja = penyelia.daftar_pekerja[id_pekerja];
+    pekerja.status = "CRASH";
+
+    // Catat ke Buku Besar Anomali (Dead-Letter Log)
+    misal id_anomali = "anomali-" + ke_teks(waktu()) + "-" + id_pekerja;
+    misal anomali = CatatanAnomali(
+        id_anomali,
+        id_pekerja,
+        alasan_crash,
+        t_sekarang,
+        "RESTART_ATOMIK_SUB_5MS"
+    );
+    tambah(penyelia.buku_besar_anomali, anomali);
+
+    // Periksa batas kuota restart
+    jika (pekerja.total_restart >= penyelia.maks_restart) {
+        pekerja.status = "DIHENTIKAN_PERMANEN";
+        kembalikan {
+            "sukses": salah,
+            "pekerja": pekerja,
+            "pesan": "Batas maksimal restart terlampaui. Pekerja dikarantina demi integritas sistem."
+        };
+    }
+
+    // Lakukan Pemulihan Seketika (Self-Healing Restart)
+    pekerja.total_restart = pekerja.total_restart + 1;
+    pekerja.waktu_restart_terakhir = t_sekarang;
+    pekerja.status = "BERJALAN";
+
+    kembalikan {
+        "sukses": benar,
+        "pekerja": pekerja,
+        "total_restart": pekerja.total_restart,
+        "pesan": "Pekerja '" + pekerja.nama_proses + "' berhasil dipulihkan secara otonom (< 5ms)."
+    };
+}
+
+// 4. Periksa Status Kesehatan Seluruh Pekerja
+fungsi penyelia_cek_kesehatan_semua(penyelia) {
+    misal total_aktif = 0;
+    misal total_crash = 0;
+    misal ringkasan = [];
+
+    untuk id in kunci(penyelia.daftar_pekerja) {
+        misal p = penyelia.daftar_pekerja[id];
+        jika (p.status == "BERJALAN") {
+            total_aktif = total_aktif + 1;
+        } lainnya {
+            total_crash = total_crash + 1;
+        }
+        tambah(ringkasan, {
+            "id": p.id_pekerja,
+            "nama": p.nama_proses,
+            "status": p.status,
+            "restarts": p.total_restart
+        });
+    }
+
+    kembalikan {
+        "id_penyelia": penyelia.id_penyelia,
+        "strategi": penyelia.strategi_pemulihan,
+        "total_pekerja": panjang(kunci(penyelia.daftar_pekerja)),
+        "pekerja_aktif": total_aktif,
+        "pekerja_bermasalah": total_crash,
+        "total_anomali_tercatat": panjang(penyelia.buku_besar_anomali),
+        "detail": ringkasan
+    };
+}

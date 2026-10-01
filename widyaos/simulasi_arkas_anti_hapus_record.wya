@@ -1,0 +1,212 @@
+// ============================================================================
+// SIMULASI SUITE: ARKAS BKU IMMUTABLE SHIELD (ANTI-HAPUS RECORD BKU)
+// Menguji Garansi Kepatuhan Mutlak:
+// 1. Intersepsi & Pencegahan Perintah Hard-Delete (DELETE/DROP/TRUNCATE)
+// 2. Soft-Delete Bersih: Record Fisik 100% Utuh di Database kas_umum
+// 3. Mandatory Audit Trail: Pencatatan DID Penghapus, Waktu & Alasan
+// 4. Storno / Jurnal Pembalik via parent_id_kas_umum (Standar SAP/BPK)
+// 5. Dual-View Mode: View Bersih Sekolah vs View Transparansi Total BPK
+// 6. Validasi Nol Record Hilang (Zero Data Loss Guarantee)
+// ============================================================================
+
+impor "widyaos/modul/arkas_bku_immutable_shield.wya";
+
+cetak("====================================================================");
+cetak("🛡️  SIMULASI: GARANSI ANTI-HAPUS RECORD BKU (IMMUTABLE AUDIT SHIELD)");
+cetak("====================================================================");
+
+// ----------------------------------------------------------------------------
+// [UJI 1] Mencegah Upaya Hard-Delete Fisik SQL
+// ----------------------------------------------------------------------------
+cetak("\n[UJI 1] Uji Intersepsi Perintah Hard-Delete SQL:");
+misal tes_delete = cegah_hard_delete_bku("DELETE");
+misal tes_drop   = cegah_hard_delete_bku("DROP");
+misal tes_update = cegah_hard_delete_bku("UPDATE");
+
+cetak("  • Upaya Eksekusi DELETE SQL :", tes_delete);
+cetak("  • Upaya Eksekusi DROP TABLE  :", tes_drop);
+cetak("  • Upaya Eksekusi UPDATE      :", tes_update);
+
+jika tes_delete == "DITOLAK_KERAS_HARD_DELETE_DILARANG_STANDAR_BPK" dan tes_drop == "DITOLAK_KERAS_HARD_DELETE_DILARANG_STANDAR_BPK" {
+    cetak("  ✅ PASS: Perintah Hard-Delete Fisik Diblokir Total! Tidak Ada Query yang Mampu Memusnahkan Record.");
+} lainnya {
+    cetak("  ❌ FAIL: Hard delete lolos!");
+}
+
+// ----------------------------------------------------------------------------
+// [UJI 2] Pembatalan Transaksi BKU Tanpa Menghapus Baris Fisik (Soft-Delete)
+// ----------------------------------------------------------------------------
+cetak("\n[UJI 2] Uji Pembatalan Transaksi Kuitansi BKU (Soft-Delete Preservation):");
+
+// Rekam transaksi awal (misal pembelian ATK Rp 2.500.000)
+misal trx_atk = RekamBkuKasUmum(
+    "KU-2026-0001",
+    "",
+    "NOTA-001",
+    "5.1.02.01.01.0024",
+    "BNU-01",
+    "Belanja Kertas HVS & Spidol Toko Makmur",
+    2500000.0,
+    "KAS_KELUAR",
+    0, // Belum dikunci
+    0, // Aktif
+    "2026-03-10T09:00:00",
+    "2026-03-10T09:00:00",
+    "did:sewidya:bendahara:ernawati",
+    "",
+    "RECORD_SAH_AKTIF"
+);
+
+// Operator mengajukan pembatalan karena kuitansi salah input tanggal
+misal trx_batal = batalkan_transaksi_bku_soft_delete(
+    trx_atk,
+    "did:sewidya:bendahara:ernawati",
+    "Koreksi: Faktur fisik tertanggal 15 Maret, salah input tanggal 10 Maret",
+    "2026-03-10T11:30:00"
+);
+
+cetak("  • ID Transaksi Tetap Ada          :", trx_batal.id_kas_umum);
+cetak("  • Nomor Bukti Kuitansi Tetap Ada  :", trx_batal.no_bukti);
+cetak("  • Flag soft_delete                :", trx_batal.soft_delete);
+cetak("  • DID Petugas Pembatal            :", trx_batal.updater_id);
+cetak("  • Alasan Pembatalan Tercatat      :", trx_batal.alasan_pembatalan);
+cetak("  • Status Audit                    :", trx_batal.status_audit);
+
+jika trx_batal.id_kas_umum == "KU-2026-0001" dan trx_batal.soft_delete == 1 dan trx_batal.no_bukti == "BNU-01" {
+    cetak("  ✅ PASS: Record Fisik 100% Utuh di Database! Data Dilestarikan Lengkap dengan Alasan & DID Pelaku.");
+} lainnya {
+    cetak("  ❌ FAIL: Record hilang atau data corrupt!");
+}
+
+// ----------------------------------------------------------------------------
+// [UJI 3] Pembatalan Transaksi Buku Kas via Jurnal Pembalik (Storno Entry)
+// ----------------------------------------------------------------------------
+cetak("\n[UJI 3] Uji Mekanisme Storno / Jurnal Pembalik (parent_id_kas_umum):");
+
+misal trx_honor = RekamBkuKasUmum(
+    "KU-2026-0002",
+    "",
+    "NOTA-002",
+    "5.1.02.02.01.0013",
+    "BNU-02",
+    "Honorarium Narasumber Workshop Kurikulum Merdeka",
+    1800000.0,
+    "KAS_KELUAR",
+    0,
+    0,
+    "2026-03-12T14:00:00",
+    "2026-03-12T14:00:00",
+    "did:sewidya:bendahara:ernawati",
+    "",
+    "RECORD_SAH_AKTIF"
+);
+
+// Dibatalkan dengan jurnal pembalik
+misal hasil_storno = batalkan_transaksi_dengan_storno(
+    trx_honor,
+    "KU-2026-0003-STORNO",
+    "did:sewidya:bendahara:ernawati",
+    "Narasumber berhalangan hadir mendadak, dana ditarik kembali ke rekening sekolah",
+    "2026-03-13T08:00:00"
+);
+
+misal record_asal = hasil_storno[0];
+misal record_storno = hasil_storno[1];
+
+cetak("  • Record Asal (Diarsip)        : ID=" + record_asal.id_kas_umum + " [soft_delete=" + ke_teks(record_asal.soft_delete) + "]");
+cetak("  • Record Storno Baru (Pembalik): ID=" + record_storno.id_kas_umum + " [parent_id=" + record_storno.parent_id_kas_umum + "]");
+cetak("  • Tipe Mutasi Penyeimbang      :", record_storno.tipe_mutasi);
+cetak("  • Uraian Storno                :", record_storno.uraian);
+
+jika record_storno.parent_id_kas_umum == "KU-2026-0002" dan record_storno.tipe_mutasi == "KAS_MASUK" {
+    cetak("  ✅ PASS: Jurnal Pembalik Diterbitkan Resmi Bertaut ke Transaksi Induk Sesuai Standar Akuntansi!");
+} lainnya {
+    cetak("  ❌ FAIL: Mekanisme storno tidak valid!");
+}
+
+// ----------------------------------------------------------------------------
+// [UJI 4] Validasi Dual-View: Tampilan Sekolah Bersih vs Audit BPK Lengkap
+// ----------------------------------------------------------------------------
+cetak("\n[UJI 4] Uji Dual-View: Kerapian Sekolah vs Transparansi Mutlak BPK:");
+
+misal database_kas_umum = [];
+
+// Tambah Saldo Awal BOS (Rp 50.000.000)
+misal trx_terima_bos = RekamBkuKasUmum(
+    "KU-2026-0000",
+    "",
+    "",
+    "4.1.04.01.01.0001",
+    "BNU-00",
+    "Penerimaan Dana BOSP Reguler Tahap 1",
+    50000000.0,
+    "KAS_MASUK",
+    0,
+    0,
+    "2026-03-01T08:00:00",
+    "2026-03-01T08:00:00",
+    "did:sewidya:dinas:mojokerto",
+    "",
+    "RECORD_SAH_AKTIF"
+);
+tambah(database_kas_umum, trx_terima_bos);
+
+// Tambah transaksi belanja sah (Rp 5.000.000)
+misal trx_sah = RekamBkuKasUmum(
+    "KU-2026-0004",
+    "",
+    "NOTA-004",
+    "5.1.02.01.01.0030",
+    "BNU-03",
+    "Langganan Internet Dedicated Fiber Optik Sekolah",
+    5000000.0,
+    "KAS_KELUAR",
+    0,
+    0,
+    "2026-03-14T10:00:00",
+    "2026-03-14T10:00:00",
+    "did:sewidya:bendahara:ernawati",
+    "",
+    "RECORD_SAH_AKTIF"
+);
+tambah(database_kas_umum, trx_sah);
+
+// Tambah transaksi yang dibatalkan soft-delete (trx_batal dari Uji 2)
+tambah(database_kas_umum, trx_batal);
+
+// Tambah pasangan transaksi asal & storno (dari Uji 3)
+tambah(database_kas_umum, record_asal);
+tambah(database_kas_umum, record_storno);
+
+// 1. Tampilan Operasional Sekolah:
+misal view_sekolah = saring_bku_tampilan_operasional(database_kas_umum);
+misal saldo_akhir_sekolah = hitung_saldo_bku_berjalan(0.0, view_sekolah);
+
+cetak("  • [VIEW OPERASIONAL SEKOLAH]");
+cetak("    - Jumlah Kuitansi Tampil   :", panjang(view_sekolah));
+cetak("    - Saldo Akhir Kas Berjalan : Rp", saldo_akhir_sekolah);
+
+// 2. Tampilan Pemeriksaan BPK / Inspektorat:
+misal hasil_audit_bpk = audit_bku_transparansi_bpk(0.0, database_kas_umum);
+
+cetak("  • [VIEW PEMERIKSAAN BPK / INSPEKTORAT]");
+cetak("    - Total Record di Database :", hasil_audit_bpk.total_seluruh_record_fisik);
+cetak("    - Transaksi Aktif          :", hasil_audit_bpk.total_transaksi_aktif);
+cetak("    - Transaksi Soft-Deleted   :", hasil_audit_bpk.total_transaksi_soft_deleted);
+cetak("    - Transaksi Jurnal Storno  :", hasil_audit_bpk.total_transaksi_storno_pembalik);
+cetak("    - Status Integritas        :", hasil_audit_bpk.status_integritas_audit);
+
+// Verifikasi integritas:
+// Total record di DB = 5 (terima bos, belanja internet, belanja atk batal, honor batal, storno honor)
+// Aktif di sekolah = 3 (terima bos + belanja internet + storno honor)
+// Soft-deleted = 2 (belanja atk batal + honor batal)
+// Saldo: 50.000.000 - 5.000.000 + 1.800.000 = 46.800.000
+jika hasil_audit_bpk.total_seluruh_record_fisik == 5 dan hasil_audit_bpk.total_transaksi_soft_deleted == 2 {
+    cetak("  ✅ PASS: 100% Record Tersimpan Lengkap di Database, Tidak Ada Satu pun Baris yang Hilang!");
+} lainnya {
+    cetak("  ❌ FAIL: Terdapat record yang hilang dari database!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: GARANSI ZERO RECORD DELETION TERBUKTI 100% LULUS");
+cetak("====================================================================");

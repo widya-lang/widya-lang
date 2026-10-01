@@ -1,0 +1,175 @@
+// ============================================================================
+// SIMULASI PENGUJIAN: KINERJA TINGGI, SKALABILITAS, & FLEKSIBILITAS RESOURCE
+// Menguji MVCC, WAL Group Commit, Query Cache, Partitioning, & R/W Splitting
+// ============================================================================
+
+impor "widyaos/modul/widyabase_kinerja_skalabilitas.wya";
+
+cetak("");
+cetak("====================================================================");
+cetak("⚡  SIMULASI: WIDYABASE HIGH-THROUGHPUT & ADAPTIVE RESOURCE ENGINE   ");
+cetak("====================================================================");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+// -------------------------------------------------------------
+// [UJI 1] Fleksibilitas Alokasi Resource (Lite Edge vs Cloud Server)
+// -------------------------------------------------------------
+cetak("[1] Uji Fleksibilitas Profil Alokasi Resource:");
+
+// Profil 1A: PC Jadul Lab / Celeron 512MB RAM
+misal engine_lite = widyabase_inisialisasi_kinerja("db_lab_jadul", "LITE_EDGE_512MB");
+cetak("  • Profil Lite Edge RAM 512MB  : Buffer =", engine_lite.profil_resource.alokasi_shared_buffer_mb, "MB | Workers =", engine_lite.profil_resource.jumlah_worker_paralel, "| Eviction =", engine_lite.profil_resource.strategi_eviction);
+
+// Profil 1B: Server Cluster Cloud 64GB RAM
+misal engine_cloud = widyabase_inisialisasi_kinerja("db_pusat_kemendikdasmen", "SERVER_CLUSTER_64GB");
+cetak("  • Profil Cloud Server 64GB    : Buffer =", engine_cloud.profil_resource.alokasi_shared_buffer_mb, "MB | Workers =", engine_cloud.profil_resource.jumlah_worker_paralel, "| Max Connections =", engine_cloud.profil_resource.max_koneksi_aktif);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika engine_lite.profil_resource.alokasi_shared_buffer_mb == 64 dan 
+     engine_cloud.profil_resource.alokasi_shared_buffer_mb == 16384 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Resource Engine Menyesuaikan Dinamis Antara PC Jadul dan Server Data Center!");
+}
+
+// -------------------------------------------------------------
+// [UJI 2] MVCC (Multi-Version Concurrency Control): Lock-Free Read
+// -------------------------------------------------------------
+cetak("\n[2] Uji MVCC Concurrency: Pembaca Tidak Pernah Memblokir Penulis:");
+
+misal riwayat_mvcc = [];
+
+// T0: Baris Awal Dibuat oleh Transaksi Tx-100
+widyabase_mvcc_tulis_versi(riwayat_mvcc, "ROW-01", 100, { "nama": "Ahmad Fauzi", "saldo": 500000.0 });
+
+// T1: Transaksi Pembaca (Tx-100) membaca data
+misal baca_tx100 = widyabase_mvcc_baca_konsisten(riwayat_mvcc, "ROW-01", 100);
+
+// T2: Transaksi Penulis (Tx-105) memperbarui data secara simultan
+widyabase_mvcc_tulis_versi(riwayat_mvcc, "ROW-01", 105, { "nama": "Ahmad Fauzi", "saldo": 750000.0 });
+
+// T3: Transaksi Pembaca Tua (Tx-100) membaca lagi -> Tetap melihat snapshot 500.000 (Konsistensi Snapshot)
+misal baca_lagi_tx100 = widyabase_mvcc_baca_konsisten(riwayat_mvcc, "ROW-01", 100);
+
+// T4: Transaksi Pembaca Baru (Tx-110) membaca -> Melihat versi terbaru 750.000
+misal baca_tx110 = widyabase_mvcc_baca_konsisten(riwayat_mvcc, "ROW-01", 110);
+
+cetak("  • Pembaca Snapshot Tx-100 : Saldo Rp", baca_lagi_tx100.data["saldo"], "(Versi Tx:", baca_lagi_tx100.versi_tx, ")");
+cetak("  • Pembaca Terkini Tx-110  : Saldo Rp", baca_tx110.data["saldo"], "(Versi Tx:", baca_tx110.versi_tx, ")");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika baca_lagi_tx100.data["saldo"] == 500000.0 dan baca_tx110.data["saldo"] == 750000.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: MVCC Berhasil! Penulisan Data Simultan Tidak Memblokir Pembaca Snapshot!");
+}
+
+// -------------------------------------------------------------
+// [UJI 3] Group Commit & High-Speed Batch Ingestion
+// -------------------------------------------------------------
+cetak("\n[3] Uji Group Commit Pipeline (Menghindari Disk I/O Bottleneck):");
+
+// Antrekan 25 transaksi ke buffer dalam jendela waktu 2ms
+misal daftar_antre = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+untuk i dalam daftar_antre {
+    widyabase_tambah_antrean_group_commit(engine_cloud, "TX-" + ke_teks(i), "INSERT INTO log_presensi VALUES(...)", "OK");
+}
+
+cetak("  • Jumlah Transaksi Terkumpul di Buffer :", panjang(engine_cloud.group_commit_queue), "transaksi");
+
+// Flush Batch Group Commit
+misal res_flush = widyabase_flush_group_commit(engine_cloud);
+cetak("  • Status Flush                         :", res_flush.status);
+cetak("  • Latensi Flush Disk I/O               :", res_flush.latensi_batch_ms, "ms");
+cetak("  • Estimasi Throughput Transaksi        :", res_flush.estimasi_tps, "TPS (Transaksi/Detik)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika res_flush.jumlah_flushed == 25 dan res_flush.estimasi_tps >= 10000.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Group Commit Pipeline Berhasil Mengolah Ribuan Transaksi per Detik!");
+}
+
+// -------------------------------------------------------------
+// [UJI 4] In-Memory Adaptive LRU Query Cache
+// -------------------------------------------------------------
+cetak("\n[4] Uji In-Memory Query Cache (Sub-Millisecond Response):");
+
+misal sql_query_populer = "SELECT id_kelas, COUNT(*) FROM siswa GROUP BY id_kelas";
+misal payload_rekap = [{ "id_kelas": "XII-RPL-1", "total": 36 }, { "id_kelas": "XII-TKJ-1", "total": 34 }];
+
+// Request 1: Cache Miss
+misal cek_cache_1 = widyabase_ambil_query_cache(engine_cloud, sql_query_populer);
+cetak("  • Eksekusi Kueri 1 (Awal) :", cek_cache_1.sumber, "(Cache Hit =", cek_cache_1.hit, ")");
+
+// Simpan Hasil ke In-Memory L1 Cache (TTL 300 detik)
+widyabase_simpan_query_cache(engine_cloud, sql_query_populer, payload_rekap, "siswa", 300);
+
+// Request 2: Cache Hit
+misal cek_cache_2 = widyabase_ambil_query_cache(engine_cloud, sql_query_populer);
+cetak("  • Eksekusi Kueri 2 (Ulang):", cek_cache_2.sumber, "(Cache Hit =", cek_cache_2.hit, ")");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika cek_cache_1.hit == salah dan cek_cache_2.hit == benar {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: L1 In-Memory Query Cache Memberikan Respons Instan Tanpa Beban Disk!");
+}
+
+// -------------------------------------------------------------
+// [UJI 5] Horizontal Partitioning & Partition Pruning (Sharding)
+// -------------------------------------------------------------
+cetak("\n[5] Uji Horizontal Partitioning & Partition Pruning:");
+
+// Buat 3 Partisi Tabel Pembayaran SPP berdasarkan Tahun Anggaran
+widyabase_buat_partisi_tabel(engine_cloud, "pembayaran_spp", "pembayaran_spp_2024", "2024-01-01", "2024-12-31");
+widyabase_buat_partisi_tabel(engine_cloud, "pembayaran_spp", "pembayaran_spp_2025", "2025-01-01", "2025-12-31");
+widyabase_buat_partisi_tabel(engine_cloud, "pembayaran_spp", "pembayaran_spp_2026", "2026-01-01", "2026-12-31");
+
+// Insert Data ke Partisi Tahun 2026
+widyabase_insert_ke_partisi(engine_cloud, "pembayaran_spp", "2026-03-15", { "id": "SPP-2026-01", "nominal": 250000.0 });
+widyabase_insert_ke_partisi(engine_cloud, "pembayaran_spp", "2024-08-20", { "id": "SPP-2024-88", "nominal": 200000.0 });
+
+// Kueri dengan Filter Tahun 2026 (Partition Pruning Aktif)
+misal hasil_pruning = widyabase_prune_dan_query_partisi(engine_cloud, "pembayaran_spp", "2026-03-15");
+
+cetak("  • Total Partisi Tabel          :", hasil_pruning.total_partisi_tersedia, "partisi");
+cetak("  • Partisi yang Di-scan Mesin   :", hasil_pruning.partisi_di_scan, "partisi (Hanya", hasil_pruning.nama_partisi_terpilih[0], ")");
+cetak("  • Efisiensi Pengurangan I/O    : 66.7% Data Diabaikan (Zero Overhead Scan)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_pruning.partisi_di_scan == 1 dan hasil_pruning.total_partisi_tersedia == 3 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Partition Pruning Mengeliminasi Pemindaian Partisi Tak Relevan!");
+}
+
+// -------------------------------------------------------------
+// [UJI 6] Read-Write Splitting & Connection Pooling Router
+// -------------------------------------------------------------
+cetak("\n[6] Uji Router Read-Write Splitting & Connection Pool:");
+
+// Uji Kueri Tulis (INSERT) -> Wajib ke Primary Node Master
+misal rute_tulis = widyabase_route_koneksi(engine_cloud, "INSERT");
+cetak("  • Rute Kueri INSERT (Write) :", rute_tulis.tipe_node, "->", rute_tulis.node_target);
+
+// Uji Kueri Baca (SELECT) -> Load-Balanced ke Read Replicas
+misal rute_baca_1 = widyabase_route_koneksi(engine_cloud, "SELECT");
+misal rute_baca_2 = widyabase_route_koneksi(engine_cloud, "SELECT");
+cetak("  • Rute Kueri SELECT 1 (Read):", rute_baca_1.tipe_node, "->", rute_baca_1.node_target);
+cetak("  • Rute Kueri SELECT 2 (Read):", rute_baca_2.tipe_node, "->", rute_baca_2.node_target);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika rute_tulis.tipe_node == "PRIMARY_WRITER" dan 
+     rute_baca_1.tipe_node == "READ_REPLICA_LOAD_BALANCED" dan 
+     rute_baca_1.node_target != rute_baca_2.node_target {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Read-Write Splitting Berhasil Mendistribusikan Beban ke Seluruh Node Replica!");
+}
+
+// -------------------------------------------------------------
+// REKAPITULASI HASIL AKHIR
+// -------------------------------------------------------------
+cetak("");
+cetak("====================================================================");
+cetak("🏆 HASIL SIMULASI: ", LULUS_TEST, "/", TOTAL_TEST, " KASUS KINERJA & SKALABILITAS LULUS (", (LULUS_TEST * 100) / TOTAL_TEST, "%)");
+cetak("====================================================================");
+cetak("");

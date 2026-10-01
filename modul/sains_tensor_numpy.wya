@@ -1,0 +1,233 @@
+// ============================================================================
+// PUSTAKA STANDAR WIDYA-LANG: sains_tensor_numpy.wya (WIDYA-NUMPY)
+// Mesin Tensor Multi-Dimensi & Aljabar Linier Setara NumPy untuk Widya-Lang
+// Menyediakan: Tensor N-D, Matmul, Transpose, Broadcasting, & Reduksi Statistik
+// ============================================================================
+
+struktur Tensor {
+    data,
+    bentuk,
+    dimensi,
+    total_elemen
+}
+
+// 1. Pembuatan Tensor Baru dari Data Datar dan Bentuk (Shape)
+fungsi tensor_buat(data_flat, bentuk_list) {
+    misal total = 1;
+    untuk b di bentuk_list {
+        total = total * b;
+    }
+
+    // Pastikan ukuran data cocok dengan bentuk
+    jika (panjang(data_flat) != total) {
+        cetak("[Peringatan Tensor]: Panjang data tidak cocok dengan bentuk!");
+    }
+
+    kembalikan Tensor(
+        data_flat,
+        bentuk_list,
+        panjang(bentuk_list),
+        total
+    );
+}
+
+// 2. Pembuatan Tensor Khusus (Nol, Satu, dan Konstan)
+fungsi tensor_nol(bentuk_list) {
+    misal total = 1;
+    untuk b di bentuk_list {
+        total = total * b;
+    }
+    misal d = [];
+    misal i = 0;
+    selama (i < total) {
+        tambah(d, 0.0);
+        i = i + 1;
+    }
+    kembalikan Tensor(d, bentuk_list, panjang(bentuk_list), total);
+}
+
+fungsi tensor_satu(bentuk_list) {
+    misal total = 1;
+    untuk b di bentuk_list {
+        total = total * b;
+    }
+    misal d = [];
+    misal i = 0;
+    selama (i < total) {
+        tambah(d, 1.0);
+        i = i + 1;
+    }
+    kembalikan Tensor(d, bentuk_list, panjang(bentuk_list), total);
+}
+
+// 3. Akses Elemen Berdasarkan Indeks Multi-Dimensi (2D)
+fungsi tensor_ambil_2d(t, baris, kolom) {
+    misal c = t.bentuk[1];
+    misal idx = (baris * c) + kolom;
+    kembalikan t.data[idx];
+}
+
+fungsi tensor_atur_2d(t, baris, kolom, nilai) {
+    misal c = t.bentuk[1];
+    misal idx = (baris * c) + kolom;
+    t.data[idx] = nilai;
+}
+
+// 4. Perkalian Matriks 2D (Matrix Multiplication: C = A x B)
+fungsi tensor_matmul(t1, t2) {
+    // Validasi dimensi: t1 [M, K] x t2 [K, N] -> t3 [M, N]
+    jika (t1.dimensi != 2 atau t2.dimensi != 2) {
+        cetak("[Galat Tensor]: Matmul hanya mendukung tensor 2D!");
+        kembalikan tensor_nol([1, 1]);
+    }
+
+    misal m = t1.bentuk[0];
+    misal k1 = t1.bentuk[1];
+    misal k2 = t2.bentuk[0];
+    misal n = t2.bentuk[1];
+
+    jika (k1 != k2) {
+        cetak("[Galat Tensor]: Dimensi kolom t1 (" + ke_teks(k1) + ") harus sama dengan baris t2 (" + ke_teks(k2) + ")!");
+        kembalikan tensor_nol([1, 1]);
+    }
+
+    misal hasil_data = [];
+    misal r = 0;
+    selama (r < m) {
+        misal c = 0;
+        selama (c < n) {
+            misal dot = 0.0;
+            misal k = 0;
+            selama (k < k1) {
+                misal v1 = t1.data[(r * k1) + k];
+                misal v2 = t2.data[(k * n) + c];
+                dot = dot + (v1 * v2);
+                k = k + 1;
+            }
+            tambah(hasil_data, dot);
+            c = c + 1;
+        }
+        r = r + 1;
+    }
+
+    kembalikan tensor_buat(hasil_data, [m, n]);
+}
+
+// 5. Transposisi Matriks 2D (Transpose: A^T)
+fungsi tensor_transpose(t) {
+    jika (t.dimensi != 2) {
+        kembalikan t;
+    }
+
+    misal baris = t.bentuk[0];
+    misal kolom = t.bentuk[1];
+    misal hasil_data = [];
+
+    misal c = 0;
+    selama (c < kolom) {
+        misal r = 0;
+        selama (r < baris) {
+            tambah(hasil_data, t.data[(r * kolom) + c]);
+            r = r + 1;
+        }
+        c = c + 1;
+    }
+
+    kembalikan tensor_buat(hasil_data, [kolom, baris]);
+}
+
+// 6. Operasi Element-wise (Penjumlahan, Pengurangan, Perkalian Skalar)
+fungsi tensor_tambah(t1, t2) {
+    misal n = t1.total_elemen;
+    misal d = [];
+    misal i = 0;
+    selama (i < n) {
+        tambah(d, t1.data[i] + t2.data[i]);
+        i = i + 1;
+    }
+    kembalikan tensor_buat(d, t1.bentuk);
+}
+
+fungsi tensor_kurang(t1, t2) {
+    misal n = t1.total_elemen;
+    misal d = [];
+    misal i = 0;
+    selama (i < n) {
+        tambah(d, t1.data[i] - t2.data[i]);
+        i = i + 1;
+    }
+    kembalikan tensor_buat(d, t1.bentuk);
+}
+
+fungsi tensor_kali_skalar(t, skalar) {
+    misal n = t.total_elemen;
+    misal d = [];
+    misal i = 0;
+    selama (i < n) {
+        tambah(d, t.data[i] * skalar);
+        i = i + 1;
+    }
+    kembalikan tensor_buat(d, t.bentuk);
+}
+
+// 7. Reduksi Statistik (Mean, Sum, Min, Max, Varians, Standar Deviasi)
+fungsi tensor_sum(t) {
+    misal total = 0.0;
+    untuk x di t.data {
+        total = total + x;
+    }
+    kembalikan total;
+}
+
+fungsi tensor_mean(t) {
+    jika (t.total_elemen == 0) { kembalikan 0.0; }
+    kembalikan tensor_sum(t) / (t.total_elemen * 1.0);
+}
+
+fungsi tensor_min(t) {
+    jika (t.total_elemen == 0) { kembalikan 0.0; }
+    misal m = t.data[0];
+    untuk x di t.data {
+        jika (x < m) { m = x; }
+    }
+    kembalikan m;
+}
+
+fungsi tensor_max(t) {
+    jika (t.total_elemen == 0) { kembalikan 0.0; }
+    misal m = t.data[0];
+    untuk x di t.data {
+        jika (x > m) { m = x; }
+    }
+    kembalikan m;
+}
+
+fungsi tensor_std(t) {
+    misal rata = tensor_mean(t);
+    misal var_sum = 0.0;
+    untuk x di t.data {
+        misal diff = x - rata;
+        var_sum = var_sum + (diff * diff);
+    }
+    misal varians = var_sum / (t.total_elemen * 1.0);
+    jika (varians <= 0.0) { kembalikan 0.0; }
+    kembalikan akar(varians);
+}
+
+// 8. Representasi Teks Tensor (Pretty Print Array)
+fungsi tensor_ke_teks(t) {
+    misal out = "Tensor(bentuk=" + ke_teks(t.bentuk) + ", data=[";
+    misal i = 0;
+    misal batasan = t.total_elemen;
+    jika (batasan > 12) { batasan = 12; }
+    selama (i < batasan) {
+        out = out + ke_teks(t.data[i]);
+        jika (i < batasan - 1) { out = out + ", "; }
+        i = i + 1;
+    }
+    jika (t.total_elemen > 12) {
+        out = out + ", ... (" + ke_teks(t.total_elemen - 12) + " lagi)";
+    }
+    out = out + "])";
+    kembalikan out;
+}

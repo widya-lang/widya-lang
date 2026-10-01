@@ -1,0 +1,195 @@
+// ============================================================================
+// MODUL: TATA KELOLA KEPEGAWAIAN, KINERJA SKP, JABATAN FUNGSIONAL & PAK KONVERSI
+// Berdasarkan Regulasi Nasional Kepegawaian Terbaru:
+// 1. PermenPAN-RB No. 1 Tahun 2023 (Jabatan Fungsional & PAK Konversi Predikat Kinerja)
+// 2. PermenPAN-RB No. 6 Tahun 2022 (Pengelolaan Kinerja Pegawai ASN & Siklus SKP)
+// 3. Peraturan BKN No. 4 Tahun 2023 (Kenaikan Pangkat 6 Periode Setahun via SIASN)
+// 4. SE Bersama Mendikbudristek & Kepala BKN No. 1 Tahun 2024 (Kinerja Guru & PMM BKN)
+// ============================================================================
+
+struktur PegawaiAsnSekolah {
+    nip,
+    nuptk,
+    nama_lengkap,
+    jenjang_jf,                 // 'AHLI_PERTAMA', 'AHLI_MUDA', 'AHLI_MADYA', 'AHLI_UTAMA'
+    pangkat_golru,              // 'III/a', 'III/b', 'III/c', 'III/d', 'IV/a', 'IV/b', 'IV/c', 'IV/d'
+    tmt_pangkat_terakhir,
+    tmt_kgb_berikutnya,         // Kenaikan Gaji Berkala tiap 2 tahun
+    angka_kredit_kumulatif
+}
+
+struktur EvaluasiPeriodikSKP {
+    id_evaluasi,
+    nip_pegawai,
+    nama_pegawai,
+    periode_siklus,             // 'TRIWULAN_1', 'TRIWULAN_2', 'TRIWULAN_3', 'TRIWULAN_4', 'SEMESTER_1', 'SEMESTER_2', 'TAHUNAN'
+    tahun_penilaian,
+    hasil_kerja_rhk,            // 'DI_ATAS_EKSPEKTASI', 'SESUAI_EKSPEKTASI', 'DI_BAWAH_EKSPEKTASI'
+    perilaku_berakhlak,         // 'DI_ATAS_EKSPEKTASI', 'SESUAI_EKSPEKTASI', 'DI_BAWAH_EKSPEKTASI'
+    predikat_kinerja,           // 'SANGAT_BAIK', 'BAIK', 'BUTUH_PERBAIKAN', 'KURANG', 'SANGAT_KURANG'
+    status_persetujuan_kepsek   // 'DISETUJUI_PEJABAT_PENILAI_KINERJA'
+}
+
+struktur PenetapanAngkaKreditKonversi {
+    id_pak,
+    nip_pegawai,
+    nama_pegawai,
+    jenjang_jf,
+    tahun_evaluasi,
+    predikat_kinerja,
+    persentase_pengali,         // 150% (Sangat Baik), 100% (Baik), 75% (Butuh Perbaikan), 50% (Kurang)
+    koefisien_tahunan_jf,       // Pertama=12.5, Muda=25.0, Madya=37.5, Utama=50.0
+    angka_kredit_tahunan_diperoleh,
+    total_ak_kumulatif_baru,
+    status_siasn_bkn            // 'TERINTEGRASI_SIASN_BKN'
+}
+
+struktur StatusKenaikanPangkatBKN {
+    nip_pegawai,
+    nama_pegawai,
+    pangkat_sekarang,
+    pangkat_tujuan,
+    ak_kumulatif,
+    ak_syarat_minimal,
+    status_predikat_2_tahun,    // 'MINIMAL_BAIK_TERPENUHI'
+    status_kelayakan_kp,        // 'MEMENUHI_SYARAT_KP_6_PERIODE', 'BELUM_CUKUP_ANGKA_KREDIT'
+    periode_usulan_bkn          // 'FEBRUARI', 'APRIL', 'JUNI', 'AGUSTUS', 'OKTOBER', 'DESEMBER'
+}
+
+struktur PengingatKenaikanGajiBerkala {
+    nip_pegawai,
+    nama_pegawai,
+    tmt_kgb_jatuh_tempo,
+    masa_kerja_tahun,
+    gaji_pokok_baru_rp,
+    status_sk_kgb               // 'SIAP_TERBIT_SPKGB_DINAS'
+}
+
+// ============================================================================
+// LOGIKA BISNIS KEPEGAWAIAN, SKP & PAK KONVERSI
+// ============================================================================
+
+// [1] Penilaian SKP Periodik (Triwulan / Semester / Tahunan) Berbasis Ekspektasi
+fungsi evaluasi_skp_periodik(
+    id_ev,
+    nip,
+    nama,
+    periode,
+    tahun,
+    ekspektasi_kerja,
+    ekspektasi_perilaku
+) {
+    misal predikat = "BAIK";
+
+    jika ekspektasi_kerja == "DI_ATAS_EKSPEKTASI" dan ekspektasi_perilaku == "DI_ATAS_EKSPEKTASI" {
+        predikat = "SANGAT_BAIK";
+    } kalau ekspektasi_kerja == "DI_BAWAH_EKSPEKTASI" atau ekspektasi_perilaku == "DI_BAWAH_EKSPEKTASI" {
+        predikat = "BUTUH_PERBAIKAN";
+    }
+
+    kembalikan EvaluasiPeriodikSKP(
+        id_ev,
+        nip,
+        nama,
+        periode,
+        tahun,
+        ekspektasi_kerja,
+        ekspektasi_perilaku,
+        predikat,
+        "DISETUJUI_PEJABAT_PENILAI_KINERJA"
+    );
+}
+
+// [2] Konversi Predikat Kinerja SKP Menjadi Angka Kredit (PermenPAN-RB 1/2023)
+fungsi hitung_pak_konversi_tahunan(
+    id_pak,
+    nip,
+    nama,
+    jenjang,
+    tahun,
+    predikat,
+    ak_lama
+) {
+    // Menentukan koefisien tahunan berdasarkan Jenjang Jabatan Fungsional
+    misal koefisien = 12.5; // Ahli Pertama
+    jika jenjang == "AHLI_MUDA" {
+        koefisien = 25.0;
+    } kalau jenjang == "AHLI_MADYA" {
+        koefisien = 37.5;
+    } kalau jenjang == "AHLI_UTAMA" {
+        koefisien = 50.0;
+    }
+
+    // Menentukan persentase pengali predikat kinerja
+    misal persen = 1.0; // Baik = 100%
+    jika predikat == "SANGAT_BAIK" {
+        persen = 1.5;   // 150%
+    } kalau predikat == "BUTUH_PERBAIKAN" {
+        persen = 0.75;  // 75%
+    } kalau predikat == "KURANG" {
+        persen = 0.5;   // 50%
+    }
+
+    misal ak_diperoleh = koefisien * persen;
+    misal total_baru = ak_lama + ak_diperoleh;
+
+    kembalikan PenetapanAngkaKreditKonversi(
+        id_pak,
+        nip,
+        nama,
+        jenjang,
+        tahun,
+        predikat,
+        persen * 100.0,
+        koefisien,
+        ak_diperoleh,
+        total_baru,
+        "TERINTEGRASI_SIASN_BKN"
+    );
+}
+
+// [3] Audit Kelayakan Kenaikan Pangkat Jabatan Fungsional (6 Periode BKN)
+fungsi audit_kelayakan_kenaikan_pangkat(
+    nip,
+    nama,
+    pangkat_skrg,
+    pangkat_tujuan,
+    ak_kumulatif,
+    ak_syarat_minimal,
+    periode_bkn
+) {
+    misal status_kp = "BELUM_CUKUP_ANGKA_KREDIT";
+    jika ak_kumulatif >= ak_syarat_minimal {
+        status_kp = "MEMENUHI_SYARAT_KP_6_PERIODE";
+    }
+
+    kembalikan StatusKenaikanPangkatBKN(
+        nip,
+        nama,
+        pangkat_skrg,
+        pangkat_tujuan,
+        ak_kumulatif,
+        ak_syarat_minimal,
+        "MINIMAL_BAIK_TERPENUHI",
+        status_kp,
+        periode_bkn
+    );
+}
+
+// [4] Monitoring Otomatis Kenaikan Gaji Berkala (KGB Tiap 2 Tahun)
+fungsi pantau_kenaikan_gaji_berkala(
+    nip,
+    nama,
+    tmt_jatuh_tempo,
+    masa_kerja,
+    gaji_baru
+) {
+    kembalikan PengingatKenaikanGajiBerkala(
+        nip,
+        nama,
+        tmt_jatuh_tempo,
+        masa_kerja,
+        gaji_baru,
+        "SIAP_TERBIT_SPKGB_DINAS"
+    );
+}

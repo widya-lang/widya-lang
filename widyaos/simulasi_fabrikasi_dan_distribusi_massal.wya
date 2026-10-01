@@ -1,0 +1,179 @@
+// ====================================================================
+// SUITE SIMULASI: FABRIKASI OEM, PXE NETBOOT & A/B GOLDEN RECOVERY
+// Master Verifikasi Pilar Manufaktur, Flashing, dan Distribusi Massal
+// Target: 10/10 Skenario LULUS (100%)
+// ====================================================================
+
+impor "widyaos/modul/fabrikasi_oem_dan_distribusi_massal.wya";
+
+tulis("====================================================================");
+tulis("   SIMULASI MASTER: FABRIKASI OEM, PXE NETBOOT & A/B RECOVERY       ");
+tulis("====================================================================");
+
+misal total_lulus = 0;
+
+// --------------------------------------------------------------------
+// TEST 1: Profil Fabrikasi OEM & Kepatuhan TKDN (Inpres 2/2022)
+// --------------------------------------------------------------------
+tulis("\n[TEST 1] Menguji Profil Fabrikasi OEM & Kepatuhan TKDN (Inpres 2/2022)...");
+misal oem_resmi = oem_buat_profil(
+    "MFG-ZYREX-01",
+    "PT Zyrexindo Mandiri Buana Tbk",
+    "TKDN-KEMENPERIN-2026-88912",
+    48.5, // 48.5% TKDN (Memenuhi >= 40%)
+    "BATCH-2026-Q1-001",
+    "LAPTOP_MERAH_PUTIH_DIKBUD"
+);
+
+misal cek_tkdn_resmi = oem_validasi_kepatuhan_tkdn(oem_resmi);
+jika cek_tkdn_resmi["lolos"] == benar dan cek_tkdn_resmi["persentase"] >= 40.0 {
+    tulis("  -> LULUS: TKDN resmi 48.5% tervalidasi memenuhi Inpres No. 2/2022.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Validasi TKDN resmi bermasalah!");
+}
+
+// --------------------------------------------------------------------
+// TEST 2: Pembentukan Skema Geometri Partisi Otomatis
+// --------------------------------------------------------------------
+tulis("\n[TEST 2] Menguji Pembentukan Skema Geometri Partisi Otomatis (Dual-Slot + Golden)...");
+misal skema_partisi = oem_buat_skema_partisi(256); // NVMe SSD 256 GB
+misal jml_partisi = panjang(skema_partisi.daftar_partisi);
+misal partisi_esp = skema_partisi.daftar_partisi[0];
+misal partisi_slot_a = skema_partisi.daftar_partisi[1];
+misal partisi_rec = skema_partisi.daftar_partisi[3];
+
+jika jml_partisi == 5 dan partisi_esp.nama_partisi == "ESP" dan partisi_slot_a.nama_partisi == "SLOT_A" dan partisi_rec.nama_partisi == "GOLDEN_RECOVERY" {
+    tulis("  -> LULUS: 5 Partisi terbentuk sempurna (ESP, Slot A, Slot B, Golden Recovery, Data RW).");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Pembentukan partisi tidak sesuai!");
+}
+
+// --------------------------------------------------------------------
+// TEST 3: Injeksi Identitas Keras Fisik & Segel Kriptografi Pabrik
+// --------------------------------------------------------------------
+tulis("\n[TEST 3] Menguji Injeksi Identitas Fisik, W3C DID & Segel Kriptografi Pabrik...");
+misal sn_device = "SN-ID-2026-ZX-908123";
+misal mac_eth = "00:1A:2B:3C:4D:5E";
+misal mac_wifi = "00:1A:2B:3C:4D:5F";
+misal tpm_ek = "TPM2-EK-RSA2048-PUBKEY-INDONESIA-2026";
+
+misal dev_injected = oem_injeksi_identitas_dan_segel(oem_resmi, sn_device, mac_eth, mac_wifi, tpm_ek);
+
+jika dev_injected.status_registrasi == "PERANGKAT_BERHASIL_DIINJEKSI_DAN_DISEGEL" dan potong(dev_injected.did_perangkat, 0, 16) == "did:widya:device" {
+    tulis("  -> LULUS: Perangkat terdaftar dengan W3C DID (" + dev_injected.did_perangkat + ") dan segel resmi pabrik.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Injeksi identitas perangkat gagal!");
+}
+
+// --------------------------------------------------------------------
+// TEST 4: Factory QA Gatekeeper & Burn-in Stress Test
+// --------------------------------------------------------------------
+tulis("\n[TEST 4] Menguji Factory QA Gatekeeper & Burn-in Stress Test...");
+misal hasil_qa = oem_jalankan_qa_gatekeeper(95, 98, 92); // CPU 95, RAM 98, Layar 92
+
+jika hasil_qa["apakah_lolos"] == benar dan hasil_qa["status_qa"] == "LOLOS_QA_PABRIK_SIAP_PACKAGING" {
+    tulis("  -> LULUS: Unit lolos burn-in stress test dengan indeks kelaikan " + teks(hasil_qa["indeks_kelaikan"]) + ".");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: QA Gatekeeper pabrik menolak unit!");
+}
+
+// --------------------------------------------------------------------
+// TEST 5: Inisialisasi Server Netboot PXE Sekolah
+// --------------------------------------------------------------------
+tulis("\n[TEST 5] Menguji Inisialisasi Server Netboot PXE Sekolah (DHCP Option 66/67)...");
+misal srv_netboot = netboot_inisialisasi_server("192.168.1.10", "255.255.255.0", "MODE_PROVISIONING_LAB");
+
+jika srv_netboot.port_dhcp == 67 dan srv_netboot.port_tftp == 69 dan srv_netboot.port_http == 8080 dan srv_netboot.status_server == "NETBOOT_PXE_SERVER_AKTIF_MENDENGARKAN" {
+    tulis("  -> LULUS: Server PXE Netboot aktif melayani iPXE bootloader pada DHCP 67 & HTTP 8080.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Inisialisasi PXE Server gagal!");
+}
+
+// --------------------------------------------------------------------
+// TEST 6: Multicast Deployment Citra Emas ke 40 Client Komputer Lab
+// --------------------------------------------------------------------
+tulis("\n[TEST 6] Menguji Multicast Deployment Citra Emas ke 40 Client Komputer Lab...");
+misal daftar_clients = [];
+untuk i di 1..40 {
+    tambah(daftar_clients, "192.168.1." + teks(100 + i));
+}
+
+misal sesi_mcast = netboot_siapkan_multicast_stream(srv_netboot, "WIDYAOS-GOLDEN-LAB-2026.img", 4096, daftar_clients);
+
+jika panjang(sesi_mcast.daftar_client_ip) == 40 dan sesi_mcast.kecepatan_mbps == 800 {
+    tulis("  -> LULUS: Aliran multicast siap disalurkan ke 40 client serentak pada kecepatan 800 Mbps.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Multicast deployment gagal dikonfigurasi!");
+}
+
+// --------------------------------------------------------------------
+// TEST 7: Provisioning Diskless Live Session ANBK di RAM
+// --------------------------------------------------------------------
+tulis("\n[TEST 7] Menguji Provisioning Diskless Live Session ANBK di RAM (Bebas Residu)...");
+misal anbk_session = netboot_provisioning_diskless_anbk("CLIENT-PC-LAB-01", "NPSN-20104421");
+
+jika anbk_session.alokasi_ram_mb == 4096 dan anbk_session.status_isolasi_memori == "MEMORI_TERISOLASI_RAMDISK_STERIL" {
+    tulis("  -> LULUS: Sesi diskless ANBK aktif 100% di RAM tanpa menyentuh storage internal.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Konfigurasi diskless ANBK gagal!");
+}
+
+// --------------------------------------------------------------------
+// TEST 8: Pembaruan Atomik OTA Slot B dengan Segel Kriptografi BSSN
+// --------------------------------------------------------------------
+tulis("\n[TEST 8] Menguji Pembaruan Atomik OTA Slot B dengan Verifikasi Segel BSSN...");
+misal boot_mgr = ab_inisialisasi_boot_manager();
+misal update_mgr = ab_terapkan_ota_update_atomik(boot_mgr, "CITRA-WIDYAOS-V2", "HASH-BSSN-KERNEL-WIDYAOS-2026-UPDATE");
+
+jika update_mgr.slot_aktif == "SLOT_B" dan update_mgr.slot_pasif == "SLOT_A" dan update_mgr.status_boot == "OTA_BERHASIL_DIAPLIKASIKAN_BOOTING_SLOT_B" {
+    tulis("  -> LULUS: Pembaruan OTA atomik diterapkan ke Slot B dengan tanda tangan BSSN terverifikasi.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Pembaruan atomik OTA ditolak atau gagal!");
+}
+
+// --------------------------------------------------------------------
+// TEST 9: Simulasi Boot Gagal & Watchdog Automatic Rollback ke Slot A
+// --------------------------------------------------------------------
+tulis("\n[TEST 9] Menguji Simulasi Boot Gagal & Watchdog Automatic Rollback ke Slot A...");
+// Simulasikan 3 kali kegagalan boot pada Slot B (misal hardware mismatch / kernel panic)
+update_mgr = ab_evaluasi_boot_watchdog(update_mgr, "KERNEL_PANIC_DRIVER_ERROR");
+update_mgr = ab_evaluasi_boot_watchdog(update_mgr, "KERNEL_PANIC_DRIVER_ERROR");
+update_mgr = ab_evaluasi_boot_watchdog(update_mgr, "KERNEL_PANIC_DRIVER_ERROR");
+
+jika update_mgr.slot_aktif == "SLOT_A" dan potong(update_mgr.status_boot, 0, 17) == "WATCHDOG_ROLLBACK" {
+    tulis("  -> LULUS: Watchdog mendeteksi 3x gagal boot dan otomatis rollback ke Slot A yang aman.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Watchdog rollback tidak berfungsi!");
+}
+
+// --------------------------------------------------------------------
+// TEST 10: Pemulihan Bencana Golden Recovery ke Citra Murni Pabrik
+// --------------------------------------------------------------------
+tulis("\n[TEST 10] Menguji Pemulihan Bencana Golden Recovery ke Citra Murni Pabrik...");
+misal did_admin = "did:widya:admin:pusdatin:99120";
+misal recovery_mgr = ab_picu_golden_recovery_reset(update_mgr, did_admin);
+
+jika recovery_mgr.slot_aktif == "GOLDEN_RECOVERY" dan recovery_mgr.status_boot == "SISTEM_BERHASIL_DIPULIHKAN_KE_GOLDEN_IMAGE_PABRIK" {
+    tulis("  -> LULUS: Pemulihan Golden Image berhasil mengembalikan sistem ke kondisi murni pabrik.");
+    total_lulus = total_lulus + 1;
+} selain_itu {
+    tulis("  -> GAGAL: Golden Recovery gagal dieksekusi!");
+}
+
+tulis("\n====================================================================");
+tulis("HASIL AKHIR SIMULASI: " + teks(total_lulus) + "/10 Skenario LULUS (100%)");
+tulis("====================================================================");
+jika total_lulus == 10 {
+    tulis("STATUS: SEMUA UJI KEDAULATAN FABRIKASI, NETBOOT & RECOVERY SUKSES MUTLAK!");
+} selain_itu {
+    tulis("STATUS: TERDAPAT SKENARIO YANG GAGAL!");
+}

@@ -1,0 +1,2449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Buku Panduan Resmi Pemrograman Widya-Lang - Edisi Komprehensif Jilid 2</title>
+<style>
+@page {
+  size: A4 portrait;
+  margin: 18mm 16mm 20mm 16mm;
+  @bottom-right {
+    content: "Halaman " counter(page);
+    font-size: 8.5pt;
+    color: #64748b;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  @bottom-left {
+    content: "Buku Panduan Resmi Pemrograman Widya-Lang (Edisi Komprehensif Jilid 2)";
+    font-size: 8.5pt;
+    color: #94a3b8;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+}
+
+@page :first {
+  margin: 0;
+  @bottom-right { content: ""; }
+  @bottom-left { content: ""; }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 9.1pt;
+  line-height: 1.55;
+  color: #1e293b;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+/* Cover Page */
+.cover {
+  width: 100vw;
+  height: 100vh;
+  min-height: 297mm;
+  background: linear-gradient(135deg, #06152b 0%, #0f2c59 35%, #1e40af 70%, #0284c7 100%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 38mm 24mm 26mm 24mm;
+  page-break-after: always;
+  break-after: page;
+}
+
+.cover-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #38bdf8;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 9.8pt;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 22px;
+  text-transform: uppercase;
+}
+
+.cover-title {
+  font-size: 33pt;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 14px 0;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.cover-title span {
+  color: #38bdf8;
+  background: linear-gradient(to right, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cover-subtitle {
+  font-size: 12.2pt;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 0 0 24px 0;
+  max-width: 660px;
+}
+
+.cover-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+  margin-top: 15px;
+  max-width: 650px;
+}
+
+.cover-feature-item {
+  background: rgba(15, 23, 42, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 8.8pt;
+  color: #e2e8f0;
+}
+
+.cover-feature-item strong {
+  color: #38bdf8;
+  display: block;
+  margin-bottom: 3px;
+  font-size: 9.7pt;
+}
+
+.cover-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  padding-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.cover-author {
+  font-size: 10.2pt;
+  color: #e2e8f0;
+}
+
+.cover-author strong {
+  color: #ffffff;
+  font-size: 11.2pt;
+  display: block;
+}
+
+.cover-edition {
+  text-align: right;
+  font-size: 8.8pt;
+  color: #94a3b8;
+}
+
+/* Structural Elements */
+.page-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+.no-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+h1.chapter-title {
+  font-size: 16pt;
+  font-weight: 800;
+  color: #0f172a;
+  border-bottom: 2.5px solid #2563eb;
+  padding-bottom: 5px;
+  margin-top: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.chapter-number {
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 10pt;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 11.4pt;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 13px;
+  margin-bottom: 5px;
+  border-left: 3.5px solid #0284c7;
+  padding-left: 8px;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h3 {
+  font-size: 9.8pt;
+  font-weight: 600;
+  color: #334155;
+  margin-top: 9px;
+  margin-bottom: 3px;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+p {
+  margin: 0 0 7px 0;
+  text-align: justify;
+}
+
+ul, ol {
+  margin: 0 0 8px 0;
+  padding-left: 18px;
+}
+
+li {
+  margin-bottom: 3px;
+}
+
+/* Callout Boxes */
+.callout {
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 9px 0;
+  border-left: 3.5px solid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.callout-title {
+  font-weight: 700;
+  font-size: 8.9pt;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.callout-info {
+  background-color: #f0f9ff;
+  border-color: #0284c7;
+  color: #0c4a6e;
+}
+.callout-info .callout-title { color: #0284c7; }
+
+.callout-tip {
+  background-color: #f0fdf4;
+  border-color: #16a34a;
+  color: #14532d;
+}
+.callout-tip .callout-title { color: #16a34a; }
+
+.callout-warn {
+  background-color: #fffbeb;
+  border-color: #f59e0b;
+  color: #78350f;
+}
+.callout-warn .callout-title { color: #d97706; }
+
+.callout-danger {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  color: #7f1d1d;
+}
+.callout-danger .callout-title { color: #dc2626; }
+
+/* Code Blocks */
+pre {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 8.0pt;
+  line-height: 1.42;
+  overflow-x: auto;
+  margin: 6px 0;
+  border: 1px solid #334155;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 8.3pt;
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 1.5px 4px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* Code Syntax Colors */
+.kw { color: #f43f5e; font-weight: bold; } /* Keywords */
+.str { color: #34d399; } /* Strings */
+.num { color: #fbbf24; } /* Numbers */
+.com { color: #64748b; font-style: italic; } /* Comments */
+.fn { color: #38bdf8; } /* Functions */
+.typ { color: #c084fc; font-weight: 600; } /* Types / Structs */
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 8.3pt;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+th {
+  background-color: #1e293b;
+  color: #ffffff;
+  text-align: left;
+  padding: 5px 8px;
+  font-weight: 600;
+  border: 1px solid #334155;
+}
+
+td {
+  padding: 4.5px 8px;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Table of Contents */
+.toc {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 12px 0 16px 0;
+}
+
+.toc-title {
+  font-size: 13pt;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 5px;
+}
+
+.toc-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc-item {
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 8.6pt;
+}
+
+.toc-item a {
+  text-decoration: none;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.toc-dots {
+  flex-grow: 1;
+  border-bottom: 1px dotted #cbd5e1;
+  margin: 0 6px;
+}
+
+.toc-page {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.diagram-box {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 11px;
+  font-family: 'Consolas', monospace;
+  font-size: 7.6pt;
+  line-height: 1.34;
+  margin: 7px 0;
+  white-space: pre;
+  color: #0f172a;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+</style>
+</head>
+<body>
+<!-- COVER PAGE -->
+<div class="cover">
+  <div>
+    <div class="cover-badge">Buku Panduan Resmi Jilid 2 • Edisi Komprehensif Skala Industri v1.0.0</div>
+    <div class="cover-title">Buku Panduan Resmi Pemrograman <span>Widya-Lang</span></div>
+    <div class="cover-subtitle">
+      Buku Pegangan Komprehensif Rekayasa Perangkat Lunak: Dari Dasar Logika Komputasi Nusantara, OOP, Sistem Asinkron, Rekayasa Desktop & Mobile, Basis Data WidyaBase, Hingga Ekosistem Kecerdasan Buatan Lokal.
+    </div>
+
+    <div class="cover-features">
+      <div class="cover-feature-item">
+        <strong>Dialek Nusantara Berdaulat</strong>
+        Tata bahasa alami Bahasa Indonesia (misal, tetap, fungsi, struktur, sifat, coba-tangkap) dengan keterbacaan kode tertinggi dan ketahanan crash deterministik.
+      </div>
+      <div class="cover-feature-item">
+        <strong>Kinerja Native Secepat Rust</strong>
+        Mesin komputasi modern tanpa runtime tebal, manajemen memori prediktif, deterministik, dan nir-crash berlatensi rendah.
+      </div>
+      <div class="cover-feature-item">
+        <strong>Aplikasi Desktop GUI & Mobile</strong>
+        Membangun aplikasi desktop native Windows/Linux dan mobile Android/iOS dalam satu basis kode tunggal dengan integrasi QRIS ASPI.
+      </div>
+      <div class="cover-feature-item">
+        <strong>Basis Data & Kecerdasan Buatan</strong>
+        Terintegrasi penuh dengan mesin basis data WidyaBase 16 pilar enterprise dan asisten AI lokal WidyaCoder (Ollama) tanpa ketergantungan asing.
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-author">
+      Disusun & Diterbitkan Oleh:
+      <strong>Tim Inti Rekayasa Bahasa Pemrograman Widya-Lang</strong>
+      Komunitas Pengembang Perangkat Lunak Berdaulat Indonesia
+    </div>
+    <div class="cover-edition">
+      Edisi Cetak & Digital: v1.0.0<br>
+      Tahun Terbit: 2026<br>
+      Lisensi Terbuka MIT (Hak Cipta Terlindungi)
+    </div>
+  </div>
+</div>
+
+<!-- KATA PENGANTAR -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">M</span> Kata Pengantar & Manifest Kedaulatan Digital</h1>
+
+<p>
+Perkembangan teknologi komputasi selama lebih dari setengah abad telah membuktikan satu hukum sejarah yang tak terbantahkan: <em>"Bangsa yang hanya menjadi konsumen bahasa pemrograman dan mesin basis data asing akan selalu berada di bawah subordinasi teknologi bangsa lain."</em> Di era kecerdasan buatan, komputasi awan, dan persaingan geopolitik siber modern, kepemilikan atas fondasi bahasa komputasi dan mesin pengolah data adalah pilar terdepan dari kedaulatan digital nasional. Ketergantungan struktural pada lisensi asing, rantai pasok tertutup, dan infrastruktur komputasi eksternal menyimpan kerentanan strategis yang nyata bagi masa depan Republik Indonesia.
+</p>
+
+<p>
+<strong>Widya-Lang</strong> dilahirkan bukan sekadar sebagai penerjemah kata kunci (<em>wrapper</em> atau <em>transpiler</em> sederhana). Widya-Lang adalah <strong>bahasa pemrograman mandiri dengan kompiler, interpreter, mesin inferensi tipe data, sistem modularitas, dan ekosistem basis data asli</strong> yang dibangun secara murni di atas arsitektur komputasi Rust modern. Dengan performa tinggi, jejak memori yang sangat efisien, dan sintaksis bercita rasa Nusantara, Widya-Lang menyajikan alternatif berdaulat yang tangguh untuk ekosistem perangkat lunak Indonesia.
+</p>
+
+<h2>Filosofi Tiga Pilar Utama Widya-Lang</h2>
+<ol>
+  <li><strong>Kedaulatan Bahasa Nusantara (<em>Sovereign Ergonomics</em>)</strong>: Memungkinkan anak bangsa berpikir, merancang, dan memprogram menggunakan idiom logis bahasa ibu mereka sendiri. Kata kunci seperti <code>misal</code>, <code>tetap</code>, <code>fungsi</code>, <code>jika</code>, <code>untuk</code>, <code>selama</code>, <code>struktur</code>, <code>sifat</code>, dan <code>coba-tangkap</code> menjadikan alur program sangat intuitif dan mudah dipelajari oleh jutaan pemula tanpa kehilangan daya ekspresif sistem perbankan skala enterprise.</li>
+  <li><strong>Ketahanan Sistem & Kinerja Skala Industri (<em>Industrial Reliability</em>)</strong>: Widya-Lang menerapkan penanganan memori aman, penanganan galat deterministik, dan ekosistem tipe data kuat. Kode yang ditulis dalam Widya-Lang siap dijalankan untuk sistem perbankan berisiko tinggi, sistem avionik, perangkat IoT industri, maupun aplikasi kasir UMKM tanpa takut mengalami <em>null pointer crash</em> yang merugikan.</li>
+  <li><strong>Ekosistem Lengkap dalam Satu Genggaman (<em>Batteries Included</em>)</strong>: Widya-Lang tidak membutuhkan pemasangan puluhan pustaka eksternal yang rapuh untuk memulai. Di dalam bundel rilis resminya telah terpasang mesin basis data <strong>WidyaBase</strong>, framework aplikasi desktop GUI (<code>modul/desktop.wya</code>), framework mobile (<code>modul/mobile.wya</code>), sistem kriptografi (AES-256, Ed25519, Post-Quantum Kyber), dan integrasi model AI lokal (<code>widya-coder:latest</code>).</li>
+</ol>
+
+<div class="callout callout-tip">
+  <div class="callout-title">📖 Petunjuk Belajar Bagi Pembaca</div>
+  Buku panduan jilid kedua ini dirancang secara sistematis dari tingkat pemula mutlak hingga arsitek sistem senior. Pelajarilah Bab 1 sampai Bab 8 secara berurutan untuk menguasai tata bahasa dan logika komputasi inti, kemudian eksplorasilah Bab 9 sampai Bab 17 untuk merekayasa aplikasi dunia nyata: antarmuka grafis desktop, transaksi mobile QRIS, mesin basis data analitik, dan integrasi agen AI otonom lokal.
+</div>
+
+<!-- DAFTAR ISI LENGKAP -->
+<div class="page-break"></div>
+<div class="toc no-break">
+  <div class="toc-title">Daftar Isi Lengkap Buku Panduan Jilid 2 (Edisi Komprehensif)</div>
+  <ul class="toc-list">
+    <li class="toc-item"><span><strong>Bab 1</strong>: Menyiapkan Lingkungan Pengembangan, Ekstensi & Eksekusi Program</span><span class="toc-dots"></span><span class="toc-page">Hal 4</span></li>
+    <li class="toc-item"><span><strong>Bab 2</strong>: Sistem Tipe Data Primitif, Variabel Dinamis & Operator Logika</span><span class="toc-dots"></span><span class="toc-page">Hal 7</span></li>
+    <li class="toc-item"><span><strong>Bab 3</strong>: Percabangan Kondisional & Pola Perulangan Komputasi Modern</span><span class="toc-dots"></span><span class="toc-page">Hal 10</span></li>
+    <li class="toc-item"><span><strong>Bab 4</strong>: Fungsi, Rekursi Kompleks & Paradigma Pemrograman Fungsional</span><span class="toc-dots"></span><span class="toc-page">Hal 13</span></li>
+    <li class="toc-item"><span><strong>Bab 5</strong>: Koleksi Data Terstruktur: Deret Dinamis & Kamus Asosiatif</span><span class="toc-dots"></span><span class="toc-page">Hal 16</span></li>
+    <li class="toc-item"><span><strong>Bab 6</strong>: Pemrograman Berorientasi Objek & Entitas: `struktur` dan `sifat`</span><span class="toc-dots"></span><span class="toc-page">Hal 19</span></li>
+    <li class="toc-item"><span><strong>Bab 7</strong>: Penanganan Galat & Ketahanan Sistem (Crash-Resilient System)</span><span class="toc-dots"></span><span class="toc-page">Hal 22</span></li>
+    <li class="toc-item"><span><strong>Bab 8</strong>: Modularitas, Sistem Impor & Arsitektur Proyek Skala Besar</span><span class="toc-dots"></span><span class="toc-page">Hal 25</span></li>
+    <li class="toc-item"><span><strong>Bab 9</strong>: Rekayasa Aplikasi Desktop GUI Modern (`modul/desktop.wya`)</span><span class="toc-dots"></span><span class="toc-page">Hal 28</span></li>
+    <li class="toc-item"><span><strong>Bab 10</strong>: Rekayasa Aplikasi Mobile & Integrasi Pembayaran QRIS ASPI</span><span class="toc-dots"></span><span class="toc-page">Hal 32</span></li>
+    <li class="toc-item"><span><strong>Bab 11</strong>: Integrasi Basis Data Mandiri WidyaBase Skala Industri</span><span class="toc-dots"></span><span class="toc-page">Hal 36</span></li>
+    <li class="toc-item"><span><strong>Bab 12</strong>: Pemrograman Konkuren, Paralelisme & Jaringan Mikroservis</span><span class="toc-dots"></span><span class="toc-page">Hal 41</span></li>
+    <li class="toc-item"><span><strong>Bab 13</strong>: Komputasi Sains, Vektor AI & Data Engineering</span><span class="toc-dots"></span><span class="toc-page">Hal 45</span></li>
+    <li class="toc-item"><span><strong>Bab 14</strong>: Kolaborasi Cerdas dengan AI Lokal (WidyaCoder via Ollama)</span><span class="toc-dots"></span><span class="toc-page">Hal 49</span></li>
+    <li class="toc-item"><span><strong>Bab 15</strong>: Keamanan Siber, Kriptografi & Kepatuhan Regulasi UU PDP</span><span class="toc-dots"></span><span class="toc-page">Hal 53</span></li>
+    <li class="toc-item"><span><strong>Bab 16</strong>: Praktik Pengujian Perangkat Lunak, Benchmarking & Standar Koding</span><span class="toc-dots"></span><span class="toc-page">Hal 56</span></li>
+    <li class="toc-item"><span><strong>Bab 17</strong>: Panduan Distribusi, Kompilasi Biner Standalone & DevOps</span><span class="toc-dots"></span><span class="toc-page">Hal 59</span></li>
+    <li class="toc-item"><span><strong>Lampiran A</strong>: Kamus Lengkap Sintaks Dialek Nusantara vs Standar Global</span><span class="toc-dots"></span><span class="toc-page">Hal 62</span></li>
+    <li class="toc-item"><span><strong>Lampiran B</strong>: Tabel Komparasi Bahasa Lintas Platform</span><span class="toc-dots"></span><span class="toc-page">Hal 64</span></li>
+    <li class="toc-item"><span><strong>Lampiran C</strong>: Direktori Modul Ekosistem Resmi Widya-Lang</span><span class="toc-dots"></span><span class="toc-page">Hal 65</span></li>
+    <li class="toc-item"><span><strong>Lampiran D</strong>: Diagnostik Galat Compiler & Pemecahan Masalah</span><span class="toc-dots"></span><span class="toc-page">Hal 66</span></li>
+  </ul>
+</div>
+
+<!-- BAB 1 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">1</span> Menyiapkan Lingkungan Pengembangan</h1>
+
+<h2>1.1 Mengunduh & Memasang Kompiler Widya-Lang</h2>
+<p>
+Kompiler Widya-Lang didistribusikan dalam bentuk biner mandiri (<em>standalone executable</em>) yang tidak memerlukan pemasangan runtime pihak ketiga seperti Node.js, Python interpreter, atau Java Virtual Machine. Seluruh modul inti, mesin basis data tersemat (WidyaBase), dan modul grafis telah dipaketkan secara statis (<em>statically linked</em>) menggunakan Rust compiler, menghasilkan performa booting instan tanpa dependensi dinamis yang rapuh.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Platform Sistem Operasi</th>
+      <th>Berkas Rilis Biner</th>
+      <th>Langkah Instalasi & Pengaturan Variabel PATH</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Windows x64 (10/11/Server)</strong></td>
+      <td><code>widya-v1.0.0-windows-x64.zip</code></td>
+      <td>Ekstrak arsip zip ke direktori <code>C:\widya-lang</code>. Buka <em>System Properties &gt; Environment Variables</em>, lalu tambahkan <code>C:\widya-lang</code> ke dalam variabel <code>Path</code> pengguna atau sistem.</td>
+    </tr>
+    <tr>
+      <td><strong>Linux x86_64 / arm64</strong></td>
+      <td><code>widya-v1.0.0-linux.tar.gz</code></td>
+      <td>Jalankan perintah: <code>tar -xvf widya.tar.gz && sudo mv widya /usr/local/bin/</code> kemudian pastikan izin eksekusi aktif via <code>chmod +x /usr/local/bin/widya</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>macOS (Apple Silicon & Intel)</strong></td>
+      <td><code>widya-v1.0.0-darwin.tar.gz</code></td>
+      <td>Jalankan: <code>tar -xvf widya.tar.gz && sudo cp widya /usr/local/bin/</code>. Izinkan akses biner melalui <em>System Settings &gt; Privacy & Security</em> jika diminta.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+Setelah konfigurasi variabel lingkungan selesai, buka terminal PowerShell atau Bash baru dan verifikasi ketersediaan kompiler dengan menjalankan perintah pemeriksaan versi:
+</p>
+
+<pre><code>$ widya --versi
+Widya-Lang Kompiler Resmi v1.0.0 (x86_64-pc-windows-msvc)
+Kedaulatan Bahasa Nusantara • Dibangun dengan Rust Native
+Status Lisensi: Open Source (MIT)
+</code></pre>
+
+<h2>1.2 Konfigurasi Visual Studio Code Resmi</h2>
+<p>
+Untuk pengalaman pengodean yang optimal, tim inti Widya-Lang menyediakan ekstensi resmi Visual Studio Code yang mencakup penyorotan sintaksis kontekstual, pelengkapan kode cerdas (IntelliSense), cuplikan kode bawaan (snippets), dan pencocokan kurung blok otomatis:
+</p>
+<ol>
+  <li>Buka aplikasi Visual Studio Code di komputer Anda.</li>
+  <li>Buka panel Extensions dengan menekan tombol pintas <code>Ctrl + Shift + X</code> (atau <code>Cmd + Shift + X</code> di macOS).</li>
+  <li>Klik tombol menu tiga titik (<code>...</code>) di sudut kanan atas panel ekstensi, lalu pilih menu <strong>Install from VSIX...</strong></li>
+  <li>Navigasikan ke direktori instalasi Widya-Lang dan pilih berkas paket ekstensi: <code>editors/vscode/widya-lang-1.0.0.vsix</code>.</li>
+  <li>Setelah terpasang, editor akan secara otomatis mengenali setiap berkas dengan ekstensi <code>.wya</code> dan memberikan pewarnaan sintaksis yang elegan.</li>
+</ol>
+
+<h2>1.3 Anatomi Arsitektur Kompiler & Alur Eksekusi</h2>
+<p>
+Widya-Lang dirancang dengan arsitektur kompilasi modular berkecepatan tinggi. Setiap instruksi yang ditulis pengembang diproses melalui tahapan bertingkat yang ketat untuk menjamin kebenaran semantik sebelum dieksekusi oleh mesin virtual:
+</p>
+
+<div class="diagram-box">
+  ┌────────────────────────┐
+  │ Berkas Sumber (*.wya)  │  Kode sumber teks beraliran Dialek Nusantara
+  └───────────┬────────────┘
+              ▼
+  ┌────────────────────────┐
+  │  Lexer (Tokenisasi)    │  Mengubah teks menjadi aliran Token (Kata Kunci, Literal, Simbol)
+  └───────────┬────────────┘
+              ▼
+  ┌────────────────────────┐
+  │  Parser & AST Builder  │  Membangun pohon sintaks abstrak (Abstract Syntax Tree / AST)
+  └───────────┬────────────┘
+              ▼
+  ┌────────────────────────┐
+  │   Mesin Inferensi      │  Verifikasi kesesuaian tipe data & validasi ruang lingkup (Scope)
+  └───────────┬────────────┘
+              ▼
+  ┌────────────────────────┐
+  │  Widya Virtual Machine │  Evaluator berbasis tumpukan (Stack-based Bytecode Engine)
+  └───────────┬────────────┘
+              ▼
+  ┌────────────────────────┐
+  │ WidyaBase / GUI Native │  Eksekusi komputasi, I/O sistem, & interaksi basis data tersemat
+  └────────────────────────┘
+</div>
+
+<h2>1.4 Perintah Tooling CLI Lengkap</h2>
+<p>
+Perkakas baris perintah Widya-Lang (<code>widya</code>) dirancang terpadu (<em>all-in-one CLI</em>) untuk menangani seluruh siklus hidup pengembangan perangkat lunak:
+</p>
+
+<ul>
+  <li><code>widya jalan &lt;berkas.wya&gt;</code>: Menjalankan berkas kode sumber secara langsung dengan latensi startup instan.</li>
+  <li><code>widya repl</code>: Membuka terminal interaktif (Read-Eval-Print Loop) untuk eksplorasi fungsi matematika, kueri database, atau verifikasi logika secara langsung baris demi baris.</li>
+  <li><code>widya kompilasi &lt;berkas.wya&gt; --keluaran &lt;biner.exe&gt;</code>: Mengompilasi kode program menjadi berkas biner mandiri yang dapat langsung didistribusikan ke komputer pengguna akhir.</li>
+  <li><code>widya format &lt;berkas.wya&gt;</code>: Memformat kode sumber secara otomatis sesuai panduan gaya penulisan resmi Widya-Lang.</li>
+  <li><code>widya tes</code>: Menjalankan seluruh pengujian unit otomatis yang dideklarasikan di dalam proyek secara paralel.</li>
+  <li><code>widya paket &lt;perintah&gt;</code>: Mengelola dependensi modul eksternal dan memaketkan artefak aplikasi ke format arsip terverifikasi.</li>
+</ul>
+
+<h2>1.5 Program "Halo Nusantara" Pertama</h2>
+<p>
+Mari membuat berkas kode perdana bernama <code>halo_nusantara.wya</code> menggunakan editor teks Anda dan mengetikkan kode terstruktur berikut:
+</p>
+
+<pre><code><span class="com">// ========================================================</span>
+<span class="com">// Berkas: halo_nusantara.wya</span>
+<span class="com">// Program Perdana Pengenalan Widya-Lang</span>
+<span class="com">// ========================================================</span>
+
+<span class="fn">fungsi</span> <span class="fn">utama</span>() {
+    <span class="fn">cetak</span>(<span class="str">"=================================================="</span>);
+    <span class="fn">cetak</span>(<span class="str">"✨ SELAMAT DATANG DI ERA KEDAULATAN WIDYA-LANG ✨"</span>);
+    <span class="fn">cetak</span>(<span class="str">"=================================================="</span>);
+
+    <span class="kw">misal</span> visi_teknologi = <span class="str">"Kemandirian Perangkat Lunak Indonesia Emas"</span>;
+    <span class="kw">tetap</span> TAHUN_TARGET = <span class="num">2045</span>;
+    <span class="kw">misal</span> sistem_siap = <span class="kw">benar</span>;
+
+    <span class="fn">cetak</span>(<span class="str">"Visi Strategis :"</span>, visi_teknologi);
+    <span class="fn">cetak</span>(<span class="str">"Target Tahun   :"</span>, TAHUN_TARGET);
+    <span class="fn">cetak</span>(<span class="str">"Kesiapan Sistem:"</span>, sistem_siap);
+    <span class="fn">cetak</span>(<span class="str">"Status Operasi : Mesin Berjalan 100% Sempurna!"</span>);
+}
+
+<span class="com">// Memanggil titik masuk aplikasi</span>
+<span class="fn">utama</span>();
+</code></pre>
+
+<p>Jalankan berkas tersebut melalui terminal PowerShell Anda:</p>
+<pre><code>$ widya jalan halo_nusantara.wya
+==================================================
+✨ SELAMAT DATANG DI ERA KEDAULATAN WIDYA-LANG ✨
+==================================================
+Visi Strategis : Kemandirian Perangkat Lunak Indonesia Emas
+Target Tahun   : 2045
+Kesiapan Sistem: benar
+Status Operasi : Mesin Berjalan 100% Sempurna!
+</code></pre>
+
+<h2>1.6 Tata Bahasa Formal EBNF (Extended Backus-Naur Form) Widya-Lang</h2>
+<p>
+Kompiler Widya-Lang bekerja berdasarkan tata bahasa bebas-konteks (<em>Context-Free Grammar</em>) yang didefinisikan secara matematis melalui notasi EBNF:
+</p>
+
+<div class="diagram-box">
+Program        ::= Statement* ;
+Statement      ::= VarDecl | ConstDecl | FuncDecl | StructDecl | IfStmt | ForStmt | WhileStmt | ReturnStmt | ExprStmt ;
+VarDecl        ::= ("misal" | "let") Identifier ("=" Expression)? ";" ;
+ConstDecl      ::= ("tetap" | "const") Identifier "=" Expression ";" ;
+FuncDecl       ::= ("fungsi" | "fn") Identifier "(" ParameterList? ")" Block ;
+ParameterList  ::= Identifier ("," Identifier)* ;
+Block          ::= "{" Statement* "}" ;
+IfStmt         ::= ("jika" | "if") Expression Block (("kalau" | "else if") Expression Block)* (("lainnya" | "else") Block)? ;
+WhileStmt      ::= ("selama" | "while") Expression Block ;
+ForStmt        ::= ("untuk" | "for") Identifier ("dalam" | "in") (RangeExpr | Expression) Block ;
+RangeExpr      ::= Expression ".." Expression ;
+ReturnStmt     ::= ("kembalikan" | "return") Expression? ";" ;
+Expression     ::= LogicOr ;
+LogicOr        ::= LogicAnd (("atau" | "||") LogicAnd)* ;
+LogicAnd       ::= Equality (("dan" | "&&") Equality)* ;
+Equality       ::= Relational (("==" | "!=") Relational)* ;
+Relational     ::= Additive (("&lt;" | "&lt;=" | "&gt;" | "&gt;=") Additive)* ;
+Additive       ::= Multiplicative (("+" | "-") Multiplicative)* ;
+Multiplicative ::= Unary (("*" | "/" | "%" | "^") Unary)* ;
+Unary          ::= ("-" | "bukan" | "!") Unary | Primary ;
+Primary        ::= Number | String | Boolean | "nihil" | Identifier | CallExpr | ArrayLiteral | MapLiteral | "(" Expression ")" ;
+</div>
+
+<h2>1.7 Arsitektur Bytecode & Evaluator Mesin Virtual (Stack Machine)</h2>
+<p>
+Setelah pohon sintaks abstrak (AST) divalidasi oleh penganalisis semantik, kompiler menghasilkan rangkaian instruksi bita (<em>bytecode instructions</em>) yang dieksekusi secara berkecepatan tinggi oleh mesin virtual Widya-Lang:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Opcode Bytecode</th>
+      <th>Argumen Operand</th>
+      <th>Operasi Tumpukan Mesin Virtual (Stack Action)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>OP_LOAD_CONST</code></td><td>Indeks Tabel Konstanta</td><td>Mendorong nilai konstanta (angka, teks, boolean) ke puncak tumpukan.</td></tr>
+    <tr><td><code>OP_STORE_FAST</code></td><td>Slot Indeks Variabel</td><td>Mengambil nilai dari puncak tumpukan dan menyimpannya di register lokal.</td></tr>
+    <tr><td><code>OP_LOAD_FAST</code></td><td>Slot Indeks Variabel</td><td>Membaca nilai dari register lokal dan mendorongnya ke puncak tumpukan.</td></tr>
+    <tr><td><code>OP_BINARY_ADD</code></td><td>-</td><td>Menarik 2 nilai teratas, menjumlahkannya, dan mendorong hasil kembali.</td></tr>
+    <tr><td><code>OP_JUMP_IF_FALSE</code></td><td>Offset Alamat Lompat</td><td>Membaca nilai boolean puncak; jika salah, lompat ke alamat target percabangan.</td></tr>
+    <tr><td><code>OP_CALL_FUNCTION</code></td><td>Jumlah Argumen (N)</td><td>Mengalokasikan frame pemanggilan fungsi baru dan mengeksekusi subrutin.</td></tr>
+    <tr><td><code>OP_RETURN_VALUE</code></td><td>-</td><td>Mengembalikan nilai puncak tumpukan ke pemanggil dan menghancurkan frame lokal.</td></tr>
+  </tbody>
+</table>
+
+<!-- BAB 2 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">2</span> Sistem Tipe Data Primitif, Mutabilitas & Operator</h1>
+
+<h2>2.1 Filosofi Mutabilitas Data: `misal` vs `tetap`</h2>
+<p>
+Salah satu sumber galat terbesar dalam rekayasa perangkat lunak adalah modifikasi keadaan data yang tidak disengaja (<em>unexpected mutation</em>). Untuk mengatasi permasalahan ini sejak tingkat desain, Widya-Lang mewajibkan pemisahan tegas antara variabel dinamis yang boleh diubah nilainya dengan konstanta abadi yang nilainya terkunci mutlak:
+</p>
+
+<ul>
+  <li><strong><code>misal</code> (Mutable Variable)</strong>: Digunakan untuk mendeklarasikan penampung data yang nilainya akan dimutasi sepanjang alur komputasi, seperti saldo transaksi, penghitung iterasi, akumulator total belanja, atau status koneksi jaringan.</li>
+  <li><strong><code>tetap</code> / <code>tetapan</code> (Immutable Constant)</strong>: Digunakan untuk nilai absolut yang tidak boleh dimodifikasi sama sekali setelah inisialisasi awal. Setiap upaya memodifikasi konstanta akan langsung menghasilkan galat kompilasi sebelum program sempat dieksekusi.</li>
+</ul>
+
+<pre><code><span class="com">// Deklarasi variabel dinamis yang dapat berubah</span>
+<span class="kw">misal</span> saldo_dompet = <span class="num">150000</span>;
+saldo_dompet = saldo_dompet + <span class="num">50000</span>; <span class="com">// Valid! Nilai kini menjadi 200000</span>
+
+<span class="com">// Deklarasi konstanta yang terlindungi mutlak</span>
+<span class="kw">tetap</span> PERSENTASE_PPN = <span class="num">0.11</span>;
+<span class="kw">tetap</span> KODE_NEGARA_ISO = <span class="str">"IDN"</span>;
+
+<span class="com">// PERSENTASE_PPN = 0.12; </span>
+<span class="com">// GALAT KOMPILASI W004: Simbol 'PERSENTASE_PPN' adalah tetapan dan nilainya tidak boleh diubah!</span>
+</code></pre>
+
+<h2>2.2 Model Memori: Alokasi Tumpukan (Stack) & Timbunan (Heap)</h2>
+<p>
+Widya-Lang mengelola memori secara otomatis dan deterministik. Tipe-tipe primitif dengan ukuran tetap (seperti bilangan bulat 64-bit, angka desimal, dan logika boolean) dialokasikan langsung pada <strong>Tumpukan (Stack)</strong> dengan kecepatan akses mikro-detik. Sementara itu, tipe data dinamis yang ukurannya dapat membesar (seperti Teks berpanjang dinamis, Deret, Kamus, dan Struktur Objek) disimpan di dalam <strong>Timbunan (Heap)</strong> dengan referensi penunjuk berhitung aman (<em>reference counting & smart lifetime management</em>). Hal ini mencegah kebocoran memori (<em>memory leak</em>) tanpa memerlukan penundaan pembersihan memori (<em>stop-the-world garbage collection pause</em>) yang mengganggu transaksi realtime.
+</p>
+
+<h2>2.3 Delapan Tipe Data Primitif Widya-Lang</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Tipe Data</th>
+      <th>Literal / Kata Kunci</th>
+      <th>Karakteristik Teknis & Batas Rentang</th>
+      <th>Kasus Penggunaan Dunia Nyata</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Angka Bulat (Integer)</strong></td>
+      <td><code>0</code>, <code>42</code>, <code>-500</code>, <code>15000000</code></td>
+      <td>Bilangan bulat bertanda 64-bit (-9.22e18 s/d +9.22e18). Bebas risiko overflow 32-bit.</td>
+      <td>ID pelanggan, jumlah stok gudang, nilai transaksi rupiah tanpa desimal.</td>
+    </tr>
+    <tr>
+      <td><strong>Angka Desimal (Float)</strong></td>
+      <td><code>3.14159</code>, <code>-0.005</code>, <code>98.75</code></td>
+      <td>Presisi ganda 64-bit IEEE 754. Mendukung nilai ilmiah eksponensial (<code>1.5e6</code>).</td>
+      <td>Koordinat GPS latitude/longitude, kalkulasi suku bunga, sensor temperatur.</td>
+    </tr>
+    <tr>
+      <td><strong>Teks (String)</strong></td>
+      <td><code>"Widya Nusantara"</code></td>
+      <td>Runtutan karakter Unicode UTF-8 dinamis dengan panjang bebas tanpa batas statis.</td>
+      <td>Nama pengguna, alamat domisili, payload pesan JSON, token otentikasi.</td>
+    </tr>
+    <tr>
+      <td><strong>Logika (Boolean)</strong></td>
+      <td><code>benar</code> / <code>salah</code> (atau <code>true</code> / <code>false</code>)</td>
+      <td>Nilai biner logis tunggal berukuran 1 bita.</td>
+      <td>Status aktivasi akun, verifikasi sandi, indikator transaksi selesai.</td>
+    </tr>
+    <tr>
+      <td><strong>Ketiadaan (Null)</strong></td>
+      <td><code>nihil</code> (atau <code>null</code>)</td>
+      <td>Tipe unit tunggal penanda bahwa suatu nilai belum terdefinisi atau kosong.</td>
+      <td>Kolom opsional formulir, nilai baris database yang bernilai NULL.</td>
+    </tr>
+    <tr>
+      <td><strong>Deret (Array)</strong></td>
+      <td><code>[10, 20, 30]</code></td>
+      <td>Koleksi berurutan dinamis berbasis indeks 0. Menerima berbagai jenis elemen.</td>
+      <td>Daftar antrean kasir, riwayat pesanan, tabel perkalian.</td>
+    </tr>
+    <tr>
+      <td><strong>Kamus (Map)</strong></td>
+      <td><code>{"kunci": "nilai"}</code></td>
+      <td>Koleksi pasangan kunci-nilai dengan performa pencarian O(1) berbasis hash table.</td>
+      <td>Konfigurasi aplikasi, payload profil pengguna, respons API RESTful.</td>
+    </tr>
+    <tr>
+      <td><strong>Struktur (Struct)</strong></td>
+      <td><code>struktur Rekening { ... }</code></td>
+      <td>Tipe data bentukan pengguna dengan bidang-bidang terdefinisi ketat.</td>
+      <td>Entitas transaksi perbankan, model rekam medis pasien, data faktur pajak.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>2.4 Operator Lengkap Dialek Nusantara</h2>
+<pre><code><span class="kw">misal</span> x = <span class="num">48</span>;
+<span class="kw">misal</span> y = <span class="num">7</span>;
+
+<span class="com">// Operator Aritmatika Presisi</span>
+<span class="fn">cetak</span>(<span class="str">"Penjumlahan (+)      :"</span>, x + y);  <span class="com">// 55</span>
+<span class="fn">cetak</span>(<span class="str">"Pengurangan (-)      :"</span>, x - y);  <span class="com">// 41</span>
+<span class="fn">cetak</span>(<span class="str">"Perkalian   (*)      :"</span>, x * y);  <span class="com">// 336</span>
+<span class="fn">cetak</span>(<span class="str">"Pembagian Asli (/)   :"</span>, x / y);  <span class="com">// 6.857142857142857</span>
+<span class="fn">cetak</span>(<span class="str">"Sisa Bagi Modulo (%) :"</span>, x % y);  <span class="com">// 6</span>
+<span class="fn">cetak</span>(<span class="str">"Perpangkatan (^)     :"</span>, <span class="num">2</span> ^ <span class="num">8</span>);  <span class="com">// 256</span>
+
+<span class="com">// Operator Perbandingan Relasional</span>
+<span class="fn">cetak</span>(<span class="str">"Sama Dengan (==)     :"</span>, x == <span class="num">48</span>);  <span class="com">// benar</span>
+<span class="fn">cetak</span>(<span class="str">"Tidak Sama (!=)      :"</span>, x != y);   <span class="com">// benar</span>
+<span class="fn">cetak</span>(<span class="str">"Lebih Besar Dari (>) :"</span>, x > <span class="num">100</span>);  <span class="com">// salah</span>
+<span class="fn">cetak</span>(<span class="str">"Lebih Kecil Sama (<=):"</span>, y <= <span class="num">10</span>);  <span class="com">// benar</span>
+
+<span class="com">// Operator Logika Alami Nusantara ('dan', 'atau', 'bukan')</span>
+<span class="kw">misal</span> punya_ktp = <span class="kw">benar</span>;
+<span class="kw">misal</span> usia = <span class="num">21</span>;
+<span class="kw">misal</span> masuk_daftar_hitam = <span class="kw">salah</span>;
+
+<span class="kw">misal</span> layak_buka_rekening = punya_ktp <span class="kw">dan</span> (usia >= <span class="num">17</span>) <span class="kw">dan</span> (<span class="kw">bukan</span> masuk_daftar_hitam);
+<span class="fn">cetak</span>(<span class="str">"Kelayakan Membuka Rekening:"</span>, layak_buka_rekening); <span class="com">// benar</span>
+</code></pre>
+
+<h2>2.5 Konversi Tipe Data & Inspeksi Dinamis</h2>
+<p>
+Fungsi bawaan <code>tipe(x)</code> digunakan untuk memeriksa jenis data secara dinamis pada saat eksekusi (runtime). Untuk melakukan konversi eksplisit antar tipe data primitif, Widya-Lang menyediakan keluarga fungsi konversi terstandarisasi:
+</p>
+
+<pre><code><span class="kw">misal</span> input_teks_harga = <span class="str">"275000"</span>;
+<span class="fn">cetak</span>(<span class="str">"Tipe asli data        :"</span>, <span class="fn">tipe</span>(input_teks_harga)); <span class="com">// String</span>
+
+<span class="com">// Konversi Teks ke Angka Bulat</span>
+<span class="kw">misal</span> harga_bersih = <span class="fn">ke_angka</span>(input_teks_harga);
+<span class="fn">cetak</span>(<span class="str">"Tipe setelah konversi :"</span>, <span class="fn">tipe</span>(harga_bersih));     <span class="com">// Integer</span>
+
+<span class="com">// Konversi ke Teks & Desimal</span>
+<span class="kw">misal</span> total_pembayaran = harga_bersih * <span class="num">1.11</span>;
+<span class="kw">misal</span> teks_struk = <span class="str">"Total Tagihan Final: Rp "</span> + <span class="fn">ke_teks</span>(total_pembayaran);
+<span class="fn">cetak</span>(teks_struk);
+</code></pre>
+
+<h2>2.6 Manipulasi Bita (Bitwise Operations) & Sistem Masking Izin Akses</h2>
+<p>
+Operasi pada level bita sangat penting dalam rekayasa sistem berkinerja tinggi, protokol komunikasi jaringan biner, dan manajemen hak akses (<em>Permission Masking</em>):
+</p>
+
+<pre><code><span class="com">// Definisi bitmask izin akses sistem perbankan</span>
+<span class="kw">tetap</span> IZIN_BACA      = <span class="num">1</span>;  <span class="com">// 0001</span>
+<span class="kw">tetap</span> IZIN_TULIS     = <span class="num">2</span>;  <span class="com">// 0010</span>
+<span class="kw">tetap</span> IZIN_HAPUS     = <span class="num">4</span>;  <span class="com">// 0100</span>
+<span class="kw">tetap</span> IZIN_OTORISASI = <span class="num">8</span>;  <span class="com">// 1000</span>
+
+<span class="com">// Memberikan izin Baca + Tulis menggunakan operator OR (|)</span>
+<span class="kw">misal</span> hak_operator = IZIN_BACA | IZIN_TULIS; <span class="com">// 0011 = 3</span>
+
+<span class="com">// Memeriksa izin menggunakan operator AND (&)</span>
+<span class="kw">misal</span> boleh_tulis = (hak_operator & IZIN_TULIS) != <span class="num">0</span>;
+<span class="kw">misal</span> boleh_hapus = (hak_operator & IZIN_HAPUS) != <span class="num">0</span>;
+
+<span class="fn">cetak</span>(<span class="str">"Hak Akses Tulis Operator :"</span>, boleh_tulis); <span class="com">// benar</span>
+<span class="fn">cetak</span>(<span class="str">"Hak Akses Hapus Operator :"</span>, boleh_hapus); <span class="com">// salah</span>
+</code></pre>
+
+<h2>2.7 Manipulasi Teks Unicode & Ekstraksi Substring</h2>
+<pre><code><span class="kw">misal</span> judul_dokumen = <span class="str">"Kedaulatan Digital Indonesia Emas 2045 🇮🇩"</span>;
+
+<span class="com">// Mengambil panjang karakter asli (Unicode UTF-8 aware)</span>
+<span class="fn">cetak</span>(<span class="str">"Panjang Teks Judul:"</span>, <span class="fn">panjang</span>(judul_dokumen));
+
+<span class="com">// Pemotongan Substring [mulai, akhir]</span>
+<span class="kw">misal</span> kata_kunci = <span class="fn">iris</span>(judul_dokumen, <span class="num">0</span>, <span class="num">18</span>);
+<span class="fn">cetak</span>(<span class="str">"Potongan Teks    :"</span>, kata_kunci); <span class="com">// Kedaulatan Digital</span>
+</code></pre>
+
+<!-- BAB 3 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">3</span> Percabangan & Pola Perulangan Modern</h1>
+
+<h2>3.1 Percabangan Bertingkat: `jika`, `kalau`, `lainnya`</h2>
+<p>
+Struktur kendali percabangan di Widya-Lang dievaluasi secara efisien dari blok atas ke bawah dengan teknik evaluasi sirkuit pendek (<em>short-circuit evaluation</em>). Blok kondisi pertama yang menghasilkan nilai logika <code>benar</code> akan dieksekusi secara instan, dan eksekutor langsung melompat keluar dari seluruh rangkaian percabangan tanpa mengevaluasi cabang-cabang berikutnya:
+</p>
+
+<pre><code><span class="kw">misal</span> nilai_skor_kredit = <span class="num">785</span>;
+<span class="kw">misal</span> keputusan_analis = <span class="str">""</span>;
+<span class="kw">misal</span> plafon_pinjaman = <span class="num">0</span>;
+
+<span class="kw">jika</span> nilai_skor_kredit >= <span class="num">800</span> {
+    keputusan_analis = <span class="str">"DISETUJUI_PRIORITAS_SUPER"</span>;
+    plafon_pinjaman = <span class="num">500000000</span>;
+} <span class="kw">kalau</span> nilai_skor_kredit >= <span class="num">700</span> {
+    keputusan_analis = <span class="str">"DISETUJUI_REGULER"</span>;
+    plafon_pinjaman = <span class="num">250000000</span>;
+} <span class="kw">kalau</span> nilai_skor_kredit >= <span class="num">600</span> {
+    keputusan_analis = <span class="str">"BUTUH_PENJAMIN_TAMBAHAN"</span>;
+    plafon_pinjaman = <span class="num">100000000</span>;
+} <span class="kw">lainnya</span> {
+    keputusan_analis = <span class="str">"PERMOHONAN_DITOLAK"</span>;
+    plafon_pinjaman = <span class="num">0</span>;
+}
+
+<span class="fn">cetak</span>(<span class="str">"Hasil Analisis Resiko :"</span>, keputusan_analis);
+<span class="fn">cetak</span>(<span class="str">"Maksimal Plafon Kredit: Rp"</span>, plafon_pinjaman);
+</code></pre>
+
+<h2>3.2 Perulangan Rentang Tertutup: `untuk` dalam `awal..akhir`</h2>
+<p>
+Widya-Lang menyediakan sintaksis rentang (<em>range operator</em>) yang sangat elegan dengan simbol dua titik berturut-turut (<code>..</code>). Rentang ini mengeksekusi iterasi terhitung dari batas awal hingga batas akhir secara inklusif tanpa memerlukan overhead alokasi memori deret:
+</p>
+
+<pre><code><span class="com">// Menghitung tabel perkalian komputasi</span>
+<span class="kw">tetap</span> BILANGAN_BASIS = <span class="num">9</span>;
+<span class="fn">cetak</span>(<span class="str">"=== TABEL PERKALIAN"</span>, BILANGAN_BASIS, <span class="str">"==="</span>);
+
+<span class="kw">untuk</span> kali <span class="kw">dalam</span> <span class="num">1</span>..<span class="num">10</span> {
+    <span class="kw">misal</span> hasil = BILANGAN_BASIS * kali;
+    <span class="fn">cetak</span>(BILANGAN_BASIS, <span class="str">"x"</span>, kali, <span class="str">"="</span>, hasil);
+}
+</code></pre>
+
+<h2>3.3 Iterasi Koleksi Elemen Deret</h2>
+<p>
+Ketika berhadapan dengan koleksi data dinamis, kata kunci <code>untuk</code> dapat langsung mengiterasi setiap elemen yang ada di dalam deret secara berurutan:
+</p>
+
+<pre><code><span class="kw">misal</span> komoditas_ekspor = [<span class="str">"Minyak Kelapa Sawit"</span>, <span class="str">"Nikel Olahan"</span>, <span class="str">"Kopi Robusta"</span>, <span class="str">"Karet Remah"</span>];
+
+<span class="fn">cetak</span>(<span class="str">"Daftar Komoditas Ekspor Unggulan:"</span>);
+<span class="kw">untuk</span> komoditas <span class="kw">dalam</span> komoditas_ekspor {
+    <span class="fn">cetak</span>(<span class="str">"• Produk Nasional:"</span>, komoditas);
+}
+</code></pre>
+
+<h2>3.4 Perulangan Kondisional `selama` & Kendali Alur (`henti`, `lanjut`)</h2>
+<p>
+Perulangan <code>selama</code> mengeksekusi blok kode berulang kali selama kondisi evaluasi bernilai <code>benar</code>. Untuk mengendalikan alur iterasi secara presisi, Widya-Lang menyediakan kata kunci <code>henti</code> (untuk memutus perulangan seketika) dan <code>lanjut</code> (untuk melompati sisa instruksi iterasi saat ini dan langsung melanjutkan ke iterasi berikutnya):
+</p>
+
+<pre><code><span class="kw">misal</span> penghitung = <span class="num">0</span>;
+<span class="kw">misal</span> total_akumulasi = <span class="num">0</span>;
+
+<span class="kw">selama</span> penghitung < <span class="num">10</span> {
+    penghitung = penghitung + <span class="num">1</span>;
+
+    <span class="com">// Lewati bilangan kelipatan 2 (Genap)</span>
+    <span class="kw">jika</span> penghitung % <span class="num">2</span> == <span class="num">0</span> {
+        <span class="kw">lanjut</span>;
+    }
+
+    <span class="com">// Hentikan proses jika nilai telah mencapai 7</span>
+    <span class="kw">jika</span> penghitung > <span class="num">7</span> {
+        <span class="kw">henti</span>;
+    }
+
+    total_akumulasi = total_akumulasi + penghitung;
+    <span class="fn">cetak</span>(<span class="str">"Memproses Bilangan Ganjil:"</span>, penghitung);
+}
+
+<span class="fn">cetak</span>(<span class="str">"Total Akumulasi Terakhir :"</span>, total_akumulasi); <span class="com">// 1 + 3 + 5 + 7 = 16</span>
+</code></pre>
+
+<h2>3.5 Penerapan Algoritma Komputasi Riil: Pencarian Biner (Binary Search)</h2>
+<p>
+Untuk memahami efisiensi perulangan dan percabangan dalam menyelesaikan masalah nyata, perhatikan implementasi algoritma Pencarian Biner (Binary Search) berorde logaritmik $O(\log N)$ berikut:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">pencarian_biner</span>(deret_angka, angka_target) {
+    <span class="kw">misal</span> indeks_kiri = <span class="num">0</span>;
+    <span class="kw">misal</span> indeks_kanan = <span class="fn">panjang</span>(deret_angka) - <span class="num">1</span>;
+
+    <span class="kw">selama</span> indeks_kiri <= indeks_kanan {
+        <span class="kw">misal</span> titik_tengah = <span class="fn">ke_angka</span>((indeks_kiri + indeks_kanan) / <span class="num">2</span>);
+        <span class="kw">misal</span> nilai_tengah = deret_angka[titik_tengah];
+
+        <span class="kw">jika</span> nilai_tengah == angka_target {
+            <span class="kw">kembalikan</span> titik_tengah; <span class="com">// Ditemukan posisi indeks target</span>
+        } <span class="kw">kalau</span> nilai_tengah < angka_target {
+            indeks_kiri = titik_tengah + <span class="num">1</span>;
+        } <span class="kw">lainnya</span> {
+            indeks_kanan = titik_tengah - <span class="num">1</span>;
+        }
+    }
+
+    <span class="kw">kembalikan</span> -<span class="num">1</span>; <span class="com">// Menandakan data tidak ditemukan</span>
+}
+
+<span class="kw">misal</span> nomor_rekening_terurut = [<span class="num">1002</span>, <span class="num">1045</span>, <span class="num">1120</span>, <span class="num">1204</span>, <span class="num">1350</span>, <span class="num">1490</span>, <span class="num">1588</span>, <span class="num">1699</span>];
+<span class="kw">misal</span> target = <span class="num">1490</span>;
+<span class="kw">misal</span> indeks_hasil = <span class="fn">pencarian_biner</span>(nomor_rekening_terurut, target);
+
+<span class="fn">cetak</span>(<span class="str">"Nomor Rekening"</span>, target, <span class="str">"ditemukan di slot indeks:"</span>, indeks_hasil); <span class="com">// 5</span>
+</code></pre>
+
+<h2>3.6 Algoritma Pengurutan Cepat (Quicksort O(N log N))</h2>
+<p>
+Quicksort adalah algoritma pengurutan data berbasis strategi bagi-dan-taklukkan (<em>divide and conquer</em>) yang sangat efisien untuk memproses jutaan rekaman data transaksi:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">pengurutan_quicksort</span>(deret) {
+    <span class="kw">jika</span> <span class="fn">panjang</span>(deret) <= <span class="num">1</span> {
+        <span class="kw">kembalikan</span> deret;
+    }
+
+    <span class="kw">misal</span> pivot = deret[<span class="num">0</span>];
+    <span class="kw">misal</span> kelompok_kiri = [];
+    <span class="kw">misal</span> kelompok_sama = [];
+    <span class="kw">misal</span> kelompok_kanan = [];
+
+    <span class="kw">untuk</span> item <span class="kw">dalam</span> deret {
+        <span class="kw">jika</span> item < pivot {
+            <span class="fn">tambah</span>(kelompok_kiri, item);
+        } <span class="kw">kalau</span> item == pivot {
+            <span class="fn">tambah</span>(kelompok_sama, item);
+        } <span class="kw">lainnya</span> {
+            <span class="fn">tambah</span>(kelompok_kanan, item);
+        }
+    }
+
+    <span class="kw">misal</span> urut_kiri = <span class="fn">pengurutan_quicksort</span>(kelompok_kiri);
+    <span class="kw">misal</span> urut_kanan = <span class="fn">pengurutan_quicksort</span>(kelompok_kanan);
+
+    <span class="kw">kembalikan</span> <span class="fn">gabung_deret</span>(urut_kiri, kelompok_sama, urut_kanan);
+}
+
+<span class="kw">misal</span> nilai_acak = [<span class="num">85</span>, <span class="num">24</span>, <span class="num">63</span>, <span class="num">45</span>, <span class="num">17</span>, <span class="num">31</span>, <span class="num">96</span>, <span class="num">50</span>];
+<span class="kw">misal</span> nilai_terurut = <span class="fn">pengurutan_quicksort</span>(nilai_acak);
+<span class="fn">cetak</span>(<span class="str">"Hasil Quicksort Nusantara:"</span>, nilai_terurut);
+</code></pre>
+
+<!-- BAB 4 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">4</span> Fungsi, Rekursi & Paradigma Fungsional</h1>
+
+<h2>4.1 Deklarasi Fungsi, Ruang Lingkup & Nilai Balik</h2>
+<p>
+Fungsi merupakan unit modularitas dasar di Widya-Lang yang membungkus serangkaian instruksi komputasi ke dalam blok bernama. Fungsi dapat menerima nol atau lebih parameter dan mengembalikan nilai komputasi melalui instruksi <code>kembalikan</code> (atau <code>return</code>):
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">hitung_anuitas_bulanan</span>(pokok_kredit, suku_bunga_tahunan, tenor_bulan) {
+    <span class="kw">misal</span> suku_bunga_bulanan = (suku_bunga_tahunan / <span class="num">100</span>) / <span class="num">12</span>;
+    <span class="kw">misal</span> faktor_pangkat = (<span class="num">1</span> + suku_bunga_bulanan) ^ tenor_bulan;
+    <span class="kw">misal</span> besaran_angsuran = pokok_kredit * (suku_bunga_bulanan * faktor_pangkat) / (faktor_pangkat - <span class="num">1</span>);
+    
+    <span class="kw">kembalikan</span> <span class="fn">ke_angka</span>(besaran_angsuran);
+}
+
+<span class="kw">misal</span> angsuran_kpr = <span class="fn">hitung_anuitas_bulanan</span>(<span class="num">350000000</span>, <span class="num">8.25</span>, <span class="num">120</span>);
+<span class="fn">cetak</span>(<span class="str">"Estimasi Angsuran KPR Bulanan: Rp"</span>, angsuran_kpr);
+</code></pre>
+
+<h2>4.2 Pengembalian Nilai Jamak (Multiple Return Values)</h2>
+<p>
+Widya-Lang mendukung pengembalian nilai jamak menggunakan struktur kamus atau deret secara langsung, memudahkan kalkulasi simultan tanpa memerlukan variabel global:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">kalkulasi_statistik_dasar</span>(deret_angka) {
+    <span class="kw">misal</span> jumlah_total = <span class="num">0</span>;
+    <span class="kw">misal</span> nilai_min = deret_angka[<span class="num">0</span>];
+    <span class="kw">misal</span> nilai_maks = deret_angka[<span class="num">0</span>];
+    <span class="kw">misal</span> n = <span class="fn">panjang</span>(deret_angka);
+
+    <span class="kw">untuk</span> val <span class="kw">dalam</span> deret_angka {
+        jumlah_total = jumlah_total + val;
+        <span class="kw">jika</span> val < nilai_min { nilai_min = val; }
+        <span class="kw">jika</span> val > nilai_maks { nilai_maks = val; }
+    }
+
+    <span class="kw">misal</span> rerata = jumlah_total / n;
+
+    <span class="kw">kembalikan</span> {
+        <span class="str">"total"</span>: jumlah_total,
+        <span class="str">"rerata"</span>: rerata,
+        <span class="str">"terendah"</span>: nilai_min,
+        <span class="str">"tertinggi"</span>: nilai_maks
+    };
+}
+
+<span class="kw">misal</span> hasil_analisis = <span class="fn">kalkulasi_statistik_dasar</span>([<span class="num">85</span>, <span class="num">92</span>, <span class="num">74</span>, <span class="num">98</span>, <span class="num">65</span>, <span class="num">90</span>]);
+<span class="fn">cetak</span>(<span class="str">"Rata-rata Nilai Kelas:"</span>, hasil_analisis[<span class="str">"rerata"</span>]);
+<span class="fn">cetak</span>(<span class="str">"Nilai Tertinggi Siswa :"</span>, hasil_analisis[<span class="str">"tertinggi"</span>]);
+</code></pre>
+
+<h2>4.3 Rekursi Kompleks: Algoritma Menara Hanoi</h2>
+<p>
+Widya-Lang mengeksekusi fungsi rekursif dengan alokasi bingkai tumpukan (<em>stack frame</em>) yang aman dan presisi. Berikut adalah implementasi algoritma legendaris Menara Hanoi untuk memindahkan cakram komputasi antar tiang:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">pindahkan_hanoi</span>(jumlah_cakram, tiang_asal, tiang_tujuan, tiang_bantuan) {
+    <span class="kw">jika</span> jumlah_cakram == <span class="num">1</span> {
+        <span class="fn">cetak</span>(<span class="str">"Pindahkan Cakram 1 dari"</span>, tiang_asal, <span class="str">"ke"</span>, tiang_tujuan);
+        <span class="kw">kembalikan</span> <span class="num">1</span>;
+    }
+
+    <span class="kw">misal</span> langkah1 = <span class="fn">pindahkan_hanoi</span>(jumlah_cakram - <span class="num">1</span>, tiang_asal, tiang_bantuan, tiang_tujuan);
+    <span class="fn">cetak</span>(<span class="str">"Pindahkan Cakram"</span>, jumlah_cakram, <span class="str">"dari"</span>, tiang_asal, <span class="str">"ke"</span>, tiang_tujuan);
+    <span class="kw">misal</span> langkah2 = <span class="fn">pindahkan_hanoi</span>(jumlah_cakram - <span class="num">1</span>, tiang_bantuan, tiang_tujuan, tiang_asal);
+
+    <span class="kw">kembalikan</span> langkah1 + <span class="num">1</span> + langkah2;
+}
+
+<span class="fn">cetak</span>(<span class="str">"--- ALGORITMA MENARA HANOI (3 CAKRAM) ---"</span>);
+<span class="kw">misal</span> total_langkah = <span class="fn">pindahkan_hanoi</span>(<span class="num">3</span>, <span class="str">"Tiang-A"</span>, <span class="str">"Tiang-C"</span>, <span class="str">"Tiang-B"</span>);
+<span class="fn">cetak</span>(<span class="str">"Total Langkah Pemindahan Selesai:"</span>, total_langkah); <span class="com">// 7 langkah</span>
+</code></pre>
+
+<h2>4.4 Paradigma Fungsional: `petakan`, `saring`, dan `lipat`</h2>
+<p>
+Widya-Lang mengadopsi fungsi tingkat tinggi (<em>higher-order functions</em>) sebagai warga kelas satu (<em>first-class citizen</em>). Anda dapat melewatkan fungsi sebagai parameter untuk memproses data tanpa efek samping (<em>pure transformations</em>):
+</p>
+
+<pre><code><span class="kw">misal</span> nominal_transaksi = [<span class="num">25000</span>, <span class="num">45000</span>, <span class="num">120000</span>, <span class="num">85000</span>, <span class="num">350000</span>, <span class="num">15000</span>];
+
+<span class="com">// 1. Saring (Filter): Ambil transaksi dengan nominal di atas Rp 50.000</span>
+<span class="fn">fungsi</span> <span class="fn">kriteria_signifikan</span>(x) {
+    <span class="kw">kembalikan</span> x >= <span class="num">50000</span>;
+}
+<span class="kw">misal</span> transaksi_besar = <span class="fn">saring</span>(nominal_transaksi, kriteria_signifikan);
+<span class="fn">cetak</span>(<span class="str">"Transaksi Signifikan:"</span>, transaksi_besar); <span class="com">// [120000, 85000, 350000]</span>
+
+<span class="com">// 2. Petakan (Map): Berikan diskon cashback 5% pada transaksi terpilih</span>
+<span class="fn">fungsi</span> <span class="fn">hitung_cashback</span>(x) {
+    <span class="kw">kembalikan</span> <span class="fn">ke_angka</span>(x * <span class="num">0.05</span>);
+}
+<span class="kw">misal</span> daftar_cashback = <span class="fn">petakan</span>(transaksi_besar, hitung_cashback);
+<span class="fn">cetak</span>(<span class="str">"Cashback Diterima    :"</span>, daftar_cashback); <span class="com">// [6000, 4250, 17500]</span>
+
+<span class="com">// 3. Lipat (Reduce/Fold): Hitung total akumulasi cashback yang dikeluarkan</span>
+<span class="fn">fungsi</span> <span class="fn">akumulasikan</span>(total_sekarang, item_berikutnya) {
+    <span class="kw">kembalikan</span> total_sekarang + item_berikutnya;
+}
+<span class="kw">misal</span> total_beban_cashback = <span class="fn">lipat</span>(daftar_cashback, akumulasikan, <span class="num">0</span>);
+<span class="fn">cetak</span>(<span class="str">"Total Beban Cashback :"</span>, total_beban_cashback); <span class="com">// 27750</span>
+</code></pre>
+
+<h2>4.5 Rekursi Ekor (Tail Call Optimization / TCO)</h2>
+<p>
+Ketika fungsi memanggil dirinya sendiri di baris paling akhir eksekusi (<em>tail position</em>), kompiler Widya-Lang secara otomatis mengoptimalkan pemanggilan tersebut menjadi loop iteratif tanpa menambah bingkai tumpukan memori (<em>Zero Stack Overhead</em>), menjamin keamanan komputasi dari galat <em>Stack Overflow</em>:
+</p>
+
+<pre><code><span class="com">// Faktorial dengan akumulator tail-recursive</span>
+<span class="fn">fungsi</span> <span class="fn">faktorial_tco</span>(n, akumulator) {
+    <span class="kw">jika</span> n <= <span class="num">1</span> {
+        <span class="kw">kembalikan</span> akumulator;
+    }
+    <span class="kw">kembalikan</span> <span class="fn">faktorial_tco</span>(n - <span class="num">1</span>, n * akumulator);
+}
+
+<span class="fn">cetak</span>(<span class="str">"Faktorial 20 (Aman Stack):"</span>, <span class="fn">faktorial_tco</span>(<span class="num">20</span>, <span class="num">1</span>));
+</code></pre>
+
+<h2>4.6 Operator Pipeline (`|&gt;`) Komposisi Data</h2>
+<pre><code><span class="com">// Transformasi data fungsional dari kiri ke kanan dengan operator pipeline</span>
+<span class="kw">misal</span> hasil_pipeline = [<span class="num">10</span>, <span class="num">25</span>, <span class="num">40</span>, <span class="num">55</span>, <span class="num">70</span>]
+    |> <span class="fn">saring</span>(<span class="fn">fungsi</span>(x) { <span class="kw">kembalikan</span> x > <span class="num">30</span>; })
+    |> <span class="fn">petakan</span>(<span class="fn">fungsi</span>(x) { <span class="kw">kembalikan</span> x * <span class="num">2</span>; });
+
+<span class="fn">cetak</span>(<span class="str">"Hasil Transformasi Pipeline:"</span>, hasil_pipeline); <span class="com">// [80, 110, 140]</span>
+</code></pre>
+
+<!-- BAB 5 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">5</span> Koleksi Data: Deret Dinamis & Kamus Asosiatif</h1>
+
+<h2>5.1 Deret Dinamis (Dynamic Arrays): Alokasi & Operasi CRUD</h2>
+<p>
+Deret dalam Widya-Lang adalah struktur data berurutan dinamis yang ukurannya dapat membesar atau mengecil secara otomatis pada saat program berjalan. Elemen deret disimpan dalam blok memori kontigu dengan pengindeksan berbasis 0 (<em>zero-based indexing</em>), memberikan akses acak berkecepatan $O(1)$ instan:
+</p>
+
+<pre><code><span class="com">// Inisialisasi Deret Dinamis</span>
+<span class="kw">misal</span> daftar_antrean = [<span class="str">"Nasabah-A01"</span>, <span class="str">"Nasabah-A02"</span>];
+
+<span class="com">// 1. CREATE: Menambahkan Elemen ke Ekor Deret</span>
+<span class="fn">tambah</span>(daftar_antrean, <span class="str">"Nasabah-A03"</span>);
+<span class="fn">tambah</span>(daftar_antrean, <span class="str">"Nasabah-A04"</span>);
+<span class="fn">cetak</span>(<span class="str">"Jumlah Antrean Aktif:"</span>, <span class="fn">panjang</span>(daftar_antrean)); <span class="com">// 4</span>
+
+<span class="com">// 2. READ: Mengakses Elemen Berdasarkan Posisi Indeks</span>
+<span class="fn">cetak</span>(<span class="str">"Panggilan Pertama   :"</span>, daftar_antrean[<span class="num">0</span>]); <span class="com">// Nasabah-A01</span>
+<span class="fn">cetak</span>(<span class="str">"Panggilan Terakhir  :"</span>, daftar_antrean[<span class="fn">panjang</span>(daftar_antrean) - <span class="num">1</span>]);
+
+<span class="com">// 3. UPDATE: Memperbarui Nilai Elemen Tertentu</span>
+daftar_antrean[<span class="num">1</span>] = <span class="str">"Nasabah-VIP-99"</span>;
+<span class="fn">cetak</span>(<span class="str">"Antrean Setelah VIP :"</span>, daftar_antrean);
+
+<span class="com">// 4. SLICE: Memotong Irisan Deret [indeks_mulai, panjang_elemen]</span>
+<span class="kw">misal</span> kloter_pagi = <span class="fn">iris</span>(daftar_antrean, <span class="num">0</span>, <span class="num">2</span>);
+<span class="fn">cetak</span>(<span class="str">"Kloter Prioritas Pagi:"</span>, kloter_pagi);
+</code></pre>
+
+<h2>5.2 Kamus Asosiatif (Hash Maps / Dictionaries)</h2>
+<p>
+Kamus adalah pasangan kunci-nilai (<em>key-value pairs</em>) yang diimplementasikan menggunakan algoritma tabel cincang (<em>hash table</em>). Operasi pencarian, penyisipan, dan pembaruan data pada Kamus berlangsung dalam kompleksitas waktu rata-rata $O(1)$, menjadikannya pilihan ideal untuk pemodelan data domain dan konfigurasi sistem:
+</p>
+
+<pre><code><span class="kw">misal</span> profil_merchant = {
+    <span class="str">"id_toko"</span>: <span class="str">"MCH-88210"</span>,
+    <span class="str">"nama_usaha"</span>: <span class="str">"Kedai Kopi Nusantara Berdaulat"</span>,
+    <span class="str">"kota"</span>: <span class="str">"Bandung"</span>,
+    <span class="str">"kategori_mcc"</span>: <span class="num">5812</span>,
+    <span class="str">"status_qris"</span>: <span class="kw">benar</span>,
+    <span class="str">"total_saldo"</span>: <span class="num">18450000</span>
+};
+
+<span class="com">// Mengambil data dengan kunci teks</span>
+<span class="fn">cetak</span>(<span class="str">"Nama Badan Usaha :"</span>, profil_merchant[<span class="str">"nama_usaha"</span>]);
+<span class="fn">cetak</span>(<span class="str">"Status QRIS Aktif:"</span>, profil_merchant[<span class="str">"status_qris"</span>]);
+
+<span class="com">// Memperbarui saldo setelah transaksi</span>
+profil_merchant[<span class="str">"total_saldo"</span>] = profil_merchant[<span class="str">"total_saldo"</span>] + <span class="num">35000</span>;
+<span class="fn">cetak</span>(<span class="str">"Saldo Rekening Baru: Rp"</span>, profil_merchant[<span class="str">"total_saldo"</span>]);
+</code></pre>
+
+<h2>5.3 Struktur Data Bersarang & Serialisasi JSON</h2>
+<p>
+Widya-Lang menyediakan dukungan bawaan untuk serialisasi dan deserialisasi format pertukaran data JSON (JavaScript Object Notation) melalui fungsi <code>urai_json(teks)</code> dan <code>ke_json(objek)</code>:
+</p>
+
+<pre><code><span class="com">// Teks payload JSON yang diterima dari jaringan API</span>
+<span class="kw">misal</span> respons_api_mentah = <span class="str">'{
+    "kode_status": 200,
+    "pesan": "Transaksi Berhasil",
+    "data": {
+        "id_ref": "TRX-2026-9901",
+        "nominal": 75000,
+        "metode": "QRIS_DOMPET_KILAT"
+    }
+}'</span>;
+
+<span class="com">// Mengurai teks JSON menjadi Kamus Widya-Lang</span>
+<span class="kw">misal</span> payload_terurai = <span class="fn">urai_json</span>(respons_api_mentah);
+<span class="fn">cetak</span>(<span class="str">"Kode Respons Status:"</span>, payload_terurai[<span class="str">"kode_status"</span>]);
+
+<span class="kw">misal</span> detail = payload_terurai[<span class="str">"data"</span>];
+<span class="fn">cetak</span>(<span class="str">"Nomor Referensi     :"</span>, detail[<span class="str">"id_ref"</span>]);
+<span class="fn">cetak</span>(<span class="str">"Nominal Terbayar    : Rp"</span>, detail[<span class="str">"nominal"</span>]);
+
+<span class="com">// Mengonversi kembali Kamus menjadi teks JSON padat</span>
+<span class="kw">misal</span> teks_json_keluaran = <span class="fn">ke_json</span>(payload_terurai);
+<span class="fn">cetak</span>(<span class="str">"Hasil Serialisasi JSON:"</span>, teks_json_keluaran);
+</code></pre>
+
+<h2>5.4 Implementasi Tembolok LRU (Least Recently Used Cache) Murni</h2>
+<p>
+Tembolok LRU (Least Recently Used Cache) adalah algoritma penting dalam sistem berkinerja tinggi untuk menyimpan hasil komputasi yang sering diakses di dalam memori RAM dengan batasan kapasitas ketat:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">buat_lru_cache</span>(kapasitas_maksimum) {
+    <span class="kw">misal</span> peta_data = {};
+    <span class="kw">misal</span> urutan_kunci = [];
+
+    <span class="kw">kembalikan</span> {
+        <span class="str">"ambil"</span>: <span class="fn">fungsi</span>(kunci) {
+            <span class="kw">jika</span> <span class="kw">bukan</span> <span class="fn">mengandung_kunci</span>(peta_data, kunci) {
+                <span class="kw">kembalikan</span> <span class="kw">nihil</span>;
+            }
+            <span class="kw">misal</span> indeks = <span class="fn">cari_indeks</span>(urutan_kunci, kunci);
+            <span class="fn">hapus_pada</span>(urutan_kunci, indeks);
+            <span class="fn">tambah</span>(urutan_kunci, kunci);
+            <span class="kw">kembalikan</span> peta_data[kunci];
+        },
+        <span class="str">"simpan"</span>: <span class="fn">fungsi</span>(kunci, nilai) {
+            <span class="kw">jika</span> <span class="fn">mengandung_kunci</span>(peta_data, kunci) {
+                <span class="kw">misal</span> idx = <span class="fn">cari_indeks</span>(urutan_kunci, kunci);
+                <span class="fn">hapus_pada</span>(urutan_kunci, idx);
+            } <span class="kw">kalau</span> <span class="fn">panjang</span>(urutan_kunci) >= kapasitas_maksimum {
+                <span class="kw">misal</span> kunci_usang = urutan_kunci[<span class="num">0</span>];
+                <span class="fn">hapus_pada</span>(urutan_kunci, <span class="num">0</span>);
+                <span class="fn">hapus_kunci</span>(peta_data, kunci_usang);
+                <span class="fn">cetak</span>(<span class="str">"[LRU EVICT] Menghapus data usang:"</span>, kunci_usang);
+            }
+            peta_data[kunci] = nilai;
+            <span class="fn">tambah</span>(urutan_kunci, kunci);
+        }
+    };
+}
+
+<span class="kw">misal</span> cache = <span class="fn">buat_lru_cache</span>(<span class="num">3</span>);
+cache.simpan(<span class="str">"token_user_1"</span>, <span class="str">"A101"</span>);
+cache.simpan(<span class="str">"token_user_2"</span>, <span class="str">"B202"</span>);
+cache.simpan(<span class="str">"token_user_3"</span>, <span class="str">"C303"</span>);
+cache.simpan(<span class="str">"token_user_4"</span>, <span class="str">"D404"</span>);
+<span class="fn">cetak</span>(<span class="str">"User 1 dalam cache:"</span>, cache.ambil(<span class="str">"token_user_1"</span>)); <span class="com">// nihil</span>
+</code></pre>
+
+<h2>5.5 Sistem Manajemen Inventaris Gudang Multi-Cabang</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">kelola_inventaris</span>() {
+    <span class="kw">misal</span> gudang = {
+        <span class="str">"GD-JKT"</span>: [
+            { <span class="str">"sku"</span>: <span class="str">"LAP-01"</span>, <span class="str">"nama"</span>: <span class="str">"Laptop Merah Putih"</span>, <span class="str">"stok"</span>: <span class="num">25</span>, <span class="str">"harga"</span>: <span class="num">8500000</span> },
+            { <span class="str">"sku"</span>: <span class="str">"MOU-02"</span>, <span class="str">"nama"</span>: <span class="str">"Mouse Nirkabel"</span>, <span class="str">"stok"</span>: <span class="num">120</span>, <span class="str">"harga"</span>: <span class="num">150000</span> }
+        ],
+        <span class="str">"GD-SBY"</span>: [
+            { <span class="str">"sku"</span>: <span class="str">"LAP-01"</span>, <span class="str">"nama"</span>: <span class="str">"Laptop Merah Putih"</span>, <span class="str">"stok"</span>: <span class="num">10</span>, <span class="str">"harga"</span>: <span class="num">8500000</span> },
+            { <span class="str">"sku"</span>: <span class="str">"KEY-03"</span>, <span class="str">"nama"</span>: <span class="str">"Papan Ketik Mekanikal"</span>, <span class="str">"stok"</span>: <span class="num">45</span>, <span class="str">"harga"</span>: <span class="num">450000</span> }
+        ]
+    };
+
+    <span class="kw">misal</span> total_valuasi = <span class="num">0</span>;
+    <span class="kw">untuk</span> kode_gudang <span class="kw">dalam</span> [<span class="str">"GD-JKT"</span>, <span class="str">"GD-SBY"</span>] {
+        <span class="kw">misal</span> daftar_barang = gudang[kode_gudang];
+        <span class="kw">untuk</span> barang <span class="kw">dalam</span> daftar_barang {
+            <span class="kw">misal</span> nilai_stok = barang[<span class="str">"stok"</span>] * barang[<span class="str">"harga"</span>];
+            total_valuasi = total_valuasi + nilai_stok;
+            <span class="fn">cetak</span>(<span class="str">"["</span> + kode_gudang + <span class="str">"] "</span> + barang[<span class="str">"nama"</span>] + <span class="str">" | Valuasi: Rp"</span>, nilai_stok);
+        }
+    }
+    <span class="fn">cetak</span>(<span class="str">"TOTAL VALUASI ASET INVENTARIS NASIONAL: Rp"</span>, total_valuasi);
+}
+
+<span class="fn">kelola_inventaris</span>();
+</code></pre>
+
+<!-- BAB 6 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">6</span> Pemrograman Berorientasi Entitas: `struktur` & `sifat`</h1>
+
+<h2>6.1 Filosofi Komposisi Entitas Menggantikan Pewarisan Kelas</h2>
+<p>
+Bahasa pemrograman generasi terdahulu sering kali terjebak dalam perangkap <em>fragile base class problem</em> akibat pewarisan bertingkat yang terlalu dalam (<em>deep class inheritance</em>). Widya-Lang memutus tradisi tersebut dengan mengadopsi model komposisi entitas modern yang bersih:
+</p>
+<ol>
+  <li><strong><code>struktur</code> (Structs)</strong>: Digunakan untuk memodelkan struktur data dan keadaan (<em>state</em>).</li>
+  <li><strong><code>sifat</code> (Traits / Interfaces)</strong>: Digunakan untuk mendeklarasikan kontrak perilaku (<em>behavioral contracts</em>) yang dapat diimplementasikan oleh entitas manapun tanpa relasi hierarki kaku.</li>
+</ol>
+
+<h2>6.2 Deklarasi `struktur`, Properti, & Pola Pabrik Objek (Factory Pattern)</h2>
+<pre><code><span class="kw">struktur</span> <span class="typ">NasabahBank</span> {
+    nomor_rekening,
+    nama_lengkap,
+    nomor_ktp,
+    saldo,
+    status_aktif
+}
+
+<span class="fn">fungsi</span> <span class="fn">buat_nasabah_baru</span>(norek, nama, ktp, setoran_awal) {
+    <span class="kw">jika</span> setoran_awal < <span class="num">50000</span> {
+        <span class="fn">cetak</span>(<span class="str">"Peringatan: Setoran awal minimal pembukaan akun adalah Rp 50.000!"</span>);
+    }
+
+    <span class="kw">kembalikan</span> <span class="typ">NasabahBank</span> {
+        nomor_rekening: norek,
+        nama_lengkap: nama,
+        nomor_ktp: ktp,
+        saldo: setoran_awal,
+        status_aktif: <span class="kw">benar</span>
+    };
+}
+
+<span class="kw">misal</span> nasabah1 = <span class="fn">buat_nasabah_baru</span>(<span class="str">"008-2026-1192"</span>, <span class="str">"Siti Rahmawati"</span>, <span class="str">"3273010190001"</span>, <span class="num">500000</span>);
+<span class="fn">cetak</span>(<span class="str">"Nasabah Terdaftar:"</span>, nasabah1.nama_lengkap);
+<span class="fn">cetak</span>(<span class="str">"Nomor Rekening   :"</span>, nasabah1.nomor_rekening);
+<span class="fn">cetak</span>(<span class="str">"Saldo Tersimpan  : Rp"</span>, nasabah1.saldo);
+</code></pre>
+
+<h2>6.3 Kontrak Polimorfisme Menggunakan `sifat` (Traits)</h2>
+<pre><code><span class="kw">sifat</span> <span class="typ">KanalPembayaran</span> {
+    <span class="fn">fungsi</span> <span class="fn">dapatkan_nama_kanal</span>();
+    <span class="fn">fungsi</span> <span class="fn">hitung_biaya_layanan</span>(nominal);
+    <span class="fn">fungsi</span> <span class="fn">proses_potong_dana</span>(nominal);
+}
+
+<span class="kw">struktur</span> <span class="typ">MetodeQRIS</span> { id_merchant, biaya_mdr_persen }
+<span class="kw">struktur</span> <span class="typ">MetodeVirtualAccount</span> { bank_tujuan, biaya_admin_tetap }
+
+<span class="fn">fungsi</span> <span class="fn">eksekusi_pembayaran</span>(metode, nominal_belanja) {
+    <span class="kw">misal</span> nama_kanal = metode.<span class="fn">dapatkan_nama_kanal</span>();
+    <span class="kw">misal</span> biaya_layanan = metode.<span class="fn">hitung_biaya_layanan</span>(nominal_belanja);
+    <span class="kw">misal</span> total_bayar = nominal_belanja + biaya_layanan;
+
+    <span class="fn">cetak</span>(<span class="str">"Memproses Kanal Pembayaran:"</span>, nama_kanal);
+    <span class="fn">cetak</span>(<span class="str">"Tagihan Belanja  : Rp"</span>, nominal_belanja);
+    <span class="fn">cetak</span>(<span class="str">"Total Tagihan    : Rp"</span>, total_bayar);
+
+    <span class="kw">misal</span> berhasil = metode.<span class="fn">proses_potong_dana</span>(total_bayar);
+    <span class="kw">kembalikan</span> berhasil;
+}
+</code></pre>
+
+<h2>6.4 Pemodelan Arsitektur Rekening Perbankan Skala Enterprise</h2>
+<pre><code><span class="kw">sifat</span> <span class="typ">ProdukPerbankan</span> {
+    <span class="fn">fungsi</span> <span class="fn">hitung_bunga_bulanan</span>();
+    <span class="fn">fungsi</span> <span class="fn">dapatkan_saldo</span>();
+    <span class="fn">fungsi</span> <span class="fn">setor_dana</span>(nominal);
+    <span class="fn">fungsi</span> <span class="fn">tarik_dana</span>(nominal);
+}
+
+<span class="kw">struktur</span> <span class="typ">RekeningTabungan</span> { nomor_rekening, nama_pemilik, saldo, suku_bunga_persen }
+<span class="kw">struktur</span> <span class="typ">RekeningGiro</span> { nomor_rekening, nama_perusahaan, saldo, batas_cerukan_overdraft }
+<span class="kw">struktur</span> <span class="typ">DepositoBerjangka</span> { nomor_bilyet, nominal_pokok, jangka_waktu_bulan, bunga_tahunan_persen }
+
+<span class="fn">fungsi</span> <span class="fn">proses_penutupan_buku_bulanan</span>(daftar_akun) {
+    <span class="fn">cetak</span>(<span class="str">"=== AUDIT PENUTUPAN BUKU PERBANKAN BULANAN ==="</span>);
+    <span class="kw">untuk</span> akun <span class="kw">dalam</span> daftar_akun {
+        <span class="kw">misal</span> bunga = akun.<span class="fn">hitung_bunga_bulanan</span>();
+        akun.<span class="fn">setor_dana</span>(bunga);
+        <span class="fn">cetak</span>(<span class="str">"Akun:"</span>, akun.nomor_rekening, <span class="str">"| Saldo Terkini: Rp"</span>, akun.<span class="fn">dapatkan_saldo</span>());
+    }
+}
+</code></pre>
+
+<!-- BAB 7 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">7</span> Penanganan Galat & Ketahanan Crash-Resilient</h1>
+
+<h2>7.1 Filosofi Zero-Panic & Penanganan Deterministik</h2>
+<p>
+Dalam arsitektur perangkat lunak skala misi-kritis (<em>mission-critical</em>), penghentian program secara mendadak akibat galat yang tak tertangani (<em>unhandled panic crash</em>) adalah bentuk kegagalan sistem paling fatal. Widya-Lang menerapkan penanganan galat deterministik berbasis blok <code>coba</code> - <code>tangkap</code> - <code>akhirnya</code> yang menjamin sumber daya tertutup aman dan program terus beroperasi:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">transfer_dana_antar_rekening</span>(rekening_asal, rekening_tujuan, nominal) {
+    <span class="kw">coba</span> {
+        <span class="kw">jika</span> nominal <= <span class="num">0</span> {
+            <span class="kw">lempar</span> <span class="str">"GALAT_NOMINAL_INVALID: Nominal transfer harus bernilai positif!"</span>;
+        }
+        <span class="kw">jika</span> rekening_asal.saldo < nominal {
+            <span class="kw">lempar</span> <span class="str">"GALAT_SALDO_INSUFISIEN: Saldo sumber tidak mencukupi untuk transfer!"</span>;
+        }
+
+        rekening_asal.saldo = rekening_asal.saldo - nominal;
+        rekening_tujuan.saldo = rekening_tujuan.saldo + nominal;
+        <span class="fn">cetak</span>(<span class="str">"✅ TRANSFER SUKSES SEBESAR Rp"</span>, nominal);
+        <span class="kw">kembalikan</span> <span class="kw">benar</span>;
+    } <span class="kw">tangkap</span> (pesan_galat) {
+        <span class="fn">cetak</span>(<span class="str">"❌ GAGAL MEMPROSES TRANSAKSI:"</span>, pesan_galat);
+        <span class="kw">kembalikan</span> <span class="kw">salah</span>;
+    } <span class="kw">akhirnya</span> {
+        <span class="fn">cetak</span>(<span class="str">"[AUDIT] Sesi mutasi rekening ditutup secara aman pada catatan jurnal."</span>);
+    }
+}
+</code></pre>
+
+<h2>7.2 Pola Ketahanan Resilient: Retry dengan Exponential Backoff</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">hubungi_server_dengan_toleransi</span>(url, batas_maksimal_percobaan) {
+    <span class="kw">misal</span> percobaan = <span class="num">1</span>;
+    <span class="kw">misal</span> jeda_detik = <span class="num">1</span>;
+
+    <span class="kw">selama</span> percobaan <= batas_maksimal_percobaan {
+        <span class="kw">coba</span> {
+            <span class="fn">cetak</span>(<span class="str">"Menghubungi endpoint"</span>, url, <span class="str">"(Percobaan ke-"</span>, percobaan, <span class="str">")..."</span>);
+            <span class="kw">jika</span> percobaan < <span class="num">3</span> { <span class="kw">lempar</span> <span class="str">"Timeout Jaringan (Kode 504)"</span>; }
+            <span class="fn">cetak</span>(<span class="str">"✨ Koneksi Jaringan Berhasil Terhubung!"</span>);
+            <span class="kw">kembalikan</span> <span class="kw">benar</span>;
+        } <span class="kw">tangkap</span> (galat) {
+            <span class="fn">cetak</span>(<span class="str">"Peringatan: Gagal terhubung ("</span>, galat, <span class="str">"). Menunggu"</span>, jeda_detik, <span class="str">"detik..."</span>);
+            percobaan = percobaan + <span class="num">1</span>;
+            jeda_detik = jeda_detik * <span class="num">2</span>;
+        }
+    }
+    <span class="kw">kembalikan</span> <span class="kw">salah</span>;
+}
+</code></pre>
+
+<h2>7.3 Pola Ketahanan Resilient: Circuit Breaker State Machine</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">buat_circuit_breaker</span>(ambang_batas_gagal, durasi_jeda_detik) {
+    <span class="kw">misal</span> status = <span class="str">"TERTUTUP"</span>;
+    <span class="kw">misal</span> jumlah_gagal = <span class="num">0</span>;
+    <span class="kw">misal</span> waktu_terbuka = <span class="num">0</span>;
+
+    <span class="kw">kembalikan</span> {
+        <span class="str">"eksekusi"</span>: <span class="fn">fungsi</span>(fungsi_aksi, aksi_cadangan_fallback) {
+            <span class="kw">misal</span> sekarang = <span class="fn">waktu_saat_ini</span>();
+
+            <span class="kw">jika</span> status == <span class="str">"TERBUKA"</span> {
+                <span class="kw">jika</span> sekarang - waktu_terbuka > durasi_jeda_detik {
+                    status = <span class="str">"SETENGAH_TERBUKA"</span>;
+                    <span class="fn">cetak</span>(<span class="str">"[CIRCUIT BREAKER] Mencoba koneksi uji coba (Half-Open)..."</span>);
+                } <span class="kw">lainnya</span> {
+                    <span class="fn">cetak</span>(<span class="str">"[CIRCUIT BREAKER] Sirkuit Terbuka! Mengalihkan ke Fallback Cache."</span>);
+                    <span class="kw">kembalikan</span> <span class="fn">aksi_cadangan_fallback</span>();
+                }
+            }
+
+            <span class="kw">coba</span> {
+                <span class="kw">misal</span> hasil = <span class="fn">fungsi_aksi</span>();
+                <span class="kw">jika</span> status == <span class="str">"SETENGAH_TERBUKA"</span> {
+                    status = <span class="str">"TERTUTUP"</span>;
+                    jumlah_gagal = <span class="num">0</span>;
+                    <span class="fn">cetak</span>(<span class="str">"[CIRCUIT BREAKER] Layanan Pulih Normal (Closed)!"</span>);
+                }
+                <span class="kw">kembalikan</span> hasil;
+            } <span class="kw">tangkap</span> (err) {
+                jumlah_gagal = jumlah_gagal + <span class="num">1</span>;
+                <span class="kw">jika</span> jumlah_gagal >= ambang_batas_gagal {
+                    status = <span class="str">"TERBUKA"</span>;
+                    waktu_terbuka = sekarang;
+                    <span class="fn">cetak</span>(<span class="str">"🚨 [CIRCUIT BREAKER] Ambang batas terlampaui! Sirkuit Dibuka!"</span>);
+                }
+                <span class="kw">kembalikan</span> <span class="fn">aksi_cadangan_fallback</span>();
+            }
+        }
+    };
+}
+</code></pre>
+
+<!-- BAB 8 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">8</span> Modularitas, Sistem Impor & Arsitektur Proyek</h1>
+
+<h2>8.1 Desain Arsitektur Piramida 4-Lapisan (Clean Architecture)</h2>
+<div class="diagram-box">
+  sistem_perbankan/
+  ├── widya.toml                    # Manifes konfigurasi proyek & dependensi
+  ├── aplikasi_utama.wya            # Titik masuk eksekusi (Entry point)
+  └── modul/
+      ├── domain/                   # Lapisan 1: Entitas Bisnis Inti (Struktur & Sifat)
+      │   └── rekening.wya
+      ├── repositori/               # Lapisan 2: Akses Data (WidyaBase Engine / File Storage)
+      │   └── repositori_rekening.wya
+      ├── layanan/                  # Lapisan 3: Logika Bisnis & Validasi Aturan
+      │   └── layanan_transfer.wya
+      └── api/                      # Lapisan 4: Pengendali Antarmuka (HTTP REST / Desktop UI)
+          └── pengendali_http.wya
+</div>
+
+<h2>8.2 Kata Kunci `impor` & Resolusi Modul Relatif</h2>
+<pre><code><span class="kw">impor</span> <span class="str">"../domain/rekening.wya"</span>;
+<span class="kw">impor</span> <span class="str">"../repositori/repositori_rekening.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">proses_layanan_transfer</span>(id_asal, id_tujuan, jumlah) {
+    <span class="kw">misal</span> akun_pengirim = <span class="fn">cari_rekening_by_id</span>(id_asal);
+    <span class="kw">misal</span> akun_penerima = <span class="fn">cari_rekening_by_id</span>(id_tujuan);
+
+    <span class="kw">jika</span> akun_pengirim.saldo < jumlah {
+        <span class="kw">kembalikan</span> { <span class="str">"sukses"</span>: <span class="kw">salah</span>, <span class="str">"alasan"</span>: <span class="str">"Saldo tidak mencukupi"</span> };
+    }
+
+    <span class="fn">simpan_mutasi_jurnal</span>(id_asal, id_tujuan, jumlah);
+    <span class="kw">kembalikan</span> { <span class="str">"sukses"</span>: <span class="kw">benar</span>, <span class="str">"waktu"</span>: <span class="fn">waktu_saat_ini</span>() };
+}
+</code></pre>
+
+<h2>8.3 Manifes Proyek: `widya.toml`</h2>
+<pre><code>[paket]
+nama = "widya-core-banking"
+versi = "1.0.0"
+penulis = "Tim Rekayasa Perbankan Berdaulat &lt;dev@bank.id&gt;"
+edisi = "2026"
+lisensi = "MIT"
+
+[dependensi]
+widyabase = { versi = "1.0.0", fitur = ["wal", "cte", "vektor"] }
+kriptografi = { versi = "1.0.0", fitur = ["aes-256", "ed25519"] }
+desktop_gui = { versi = "1.0.0" }
+</code></pre>
+
+<h2>8.4 Kontainer Injeksi Dependensi (Dependency Injection Container)</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">buat_kontainer_layanan</span>() {
+    <span class="kw">misal</span> daftar_layanan = {};
+
+    <span class="kw">kembalikan</span> {
+        <span class="str">"daftarkan"</span>: <span class="fn">fungsi</span>(nama, pembuat_instansi) {
+            daftar_layanan[nama] = pembuat_instansi;
+        },
+        <span class="str">"selesaikan"</span>: <span class="fn">fungsi</span>(nama) {
+            <span class="kw">jika</span> <span class="kw">bukan</span> <span class="fn">mengandung_kunci</span>(daftar_layanan, nama) {
+                <span class="kw">lempar</span> <span class="str">"Layanan tidak ditemukan di kontainer: "</span> + nama;
+            }
+            <span class="kw">kembalikan</span> daftar_layanan[nama]();
+        }
+    };
+}
+
+<span class="kw">misal</span> di = <span class="fn">buat_kontainer_layanan</span>();
+
+di.daftarkan(<span class="str">"db"</span>, <span class="fn">fungsi</span>() {
+    <span class="kw">kembalikan</span> <span class="fn">BukaWidyaBase</span>(<span class="str">"produksi.wdb"</span>);
+});
+
+di.daftarkan(<span class="str">"layanan_pengguna"</span>, <span class="fn">fungsi</span>() {
+    <span class="kw">misal</span> database = di.selesaikan(<span class="str">"db"</span>);
+    <span class="kw">kembalikan</span> <span class="fn">BuatLayananPengguna</span>(database);
+});
+
+<span class="kw">misal</span> app_service = di.selesaikan(<span class="str">"layanan_pengguna"</span>);
+<span class="fn">cetak</span>(<span class="str">"Layanan Berhasil Terinjeksi dan Siap Digunakan!"</span>);
+</code></pre>
+
+<!-- BAB 9 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">9</span> Rekayasa Aplikasi Desktop GUI Modern</h1>
+
+<h2>9.1 Arsitektur WidyaEngine Desktop: Event Loop & Message Dispatcher</h2>
+<p>
+Berbeda dengan ekosistem modern yang sering kali bergantung pada kerangka peramban web tebal (seperti Electron) yang menghabiskan memori ratusan megabita, framework <code>modul/desktop.wya</code> dirancang secara native di atas pustaka grafis sistem operasi berkecepatan tinggi. Dengan konsumsi RAM kurang dari 35 MB, aplikasi desktop Widya-Lang memiliki waktu startup instan (<em>sub-second startup</em>) dan responsivitas antarmuka yang sangat mulus.
+</p>
+
+<div class="diagram-box">
+  ┌────────────────────────────────────────────────────────┐
+  │                 Siklus Hidup Jendela GUI               │
+  │  Inisialisasi Window ──► Pasang Komponen ──► Render UI │
+  └───────────────────────────┬────────────────────────────┘
+                              ▼
+  ┌────────────────────────────────────────────────────────┐
+  │            Event-Driven Loop (Thread Utama)            │
+  │  Peristiwa Masuk (Klik/Ketik/Timer) ──► Dispatcher     │
+  │  Eksekusi Callback ──► Pembaruan DOM GUI ──► Re-Paint  │
+  └────────────────────────────────────────────────────────┘
+</div>
+
+<h2>9.2 Komponen Antarmuka Grafis (UI Widgets)</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Komponen GUI</th>
+      <th>Metode Pembuatan</th>
+      <th>Properti & Perilaku Interaktif</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Jendela Utama (Window)</strong></td>
+      <td><code>AplikasiDesktop(judul, lebar, tinggi)</code></td>
+      <td>Wadah induk aplikasi dengan bilah judul, ikon, dan tombol kontrol standar OS.</td>
+    </tr>
+    <tr>
+      <td><strong>Panel Kontainer</strong></td>
+      <td><code>app.tambah_panel(id, x, y, w, h, bg_color)</code></td>
+      <td>Wadah tata letak untuk mengelompokkan elemen formulir, bilah sisi, atau kartu statistik.</td>
+    </tr>
+    <tr>
+      <td><strong>Label Teks</strong></td>
+      <td><code>app.tambah_label(id, teks, x, y)</code></td>
+      <td>Menampilkan teks statis, judul seksi, atau nilai indikator status.</td>
+    </tr>
+    <tr>
+      <td><strong>Kotak Input Teks</strong></td>
+      <td><code>app.tambah_input(id, placeholder, x, y)</code></td>
+      <td>Bidang input ketikan keyboard untuk SKU barcode, nomor telepon, atau nominal.</td>
+    </tr>
+    <tr>
+      <td><strong>Tombol Aksi (Button)</strong></td>
+      <td><code>app.tambah_tombol(id, label, x, y, fungsi_klik)</code></td>
+      <td>Memicu penanganan aksi ketika tombol diklik oleh pengguna.</td>
+    </tr>
+    <tr>
+      <td><strong>Tabel Data (TableView)</strong></td>
+      <td><code>app.tambah_tabel(id, kolom, x, y, w, h)</code></td>
+      <td>Menampilkan data tabular transaksi berbaris dengan bilah gulir (scroll).</td>
+    </tr>
+    <tr>
+      <td><strong>Kotak Dialog (Modal)</strong></td>
+      <td><code>app.tampilkan_dialog(judul, pesan)</code></td>
+      <td>Jendela pop-up peringatan konfirmasi atau pemberitahuan struk belanja.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>9.3 Studi Kasus Lengkap: WidyaPOS - Aplikasi Kasir Retail UMKM</h2>
+<p>
+Berikut adalah implementasi penuh kode aplikasi kasir retail desktop Point-of-Sale (POS) yang terhubung langsung ke mesin basis data lokal WidyaBase:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/desktop.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./modul/widyabase.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">inisialisasi_kasir_pos</span>() {
+    <span class="com">// 1. Hubungkan ke Database Master Barang Lokal</span>
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"kasir_toko.wdb"</span>);
+    db.<span class="fn">eksekusi</span>(<span class="str">"
+        BUAT_TABEL JIKA_TIDAK_ADA produk (
+            sku TEKS KUNCI_UTAMA,
+            nama TEKS,
+            harga INT,
+            stok INT
+        );
+    "</span>);
+
+    <span class="com">// 2. Buat Jendela Aplikasi Desktop</span>
+    <span class="kw">misal</span> app = <span class="fn">AplikasiDesktop</span>(<span class="str">"WidyaPOS - Kasir Retail Nusantara v1.0"</span>, <span class="num">920</span>, <span class="num">680</span>);
+
+    <span class="com">// 3. Keadaan Internal Keranjang Belanja</span>
+    <span class="kw">misal</span> keranjang_item = [];
+    <span class="kw">misal</span> total_akumulasi = <span class="num">0</span>;
+
+    <span class="com">// Header Judul Aplikasi</span>
+    app.<span class="fn">tambah_label</span>(<span class="str">"hdr_judul"</span>, <span class="str">"🛒 SISTEM KASIR KEDAULATAN NUSANTARA"</span>, <span class="num">30</span>, <span class="num">20</span>);
+
+    <span class="com">// Komponen Input Barcode & Kuantitas</span>
+    app.<span class="fn">tambah_label</span>(<span class="str">"lbl_sku"</span>, <span class="str">"Kode Barcode / SKU:"</span>, <span class="num">30</span>, <span class="num">65</span>);
+    app.<span class="fn">tambah_input</span>(<span class="str">"input_sku"</span>, <span class="str">"Ketik SKU (cth: KOP-01)..."</span>, <span class="num">30</span>, <span class="num">90</span>);
+
+    app.<span class="fn">tambah_label</span>(<span class="str">"lbl_qty"</span>, <span class="str">"Jumlah (Qty):"</span>, <span class="num">350</span>, <span class="num">65</span>);
+    app.<span class="fn">tambah_input</span>(<span class="str">"input_qty"</span>, <span class="str">"1"</span>, <span class="num">350</span>, <span class="num">90</span>);
+
+    <span class="com">// Label Indikator Total Realtime</span>
+    app.<span class="fn">tambah_label</span>(<span class="str">"lbl_total_layar"</span>, <span class="str">"TOTAL TAGIHAN: Rp 0"</span>, <span class="num">550</span>, <span class="num">85</span>);
+
+    <span class="com">// 4. Tombol Tambah Barang ke Keranjang Belanja</span>
+    app.<span class="fn">tambah_tombol</span>(<span class="str">"btn_tambah"</span>, <span class="str">"+ Masukkan Keranjang"</span>, <span class="num">30</span>, <span class="num">140</span>, <span class="fn">fungsi</span>() {
+        <span class="kw">misal</span> kode_sku = app.<span class="fn">ambil_nilai</span>(<span class="str">"input_sku"</span>);
+        <span class="kw">misal</span> kuantitas = <span class="fn">ke_angka</span>(app.<span class="fn">ambil_nilai</span>(<span class="str">"input_qty"</span>));
+
+        <span class="kw">jika</span> kuantitas <= <span class="num">0</span> {
+            app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Peringatan"</span>, <span class="str">"Kuantitas barang harus minimal 1 pcs!"</span>);
+            <span class="kw">kembalikan</span>;
+        }
+
+        <span class="com">// Ambil data barang dari WidyaBase</span>
+        <span class="kw">misal</span> baris = db.<span class="fn">kueri_satu</span>(<span class="str">"PILIH * DARI produk DIMANA sku = '"</span> + kode_sku + <span class="str">"';"</span>);
+        <span class="kw">jika</span> baris == <span class="kw">nihil</span> {
+            <span class="com">// Data sampel otomatis jika barang belum ada</span>
+            baris = { <span class="str">"sku"</span>: kode_sku, <span class="str">"nama"</span>: <span class="str">"Produk Unggulan "</span> + kode_sku, <span class="str">"harga"</span>: <span class="num">25000</span> };
+        }
+
+        <span class="kw">misal</span> subtotal_item = baris[<span class="str">"harga"</span>] * kuantitas;
+        total_akumulasi = total_akumulasi + subtotal_item;
+
+        <span class="fn">tambah</span>(keranjang_item, {
+            <span class="str">"sku"</span>: kode_sku,
+            <span class="str">"nama"</span>: baris[<span class="str">"nama"</span>],
+            <span class="str">"qty"</span>: kuantitas,
+            <span class="str">"harga"</span>: baris[<span class="str">"harga"</span>],
+            <span class="str">"subtotal"</span>: subtotal_item
+        });
+
+        <span class="com">// Perbarui tampilan label total di layar kasir</span>
+        app.<span class="fn">set_teks</span>(<span class="str">"lbl_total_layar"</span>, <span class="str">"TOTAL TAGIHAN: Rp "</span> + <span class="fn">ke_teks</span>(total_akumulasi));
+        app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Sukses"</span>, <span class="str">"Berhasil menambahkan: "</span> + baris[<span class="str">"nama"</span>]);
+    });
+
+    <span class="com">// 5. Tombol Selesaikan Transaksi & Cetak Struk</span>
+    app.<span class="fn">tambah_tombol</span>(<span class="str">"btn_selesai"</span>, <span class="str">"💳 SELESAIKAN PEMBAYARAN & CETAK STRUK"</span>, <span class="num">30</span>, <span class="num">560</span>, <span class="fn">fungsi</span>() {
+        <span class="kw">jika</span> <span class="fn">panjang</span>(keranjang_item) == <span class="num">0</span> {
+            app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Peringatan"</span>, <span class="str">"Keranjang belanja masih kosong!"</span>);
+            <span class="kw">kembalikan</span>;
+        }
+
+        <span class="com">// Mutasi Pengurangan Stok Atomik di Database</span>
+        db.<span class="fn">eksekusi</span>(<span class="str">"MULAI_TRANSAKSI;"</span>);
+        <span class="kw">untuk</span> item <span class="kw">dalam</span> keranjang_item {
+            db.<span class="fn">eksekusi</span>(<span class="str">"PERBARUI produk ATUR stok = stok - "</span> + <span class="fn">ke_teks</span>(item.qty) + <span class="str">" DIMANA sku = '"</span> + item.sku + <span class="str">"';"</span>);
+        }
+        db.<span class="fn">eksekusi</span>(<span class="str">"KOMIT;"</span>);
+
+        <span class="kw">misal</span> pajak_ppn = <span class="fn">ke_angka</span>(total_akumulasi * <span class="num">0.11</span>);
+        <span class="kw">misal</span> total_akhir = total_akumulasi + pajak_ppn;
+
+        <span class="kw">misal</span> pesan_struk = <span class="str">"====================================\n"</span> +
+                           <span class="str">"         STRUK PENJUALAN TOKO        \n"</span> +
+                           <span class="str">"====================================\n"</span> +
+                           <span class="str">"Subtotal Belanja : Rp "</span> + <span class="fn">ke_teks</span>(total_akumulasi) + <span class="str">"\n"</span> +
+                           <span class="str">"Pajak PPN (11%)  : Rp "</span> + <span class="fn">ke_teks</span>(pajak_ppn) + <span class="str">"\n"</span> +
+                           <span class="str">"Total Akhir Bayar: Rp "</span> + <span class="fn">ke_teks</span>(total_akhir) + <span class="str">"\n"</span> +
+                           <span class="str">"Status Transaksi : LUNAS & TERCATAT WAL\n"</span> +
+                           <span class="str">"====================================\n"</span> +
+                           <span class="str">"    Terima Kasih Atas Kunjungan Anda! \n"</span>;
+
+        app.<span class="fn">tampilkan_dialog</span>(<span class="str">"Transaksi Berhasil"</span>, pesan_struk);
+
+        <span class="com">// Reset Keranjang untuk Transaksi Berikutnya</span>
+        keranjang_item = [];
+        total_akumulasi = <span class="num">0</span>;
+        app.<span class="fn">set_teks</span>(<span class="str">"lbl_total_layar"</span>, <span class="str">"TOTAL TAGIHAN: Rp 0"</span>);
+    });
+
+    <span class="com">// 6. Jalankan Loop Antarmuka Desktop</span>
+    app.<span class="fn">jalankan</span>();
+}
+
+<span class="fn">inisialisasi_kasir_pos</span>();
+</code></pre>
+
+<!-- BAB 10 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">10</span> Rekayasa Aplikasi Mobile & Integrasi QRIS ASPI</h1>
+
+<h2>10.1 Standar Nasional QRIS (Quick Response Code Indonesian Standard)</h2>
+<p>
+Sesuai dengan regulasi Bank Indonesia dan Asosiasi Sistem Pembayaran Indonesia (ASPI), seluruh transaksi pembayaran nirsentuh di Indonesia menggunakan spesifikasi <strong>EMVCo Tag-Length-Value (TLV)</strong>. Format ini menyusun seluruh data merchant, nomor akun nasional (NMID), kategori usaha, mata uang Rupiah (Kode ISO 360), dan checksum keamanan dalam satu deret teks terstandarisasi.
+</p>
+
+<h2>10.2 Pembuat Payload QRIS Dinamis Terstandarisasi ASPI</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">buat_payload_qris_dinamis</span>(nmid, nama_toko, kota, nominal_rupiah, invoice_id) {
+    <span class="kw">misal</span> payload = <span class="str">""</span>;
+
+    <span class="com">// Helper pembuat pasangan Tag-Length-Value (TLV)</span>
+    <span class="kw">misal</span> tlv = <span class="fn">fungsi</span>(tag, nilai) {
+        <span class="kw">misal</span> len = <span class="fn">panjang</span>(nilai);
+        <span class="kw">misal</span> len_str = <span class="fn">ke_teks</span>(len);
+        <span class="kw">jika</span> len < <span class="num">10</span> { len_str = <span class="str">"0"</span> + len_str; }
+        <span class="kw">kembalikan</span> tag + len_str + nilai;
+    };
+
+    payload = payload + tlv(<span class="str">"00"</span>, <span class="str">"01"</span>);               <span class="com">// Format Indicator</span>
+    payload = payload + tlv(<span class="str">"01"</span>, <span class="str">"12"</span>);               <span class="com">// Point of Initiation: Dinamis</span>
+    payload = payload + tlv(<span class="str">"26"</span>, <span class="str">"ID.CO.QRIS.WWW01"</span> + tlv(<span class="str">"02"</span>, nmid));
+    payload = payload + tlv(<span class="str">"52"</span>, <span class="str">"5812"</span>);             <span class="com">// Merchant Category Code</span>
+    payload = payload + tlv(<span class="str">"53"</span>, <span class="str">"360"</span>);              <span class="com">// Mata Uang Rupiah (360)</span>
+    payload = payload + tlv(<span class="str">"54"</span>, <span class="fn">ke_teks</span>(nominal_rupiah) + <span class="str">".00"</span>);
+    payload = payload + tlv(<span class="str">"58"</span>, <span class="str">"ID"</span>);               <span class="com">// Kode Negara</span>
+    payload = payload + tlv(<span class="str">"59"</span>, nama_toko);          <span class="com">// Nama Toko</span>
+    payload = payload + tlv(<span class="str">"60"</span>, kota);               <span class="com">// Kota Merchant</span>
+    payload = payload + tlv(<span class="str">"62"</span>, tlv(<span class="str">"01"</span>, invoice_id)); <span class="com">// Nomor Tagihan</span>
+
+    <span class="com">// Tambahkan Tag 63 untuk Checksum CRC-16</span>
+    payload = payload + <span class="str">"6304"</span>;
+    <span class="kw">misal</span> crc = <span class="fn">hitung_crc16_qris</span>(payload);
+    <span class="kw">kembalikan</span> payload + crc;
+}
+</code></pre>
+
+<h2>10.3 Resolusi Konflik Sinkronisasi Multi-Kasir dengan Vector Clocks</h2>
+<p>
+Ketika beberapa kasir bergerak (mobile cashiers) menerima pesanan offline secara bersamaan di area lapangan festival, sinkronisasi data ke cloud sering menghadapi konflik pembaruan ganda. Pola <strong>Vector Clocks</strong> melacak urutan kausalitas mutasi data:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">bandingkan_vector_clock</span>(clock_a, clock_b) {
+    <span class="kw">misal</span> ada_a_lebih_besar = <span class="kw">salah</span>;
+    <span class="kw">misal</span> ada_b_lebih_besar = <span class="kw">salah</span>;
+
+    <span class="kw">untuk</span> kasir_id <span class="kw">dalam</span> [<span class="str">"KASIR-01"</span>, <span class="str">"KASIR-02"</span>, <span class="str">"KASIR-03"</span>] {
+        <span class="kw">misal</span> val_a = clock_a[kasir_id];
+        <span class="kw">misal</span> val_b = clock_b[kasir_id];
+        <span class="kw">jika</span> val_a > val_b { ada_a_lebih_besar = <span class="kw">benar</span>; }
+        <span class="kw">jika</span> val_b > val_a { ada_b_lebih_besar = <span class="kw">benar</span>; }
+    }
+
+    <span class="kw">jika</span> ada_a_lebih_besar <span class="kw">dan</span> (<span class="kw">bukan</span> ada_b_lebih_besar) { <span class="kw">kembalikan</span> <span class="str">"A_MENDOMINASI"</span>; }
+    <span class="kw">jika</span> ada_b_lebih_besar <span class="kw">dan</span> (<span class="kw">bukan</span> ada_a_lebih_besar) { <span class="kw">kembalikan</span> <span class="str">"B_MENDOMINASI"</span>; }
+    <span class="kw">kembalikan</span> <span class="str">"KONFLIK_SEJAJAR"</span>; <span class="com">// Butuh penggabungan (merge) manual</span>
+}
+</code></pre>
+
+<!-- BAB 11 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">11</span> Integrasi Basis Data Mandiri WidyaBase Skala Industri</h1>
+
+<h2>11.1 Arsitektur Internal B-Tree & Pembelahan Halaman (Page Split)</h2>
+<p>
+Ketika jumlah baris data dalam satu halaman B-Tree melebihi kapasitas 4096 bita, WidyaBase melakukan pembelahan halaman (<em>page split</em>) secara atomik. Kunci median dinaikkan ke halaman induk (<em>parent page</em>) untuk mempertahankan kedalaman pohon tetap seimbang (<em>balanced tree depth</em> $O(\log N)$):
+</p>
+
+<div class="diagram-box">
+             [ Halaman Daun Penuh (4 KB) ]
+             [ K1 | K2 | K3 | K4 | K5 | K6 ] ──► Overflow!
+                           │
+             ┌─────────────┴─────────────┐
+             ▼                           ▼
+  [ Halaman Daun Kiri ]       [ Halaman Daun Kanan ]
+     [ K1 | K2 | K3 ]            [ K4 | K5 | K6 ]
+             └─────────────┬─────────────┘
+                           ▼
+              [ Kunci Median K4 Dinaikkan ]
+                [ Halaman Induk (Root) ]
+</div>
+
+<h2>11.2 Kueri Manufaktur Rantai Pasok: Bill of Materials (BOM)</h2>
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/widyabase.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">analisis_kebutuhan_komponen_bom</span>() {
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"pabrik_otomotif.wdb"</span>);
+
+    <span class="com">// CTE Rekursif untuk Menghitung Seluruh Sub-Komponen Kendaraan Listrik</span>
+    <span class="kw">misal</span> sql_bom = <span class="str">"
+        DENGAN REKURSIF rincian_bom SEBAGAI (
+            PILIH id_part, nama_komponen, jumlah, 1 SEBAGAI tingkat_sub
+            DARI komponen_rakitan
+            DIMANA id_induk ADALAH NIHIL
+
+            GABUNG_SEMUA
+
+            PILIH k.id_part, k.nama_komponen, r.jumlah * k.jumlah, r.tingkat_sub + 1
+            DARI komponen_rakitan AS k
+            GABUNG rincian_bom AS r PADA k.id_induk = r.id_part
+        )
+        PILIH * DARI rincian_bom URUTKAN_BERDASARKAN tingkat_sub NAIK;
+    "</span>;
+
+    <span class="kw">misal</span> daftar_komponen = db.<span class="fn">kueri</span>(sql_bom);
+    <span class="kw">untuk</span> p <span class="kw">dalam</span> daftar_komponen {
+        <span class="fn">cetak</span>(<span class="str">"Tingkat:"</span>, p[<span class="str">"tingkat_sub"</span>], <span class="str">"| Part:"</span>, p[<span class="str">"nama_komponen"</span>], <span class="str">"| Total Qty:"</span>, p[<span class="str">"jumlah"</span>]);
+    }
+}
+</code></pre>
+
+<h2>11.3 Kueri Geospasial: Pencarian Armada Taksi Terdekat</h2>
+<pre><code><span class="fn">fungsi</span> <span class="fn">cari_armada_terdekat</span>(lintang_penumpang, bujur_penumpang) {
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"transportasi_online.wdb"</span>);
+
+    <span class="com">// Menghitung jarak geodesik menggunakan fungsi geometris bawaan WidyaBase</span>
+    <span class="kw">misal</span> sql_jarak = <span class="str">"
+        PILIH 
+            id_driver, 
+            nama_supir, 
+            ST_Jarak(lokasi_gps, ST_Titik("</span> + <span class="fn">ke_teks</span>(lintang_penumpang) + <span class="str">", "</span> + <span class="fn">ke_teks</span>(bujur_penumpang) + <span class="str">")) AS radius_meter
+        DARI armada_taksi
+        DIMANA status_siaga = BENAR
+        URUTKAN_BERDASARKAN radius_meter NAIK
+        BATAS 3;
+    "</span>;
+
+    <span class="kw">misal</span> supir_terpilih = db.<span class="fn">kueri</span>(sql_jarak);
+    <span class="fn">cetak</span>(<span class="str">"=== 3 ARMADA TERDEKAT DENGAN ANDA ==="</span>);
+    <span class="kw">untuk</span> s <span class="kw">dalam</span> supir_terpilih {
+        <span class="fn">cetak</span>(<span class="str">"Supir:"</span>, s[<span class="str">"nama_supir"</span>], <span class="str">"| Jarak:"</span>, s[<span class="str">"radius_meter"</span>], <span class="str">"meter"</span>);
+    }
+}
+</code></pre>
+
+<!-- BAB 12 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">12</span> Pemrograman Konkuren, Paralelisme & Jaringan Mikroservis</h1>
+
+<h2>12.1 Green Threads & Task Worker: Model Konkurensi Ringan</h2>
+<p>
+Dalam arsitektur komputasi modern, pembuatan thread sistem operasi (<em>OS native thread</em>) memerlukan biaya alokasi memori yang cukup besar (umumnya 1–2 MB per tumpukan thread). Widya-Lang menerapkan model konkurensi <strong>Green Threads (M:N Task Scheduler)</strong> di mana ribuan tugas komputasi independen dijadwalkan secara kooperatif di atas sejumlah kecil thread fisik prosesor. Dengan jejak tumpukan awal hanya 4 KB, sistem dapat menjalankan 100.000 tugas konkuren secara simultan tanpa menghabiskan kapasitas RAM server.
+</p>
+
+<div class="diagram-box">
+  ┌────────────────────────────────────────────────────────┐
+  │  Tugas Konkuren Widya (Green Threads: T1, T2, ... Tn)  │
+  └───────────────────────────┬────────────────────────────┘
+                              ▼
+  ┌────────────────────────────────────────────────────────┐
+  │       Penjadwal Tugas Tingkat Pengguna (Work-Stealing) │
+  └───────────────────────────┬────────────────────────────┘
+                              ▼
+  ┌────────────────────────────────────────────────────────┐
+  │ Thread Prosesor Fisik OS (Core 1, Core 2, Core 3...)   │
+  └────────────────────────────────────────────────────────┘
+</div>
+
+<h2>12.2 Saluran Komunikasi (Channels) Antar-Tugas & Worker Pool</h2>
+<p>
+Pola <strong>Worker Pool</strong> adalah standar industri untuk membatasi konsumsi sumber daya saat memproses ribuan pekerjaan komputasi berat secara paralel:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/konkurensi.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">jalankan_worker_pool</span>(jumlah_pekerja, daftar_tugas) {
+    <span class="kw">misal</span> kanal_tugas = <span class="fn">buat_saluran</span>(<span class="fn">panjang</span>(daftar_tugas));
+    <span class="kw">misal</span> kanal_hasil = <span class="fn">buat_saluran</span>(<span class="fn">panjang</span>(daftar_tugas));
+
+    <span class="com">// Meluncurkan N pekerja (Worker Green Threads)</span>
+    <span class="kw">untuk</span> id_pekerja <span class="kw">dalam</span> <span class="num">1</span>..jumlah_pekerja {
+        <span class="fn">jalankan_tugas</span>(<span class="fn">fungsi</span>() {
+            <span class="kw">selama</span> <span class="kw">benar</span> {
+                <span class="kw">misal</span> tugas = <span class="fn">terima_dari_saluran</span>(kanal_tugas);
+                <span class="kw">jika</span> tugas == <span class="kw">nihil</span> { <span class="kw">henti</span>; }
+                <span class="fn">cetak</span>(<span class="str">"[Pekerja-"</span> + <span class="fn">ke_teks</span>(id_pekerja) + <span class="str">"] Memproses:"</span>, tugas.id);
+                <span class="kw">misal</span> hasil = tugas.nilai * <span class="num">2</span>; <span class="com">// Komputasi</span>
+                <span class="fn">kirim_ke_saluran</span>(kanal_hasil, { <span class="str">"id"</span>: tugas.id, <span class="str">"hasil"</span>: hasil });
+            }
+        });
+    }
+
+    <span class="com">// Menerbitkan tugas ke dalam antrean</span>
+    <span class="kw">untuk</span> t <span class="kw">dalam</span> daftar_tugas {
+        <span class="fn">kirim_ke_saluran</span>(kanal_tugas, t);
+    }
+    <span class="fn">tutup_saluran</span>(kanal_tugas);
+}
+</code></pre>
+
+<h2>12.3 Middleware Otentikasi Token JWT pada Server HTTP</h2>
+<p>
+Mengamankan rute mikroservis dengan memvalidasi tanda tangan JSON Web Token (JWT) secara ketat pada lapisan perantara:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/http_server.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./modul/kripto_aman.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">middleware_jwt_auth</span>(permintaan, respon, handler_berikutnya) {
+    <span class="kw">misal</span> header_auth = permintaan.headers[<span class="str">"Authorization"</span>];
+    <span class="kw">jika</span> header_auth == <span class="kw">nihil</span> <span class="kw">atau</span> <span class="kw">bukan</span> <span class="fn">diawali_dengan</span>(header_auth, <span class="str">"Bearer "</span>) {
+        respon.<span class="fn">kirim_json</span>(<span class="num">401</span>, { <span class="str">"galat"</span>: <span class="str">"Akses Ditolak: Token Bearer Tidak Ditemukan!"</span> });
+        <span class="kw">kembalikan</span>;
+    }
+
+    <span class="kw">misal</span> token = <span class="fn">potong_teks</span>(header_auth, <span class="num">7</span>);
+    <span class="kw">coba</span> {
+        <span class="kw">misal</span> klaim = <span class="fn">VerifikasiTokenJWT</span>(token, <span class="str">"kunci_rahasia_otoritas_2026"</span>);
+        permintaan.konteks_user = klaim;
+        <span class="fn">handler_berikutnya</span>(permintaan, respon);
+    } <span class="kw">tangkap</span> (err) {
+        respon.<span class="fn">kirim_json</span>(<span class="num">403</span>, { <span class="str">"galat"</span>: <span class="str">"Token Tidak Sah atau Telah Kedaluwarsa!"</span> });
+    }
+}
+</code></pre>
+
+<!-- BAB 13 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">13</span> Komputasi Sains, Vektor AI & Data Engineering</h1>
+
+<h2>13.1 Aljabar Linier: Perkalian Matriks Berkinerja Tinggi</h2>
+<p>
+Operasi perkalian matriks adalah fondasi utama lapisan jaringan saraf tiruan (<em>deep learning neural networks</em>). Berikut adalah implementasi algoritma perkalian matriks murni di Widya-Lang:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">perkalian_matriks</span>(mat_a, mat_b) {
+    <span class="kw">misal</span> baris_a = <span class="fn">panjang</span>(mat_a);
+    <span class="kw">misal</span> kolom_a = <span class="fn">panjang</span>(mat_a[<span class="num">0</span>]);
+    <span class="kw">misal</span> kolom_b = <span class="fn">panjang</span>(mat_b[<span class="num">0</span>]);
+
+    <span class="kw">misal</span> hasil = [];
+    <span class="kw">untuk</span> i <span class="kw">dalam</span> <span class="num">0</span>..(baris_a - <span class="num">1</span>) {
+        <span class="kw">misal</span> baris_baru = [];
+        <span class="kw">untuk</span> j <span class="kw">dalam</span> <span class="num">0</span>..(kolom_b - <span class="num">1</span>) {
+            <span class="kw">misal</span> akumulasi = <span class="num">0</span>;
+            <span class="kw">untuk</span> k <span class="kw">dalam</span> <span class="num">0</span>..(kolom_a - <span class="num">1</span>) {
+                akumulasi = akumulasi + (mat_a[i][k] * mat_b[k][j]);
+            }
+            <span class="fn">tambah</span>(baris_baru, akumulasi);
+        }
+        <span class="fn">tambah</span>(hasil, baris_baru);
+    }
+    <span class="kw">kembalikan</span> hasil;
+}
+</code></pre>
+
+<h2>13.2 Navigasi Graf Multi-Lapisan HNSW (Hierarchical Navigable Small World)</h2>
+<p>
+Pencarian vektor HNSW mengorganisasikan data ke dalam lapisan graf bertingkat layaknya jaringan jalan tol ekspres dan jalan raya perkotaan:
+</p>
+
+<div class="diagram-box">
+  Lapisan 2 (Tol Ekspres)    : [ Node A ] ─────────────────────────► [ Node G ]
+                                     │                                      │
+  Lapisan 1 (Jalan Arteri)   : [ Node A ] ────────► [ Node D ] ─────► [ Node G ]
+                                     │                  │                   │
+  Lapisan 0 (Jalan Lingkungan): [ Node A ] ──► [Node B] ──► [Node C] ──► [ Node D ] ...
+</div>
+
+<!-- BAB 14 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">14</span> Kolaborasi Cerdas dengan AI Lokal (WidyaCoder)</h1>
+
+<h2>14.1 Mengoperasikan WidyaCoder di Terminal Lokal</h2>
+<pre><code><span class="com"># Menjalankan model AI lokal yang telah dilatih korpus Widya-Lang</span>
+$ ollama run widya-coder:latest
+&gt;&gt;&gt; Bagaimana cara membuat tabel di WidyaBase dengan kunci utama otomatis?
+
+Kompiler WidyaBase menyediakan sintaksis DDL Dialek Nusantara:
+BUAT_TABEL pengguna (
+    id INT KUNCI_UTAMA,
+    nama_lengkap TEKS,
+    saldo INT
+);
+</code></pre>
+
+<h2>14.2 Siklus Agen AI Otonom Multi-Putaran (Multi-Turn ReAct Loop)</h2>
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/http_klien.wya"</span>;
+<span class="kw">impor</span> <span class="str">"./modul/widyabase.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">agen_cerdas_investigasi</span>(pertanyaan_pengguna) {
+    <span class="kw">misal</span> db = <span class="fn">BukaWidyaBase</span>(<span class="str">"operasional.wdb"</span>);
+    <span class="kw">misal</span> memori_percakapan = [
+        { <span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"Anda adalah Analis Sistem Widya-Lang berdaulat. Anda dapat mengeksekusi kueri WidyaBase dengan format: [KUERI: sql_command]"</span> }
+    ];
+
+    <span class="fn">tambah</span>(memori_percakapan, { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: pertanyaan_pengguna });
+
+    <span class="com">// Putaran 1: Minta AI Menganalisis Kebutuhan Data</span>
+    <span class="kw">misal</span> respon_ai = <span class="fn">PanggilOllamaChat</span>(<span class="str">"widya-coder:latest"</span>, memori_percakapan);
+    <span class="fn">cetak</span>(<span class="str">"[AI PIKIRAN]:"</span>, respon_ai);
+
+    <span class="com">// Deteksi Pemanggilan Alat (Tool Calling)</span>
+    <span class="kw">jika</span> <span class="fn">mengandung_teks</span>(respon_ai, <span class="str">"[KUERI:"</span>) {
+        <span class="kw">misal</span> perintah_sql = <span class="fn">ekstrak_antara</span>(respon_ai, <span class="str">"[KUERI:"</span>, <span class="str">"]"</span>);
+        <span class="fn">cetak</span>(<span class="str">"[AKSI EKSEKUSI WIDYABASE]:"</span>, perintah_sql);
+        
+        <span class="kw">misal</span> data_tabel = db.<span class="fn">kueri</span>(perintah_sql);
+        <span class="fn">tambah</span>(memori_percakapan, { <span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: respon_ai });
+        <span class="fn">tambah</span>(memori_percakapan, { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"HASIL DATA WIDYABASE:\n"</span> + <span class="fn">ke_json</span>(data_tabel) });
+
+        <span class="com">// Putaran 2: AI Menyusun Jawaban Akhir Berdasarkan Data Riil</span>
+        <span class="kw">misal</span> kesimpulan_akhir = <span class="fn">PanggilOllamaChat</span>(<span class="str">"widya-coder:latest"</span>, memori_percakapan);
+        <span class="fn">cetak</span>(<span class="str">"[KESIMPULAN FINAL AGEN]:\n"</span>, kesimpulan_akhir);
+        <span class="kw">kembalikan</span> kesimpulan_akhir;
+    }
+
+    <span class="kw">kembalikan</span> respon_ai;
+}
+</code></pre>
+
+<!-- BAB 15 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">15</span> Keamanan Siber, Kriptografi & Kepatuhan UU PDP</h1>
+
+<h2>15.1 Kriptografi Pasca-Kuantum (Post-Quantum Cryptography: ML-KEM / Kyber-768)</h2>
+<p>
+Perkembangan komputer kuantum di masa depan berpotensi meruntuhkan sistem enkripsi RSA dan kurva eliptis klasik. Widya-Lang adalah salah satu pelopor bahasa berdaulat yang telah mengintegrasikan modul pertukaran kunci berbasis kekisi (<em>lattice-based cryptography</em>) standar NIST <strong>ML-KEM (Kyber-768)</strong> di dalam <code>modul/kripto_aman.wya</code>:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/kripto_aman.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">pertukaran_kunci_kuantum</span>() {
+    <span class="com">// 1. Penerima (Server Bank) Membangkitkan Pasangan Kunci Kyber-768</span>
+    <span class="kw">misal</span> kunci_server = <span class="fn">BuatPasanganKunciKyber768</span>();
+    <span class="fn">cetak</span>(<span class="str">"Kunci Publik Kuantum Server (1184 Bita):"</span>, <span class="fn">panjang</span>(kunci_server.publik));
+
+    <span class="com">// 2. Pengirim (Aplikasi Nasabah) Melakukan Enkapsulasi Kunci Bersama</span>
+    <span class="kw">misal</span> enkapsulasi = <span class="fn">EnkapsulasiKyber768</span>(kunci_server.publik);
+    <span class="com">// enkapsulasi menghasilkan: ciphertext (1088 bita) dan kunci_bersama (32 bita)</span>
+
+    <span class="com">// 3. Penerima Melakukan Dekapsulasi Kunci Bersama dengan Kunci Privat</span>
+    <span class="kw">misal</span> kunci_terdekapsulasi = <span class="fn">DekapsulasiKyber768</span>(enkapsulasi.ciphertext, kunci_server.privat);
+
+    <span class="com">// Verifikasi kedua pihak memiliki kunci rahasia simetris yang identik</span>
+    <span class="kw">misal</span> aman = <span class="fn">perbandingan_waktu_konstan</span>(enkapsulasi.kunci_bersama, kunci_terdekapsulasi);
+    <span class="fn">cetak</span>(<span class="str">"Kunci Bersama Kuantum Sukses Disepakati:"</span>, aman); <span class="com">// benar</span>
+}
+</code></pre>
+
+<h2>15.2 Perbandingan Waktu Konstan (Constant-Time Comparison)</h2>
+<p>
+Serangan waktu (<em>timing attacks</em>) memanfaatkan perbedaan mikro-detik dalam pembandingan string untuk menebak sandi atau token. Widya-Lang menyediakan fungsi pembandingan yang kebal terhadap kebocoran waktu komputasi:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">perbandingan_waktu_konstan</span>(teks_a, teks_b) {
+    <span class="kw">jika</span> <span class="fn">panjang</span>(teks_a) != <span class="fn">panjang</span>(teks_b) {
+        <span class="kw">kembalikan</span> <span class="kw">salah</span>;
+    }
+    <span class="kw">misal</span> akumulasi_xor = <span class="num">0</span>;
+    <span class="kw">misal</span> n = <span class="fn">panjang</span>(teks_a);
+    <span class="kw">untuk</span> i <span class="kw">dalam</span> <span class="num">0</span>..(n - <span class="num">1</span>) {
+        akumulasi_xor = akumulasi_xor | (<span class="fn">kode_karakter</span>(teks_a, i) ^ <span class="fn">kode_karakter</span>(teks_b, i));
+    }
+    <span class="kw">kembalikan</span> akumulasi_xor == <span class="num">0</span>;
+}
+</code></pre>
+
+<h2>15.3 Daftar Periksa Audit Kepatuhan UU PDP No. 27/2022</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Pasal Regulasi</th>
+      <th>Kewajiban Pengendali Data Pribadi</th>
+      <th>Mekanisme Implementasi di Widya-Lang</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Pasal 20</strong></td>
+      <td>Memiliki dasar pemrosesan data pribadi yang sah & eksplisit</td>
+      <td>Pencatatan field <code>persetujuan_pengguna_ts</code> saat registrasi entitas.</td>
+    </tr>
+    <tr>
+      <td><strong>Pasal 35</strong></td>
+      <td>Melindungi keamanan data dari pemrosesan tanpa hak</td>
+      <td>Enkripsi kolom database sensitif menggunakan AES-256-GCM.</td>
+    </tr>
+    <tr>
+      <td><strong>Pasal 37</strong></td>
+      <td>Mencegah akses yang tidak sah melalui kontrol ketat</td>
+      <td>Autentikasi JWT Bearer bertanda tangan Ed25519 & Role-Based Access Control.</td>
+    </tr>
+    <tr>
+      <td><strong>Pasal 43</strong></td>
+      <td>Menghapus data pribadi jika masa retensi telah berakhir</td>
+      <td>Kueri terjadwal <code>HAPUS_PERMANEN DARI pelanggan DIMANA kedaluwarsa &lt; SEKARANG()</code> dengan penghapusan memori kriptografis nol.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- BAB 16 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">16</span> Praktik Pengujian Perangkat Lunak, Benchmarking & Standar Koding</h1>
+
+<h2>16.1 Pengujian Berbasis Properti (Property-Based Testing)</h2>
+<p>
+Selain pengujian kasus unit statis, pengujian berbasis properti menguji apakah invarian logika matematis tetap berlaku di bawah ribuan masukan acak:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/pengujian.wya"</span>;
+
+<span class="fn">tes_properti</span> <span class="str">"Invarian: Komutatif Penjumlahan Selalu Berlaku"</span> {
+    <span class="fn">uji_untuk_semua</span>(<span class="fn">tipe_data_acak</span>(<span class="str">"angka"</span>), <span class="fn">tipe_data_acak</span>(<span class="str">"angka"</span>), <span class="fn">fungsi</span>(a, b) {
+        <span class="fn">pastikan_sama</span>(a + b, b + a);
+    });
+}
+
+<span class="fn">tes_properti</span> <span class="str">"Invarian: Enkripsi yang Diikuti Dekripsi Mengembalikan Nilai Asli"</span> {
+    <span class="fn">uji_untuk_semua</span>(<span class="fn">tipe_data_acak</span>(<span class="str">"teks"</span>), <span class="fn">fungsi</span>(pesan_asli) {
+        <span class="kw">misal</span> sandi = <span class="fn">EnkripsiAES256GCM</span>(pesan_asli, KUNCI_UJI);
+        <span class="kw">misal</span> balik = <span class="fn">DekripsiAES256GCM</span>(sandi.ciphertext, KUNCI_UJI, sandi.nonce, sandi.tag);
+        <span class="fn">pastikan_sama</span>(pesan_asli, balik);
+    });
+}
+</code></pre>
+
+<!-- BAB 17 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">17</span> Panduan Distribusi, Kompilasi Biner & DevOps</h1>
+
+<h2>17.1 Konfigurasi Unit Layanan Linux (systemd service)</h2>
+<div class="diagram-box">
+[Unit]
+Description=Layanan Server Mikroservis Widya-Lang Nusantara
+After=network.target
+
+[Service]
+Type=simple
+User=widya
+WorkingDirectory=/opt/widya_app
+ExecStart=/usr/local/bin/widya jalan aplikasi_server.wya
+Restart=always
+RestartSec=5s
+LimitNOFILE=65535
+Environment="WIDYA_ENV=produksi"
+Environment="PORT=8080"
+
+[Install]
+WantedBy=multi-user.target
+</div>
+
+<h2>17.2 Metrik Operasional Prometheus Exporter</h2>
+<p>
+Widya-Lang menyediakan endpoint metrik standar Prometheus pada <code>/metrik</code> untuk monitoring performa CPU, memori heap, dan latensi query secara realtime melalui dashboard Grafana:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/metrik.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">ekspos_metrik_prometheus</span>(server) {
+    <span class="kw">misal</span> counter_transaksi = <span class="fn">BuatPenghitungMetrik</span>(<span class="str">"transaksi_total"</span>, <span class="str">"Jumlah transaksi kasir berhasil"</span>);
+
+    server.<span class="fn">rute_get</span>(<span class="str">"/metrik"</span>, <span class="fn">fungsi</span>(req, res) {
+        <span class="kw">misal</span> data_metrik = <span class="fn">KumpulkanMetrikSistem</span>();
+        res.<span class="fn">kirim_teks</span>(<span class="num">200</span>, data_metrik, <span class="str">"text/plain; version=0.0.4"</span>);
+    });
+}
+</code></pre>
+
+<!-- LAMPIRAN A -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">A</span> Lampiran: Kamus Lengkap Sintaks Dialek Nusantara</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kata Kunci Nusantara</th>
+      <th>Padanan Bahasa Inggris</th>
+      <th>Kategori Sintaksis</th>
+      <th>Deskripsi Semantik & Contoh Penggunaan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>misal</code></td><td><code>let / var / mut</code></td><td>Variabel</td><td>Mendeklarasikan variabel mutable dinamis: <code>misal x = 10;</code></td></tr>
+    <tr><td><code>tetap</code> / <code>tetapan</code></td><td><code>const / immutable</code></td><td>Konstanta</td><td>Mendeklarasikan konstanta terkunci: <code>tetap PI = 3.14;</code></td></tr>
+    <tr><td><code>fungsi</code></td><td><code>function / def / fn</code></td><td>Subrutin</td><td>Mendefinisikan blok fungsi komputasi: <code>fungsi hitung() { }</code></td></tr>
+    <tr><td><code>kembalikan</code></td><td><code>return</code></td><td>Alur Fungsi</td><td>Mengembalikan nilai dari eksekusi fungsi: <code>kembalikan total;</code></td></tr>
+    <tr><td><code>jika</code></td><td><code>if</code></td><td>Percabangan</td><td>Mengevaluasi kondisi logika pertama: <code>jika nilai >= 75 { }</code></td></tr>
+    <tr><td><code>kalau</code></td><td><code>else if / elif</code></td><td>Percabangan</td><td>Mengevaluasi cabang kondisi berikutnya: <code>kalau nilai >= 60 { }</code></td></tr>
+    <tr><td><code>lainnya</code></td><td><code>else</code></td><td>Percabangan</td><td>Cabang alternatif jika seluruh kondisi salah: <code>lainnya { }</code></td></tr>
+    <tr><td><code>untuk</code></td><td><code>for</code></td><td>Perulangan</td><td>Iterasi rentang angka atau koleksi data: <code>untuk i dalam 1..10 { }</code></td></tr>
+    <tr><td><code>selama</code></td><td><code>while</code></td><td>Perulangan</td><td>Perulangan berbasis syarat kondisi benar: <code>selama aktif { }</code></td></tr>
+    <tr><td><code>henti</code></td><td><code>break</code></td><td>Kendali Loop</td><td>Menghentikan perulangan seketika: <code>henti;</code></td></tr>
+    <tr><td><code>lanjut</code></td><td><code>continue</code></td><td>Kendali Loop</td><td>Melompati iterasi saat ini menuju iterasi berikutnya: <code>lanjut;</code></td></tr>
+    <tr><td><code>struktur</code></td><td><code>struct / class</code></td><td>Tipe Bentukan</td><td>Mendefinisikan entitas data terstruktur: <code>struktur Nasabah { }</code></td></tr>
+    <tr><td><code>sifat</code></td><td><code>trait / interface</code></td><td>Kontrak Perilaku</td><td>Mendefinisikan antarmuka polimorfisme: <code>sifat Transaksi { }</code></td></tr>
+    <tr><td><code>coba</code></td><td><code>try</code></td><td>Penanganan Galat</td><td>Membuka blok eksekusi rawan kegagalan: <code>coba { ... }</code></td></tr>
+    <tr><td><code>tangkap</code></td><td><code>catch / except</code></td><td>Penanganan Galat</td><td>Menangkap objek galat yang terlempar: <code>tangkap (galat) { ... }</code></td></tr>
+    <tr><td><code>akhirnya</code></td><td><code>finally</code></td><td>Penanganan Galat</td><td>Blok yang dijamin selalu dieksekusi: <code>akhirnya { tutup(); }</code></td></tr>
+    <tr><td><code>lempar</code></td><td><code>throw / raise</code></td><td>Pemicu Galat</td><td>Memicu galat terstruktur secara eksplisit: <code>lempar "Saldo minus";</code></td></tr>
+    <tr><td><code>impor</code></td><td><code>import / use</code></td><td>Modularitas</td><td>Memuat berkas atau pustaka lain: <code>impor "./modul/desktop.wya";</code></td></tr>
+    <tr><td><code>cetak</code></td><td><code>print / println</code></td><td>I/O Standar</td><td>Mencetak baris data ke terminal konsol: <code>cetak("Halo Indonesia");</code></td></tr>
+    <tr><td><code>dan</code></td><td><code>&& / and</code></td><td>Operator Logika</td><td>Evaluasi konjungsi logika biner: <code>jika a dan b { }</code></td></tr>
+    <tr><td><code>atau</code></td><td><code>|| / or</code></td><td>Operator Logika</td><td>Evaluasi disjungsi logika biner: <code>jika a atau b { }</code></td></tr>
+    <tr><td><code>bukan</code></td><td><code>! / not</code></td><td>Operator Logika</td><td>Negasi nilai kebenaran logika: <code>jika bukan aktif { }</code></td></tr>
+    <tr><td><code>benar</code> / <code>salah</code></td><td><code>true / false</code></td><td>Literal Boolean</td><td>Konstanta nilai kebenaran logika: <code>misal valid = benar;</code></td></tr>
+    <tr><td><code>nihil</code></td><td><code>null / nil / none</code></td><td>Literal Ketiadaan</td><td>Menandakan ketiadaan nilai: <code>misal data = nihil;</code></td></tr>
+    <tr><td><code>panjang</code></td><td><code>len / length / size</code></td><td>Fungsi Bawaan</td><td>Menghitung panjang deret atau jumlah karakter string: <code>panjang(deret)</code></td></tr>
+    <tr><td><code>tambah</code></td><td><code>push / append</code></td><td>Fungsi Bawaan</td><td>Menyisipkan elemen ke bagian ekor deret: <code>tambah(daftar, item)</code></td></tr>
+    <tr><td><code>iris</code></td><td><code>slice / substring</code></td><td>Fungsi Bawaan</td><td>Mengambil potongan deret atau string: <code>iris(teks, 0, 5)</code></td></tr>
+    <tr><td><code>ke_angka</code></td><td><code>parseInt / toInt</code></td><td>Konversi Tipe</td><td>Mengonversi representasi string menjadi integer: <code>ke_angka("150")</code></td></tr>
+    <tr><td><code>ke_teks</code></td><td><code>toString / str</code></td><td>Konversi Tipe</td><td>Mengonversi nilai tipe apapun menjadi string teks: <code>ke_teks(42)</code></td></tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN B -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">B</span> Lampiran: Tabel Komparasi Bahasa Lintas Platform</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fitur / Karakteristik</th>
+      <th>Widya-Lang v1.0</th>
+      <th>Rust 1.80</th>
+      <th>Python 3.12</th>
+      <th>Go 1.22</th>
+      <th>TypeScript / Node</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Dialek Bahasa Asli</strong></td>
+      <td>Bahasa Indonesia (Nusantara)</td>
+      <td>Bahasa Inggris</td>
+      <td>Bahasa Inggris</td>
+      <td>Bahasa Inggris</td>
+      <td>Bahasa Inggris</td>
+    </tr>
+    <tr>
+      <td><strong>Mesin Komputasi</strong></td>
+      <td>Native Rust VM & Compiler</td>
+      <td>LLVM Native Binary</td>
+      <td>CPython Bytecode VM</td>
+      <td>Go SSA Native Compiler</td>
+      <td>V8 JIT Engine</td>
+    </tr>
+    <tr>
+      <td><strong>Jejak Startup Biner</strong></td>
+      <td>&lt; 5 ms (Instan)</td>
+      <td>&lt; 2 ms (Instan)</td>
+      <td>~ 50-100 ms</td>
+      <td>&lt; 5 ms (Instan)</td>
+      <td>~ 150-250 ms</td>
+    </tr>
+    <tr>
+      <td><strong>Basis Data Tersemat</strong></td>
+      <td>WidyaBase 16 Pilar Bawaan</td>
+      <td>Membutuhkan Crate Luar</td>
+      <td>SQLite Bawaan</td>
+      <td>Membutuhkan Driver Cgo</td>
+      <td>Membutuhkan Paket NPM</td>
+    </tr>
+    <tr>
+      <td><strong>Dukungan GUI Native</strong></td>
+      <td>Tersedia (modul/desktop.wya)</td>
+      <td>Pustaka Eksternal Rumit</td>
+      <td>Tkinter Lambat</td>
+      <td>Eksternal Cgo</td>
+      <td>Electron Berat (&gt;150MB)</td>
+    </tr>
+    <tr>
+      <td><strong>Dukungan Model AI Lokal</strong></td>
+      <td>WidyaCoder (Ollama Native)</td>
+      <td>Candle / Burn bindings</td>
+      <td>PyTorch / Transformers</td>
+      <td>Ollama REST client</td>
+      <td>LangChain / Ollama JS</td>
+    </tr>
+    <tr>
+      <td><strong>Standar Finansial Nasional</strong></td>
+      <td>QRIS ASPI EMVCo Terintegrasi</td>
+      <td>Tidak Ada Standar</td>
+      <td>Tidak Ada Standar</td>
+      <td>Tidak Ada Standar</td>
+      <td>Tidak Ada Standar</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN C -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">C</span> Lampiran: Direktori Modul Ekosistem Resmi</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Path Berkas Modul Resmi</th>
+      <th>Fungsi Utama & Tanggung Jawab Komputasi</th>
+      <th>Contoh Penggunaan API Kunci</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>modul/widyabase.wya</code></td>
+      <td>Mesin basis data relasional slotted-page 4KB, transaksi ACID, WAL, CTE rekursif, dan window functions.</td>
+      <td><code>misal db = BukaWidyaBase("data.wdb");</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/desktop.wya</code></td>
+      <td>Framework antarmuka grafis desktop native ringan (Windows/Linux) untuk aplikasi kasir & dashboard.</td>
+      <td><code>misal app = AplikasiDesktop("Kasir", 800, 600);</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/mobile.wya</code></td>
+      <td>Framework mobile sentuh dengan pembacaan kamera QRIS ASPI, printer bluetooth, dan outbox offline.</td>
+      <td><code>misal mob = AplikasiMobile("Warung Mobile");</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/dataframe_analitika.wya</code></td>
+      <td>Struktur data tabel kolumnar bervolume tinggi, operasi pembersihan missing values, agregasi GroupBy.</td>
+      <td><code>misal df = MuatDataframeCSV("omzet.csv");</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/vektor_hnsw.wya</code></td>
+      <td>Indeks pencarian semantik vektor kemiripan kosinus untuk arsitektur Retrieval-Augmented Generation (RAG).</td>
+      <td><code>misal idx = IndeksVektorHNSW(128);</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/kripto_aman.wya</code></td>
+      <td>Kriptografi kelas militer: AES-256-GCM, kurva Ed25519, hashing Argon2id, dan Post-Quantum Kyber.</td>
+      <td><code>misal enc = EnkripsiAES256GCM(teks, kunci);</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/http_server.wya</code></td>
+      <td>Server HTTP mikroservis berkecepatan tinggi dengan router RESTful dan penangan JSON otomatis.</td>
+      <td><code>misal srv = BuatServerHTTP("0.0.0.0", 8080);</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN D -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">D</span> Lampiran: Diagnostik Galat Compiler & Solusi Perbaikan</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kode Galat</th>
+      <th>Pesan Diagnostik Kompiler</th>
+      <th>Akar Penyebab Permasalahan</th>
+      <th>Tindakan Solusi Pemulihan Kode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>W001</strong></td>
+      <td>Tanda titik koma (<code>;</code>) tidak ditemukan di akhir baris</td>
+      <td>Lupa menutup pernyataan perintah komputasi</td>
+      <td>Tambahkan karakter <code>;</code> pada akhir baris instruksi.</td>
+    </tr>
+    <tr>
+      <td><strong>W002</strong></td>
+      <td>Simbol pengenal variabel belum dideklarasikan</td>
+      <td>Mengakses variabel sebelum dideklarasikan dengan <code>misal</code></td>
+      <td>Pastikan mendeklarasikan variabel dengan <code>misal nama = nilai;</code> sebelum diakses.</td>
+    </tr>
+    <tr>
+      <td><strong>W004</strong></td>
+      <td>Upaya mutasi pada tetapan abadi terlarang</td>
+      <td>Mencoba mengubah nilai variabel yang dideklarasikan dengan <code>tetap</code></td>
+      <td>Ganti kata kunci deklarasi menjadi <code>misal</code> jika nilai memang perlu berubah.</td>
+    </tr>
+    <tr>
+      <td><strong>W008</strong></td>
+      <td>Indeks deret berada di luar batas alokasi memori</td>
+      <td>Mengakses elemen deret dengan indeks &gt;= panjang deret</td>
+      <td>Periksa panjang koleksi dengan fungsi <code>panjang(deret)</code> sebelum mengakses indeks.</td>
+    </tr>
+    <tr>
+      <td><strong>W015</strong></td>
+      <td>Kueri WidyaBase melanggar kendala kunci asing</td>
+      <td>Menyisipkan ID relasi yang tidak terdaftar di tabel induk</td>
+      <td>Pastikan entitas pada tabel rujukan telah terdaftar sebelum menyisipkan baris anak.</td>
+    </tr>
+    <tr>
+      <td><strong>W021</strong></td>
+      <td>Checksum CRC-16 QRIS tidak sesuai dengan payload</td>
+      <td>String QRIS mengalami korupsi atau manipulasi data saat pemindaian</td>
+      <td>Minta pembeli melakukan scan ulang kode QRIS dari aplikasi perbankan resmi.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout callout-tip" style="margin-top: 30px;">
+  <div class="callout-title">🇮🇩 Penutup: Menyongsong Masa Depan Teknologi Berdaulat</div>
+  Dengan selesainya buku panduan resmi jilid 2 ini, Anda telah menguasai seluruh spektrum rekayasa perangkat lunak modern: dari algoritma dasar Nusantara, rekayasa desktop kasir UMKM, transaksi pembayaran QRIS nasional, basis data mandiri WidyaBase, hingga orkestrasi agen AI lokal tanpa ketergantungan asing. Selamat berkarya, berinovasi, dan mengibarkan kedaulatan teknologi Indonesia Emas 2045!
+</div>
+
+</body>
+</html>
+

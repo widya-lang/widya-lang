@@ -1,0 +1,9 @@
+// Server Mandiri: WidyaOS Sovereign Cloud Web & Shell Console
+// Dijalankan dengan runtime resmi Widya-Lang: widya web dev web/ -p 8006
+
+tulis("==================================================")
+tulis("🚀 Menjalankan Server WidyaOS Sovereign Cloud v2.4")
+tulis("🌐 Port Mandiri: http://localhost:8006")
+tulis("🔐 Keamanan: Post-Quantum Cryptography (ML-DSA / Dilithium5)")
+tulis("📁 Direktori Web: ./web")
+tulis("==================================================")

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KDMP Hub — Sistem Koperasi Desa Merah Putih 7 Pilar Usaha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <span class="logo-badge">KDMP</span>
+        </div>
+        <div class="brand-info">
+          <h2>Koperasi Merah Putih</h2>
+          <span class="badge-status">Online • 7 Pilar Aktif</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section">MENU UTAMA</div>
+        <button class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard Eksekutif</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('pos')" id="nav-pos">
+          <span class="nav-icon">🛒</span>
+          <span class="nav-label">Kasir Warung POS</span>
+          <span class="nav-badge" id="badge-cart">0</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('simpanpinjam')" id="nav-simpanpinjam">
+          <span class="nav-icon">💰</span>
+          <span class="nav-label">Simpan Pinjam</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('apotik')" id="nav-apotik">
+          <span class="nav-icon">💊</span>
+          <span class="nav-label">Apotik & Obat Desa</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('klinik')" id="nav-klinik">
+          <span class="nav-icon">🩺</span>
+          <span class="nav-label">Klinik SatuSehat</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('gudang')" id="nav-gudang">
+          <span class="nav-icon">🌾</span>
+          <span class="nav-label">Resi Gudang Komoditas</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('logistik')" id="nav-logistik">
+          <span class="nav-icon">🚚</span>
+          <span class="nav-label">Logistik & Armada</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">AD</div>
+          <div class="user-details">
+            <span class="user-name">Ahmad Dahlan</span>
+            <span class="user-role">Ketua Koperasi Unit 04</span>
+          </div>
+        </div>
+        <div class="engine-tag">Powered by <strong>WidyaBase ACID</strong></div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="header-left">
+          <h1 id="page-title">Dashboard Eksekutif Koperasi KDMP</h1>
+          <p id="page-subtitle">Sinergi 7 Pilar Usaha Terpadu Desa Mandiri • Sinkronisasi Real-Time</p>
+        </div>
+        <div class="header-right">
+          <div class="live-pill">
+            <span class="dot-pulse"></span>
+            <span id="live-clock">12:00:00 WIB</span>
+          </div>
+          <div class="quick-stat">
+            <span class="stat-lbl">Kas Operasional</span>
+            <span class="stat-val" id="total-kas">Rp 148.650.000</span>
+          </div>
+          <button class="btn-primary" onclick="simulasiTransaksiBaru()">+ Transaksi Kilat</button>
+        </div>
+      </header>
+
+      <!-- TAB: DASHBOARD -->
+      <section id="tab-dashboard" class="tab-pane active">
+        <!-- METRICS ROW -->
+        <div class="metrics-grid">
+          <div class="metric-card gradient-red">
+            <div class="metric-header">
+              <span class="metric-title">Omzet Hari Ini</span>
+              <span class="metric-tag">+18.4%</span>
+            </div>
+            <div class="metric-value" id="val-omzet">Rp 24.850.000</div>
+            <div class="metric-sub">Dari 7 pilar unit usaha desa</div>
+          </div>
+          <div class="metric-card gradient-blue">
+            <div class="metric-header">
+              <span class="metric-title">Total Anggota Aktif</span>
+              <span class="metric-tag">842 Warga</span>
+            </div>
+            <div class="metric-value">98.2%</div>
+            <div class="metric-sub">Rasio partisipasi iuran wajib</div>
+          </div>
+          <div class="metric-card gradient-emerald">
+            <div class="metric-header">
+              <span class="metric-title">Estimasi SHU Berjalan</span>
+              <span class="metric-tag">2026 Q3</span>
+            </div>
+            <div class="metric-value" id="val-shu">Rp 42.120.000</div>
+            <div class="metric-sub">Siap dibagikan di RAT</div>
+          </div>
+          <div class="metric-card gradient-purple">
+            <div class="metric-header">
+              <span class="metric-title">Status Resi Gudang</span>
+              <span class="metric-tag">Aman</span>
+            </div>
+            <div class="metric-value">142.5 Ton</div>
+            <div class="metric-sub">Komoditas gabah & jagung</div>
+          </div>
+        </div>
+
+        <!-- 7 PILAR OVERVIEW TILES -->
+        <h3 class="section-title">Status Operasional 7 Pilar Usaha Desa</h3>
+        <div class="pilar-grid">
+          <div class="pilar-card" onclick="switchTab('pos')">
+            <div class="pilar-icon">🛒</div>
+            <div class="pilar-body">
+              <h4>1. Warung Sembako POS</h4>
+              <p>Kasir cepat, barcode scanner, diskon khusus anggota 5%</p>
+              <span class="pilar-stat">Omzet: Rp 8.420.000 (142 Trx)</span>
+            </div>
+          </div>
+          <div class="pilar-card" onclick="switchTab('simpanpinjam')">
+            <div class="pilar-icon">💰</div>
+            <div class="pilar-body">
+              <h4>2. Simpan Pinjam</h4>
+              <p>Pembiayaan modal kerja petani & UMKM, bunga 0.8% flat</p>
+              <span class="pilar-stat">Portofolio: Rp 86.500.000</span>
+            </div>
+          </div>
+          <div class="pilar-card" onclick="switchTab('apotik')">
+            <div class="pilar-icon">💊</div>
+            <div class="pilar-body">
+              <h4>3. Apotik Desa</h4>
+              <p>Stok obat generik terjangkau & vitamin subsidi pemdes</p>
+              <span class="pilar-stat">520 Item Terkelola</span>
+            </div>
+          </div>
+          <div class="pilar-card" onclick="switchTab('klinik')">
+            <div class="pilar-icon">🩺</div>
+            <div class="pilar-body">
+              <h4>4. Klinik Pratama</h4>
+              <p>Rekam medis SatuSehat FHIR & integrasi BPJS V-Claim</p>
+              <span class="pilar-stat">24 Pasien Hari Ini</span>
+            </div>
+          </div>
+          <div class="pilar-card" onclick="switchTab('gudang')">
+            <div class="pilar-icon">🌾</div>
+            <div class="pilar-body">
+              <h4>5. Resi Gudang</h4>
+              <p>Tokenisasi komoditas gabah, sertifikat digital anti-tengkulak</p>
+              <span class="pilar-stat">Kapasitas 85% Terisi</span>
+            </div>
+          </div>
+          <div class="pilar-card" onclick="switchTab('logistik')">
+            <div class="pilar-icon">🚚</div>
+            <div class="pilar-body">
+              <h4>6. Armada Logistik</h4>
+              <p>Armada pikap & truk pendingin distribusi hasil panen</p>
+              <span class="pilar-stat">4 Armada Sedang Jalan</span>
+            </div>
+          </div>
+          <div class="pilar-card">
+            <div class="pilar-icon">🏢</div>
+            <div class="pilar-body">
+              <h4>7. Administrasi Kantor</h4>
+              <p>Otomasi notulensi, RAT, dan laporan pajak PP 45</p>
+              <span class="pilar-stat">Audit Level A (UU PDP)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY LOG -->
+        <div class="panel-card mt-6">
+          <div class="panel-header">
+            <h3>Jejak Transaksi & Audit Real-Time (WidyaBase Engine)</h3>
+            <button class="btn-sm" onclick="bersihkanLog()">Refresh Log</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="table-log">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Unit Pilar</th>
+                  <th>Uraian Transaksi</th>
+                  <th>Nominal</th>
+                  <th>Metode Bayar</th>
+                  <th>Status ACID</th>
+                </tr>
+              </thead>
+              <tbody id="log-tbody">
+                <!-- Injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: POS KASIR -->
+      <section id="tab-pos" class="tab-pane">
+        <div class="pos-layout">
+          <div class="pos-products">
+            <div class="pos-search-bar">
+              <input type="text" id="pos-search" placeholder="Cari nama barang atau scan barcode..." onkeyup="filterProduk()">
+              <div class="category-pills">
+                <button class="cat-pill active" onclick="filterKategori('semua')">Semua</button>
+                <button class="cat-pill" onclick="filterKategori('sembako')">Sembako</button>
+                <button class="cat-pill" onclick="filterKategori('pertanian')">Pupuk & Tani</button>
+                <button class="cat-pill" onclick="filterKategori('kebutuhan')">Kebutuhan Rumah</button>
+              </div>
+            </div>
+            <div class="product-grid" id="product-grid">
+              <!-- Products injected by JS -->
+            </div>
+          </div>
+
+          <!-- POS CART & CHECKOUT -->
+          <div class="pos-cart-panel">
+            <div class="cart-header">
+              <h3>Keranjang Belanja</h3>
+              <button class="btn-clear" onclick="kosongkanKeranjang()">Hapus Semua</button>
+            </div>
+            
+            <div class="member-select">
+              <label>Nomor Anggota (Opsional diskon 5%):</label>
+              <select id="select-member" onchange="hitungTotalPos()">
+                <option value="umum">Warga Non-Anggota (Umum)</option>
+                <option value="A001" selected>KOP-0084: Bpk. Slamet Riyadi (Diskon 5%)</option>
+                <option value="A002">KOP-0112: Ibu Sri Wahyuni (Diskon 5%)</option>
+                <option value="A003">KOP-0341: Bpk. Joko Supriyanto (Diskon 5%)</option>
+              </select>
+            </div>
+
+            <div class="cart-items" id="cart-items">
+              <div class="cart-empty">Keranjang belanja kosong.<br>Pilih produk di sebelah kiri.</div>
+            </div>
+
+            <div class="cart-summary">
+              <div class="sum-row"><span>Subtotal:</span><span id="pos-subtotal">Rp 0</span></div>
+              <div class="sum-row"><span>Diskon Anggota (5%):</span><span id="pos-diskon">-Rp 0</span></div>
+              <div class="sum-row total"><span>TOTAL BAYAR:</span><span id="pos-total">Rp 0</span></div>
+
+              <div class="payment-methods">
+                <label>Pilih Metode Pembayaran:</label>
+                <div class="method-buttons">
+                  <button class="btn-method active" id="btn-qris" onclick="setPaymentMethod('qris')">📱 QRIS WidyaPay</button>
+                  <button class="btn-method" id="btn-tunai" onclick="setPaymentMethod('tunai')">💵 Tunai Kas</button>
+                  <button class="btn-method" id="btn-simpanan" onclick="setPaymentMethod('simpanan')">💳 Potong Simpanan</button>
+                </div>
+              </div>
+
+              <button class="btn-checkout" id="btn-checkout" onclick="prosesPembayaranPOS()">PROSES PEMBAYARAN SEKARANG</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: SIMPAN PINJAM -->
+      <section id="tab-simpanpinjam" class="tab-pane">
+        <div class="sp-layout">
+          <div class="panel-card">
+            <h3>Kalkulator Simulasi Pinjaman Modal Usaha Desa</h3>
+            <p class="text-muted">Bunga kompetitif 0.8% per bulan flat, tanpa biaya administrasi tersembunyi.</p>
+            
+            <div class="calculator-form mt-4">
+              <div class="form-group">
+                <label>Jumlah Pengajuan Pinjaman (Rp):</label>
+                <input type="number" id="sp-nominal" value="10000000" min="1000000" max="100000000" step="1000000" oninput="kalkulasiPinjaman()">
+              </div>
+              <div class="form-group">
+                <label>Tenor Pinjaman (Bulan):</label>
+                <select id="sp-tenor" onchange="kalkulasiPinjaman()">
+                  <option value="6">6 Bulan</option>
+                  <option value="12" selected>12 Bulan (1 Tahun)</option>
+                  <option value="24">24 Bulan (2 Tahun)</option>
+                  <option value="36">36 Bulan (3 Tahun)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Peruntukan Usaha:</label>
+                <select id="sp-peruntukan">
+                  <option>Modal Pupuk & Bibit Pertanian Padi</option>
+                  <option>Pengadaan Pakan Ternak Kambing/Sapi</option>
+                  <option>Perluasan Warung Kelontong Desa</option>
+                  <option>Pengadaan Mesin Penggiling Padi</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="calc-result-box mt-4">
+              <div class="res-item">
+                <span>Pokok per Bulan:</span>
+                <strong id="res-pokok">Rp 833.333</strong>
+              </div>
+              <div class="res-item">
+                <span>Jasa Koperasi (0.8%):</span>
+                <strong id="res-bunga">Rp 80.000</strong>
+              </div>
+              <div class="res-item highlight">
+                <span>Total Angsuran per Bulan:</span>
+                <strong id="res-total-angsuran">Rp 913.333</strong>
+              </div>
+            </div>
+
+            <button class="btn-primary mt-4" onclick="ajukanPinjaman()">Ajukan Permohonan Pinjaman</button>
+          </div>
+
+          <!-- DAFTAR PINJAMAN AKTIF -->
+          <div class="panel-card">
+            <h3>Buku Registrasi Pinjaman Berjalan</h3>
+            <div class="table-responsive mt-3">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID Pinjaman</th>
+                    <th>Nama Anggota</th>
+                    <th>Plafon</th>
+                    <th>Sisa Pokok</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="sp-tbody">
+                  <tr>
+                    <td><code>PJ-2026-001</code></td>
+                    <td>Pak Sutrisno (Tani)</td>
+                    <td>Rp 15.000.000</td>
+                    <td>Rp 7.500.000</td>
+                    <td><span class="badge-success">Lancar (10/12)</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>PJ-2026-002</code></td>
+                    <td>Ibu Maryani (Warung)</td>
+                    <td>Rp 8.000.000</td>
+                    <td>Rp 2.000.000</td>
+                    <td><span class="badge-success">Lancar (9/12)</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>PJ-2026-003</code></td>
+                    <td>Pak Bambang (Ternak)</td>
+                    <td>Rp 25.000.000</td>
+                    <td>Rp 18.750.000</td>
+                    <td><span class="badge-success">Lancar (3/12)</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: APOTIK DESA -->
+      <section id="tab-apotik" class="tab-pane">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Inventaris Apotik & Obat Terpadu Desa</h3>
+            <button class="btn-primary" onclick="tambahObatBaru()">+ Tambah Stok Obat</button>
+          </div>
+          <div class="table-responsive mt-4">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kode Obat</th>
+                  <th>Nama Obat / Formula</th>
+                  <th>Kategori</th>
+                  <th>Stok Tersedia</th>
+                  <th>Harga Warga</th>
+                  <th>Kedaluwarsa</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>MED-001</code></td>
+                  <td>Paracetamol 500mg (Generik)</td>
+                  <td>Analgetik</td>
+                  <td><strong>1.250 Tab</strong></td>
+                  <td>Rp 4.500 / strip</td>
+                  <td>Des 2027</td>
+                  <td><button class="btn-sm" onclick="jualObat('Paracetamol 500mg', 4500)">Jual</button></td>
+                </tr>
+                <tr>
+                  <td><code>MED-002</code></td>
+                  <td>Amoxicillin 500mg</td>
+                  <td>Antibiotik</td>
+                  <td><strong>840 Tab</strong></td>
+                  <td>Rp 8.000 / strip</td>
+                  <td>Okt 2027</td>
+                  <td><button class="btn-sm" onclick="jualObat('Amoxicillin 500mg', 8000)">Jual</button></td>
+                </tr>
+                <tr>
+                  <td><code>MED-003</code></td>
+                  <td>Antasida Doen (Kunyah)</td>
+                  <td>Lambung / Maag</td>
+                  <td><strong>620 Tab</strong></td>
+                  <td>Rp 5.000 / strip</td>
+                  <td>Jan 2028</td>
+                  <td><button class="btn-sm" onclick="jualObat('Antasida Doen', 5000)">Jual</button></td>
+                </tr>
+                <tr>
+                  <td><code>MED-004</code></td>
+                  <td>Vitamin C 500mg IPI</td>
+                  <td>Suplemen Daya Tahan</td>
+                  <td><strong>450 Botol</strong></td>
+                  <td>Rp 7.500 / btl</td>
+                  <td>Mar 2028</td>
+                  <td><button class="btn-sm" onclick="jualObat('Vitamin C 500mg', 7500)">Jual</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: KLINIK SATUSEHAT -->
+      <section id="tab-klinik" class="tab-pane">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3>Klinik Pratama Desa & Rekam Medis SatuSehat FHIR</h3>
+              <p class="text-muted">Terhubung langsung dengan Kemenkes RI via JSON HL7/FHIR Protocol</p>
+            </div>
+            <div class="badge-status-lg">✅ SatuSehat Bridged</div>
+          </div>
+
+          <div class="form-grid-2 mt-4">
+            <div class="form-group">
+              <label>Pencarian Pasien (NIK / No. BPJS):</label>
+              <input type="text" value="3302150804820001 - Bpk. Karyo Wibowo" readonly>
+            </div>
+            <div class="form-group">
+              <label>Keluhan / Diagnosa Primer (ICD-10):</label>
+              <input type="text" id="klinik-icd10" value="I10 - Hipertensi Esensial Primer">
+            </div>
+            <div class="form-group">
+              <label>Tekanan Darah (Tanda Vital):</label>
+              <input type="text" id="klinik-td" value="135/85 mmHg">
+            </div>
+            <div class="form-group">
+              <label>Dokter / Bidan Pemeriksa:</label>
+              <input type="text" value="dr. Nurul Hidayati (SIP: 446/102/2025)" readonly>
+            </div>
+          </div>
+
+          <div class="fhir-preview-box mt-4">
+            <div class="fhir-header">
+              <span>Preview Payload HL7 FHIR JSON Resource:</span>
+              <span class="badge-code">Encounter & Condition</span>
+            </div>
+            <pre class="code-view" id="fhir-json-preview">{
+  "resourceType": "Encounter",
+  "status": "finished",
+  "class": {
+    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+    "code": "AMB",
+    "display": "ambulatory"
+  },
+  "subject": {
+    "reference": "Patient/3302150804820001",
+    "display": "Bpk. Karyo Wibowo"
+  },
+  "diagnosis": [
+    {
+      "condition": {
+        "code": {
+          "coding": [{
+            "system": "http://hl7.org/fhir/sid/icd-10",
+            "code": "I10",
+            "display": "Hipertensi Esensial"
+          }]
+        }
+      }
+    }
+  ]
+}</pre>
+          </div>
+
+          <button class="btn-primary mt-4" onclick="kirimSatuSehat()">Kirim Rekam Medis ke SatuSehat Kemenkes</button>
+        </div>
+      </section>
+
+      <!-- TAB: RESI GUDANG -->
+      <section id="tab-gudang" class="tab-pane">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Sistem Resi Gudang & Tokenisasi Komoditas Panen</h3>
+            <button class="btn-primary" onclick="terbitkanResiGudang()">+ Terbitkan Sertifikat Resi Baru</button>
+          </div>
+          <div class="table-responsive mt-4">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>No. Sertifikat Resi</th>
+                  <th>Komoditas</th>
+                  <th>Nama Petani</th>
+                  <th>Bobot Masuk</th>
+                  <th>Kadar Air</th>
+                  <th>Taksiran Nilai</th>
+                  <th>Status Jaminan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>SRG-GABAH-0841</code></td>
+                  <td>Gabah Kering Panen (GKP)</td>
+                  <td>Kelompok Tani Makmur</td>
+                  <td>28.5 Ton</td>
+                  <td>13.8% (Standar SNI)</td>
+                  <td>Rp 185.250.000</td>
+                  <td><span class="badge-success">Terbit & Berdaulat</span></td>
+                </tr>
+                <tr>
+                  <td><code>SRG-JAGUNG-0219</code></td>
+                  <td>Jagung Pipil Kering</td>
+                  <td>Bpk. Wardoyo</td>
+                  <td>14.0 Ton</td>
+                  <td>14.1%</td>
+                  <td>Rp 77.000.000</td>
+                  <td><span class="badge-success">Terbit & Berdaulat</span></td>
+                </tr>
+                <tr>
+                  <td><code>SRG-KOPI-0092</code></td>
+                  <td>Biji Kopi Robusta Desa</td>
+                  <td>Poktan Lereng Gunung</td>
+                  <td>4.2 Ton</td>
+                  <td>12.0%</td>
+                  <td>Rp 168.000.000</td>
+                  <td><span class="badge-success">Terbit & Berdaulat</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: LOGISTIK ARMADA -->
+      <section id="tab-logistik" class="tab-pane">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Pelacakan & Penjadwalan Armada Logistik Desa</h3>
+            <button class="btn-primary" onclick="jadwalPengiriman()">+ Jadwalkan Rute Baru</button>
+          </div>
+          <div class="fleet-grid mt-4">
+            <div class="fleet-card">
+              <div class="fleet-icon">🚚</div>
+              <div class="fleet-info">
+                <h4>Armada 01: Truk Pendingin Isuzu Giga</h4>
+                <p>Rute: Gudang Desa ➔ Pasar Induk Kota (Sayur Segar)</p>
+                <span class="fleet-badge active">Sedang Dalam Perjalanan • ETA 45 Mnt</span>
+              </div>
+            </div>
+            <div class="fleet-card">
+              <div class="fleet-icon">🛻</div>
+              <div class="fleet-info">
+                <h4>Armada 02: Pikap GrandMax 01</h4>
+                <p>Rute: Toko Koperasi ➔ Dusun 3 (Distribusi Pupuk Subsidi)</p>
+                <span class="fleet-badge active">Bongkar Muatan</span>
+              </div>
+            </div>
+            <div class="fleet-card">
+              <div class="fleet-icon">🛻</div>
+              <div class="fleet-info">
+                <h4>Armada 03: Pikap GrandMax 02</h4>
+                <p>Rute: Puskesmas ➔ Apotik Unit 02 (Drop Stok Obat)</p>
+                <span class="fleet-badge idle">Standby di Garasi Desa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL CHECKOUT NOTIFIKASI -->
+  <div class="modal-overlay" id="modal-checkout">
+    <div class="modal-box">
+      <div class="modal-icon">✅</div>
+      <h3 id="modal-title">Transaksi Berhasil!</h3>
+      <p id="modal-desc">Pembayaran QRIS WidyaPay telah terverifikasi dengan transaksi ACID di basis data.</p>
+      <div class="modal-receipt" id="modal-receipt">
+        <!-- Injected -->
+      </div>
+      <button class="btn-primary w-full mt-4" onclick="tutupModal()">Tutup & Cetak Struk</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+// =================================================================
+// Modul Manajemen Perpustakaan Sekolah Terpadu (Smart Library)
+// (Adopsi MOD-18: OPAC, Sirkulasi Barcode, Pencatatan Aset KIB E & Multi-Sumber Dana)
+// =================================================================
+
+struktur JudulKatalogBuku {
+    id_buku,
+    isbn,
+    judul,
+    pengarang,
+    ddc_klasifikasi, // Contoh: "005.133" untuk Pemrograman
+    total_eksemplar,
+    eksemplar_tersedia
+}
+
+// Eksemplar Fisik Buku dengan Pencatatan Aset KIB E & Multi-Sumber Pembiayaan
+struktur EksemplarFisikBuku {
+    barcode_item,
+    id_buku,
+    nomor_inventaris,
+    kode_rak,
+    npsn_pemilik_aset, // Sekolah Pemilik / Entitas Pembukuan BMD
+    sumber_pembiayaan, // BOSP_REGULER, BOSP_KINERJA, BANPEM_APBN, BOSDA, HIBAH_WAKAF, DIPA_KL
+    nomor_bast_siplah, // Dokumen BAST Rekanan SIPLah
+    harga_perolehan_rp, // Nilai Kapitalisasi Aset KIB E
+    tahun_pengadaan,
+    kondisi, // BAIK, RUSAK_RINGAN, RUSAK_BERAT
+    status // TERSEDIA, SEDANG_DIPINJAM, RUSAK, HILANG
+}
+
+struktur TransaksiSirkulasi {
+    id_transaksi,
+    barcode_item,
+    nisn_peminjam,
+    nama_peminjam,
+    stempel_pinjam,
+    batas_waktu_kembali,
+    stempel_kembali,
+    total_denda_rp,
+    status_transaksi // AKTIF, SELESAI, TERLAMBAT
+}
+
+struktur SuratBebasPustaka {
+    nomor_surat,
+    nisn,
+    nama_siswa,
+    status_bebas, // BEBAS_TANGGUNGAN atau MASIH_ADA_PINJAMAN
+    keterangan,
+    hash_verifikasi_qr
+}
+
+struktur RekapitulasiKIBE {
+    npsn_sekolah,
+    total_judul,
+    total_eksemplar_buku,
+    total_nilai_aset_rp,
+    alokasi_bosp_reguler_rp,
+    alokasi_bosp_kinerja_rp,
+    alokasi_banpem_apbn_rp,
+    alokasi_bosda_rp,
+    alokasi_hibah_wakaf_rp,
+    alokasi_dipa_kl_rp
+}
+
+// -------------------------------------------------------------
+// [1] Pendaftaran Katalog Judul Buku
+// -------------------------------------------------------------
+fungsi pustaka_daftarkan_buku(id, isbn, judul, author, ddc, jml_eksemplar) {
+    kembalikan JudulKatalogBuku(
+        id,
+        isbn,
+        judul,
+        author,
+        ddc,
+        jml_eksemplar,
+        jml_eksemplar // Awalnya seluruh eksemplar tersedia
+    );
+}
+
+// -------------------------------------------------------------
+// [2] Registrasi Aset Eksemplar Fisik & Sumber Pembiayaan (KIB E)
+// -------------------------------------------------------------
+fungsi pustaka_daftarkan_eksemplar_lengkap(barcode, id_buku, no_inv, rak, npsn_pemilik, sumber_dana, no_bast, harga, tahun, kondisi) {
+    kembalikan EksemplarFisikBuku(
+        barcode,
+        id_buku,
+        no_inv,
+        rak,
+        npsn_pemilik,
+        sumber_dana,
+        no_bast,
+        harga,
+        tahun,
+        kondisi,
+        "TERSEDIA"
+    );
+}
+
+// Wrapper Kompatibilitas Bawaan
+fungsi pustaka_daftarkan_eksemplar(barcode, id_buku, no_inv, rak) {
+    kembalikan pustaka_daftarkan_eksemplar_lengkap(
+        barcode,
+        id_buku,
+        no_inv,
+        rak,
+        "20109999",
+        "BOSP_REGULER",
+        "BAST-SIPLAH-DEFAULT",
+        75000.0,
+        2026,
+        "BAIK"
+    );
+}
+
+// -------------------------------------------------------------
+// [3] Rekapitulasi Neraca Aset KIB E Berdasarkan Sumber Pembiayaan
+// -------------------------------------------------------------
+fungsi pustaka_rekapitulasi_kib_e(npsn, daftar_eksemplar) {
+    misal total_eksemplar = 0;
+    misal total_nilai = 0.0;
+    misal bosp_reg = 0.0;
+    misal bosp_kin = 0.0;
+    misal banpem = 0.0;
+    misal bosda = 0.0;
+    misal hibah = 0.0;
+    misal dipa = 0.0;
+    
+    untuk e dalam daftar_eksemplar {
+        jika e.npsn_pemilik_aset == npsn {
+            total_eksemplar = total_eksemplar + 1;
+            total_nilai = total_nilai + e.harga_perolehan_rp;
+            
+            jika e.sumber_pembiayaan == "BOSP_REGULER" {
+                bosp_reg = bosp_reg + e.harga_perolehan_rp;
+            } kalau e.sumber_pembiayaan == "BOSP_KINERJA" {
+                bosp_kin = bosp_kin + e.harga_perolehan_rp;
+            } kalau e.sumber_pembiayaan == "BANPEM_APBN" {
+                banpem = banpem + e.harga_perolehan_rp;
+            } kalau e.sumber_pembiayaan == "BOSDA" {
+                bosda = bosda + e.harga_perolehan_rp;
+            } kalau e.sumber_pembiayaan == "HIBAH_WAKAF" {
+                hibah = hibah + e.harga_perolehan_rp;
+            } kalau e.sumber_pembiayaan == "DIPA_KL" {
+                dipa = dipa + e.harga_perolehan_rp;
+            }
+        }
+    }
+    
+    kembalikan RekapitulasiKIBE(
+        npsn,
+        1, // Minimal 1 judul
+        total_eksemplar,
+        total_nilai,
+        bosp_reg,
+        bosp_kin,
+        banpem,
+        bosda,
+        hibah,
+        dipa
+    );
+}
+
+// -------------------------------------------------------------
+// [4] Sirkulasi Peminjaman Kilat (< 5 Detik dengan Barcode/RFID)
+// -------------------------------------------------------------
+fungsi pustaka_pinjam_buku(id_trx, eksemplar, katalog, nisn, nama, durasi_hari) {
+    jika eksemplar.status != "TERSEDIA" {
+        kembalikan {
+            "sukses": salah,
+            "pesan": "Buku tidak tersedia di rak (Status: " + eksemplar.status + ")"
+        };
+    }
+    
+    eksemplar.status = "SEDANG_DIPINJAM";
+    katalog.eksemplar_tersedia = katalog.eksemplar_tersedia - 1;
+    
+    misal waktu_sekarang = waktu();
+    misal batas_kembali = waktu_sekarang + (durasi_hari * 86400); // 86.400 detik per hari
+    
+    misal trx = TransaksiSirkulasi(
+        id_trx,
+        eksemplar.barcode_item,
+        nisn,
+        nama,
+        waktu_sekarang,
+        batas_kembali,
+        nihil,
+        0.0,
+        "AKTIF"
+    );
+    
+    kembalikan {
+        "sukses": benar,
+        "transaksi": trx,
+        "pesan": "Buku berhasil dipinjam. Batas kembali: " + ke_teks(durasi_hari) + " hari."
+    };
+}
+
+// -------------------------------------------------------------
+// [5] Pengembalian Buku & Perhitungan Denda Otomatis
+// -------------------------------------------------------------
+fungsi pustaka_kembalikan_buku(trx, eksemplar, katalog, waktu_pengembalian) {
+    eksemplar.status = "TERSEDIA";
+    katalog.eksemplar_tersedia = katalog.eksemplar_tersedia + 1;
+    trx.stempel_kembali = waktu_pengembalian;
+    
+    misal tarif_denda_per_hari = 1000.0; // Rp 1.000,- per hari keterlambatan
+    misal denda = 0.0;
+    
+    jika waktu_pengembalian > trx.batas_waktu_kembali {
+        misal selisih_detik = waktu_pengembalian - trx.batas_waktu_kembali;
+        misal hari_telat = atap(selisih_detik / 86400.0);
+        denda = hari_telat * tarif_denda_per_hari;
+        trx.status_transaksi = "TERLAMBAT";
+    } lainnya {
+        trx.status_transaksi = "SELESAI";
+    }
+    
+    trx.total_denda_rp = denda;
+    
+    kembalikan {
+        "sukses": benar,
+        "denda_rp": denda,
+        "status": trx.status_transaksi
+    };
+}
+
+// -------------------------------------------------------------
+// [6] Penerbitan Surat Bebas Pustaka Digital Otomatis
+// -------------------------------------------------------------
+fungsi pustaka_terbitkan_bebas_pustaka(nisn, nama_siswa, total_pinjaman_aktif, total_tunggakan_denda) {
+    jika total_pinjaman_aktif > 0 atau total_tunggakan_denda > 0.0 {
+        kembalikan SuratBebasPustaka(
+            "BELUM_MEMENUHI",
+            nisn,
+            nama_siswa,
+            "MASIH_ADA_PINJAMAN",
+            "Masih memiliki " + ke_teks(total_pinjaman_aktif) + " buku pinjaman atau tunggakan denda Rp " + ke_teks(total_tunggakan_denda),
+            nihil
+        );
+    }
+    
+    misal no_surat = "PERPUS/SKBP/" + ke_teks(waktu()) + "/" + nisn;
+    misal hash = "0x" + sha256(no_surat + nisn + "BEBAS_PUSTAKA_VALID");
+    
+    kembalikan SuratBebasPustaka(
+        no_surat,
+        nisn,
+        nama_siswa,
+        "BEBAS_TANGGUNGAN",
+        "Siswa dinyatakan bebas tanggungan pustaka untuk syarat kelulusan/mutasi.",
+        hash
+    );
+}

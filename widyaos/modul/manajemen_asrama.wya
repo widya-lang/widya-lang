@@ -1,0 +1,156 @@
+// ==============================================================================
+// WIDYAOS: MODUL TATA KELOLA ASRAMA & PEMBINAAN KARAKTER (24 JAM)
+// Khusus Sekolah Rakyat (Afirmasi Kemiskinan Berasrama) & Sekolah Garuda (Kedinasan)
+// ==============================================================================
+
+struktur KamarAsrama {
+    nomor_kamar,
+    gedung,
+    kapasitas,
+    jumlah_penghuni,
+    nama_pembina
+}
+
+struktur IzinPesiar {
+    id_izin,
+    nisn,
+    nama_siswa,
+    tujuan,
+    jam_keluar,
+    jam_kembali,
+    status_approval, // MENUNGGU_PERSETUJUAN, DISETUJUI_PEMBINA, DITOLAK
+    qr_verifikasi
+}
+
+struktur RollCallMalam {
+    tanggal,
+    nomor_kamar,
+    total_siswa,
+    jumlah_hadir,
+    jumlah_izin,
+    jumlah_sakit,
+    status_lengkap
+}
+
+struktur PoinKarakter {
+    nisn,
+    nama_siswa,
+    jenis_catatan, // PRESTASI_KEBAIKAN, PELANGGARAN_DISIPLIN
+    poin,
+    uraian,
+    total_saldo_poin
+}
+
+// Inisialisasi Kamar Asrama
+fungsi buat_kamar_asrama(
+    nomor,
+    gedung,
+    kapasitas,
+    terisi,
+    pembina
+) {
+    kembalikan KamarAsrama(
+        nomor,
+        gedung,
+        kapasitas,
+        terisi,
+        pembina
+    );
+}
+
+// Pengajuan Izin Pesiar / Keluar Asrama
+fungsi ajukan_izin_pesiar(
+    id_izin,
+    nisn,
+    nama,
+    tujuan,
+    jam_keluar,
+    jam_kembali
+) {
+    kembalikan IzinPesiar(
+        id_izin,
+        nisn,
+        nama,
+        tujuan,
+        jam_keluar,
+        jam_kembali,
+        "MENUNGGU_PERSETUJUAN",
+        "QR-PENDING-" + id_izin
+    );
+}
+
+// Persetujuan Izin Pesiar oleh Pembina Asrama
+fungsi setujui_izin_pesiar(
+    izin,
+    disetujui,
+    catatan_pembina
+) {
+    misal status = "DITOLAK";
+    misal qr = "QR-DITOLAK";
+    jika disetujui {
+        status = "DISETUJUI_PEMBINA";
+        qr = "QR-PAS-PESIAR-" + izin.id_izin;
+    }
+
+    kembalikan IzinPesiar(
+        izin.id_izin,
+        izin.nisn,
+        izin.nama_siswa,
+        izin.tujuan,
+        izin.jam_keluar,
+        izin.jam_kembali,
+        status,
+        qr
+    );
+}
+
+// Rekam Absensi Malam Asrama (Night Roll Call)
+fungsi rekam_roll_call_malam(
+    tanggal,
+    nomor_kamar,
+    total,
+    hadir,
+    izin,
+    sakit
+) {
+    misal is_lengkap = false;
+    jika (hadir + izin + sakit) == total {
+        is_lengkap = true;
+    }
+
+    kembalikan RollCallMalam(
+        tanggal,
+        nomor_kamar,
+        total,
+        hadir,
+        izin,
+        sakit,
+        is_lengkap
+    );
+}
+
+// Pencatatan Poin Karakter (Buku Saku Disiplin & Kebaikan)
+fungsi catat_poin_karakter(
+    nisn,
+    nama,
+    jenis,
+    poin,
+    uraian,
+    saldo_awal
+) {
+    misal saldo_baru = saldo_awal;
+    jika jenis == "PRESTASI_KEBAIKAN" {
+        saldo_baru = saldo_awal + poin;
+    } lainnya {
+        saldo_baru = saldo_awal - poin;
+    }
+
+    kembalikan PoinKarakter(
+        nisn,
+        nama,
+        jenis,
+        poin,
+        uraian,
+        saldo_baru
+    );
+}

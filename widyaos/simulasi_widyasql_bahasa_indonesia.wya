@@ -1,0 +1,239 @@
+// ====================================================================
+// SIMULASI MASTER: WIDYASQL (BAHASA INDONESIA SQL ENGINE)
+// Pembuktian Kedaulatan Bahasa Basis Data Nasional
+// PILIH, DARI, DIMANA, GABUNG_DALAM, MASUKKAN_KE, PERBARUI,
+// HITUNG, RATA_RATA, MULAI_TRANSAKSI, KUKUHKAN, & Transpiler Dwiarah
+// ====================================================================
+
+impor "widyaos/modul/widyasql_bahasa_indonesia.wya";
+
+fungsi utama() {
+    tulis("====================================================================");
+    tulis("🇮🇩  AUDIT MASTER: WIDYASQL (BAHASA INDONESIA SQL RELASIONAL)");
+    tulis("    Kedaulatan Bahasa Basis Data: Kueri Murni Bahasa Indonesia");
+    tulis("====================================================================");
+
+    misal lulus_audit = 0;
+    misal total_audit = 10;
+
+    // ----------------------------------------------------------------
+    // [1] AUDIT 1: Transpiler Dwiarah: WidyaSQL (Indonesia) -> ANSI SQL (Inggris)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[1] Audit WidyaSQL: Terjemahan Bahasa Indonesia ke ANSI SQL:");
+    misal kueri_id = "PILIH nisn, nama DARI siswa DIMANA nilai >= 75 DAN status = 'AKTIF' URUTKAN_BERDASARKAN nilai TURUN BATAS 10";
+    misal hasil_ansi = widyasql_terjemah_ke_ansi(kueri_id);
+    tulis("  • WidyaSQL (ID) : " + hasil_ansi.kueri_sumber);
+    tulis("  • ANSI SQL (EN) : " + hasil_ansi.kueri_hasil);
+
+    jika hasil_ansi.kueri_hasil == "SELECT nisn, nama FROM siswa WHERE nilai >= 75 AND status = 'AKTIF' ORDER BY nilai DESC LIMIT 10" {
+        tulis("  ✅ PASS: Kueri WidyaSQL Berhasil Diterjemahkan 100% Akurat ke ANSI SQL!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Terjemahan ke ANSI SQL tidak presisi!");
+    }
+
+    // ----------------------------------------------------------------
+    // [2] AUDIT 2: Transpiler Dwiarah: ANSI SQL (Inggris) -> WidyaSQL (Indonesia)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[2] Audit WidyaSQL: Terjemahan Balik ANSI SQL ke Bahasa Indonesia:");
+    misal kueri_en = "SELECT nama FROM siswa INNER JOIN kelas ON siswa.id_kelas = kelas.id";
+    misal hasil_id = widyasql_terjemah_ke_indonesia(kueri_en);
+    tulis("  • ANSI SQL (EN) : " + hasil_id.kueri_sumber);
+    tulis("  • WidyaSQL (ID) : " + hasil_id.kueri_hasil);
+
+    jika hasil_id.kueri_hasil == "PILIH nama DARI siswa GABUNG_DALAM kelas PADA siswa.id_kelas = kelas.id" {
+        tulis("  ✅ PASS: Kueri Internasional Berhasil Diindonesiakan Secara Sempurna!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Terjemahan balik ke bahasa Indonesia gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [3] AUDIT 3: Eksekusi DDL (BUAT_TABEL)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[3] Audit WidyaSQL: Eksekusi DDL BUAT_TABEL Siswa & Kelas:");
+    misal db = widyasql_buat_database("DB_SEKOLAH_BERDAULAT");
+    db = widyasql_buat_tabel(db, "kelas", ["id_kelas", "nama_kelas", "wali_kelas"]);
+    db = widyasql_buat_tabel(db, "siswa", ["nisn", "nama_siswa", "id_kelas", "nilai_matematika", "status"]);
+
+    tulis("  • Database Aktif      : " + db.nama_db);
+    tulis("  • Tabel #1 Dibuat     : " + db.daftar_tabel[0].nama_tabel + " (" + panjang(db.daftar_tabel[0].daftar_kolom) + " kolom)");
+    tulis("  • Tabel #2 Dibuat     : " + db.daftar_tabel[1].nama_tabel + " (" + panjang(db.daftar_tabel[1].daftar_kolom) + " kolom)");
+
+    jika panjang(db.daftar_tabel) == 2 {
+        tulis("  ✅ PASS: Skema Tabel Relasional Berhasil Dibuat dengan Sintaks Bahasa Indonesia!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Pembuatan tabel gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [4] AUDIT 4: Eksekusi DML (MASUKKAN_KE ... NILAI)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[4] Audit WidyaSQL: Eksekusi DML MASUKKAN_KE (INSERT INTO):");
+    // Masukkan data master kelas
+    db = widyasql_masukkan_data(db, "kelas", [1, "X-RPL-1", "Budi Santoso, S.Kom"]);
+    db = widyasql_masukkan_data(db, "kelas", [2, "X-TKJ-1", "Dewi Sartika, M.T"]);
+
+    // Masukkan data siswa
+    db = widyasql_masukkan_data(db, "siswa", ["008101", "Ahmad Fauzi", 1, 92.0, "AKTIF"]);
+    db = widyasql_masukkan_data(db, "siswa", ["008102", "Siti Nurhaliza", 1, 88.5, "AKTIF"]);
+    db = widyasql_masukkan_data(db, "siswa", ["008103", "Bambang Pamungkas", 2, 65.0, "REMIDIAL"]);
+    db = widyasql_masukkan_data(db, "siswa", ["008104", "Ratna Sari", 2, 78.0, "AKTIF"]);
+
+    misal total_siswa = panjang(db.daftar_tabel[1].daftar_baris);
+    tulis("  • Total Baris Kelas   : " + panjang(db.daftar_tabel[0].daftar_baris) + " Kelas");
+    tulis("  • Total Baris Siswa   : " + total_siswa + " Siswa");
+
+    jika total_siswa == 4 {
+        tulis("  ✅ PASS: 4 Rekord Siswa Berhasil Dimasukkan ke Basis Data!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Penyisipan baris data gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [5] AUDIT 5: Eksekusi DML (PILIH ... DARI ... DIMANA)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[5] Audit WidyaSQL: Eksekusi DML PILIH ... DIMANA (SELECT ... WHERE):");
+    // Kueri: PILIH nama_siswa, nilai_matematika DARI siswa DIMANA nilai_matematika >= 80.0
+    misal hasil_pilih = widyasql_pilih_data(
+        db,
+        "siswa",
+        ["nama_siswa", "nilai_matematika"],
+        "nilai_matematika",
+        ">=",
+        80.0
+    );
+    tulis("  • Kueri WidyaSQL      : PILIH nama_siswa, nilai_matematika DARI siswa DIMANA nilai >= 80.0");
+    tulis("  • Hasil Baris Lolos   : " + hasil_pilih.total_baris + " Siswa Berprestasi");
+    tulis("  • Siswa #1            : " + hasil_pilih.daftar_data[0][0] + " (Nilai: " + hasil_pilih.daftar_data[0][1] + ")");
+    tulis("  • Siswa #2            : " + hasil_pilih.daftar_data[1][0] + " (Nilai: " + hasil_pilih.daftar_data[1][1] + ")");
+
+    jika hasil_pilih.total_baris == 2 dan hasil_pilih.daftar_data[0][0] == "Ahmad Fauzi" {
+        tulis("  ✅ PASS: Kueri Filter & Proyeksi Berbahasa Indonesia Berjalan Akurat!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Eksekusi PILIH DIMANA gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [6] AUDIT 6: Eksekusi Relational Join (GABUNG_DALAM ... PADA)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[6] Audit WidyaSQL: Eksekusi Relational GABUNG_DALAM (INNER JOIN):");
+    // Kueri: PILIH nama_siswa, nama_kelas DARI siswa GABUNG_DALAM kelas PADA siswa.id_kelas = kelas.id_kelas
+    misal hasil_join = widyasql_gabung_dalam(
+        db,
+        "siswa",
+        "kelas",
+        "id_kelas",
+        "id_kelas",
+        ["nama_siswa"],
+        ["nama_kelas"]
+    );
+    tulis("  • Kueri WidyaSQL      : PILIH siswa GABUNG_DALAM kelas PADA id_kelas");
+    tulis("  • Total Baris Relasi  : " + hasil_join.total_baris + " Baris Terhubung");
+    tulis("  • Pasangan #1         : " + hasil_join.daftar_data[0][0] + " -> Kelas: " + hasil_join.daftar_data[0][1]);
+    tulis("  • Pasangan #3         : " + hasil_join.daftar_data[2][0] + " -> Kelas: " + hasil_join.daftar_data[2][1]);
+
+    jika hasil_join.total_baris == 4 dan hasil_join.daftar_data[0][1] == "X-RPL-1" {
+        tulis("  ✅ PASS: Relational Join Antar-Tabel Berhasil Menggabungkan Data Siswa & Kelas!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Eksekusi relasi GABUNG_DALAM gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [7] AUDIT 7: Fungsi Agregasi HITUNG() (COUNT)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[7] Audit WidyaSQL: Fungsi Agregasi HITUNG (COUNT):");
+    misal hitung_siswa = widyasql_agregasi_hitung(db, "siswa");
+    misal hitung_kelas = widyasql_agregasi_hitung(db, "kelas");
+    tulis("  • HITUNG(siswa)       : " + hitung_siswa + " Siswa");
+    tulis("  • HITUNG(kelas)       : " + hitung_kelas + " Rombongan Belajar");
+
+    jika hitung_siswa == 4 dan hitung_kelas == 2 {
+        tulis("  ✅ PASS: Fungsi Agregasi HITUNG(*) Berjalan Tepat!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Agregasi HITUNG salah!");
+    }
+
+    // ----------------------------------------------------------------
+    // [8] AUDIT 8: Fungsi Agregasi RATA_RATA() (AVG)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[8] Audit WidyaSQL: Fungsi Agregasi RATA_RATA (AVG):");
+    misal rerata = widyasql_agregasi_rata_rata(db, "siswa", "nilai_matematika");
+    // (92.0 + 88.5 + 65.0 + 78.0) / 4 = 323.5 / 4 = 80.875
+    tulis("  • RATA_RATA(nilai)    : " + rerata);
+
+    jika rerata >= 80.8 dan rerata <= 80.9 {
+        tulis("  ✅ PASS: Kalkulasi RATA_RATA Menghasilkan Nilai 80.875 Akurat!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Kalkulasi RATA_RATA menyimpang!");
+    }
+
+    // ----------------------------------------------------------------
+    // [9] AUDIT 9: Eksekusi DML (PERBARUI ... ATUR ... DIMANA)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[9] Audit WidyaSQL: Eksekusi DML PERBARUI (UPDATE ... SET):");
+    // Kueri: PERBARUI siswa ATUR status = 'LULUS_REMIDIAL' DIMANA nisn = '008103'
+    misal updated = widyasql_perbarui_data(db, "siswa", "status", "LULUS_REMIDIAL", "nisn", "008103");
+    misal cek_siswa = widyasql_pilih_data(db, "siswa", ["nama_siswa", "status"], "nisn", "==", "008103");
+    tulis("  • Baris Terpengaruh   : " + updated + " Rekord");
+    tulis("  • Status Siswa Kini   : " + cek_siswa.daftar_data[0][0] + " -> Status: " + cek_siswa.daftar_data[0][1]);
+
+    jika updated == 1 dan cek_siswa.daftar_data[0][1] == "LULUS_REMIDIAL" {
+        tulis("  ✅ PASS: Mutasi Data PERBARUI ... ATUR Berhasil Mengubah Status Siswa!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Eksekusi DML PERBARUI gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [10] AUDIT 10: Transaksi Penuh ACID (MULAI_TRANSAKSI ... KUKUHKAN)
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[10] Audit WidyaSQL: Siklus Transaksi Atomik ACID (KUKUHKAN & BATALKAN):");
+    misal mulai = widyasql_transaksi_mulai(db);
+    tulis("  • Sesi Transaksi      : " + mulai + " (Status: " + db.status_transaksi + ")");
+    misal commit = widyasql_transaksi_kukuhkan(db);
+    misal audit_bahasa = widyasql_audit_kedaulatan_bahasa();
+    tulis("  • Pengukuhan Transaksi: " + commit + " (Status: " + db.status_transaksi + ")");
+    tulis("  • Kedaulatan Bahasa   : " + audit_bahasa);
+
+    jika commit == "SELURUH_MUTASI_BERHASIL_DIKUKUHKAN_ACID_COMMIT" dan db.status_transaksi == "TIDAK_ADA" {
+        tulis("  ✅ PASS: Sesi Transaksi Atomik ACID Berhasil Mematuhi Standar Perbankan!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Siklus transaksi ACID gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // RINGKASAN AKHIR AUDIT WIDYASQL BAHASA INDONESIA
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("====================================================================");
+    tulis("🏆  HASIL AKHIR AUDIT WIDYASQL (BAHASA INDONESIA SQL RELASIONAL):");
+    tulis("    Lulus: " + lulus_audit + " dari " + total_audit + " Skenario Pengujian Paripurna");
+    tulis("====================================================================");
+
+    jika lulus_audit == total_audit {
+        tulis("🇮🇩 KELULUSAN SEMPURNA 100%: BAHASA INDONESIA RESMI MENGUASAI BASIS DATA RELASIONAL!");
+        tulis("   WidyaSQL Membuka Pintu Literasi Data Tanpa Hambatan Bahasa Asing.");
+    } jika_tidak {
+        tulis("⚠️ MASIH TERDAPAT SKENARIO PENGUJIAN YANG BELUM LULUS AUDIT.");
+    }
+}
+
+utama();

@@ -1,0 +1,162 @@
+// =================================================================
+// SIMULASI TERPADU: SATGAS TPPK, EKSKUL, PEMILOS & PUSAT KOMANDO
+// Menguji MOD-12 (Sekolah Aman TPPK), MOD-14 (Ekskul & Pemilos),
+// dan MOD-30 (Executive GIS Command Center)
+// =================================================================
+
+impor "widyaos/modul/sekolah_aman_tppk.wya";
+impor "widyaos/modul/ekskul_pemilos.wya";
+impor "widyaos/modul/command_center_wilayah.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║   === SIMULASI TPPK, EKSKUL, PEMILOS & PUSAT KOMANDO v1.0 ===    ║");
+cetak("║   Pilar Ekosistem Sekolah Terpadu & Kokpit Eksekutif RI          ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+// -------------------------------------------------------------
+// [TEST 1] MOD-12: Satgas TPPK & Pengaduan Rahasia Anti-Bullying
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[1] MOD-12: Satgas TPPK & Pengaduan Rahasia Anti-Bullying");
+cetak("================================================================");
+misal aduan = tppk_buat_pengaduan(
+    "PERUNDUNGAN_BULLYING",
+    "DARURAT_KRITIS",
+    "Terjadi pemalakan dan intimidasi verbal berulang di area belakang kantin",
+    "siswa_korban_anonim_kelas_10"
+);
+
+cetak("🚨 Tiket Pengaduan     :", aduan.kode_tiket);
+cetak("📋 Kategori Kasus      :", aduan.kategori_kasus, "| Urgensi:", aduan.urgensi);
+cetak("🔒 Identitas Pelapor   :", aduan.hash_rahasia_pelapor, "(Zero-Knowledge Encrypted)");
+
+// Tindak lanjut investigasi Satgas TPPK
+misal proses = tppk_proses_kasus(aduan, "MEDIASI_KONSELING", "Satgas TPPK memanggil orang tua dan mengagendakan konseling psikologis");
+cetak("🛡️ Status Penanganan   :", proses.status_baru);
+cetak("   Catatan Satgas      :", proses.catatan);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika aduan.status_penanganan == "MEDIASI_KONSELING" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1] Alur Penanganan Kasus Satgas TPPK: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 2] MOD-14: Ekstrakurikuler & Nilai Rapor Karakter
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[2] MOD-14: Ekstrakurikuler & Penilaian Otomatis ke e-Rapor");
+cetak("================================================================");
+misal ekskul_robotik = ekskul_daftarkan(
+    "EKS-ROBOTIK",
+    "Klub Sains & Robotika AI",
+    "SAINS_ROBOTIK",
+    "Budi Santoso, S.Kom",
+    "Jumat 15.30",
+    "Lab Komputer AI",
+    30
+);
+
+cetak("🤖 Ekstrakurikuler     :", ekskul_robotik.nama_ekskul, "| Kategori:", ekskul_robotik.kategori);
+cetak("👨‍🏫 Pembina            :", ekskul_robotik.nama_pembina, "| Jadwal:", ekskul_robotik.hari_latihan);
+
+// Nilai Rapor Karakter Ekskul untuk Siswa
+misal nilai_ahmad = ekskul_beri_nilai_rapor(
+    "0081234567",
+    "Ahmad Fauzi",
+    ekskul_robotik.id_ekskul,
+    "A",
+    "Sangat aktif dan berhasil memprogram robot navigasi otonom berbasis sensor ultrasonik."
+);
+
+cetak("📄 Nilai Rapor Ekskul  : Siswa", nilai_ahmad.nama_siswa);
+cetak("   Predikat            : " + nilai_ahmad.predikat + " (Sangat Baik)");
+cetak("   Narasi e-Rapor      :", nilai_ahmad.deskripsi_narasi_rapor);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika nilai_ahmad.predikat == "A" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2] Ekstrakurikuler & Sinkronisasi e-Rapor: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 3] MOD-14: E-Voting Pemilos Digital Anti-Kecurangan
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[3] MOD-14: E-Voting Pemilihan Ketua OSIS (Pemilos Digital)");
+cetak("================================================================");
+misal pemilos_2026 = pemilos_inisialisasi("PEMILOS-2026", "2026/2027", 500); // DPT 500 Siswa
+pemilos_tambah_paslon(pemilos_2026, 1, "Rizky Pratama", "Nadia Syifa", "Mewujudkan OSIS Kolaboratif & Melek AI");
+pemilos_tambah_paslon(pemilos_2026, 2, "Dimas Arya", "Laila Zahra", "Sekolah Ramah Anak & Berprestasi Global");
+
+cetak("🗳️ Pemilos Digital     : Total DPT =", pemilos_2026.total_pemilih_dpt, "siswa");
+cetak("   Paslon No. 1        :", pemilos_2026.daftar_paslon[0].nama_ketua, "&", pemilos_2026.daftar_paslon[0].nama_wakil);
+cetak("   Paslon No. 2        :", pemilos_2026.daftar_paslon[1].nama_ketua, "&", pemilos_2026.daftar_paslon[1].nama_wakil);
+
+// Pencoblosan Suara Digital
+pemilos_coblos_digital(pemilos_2026, 1, "TOKEN-VOTE-SISWA-01");
+pemilos_coblos_digital(pemilos_2026, 1, "TOKEN-VOTE-SISWA-02");
+misal vote_terakhir = pemilos_coblos_digital(pemilos_2026, 2, "TOKEN-VOTE-SISWA-03");
+
+cetak("📊 Hasil Quick Count   : Total Suara Masuk =", pemilos_2026.total_suara_masuk, "suara");
+cetak("   Perolehan Paslon 1  :", pemilos_2026.daftar_paslon[0].total_suara, "suara");
+cetak("   Perolehan Paslon 2  :", pemilos_2026.daftar_paslon[1].total_suara, "suara");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika pemilos_2026.total_suara_masuk == 3 dan pemilos_2026.daftar_paslon[0].total_suara == 2 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 3] E-Voting Pemilos Digital Terverifikasi: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 4] MOD-30: Executive GIS Command Center Wilayah
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[4] MOD-30: Pusat Komando Eksekutif Dinas Pendidikan Wilayah");
+cetak("================================================================");
+misal dashboard_jabar = command_center_hitung_agregat(
+    "WIL-JABAR",
+    "Provinsi Jawa Barat",
+    1200,          // 1.200 Satuan Pendidikan
+    1500.0,        // Pagu BOSP Rp 1.500 Miliar
+    1250.0,        // Realisasi Rp 1.250 Miliar
+    45,            // 45 Sekolah Berisiko Audit (Skor < 70)
+    350000,        // 350.000 Porsi MBG BGN Harian
+    8500           // 8.500 Unit IFP Aktif
+);
+
+cetak("🏛️ Wilayah Pantauan    :", dashboard_jabar.nama_wilayah);
+cetak("📊 Total Sekolah Aktif :", dashboard_jabar.total_sekolah_terhubung, "satuan pendidikan");
+cetak("💰 Penyerapan BOSP     :", dashboard_jabar.persen_penyerapan_anggaran, "% (Realisasi Rp " + ke_teks(dashboard_jabar.total_realisasi_bosp_miliar) + " M dari Rp " + ke_teks(dashboard_jabar.total_pagu_bosp_miliar) + " M)");
+cetak("🍱 Program MBG BGN     :", dashboard_jabar.total_porsi_mbg_harian, "porsi gizi tersalurkan hari ini");
+cetak("📺 Terminal IFP Aktif  :", dashboard_jabar.total_ifp_aktif_mengajar, "layar kelas mengajar serentak");
+
+// Peringatan Dini untuk Intervensi Cepat Pengawas Sekolah
+misal warning_sekolah = command_center_evaluasi_sekolah("20108888", "SMA Negeri 99 Pedalaman", 65.0, 35.0);
+cetak("⚠️ Deteksi Sekolah Rawan: " + warning_sekolah.nama_sekolah);
+cetak("   Jenis Peringatan    : " + warning_sekolah.jenis_peringatan);
+cetak("   Tingkat Bahaya      : " + warning_sekolah.tingkat_bahaya, "(Sinyal Merah Pembinaan Tim BPKAD/Disdik)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika dashboard_jabar.persen_penyerapan_anggaran > 83.0 dan warning_sekolah.tingkat_bahaya == "MERAH_KRITIS" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 4] Konsolidasi Executive GIS Hub & Peringatan Dini: LULUS");
+}
+
+cetak("");
+cetak("================================================================");
+cetak("HASIL EVALUASI TPPK, EKSKUL, PEMILOS & PUSAT KOMANDO");
+cetak("Total Skenario Diuji :", TOTAL_TEST);
+cetak("Lulus Verifikasi     :", LULUS_TEST);
+cetak("================================================================");
+jika TOTAL_TEST == LULUS_TEST {
+    cetak("🎉 SEMPURNA! SELURUH PILAR PENDUKUNG & EKSEKUTIF 100% LULUS!");
+}

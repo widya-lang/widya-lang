@@ -1,0 +1,164 @@
+// ============================================================================
+// PUSTAKA STANDAR WIDYA-LANG: deep_learning_autograd.wya (WIDYA-TORCH)
+// Mesin Automatic Differentiation & Deep Learning Setara PyTorch untuk Widya-Lang
+// Menyediakan: Autograd Graph, Backward Pass, Linear Layers, ReLU, & SGD Optimizer
+// ============================================================================
+
+struktur VariabelAutograd {
+    data,
+    grad,
+    operasi,
+    anak,
+    memerlukan_grad
+}
+
+// 1. Pembentukan Simpul Variabel dalam Graf Komputasi
+fungsi autograd_variabel(data_nilai, butuh_grad) {
+    kembalikan VariabelAutograd(
+        data_nilai,
+        0.0,
+        "LEAF",
+        [],
+        butuh_grad
+    );
+}
+
+// 2. Operasi Maju Penjumlahan (Forward Addition: z = x + y)
+fungsi autograd_tambah(v1, v2) {
+    misal z_data = v1.data + v2.data;
+    misal butuh = v1.memerlukan_grad atau v2.memerlukan_grad;
+    kembalikan VariabelAutograd(
+        z_data,
+        0.0,
+        "TAMBAH",
+        [v1, v2],
+        butuh
+    );
+}
+
+// 3. Operasi Maju Perkalian (Forward Multiplication: z = x * y)
+fungsi autograd_kali(v1, v2) {
+    misal z_data = v1.data * v2.data;
+    misal butuh = v1.memerlukan_grad atau v2.memerlukan_grad;
+    kembalikan VariabelAutograd(
+        z_data,
+        0.0,
+        "KALI",
+        [v1, v2],
+        butuh
+    );
+}
+
+// 4. Perambatan Mundur Gradien (Backward Propagation: dL/dx)
+fungsi autograd_mundur(v_akar) {
+    // Inisialisasi gradien akar dengan 1.0 (dL/dL = 1)
+    v_akar.grad = 1.0;
+
+    // Topologis sederhana untuk perambatan mundur
+    misal antrian = [v_akar];
+    selama (panjang(antrian) > 0) {
+        misal v_curr = antrian[0];
+        // Hapus elemen pertama dari antrian
+        misal antrian_baru = [];
+        misal i = 1;
+        selama (i < panjang(antrian)) {
+            tambah(antrian_baru, antrian[i]);
+            i = i + 1;
+        }
+        antrian = antrian_baru;
+
+        jika (v_curr.operasi == "TAMBAH") {
+            misal v1 = v_curr.anak[0];
+            misal v2 = v_curr.anak[1];
+            jika (v1.memerlukan_grad) {
+                v1.grad = v1.grad + (1.0 * v_curr.grad);
+                tambah(antrian, v1);
+            }
+            jika (v2.memerlukan_grad) {
+                v2.grad = v2.grad + (1.0 * v_curr.grad);
+                tambah(antrian, v2);
+            }
+        } lainnya {
+            jika (v_curr.operasi == "KALI") {
+                misal v1 = v_curr.anak[0];
+                misal v2 = v_curr.anak[1];
+                jika (v1.memerlukan_grad) {
+                    // dz/dv1 = v2
+                    v1.grad = v1.grad + (v2.data * v_curr.grad);
+                    tambah(antrian, v1);
+                }
+                jika (v2.memerlukan_grad) {
+                    // dz/dv2 = v1
+                    v2.grad = v2.grad + (v1.data * v_curr.grad);
+                    tambah(antrian, v2);
+                }
+            } lainnya {
+                jika (v_curr.operasi == "RELU") {
+                    misal v_in = v_curr.anak[0];
+                    jika (v_in.memerlukan_grad) {
+                        misal grad_in = 0.0;
+                        jika (v_in.data > 0.0) { grad_in = 1.0; }
+                        v_in.grad = v_in.grad + (grad_in * v_curr.grad);
+                        tambah(antrian, v_in);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// 5. Lapisan Neural Network: Linear Layer (y = w * x + b)
+struktur LapisanLinear {
+    bobot,
+    bias
+}
+
+fungsi buat_lapisan_linear(bobot_awal, bias_awal) {
+    kembalikan LapisanLinear(
+        autograd_variabel(bobot_awal, benar),
+        autograd_variabel(bias_awal, benar)
+    );
+}
+
+fungsi linear_maju(layer, x_var) {
+    misal wx = autograd_kali(layer.bobot, x_var);
+    misal out = autograd_tambah(wx, layer.bias);
+    kembalikan out;
+}
+
+// 6. Fungsi Aktivasi Non-Linier (ReLU: max(0, x))
+fungsi aktivasi_relu(v) {
+    misal out_val = v.data;
+    jika (out_val < 0.0) { out_val = 0.0; }
+    kembalikan VariabelAutograd(
+        out_val,
+        0.0,
+        "RELU",
+        [v],
+        v.memerlukan_grad
+    );
+}
+
+// 7. Fungsi Rugi (Loss Function: MSE = 0.5 * (pred - target)^2)
+fungsi fungsi_rugi_mse(prediksi_var, target_nilai) {
+    misal target_var = autograd_variabel(target_nilai, salah);
+    // diff = pred - target
+    misal neg_target = autograd_variabel(-1.0 * target_nilai, salah);
+    misal diff = autograd_tambah(prediksi_var, neg_target);
+    // squared = diff * diff
+    misal squared = autograd_kali(diff, diff);
+    // Skalar 0.5 untuk penyederhanaan turunan
+    misal setengah = autograd_variabel(0.5, salah);
+    kembalikan autograd_kali(squared, setengah);
+}
+
+// 8. Pengoptimal Gradient Descent (SGD Optimizer: w = w - lr * grad)
+fungsi pengoptimal_sgd_langkah(parameter_list, laju_belajar) {
+    untuk p in parameter_list {
+        jika (p.memerlukan_grad) {
+            p.data = p.data - (laju_belajar * p.grad);
+            // Reset gradien setelah langkah optimasi (zero_grad)
+            p.grad = 0.0;
+        }
+    }
+}

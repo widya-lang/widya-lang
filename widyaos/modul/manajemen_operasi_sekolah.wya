@@ -1,0 +1,251 @@
+// ============================================================================
+// MODUL: MANAJEMEN OPERASI SEKOLAH TERPADU (SCHOOL OPERATIONS SYSTEM - SOS)
+// Platform Pengelolaan Seluruh Aspek Operasional Harian Satuan Pendidikan
+// 
+// 7 Pilar Operasi Kunci:
+// 1. Piket Harian & Auto-Inval Guru (Pengganti Mengajar Otomatis Bebas Jam Kosong)
+// 2. Helpdesk Pemeliharaan & Tiket Kerusakan Sarpras (Terhubung ke ARKAS)
+// 3. Peminjaman Fasilitas & Ruang Praktik (Anti-Jadwal Bentrok)
+// 4. Buku Tamu Digital & Pengamanan Kampus (QR Visitor Badge)
+// 5. Buku Saku Poin Karakter Siswa (Merit/Demerit & Konseling BK)
+// 6. Penggajian & Honorarium GTK Non-ASN (Berbasis Presensi Riil & PPh 21)
+// 7. Survei Kepuasan Layanan Pendidikan (SKM untuk Perencanaan PBD)
+// ============================================================================
+
+struktur TiketPemeliharaanSarpras {
+    id_tiket,
+    pelapor_did,
+    lokasi_ruang,             // Contoh: 'LAB_KOMPUTER_1', 'RUANG_KELAS_8A'
+    nama_barang_rusak,        // Contoh: 'Proyektor Epson EB-X400'
+    deskripsi_kerusakan,      // Contoh: 'Lampu indikator merah berkedip, tidak menyala'
+    tingkat_urgensi,          // 'KRITIS_MENGGANGGU_KBM', 'SEDANG', 'RINGAN'
+    teknisi_ditugaskan,
+    estimasi_biaya,
+    kode_rekening_arkas,      // '5.1.02.01.01.0035' (Pemeliharaan Alat Kantor)
+    status_perbaikan          // 'TERDAFTAR', 'SEDANG_DIPERBAIKI', 'SELESAI_TERUJI'
+}
+
+struktur JadwalInvalGuru {
+    id_inval,
+    tanggal,
+    jam_ke,                   // Contoh: '3 - 4'
+    nama_guru_berhalangan,
+    alasan_tidak_hadir,       // 'SAKIT', 'DINAS_LUAR', 'CUTI'
+    nama_guru_piket_inval,
+    kelas_rombel,
+    materi_modul_lms,
+    status_pelaksanaan
+}
+
+struktur PeminjamanFasilitas {
+    id_peminjaman,
+    fasilitas_ruang,          // 'AULA_GRAHA_WIYATA', 'LAB_BAHASA', 'BUS_SEKOLAH'
+    penanggung_jawab,
+    tanggal_pinjam,
+    jam_mulai,
+    jam_selesai,
+    tujuan_kegiatan,
+    status_persetujuan        // 'DISETUJUI_WAKASEK_SARPRAS', 'DITOLAK_BENTROK'
+}
+
+struktur BukuTamuDigital {
+    id_kunjungan,
+    nama_tamu,
+    instansi_asal,
+    tujuan_kunjungan,
+    pejabat_ditemui,
+    waktu_masuk,
+    waktu_keluar,
+    nomor_badge_qr,
+    status_kunjungan          // 'SEDANG_BERLANGSUNG', 'SELESAI'
+}
+
+struktur CatatanPoinKarakter {
+    id_catatan,
+    nisn_siswa,
+    nama_siswa,
+    jenis_kejadian,           // 'PRESTASI' atau 'PELANGGARAN'
+    uraian_kejadian,
+    bobot_poin,               // Positif (+) untuk prestasi, Negatif (-) untuk pelanggaran
+    tindak_lanjut_bk,
+    status_notifikasi_ortu
+}
+
+struktur SlipHonorGtkNonAsn {
+    id_slip,
+    nik_guru,
+    nama_guru,
+    total_jam_tatap_muka_riil,
+    tarif_per_jam,
+    honor_kotor,
+    potongan_pph_21,
+    honor_bersih_diterima,
+    bulan_periode,
+    status_pembayaran         // 'SIAP_TRANSFER_CMS_BANK', 'TERBAYAR'
+}
+
+// ============================================================================
+// LOGIKA BISNIS MANAJEMEN OPERASI
+// ============================================================================
+
+// [1] Alokasi Guru Inval Otomatis (Cegah Kelas Kosong)
+fungsi alokasikan_guru_inval(
+    id_inval,
+    tanggal,
+    jam,
+    guru_absen,
+    alasan,
+    guru_piket,
+    rombel,
+    modul_ajar
+) {
+    misal inval = JadwalInvalGuru(
+        id_inval,
+        tanggal,
+        jam,
+        guru_absen,
+        alasan,
+        guru_piket,
+        rombel,
+        modul_ajar,
+        "TERDISPOSISI_GURU_INVAL_SIAP_MASUK_KELAS"
+    );
+    kembalikan inval;
+}
+
+// [2] Pendaftaran & Penugasan Tiket Kerusakan Sarpras (Auto-Link ARKAS)
+fungsi buat_tiket_perbaikan_sarpras(
+    id_tiket,
+    pelapor,
+    ruang,
+    barang,
+    kerusakan,
+    urgensi,
+    rekening_arkas
+) {
+    misal tiket = TiketPemeliharaanSarpras(
+        id_tiket,
+        pelapor,
+        ruang,
+        barang,
+        kerusakan,
+        urgensi,
+        "TIM_TEKNISI_SARPRAS_INTERNAL",
+        0.0,
+        rekening_arkas,
+        "TERDAFTAR"
+    );
+    kembalikan tiket;
+}
+
+fungsi selesaikan_tiket_perbaikan(tiket, biaya, teknisi) {
+    tiket.status_perbaikan = "SELESAI_TERUJI";
+    tiket.estimasi_biaya = biaya;
+    tiket.teknisi_ditugaskan = teknisi;
+    kembalikan "SUKSES_SARPRAS_KEMBALI_BERFUNGSI";
+}
+
+// [3] Validasi Peminjaman Ruang / Lab Anti-Bentrok
+fungsi ajukan_peminjaman_ruang(
+    id_pinjam,
+    ruang,
+    pj,
+    tanggal,
+    mulai,
+    selesai,
+    tujuan,
+    apakah_ada_jadwal_sama
+) {
+    jika apakah_ada_jadwal_sama == benar {
+        kembalikan PeminjamanFasilitas(
+            id_pinjam,
+            ruang,
+            pj,
+            tanggal,
+            mulai,
+            selesai,
+            tujuan,
+            "DITOLAK_BENTROK"
+        );
+    }
+
+    kembalikan PeminjamanFasilitas(
+        id_pinjam,
+        ruang,
+        pj,
+        tanggal,
+        mulai,
+        selesai,
+        tujuan,
+        "DISETUJUI_WAKASEK_SARPRAS"
+    );
+}
+
+// [4] Pencatatan Buku Tamu Digital & Badge QR
+fungsi catat_tamu_masuk(id_kunjungan, nama, instansi, tujuan, pejabat) {
+    misal badge = "QR-VISITOR-" + id_kunjungan;
+    kembalikan BukuTamuDigital(
+        id_kunjungan,
+        nama,
+        instansi,
+        tujuan,
+        pejabat,
+        "08:30 WIB",
+        "-",
+        badge,
+        "SEDANG_BERLANGSUNG"
+    );
+}
+
+// [5] Poin Karakter Siswa & Notifikasi ke Orang Tua
+fungsi catat_kejadian_karakter_siswa(
+    id_catatan,
+    nisn,
+    nama,
+    jenis,
+    uraian,
+    bobot
+) {
+    misal tindak = "PENCATATAN_REKOR_POSITIF";
+    jika jenis == "PELANGGARAN" {
+        tindak = "PANGGILAN_KONSELING_GURU_BK";
+    }
+
+    kembalikan CatatanPoinKarakter(
+        id_catatan,
+        nisn,
+        nama,
+        jenis,
+        uraian,
+        bobot,
+        tindak,
+        "NOTIFIKASI_TERKIRIM_KE_PORTAL_ORANG_TUA"
+    );
+}
+
+// [6] Hitung Honorarium Guru Non-ASN Berbasis Kehadiran Riil
+fungsi hitung_slip_honor_guru_non_asn(
+    id_slip,
+    nik,
+    nama,
+    jam_riil,
+    tarif,
+    persen_pph
+) {
+    misal kotor = jam_riil * tarif;
+    misal pph = kotor * (persen_pph / 100.0);
+    misal bersih = kotor - pph;
+
+    kembalikan SlipHonorGtkNonAsn(
+        id_slip,
+        nik,
+        nama,
+        jam_riil,
+        tarif,
+        kotor,
+        pph,
+        bersih,
+        "Maret 2026",
+        "SIAP_TRANSFER_CMS_BANK"
+    );
+}

@@ -1,0 +1,11 @@
+// ==============================================================================
+// server.wya - Server Mandiri SmartCity Telemetri
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("🏙️ MEMULAI SERVER MANDIRI: SMARTCITY ISPU TELEMETRI & GIS");
+cetak("Port Layanan: http://localhost:8003");
+cetak("==================================================================");
+
+misal port = 8003;
+eksekusi("../../target/release/widya web dev ./web -p " + ke_teks(port));

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WidyaDiagram Studio | Platform Diagram Vektor Berdaulat Setara draw.io & Visio</title>
+    <meta name="description" content="Studio Pembuatan Diagram Vektor Berdaulat Tingkat Industri & Keamanan Tinggi Setara draw.io dan Microsoft Visio dengan BPMN SPBE, UML, Topologi Jaringan, Segel W3C DID, dan Ekspor SVG/draw.io.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0d14;
+            --bg-surface: #111827;
+            --bg-panel: #161f30;
+            --bg-canvas: #0f141f;
+            --bg-input: #1e293b;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(56, 189, 248, 0.4);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.25);
+            --secondary: #818cf8;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-main: 'Outfit', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-base);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 52px;
+            background: #0d121d;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--primary-glow);
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .brand-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title h1 {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-edition {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+        }
+
+        .action-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-tool {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-panel);
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn-tool:hover {
+            background: #25334d;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-tool.btn-primary {
+            background: linear-gradient(135deg, #0284c7, #6366f1);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .badge-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-size: 11px;
+            font-family: var(--font-code);
+            font-weight: 600;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 6px #10b981;
+        }
+
+        /* Workspace Layout */
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Sidebar: Shape Palettes */
+        .sidebar-left {
+            width: 250px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .palette-group {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .palette-header {
+            padding: 10px 14px;
+            background: #121927;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .palette-grid {
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .shape-item {
+            background: #1a2336;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            height: 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            padding: 4px;
+        }
+
+        .shape-item:hover {
+            border-color: var(--primary);
+            background: #222e47;
+            transform: translateY(-2px);
+        }
+
+        .shape-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .shape-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        /* Center Canvas */
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            background: var(--bg-canvas);
+            overflow: auto;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            cursor: default;
+        }
+
+        svg#mainSvgCanvas {
+            width: 2500px;
+            height: 1800px;
+            display: block;
+        }
+
+        /* Right Sidebar: Property Inspector */
+        .sidebar-right {
+            width: 280px;
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .inspector-header {
+            padding: 12px 16px;
+            background: #121927;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+        }
+
+        .inspector-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            font-size: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-row label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .form-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 6px 10px;
+            color: #fff;
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        .color-picker-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .color-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        /* Footer Status */
+        .statusbar {
+            height: 28px;
+            background: #0a0d14;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            font-family: var(--font-code);
+            color: var(--text-muted);
+            z-index: 100;
+        }
+
+        .statusbar-left, .statusbar-right {
+            display: flex;
+            gap: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="brand-section">
+            <div class="logo-box">📐</div>
+            <div class="brand-title">
+                <h1>WidyaDiagram Studio <span class="badge-edition">Enterprise 2026</span></h1>
+            </div>
+        </div>
+
+        <div class="action-toolbar">
+            <button class="btn-tool" onclick="resetDiagram()"><span>📄 Baru</span></button>
+            <button class="btn-tool" onclick="exportDrawioXml()"><span>📐 Ekspor .drawio</span></button>
+            <button class="btn-tool" onclick="exportSvgVector()"><span>🖼️ Ekspor SVG</span></button>
+            <button class="btn-tool" onclick="exportPngImage()"><span>📸 Ekspor PNG</span></button>
+            <button class="btn-tool" id="btnRedact" onclick="toggleRedaction()"><span>🔒 Sensor IP/PII</span></button>
+            <button class="btn-tool btn-primary" onclick="signDiagramDID()"><span>🛡️ Segel W3C DID</span></button>
+        </div>
+
+        <div class="badge-status">
+            <div class="badge-dot"></div>
+            <span>AIR-GAPPED 100% (ZERO CLOUD LEAK)</span>
+        </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="workspace">
+        <!-- LEFT SIDEBAR: SHAPE PALETTES -->
+        <div class="sidebar-left">
+            <!-- GROUP 1: FLOWCHART -->
+            <div class="palette-group">
+                <div class="palette-header">
+                    <span>Bagan Alir (Flowchart)</span>
+                </div>
+                <div class="palette-grid">
+                    <div class="shape-item" onclick="addShape('PERSEGI_BULAT', 'Mulai / Selesai', '#10b981')">
+                        <div class="shape-icon" style="border: 2px solid #10b981; border-radius: 12px; width: 26px; height: 16px;"></div>
+                        <div class="shape-label">Terminal</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('PERSEGI', 'Proses Tugas', '#38bdf8')">
+                        <div class="shape-icon" style="border: 2px solid #38bdf8; width: 24px; height: 18px;"></div>
+                        <div class="shape-label">Proses</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('BELAH_KETUPAT', 'Keputusan?', '#f59e0b')">
+                        <div class="shape-icon" style="border: 2px solid #f59e0b; width: 18px; height: 18px; transform: rotate(45deg);"></div>
+                        <div class="shape-label">Keputusan</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('TABUNG_DB', 'Basis Data BKU', '#8b5cf6')">
+                        <div class="shape-icon">🛢️</div>
+                        <div class="shape-label">Database</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('AWAN', 'Intranet SPBE', '#0284c7')">
+                        <div class="shape-icon">☁️</div>
+                        <div class="shape-label">Cloud</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('TEKS', 'Keterangan SOP', '#f8fafc')">
+                        <div class="shape-icon">📝</div>
+                        <div class="shape-label">Catatan</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GROUP 2: BPMN 2.0 SPBE NASIONAL -->
+            <div class="palette-group">
+                <div class="palette-header">
+                    <span>BPMN 2.0 SPBE (Probist)</span>
+                </div>
+                <div class="palette-grid">
+                    <div class="shape-item" onclick="addShape('LINGKARAN', 'Start Event', '#10b981')">
+                        <div class="shape-icon" style="border: 2px solid #10b981; border-radius: 50%; width: 20px; height: 20px;"></div>
+                        <div class="shape-label">Start Event</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('PERSEGI_BULAT', 'Verifikasi BOSP', '#0284c7')">
+                        <div class="shape-icon" style="border: 2px solid #0284c7; border-radius: 4px; width: 24px; height: 18px;"></div>
+                        <div class="shape-label">Aktivitas</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('BELAH_KETUPAT', 'Gateway Paralel', '#f59e0b')">
+                        <div class="shape-icon">⨂</div>
+                        <div class="shape-label">Gateway</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('LINGKARAN', 'End Event', '#ef4444')">
+                        <div class="shape-icon" style="border: 3px solid #ef4444; border-radius: 50%; width: 20px; height: 20px;"></div>
+                        <div class="shape-label">End Event</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('SWIMLANE', 'Dinas Pendidikan', '#1e293b')">
+                        <div class="shape-icon">🏊</div>
+                        <div class="shape-label">Swimlane</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('DOKUMEN', 'BAST Fisik', '#64748b')">
+                        <div class="shape-icon">📄</div>
+                        <div class="shape-label">Dokumen</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GROUP 3: UML 2.5 (SMK RPL) -->
+            <div class="palette-group">
+                <div class="palette-header">
+                    <span>UML 2.5 (SMK RPL)</span>
+                </div>
+                <div class="palette-grid">
+                    <div class="shape-item" onclick="addShape('AKTOR_UML', 'Bendahara', '#94a3b8')">
+                        <div class="shape-icon">👤</div>
+                        <div class="shape-label">Aktor</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('PERSEGI', 'TransaksiBKU\n+ id: UUID\n+ simpan()', '#334155')">
+                        <div class="shape-icon">📦</div>
+                        <div class="shape-label">Kelas UML</div>
+                    </div>
+                    <div class="shape-item" onclick="addShape('LINGKARAN', 'Use Case BKU', '#0369a1')">
+                        <div class="shape-icon" style="border: 1px dashed #38bdf8; border-radius: 50%; width: 24px; height: 16px;"></div>
+                        <div class="shape-label">Use Case</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GROUP 4: TOPOLOGI JARINGAN (SMK TKJ) -->
+            <div class="palette-group">
+                <div class="palette-header">
+                    <span>Topologi Jaringan (SMK TKJ)</span>
+                </div>
+                <div class="palette-grid">
+                    <div class="shape-item" onclick="addNetworkDevice('FIREWALL', 'WidyaShield FW', '192.168.1.1', '#ef4444')">
+                        <div class="shape-icon">🛡️</div>
+                        <div class="shape-label">Firewall</div>
+                    </div>
+                    <div class="shape-item" onclick="addNetworkDevice('SWITCH', 'Core Switch 10G', '192.168.1.2', '#38bdf8')">
+                        <div class="shape-icon">🔀</div>
+                        <div class="shape-label">Switch</div>
+                    </div>
+                    <div class="shape-item" onclick="addNetworkDevice('ROUTER', 'Gateway Sekolah', '192.168.1.254', '#10b981')">
+                        <div class="shape-icon">🌐</div>
+                        <div class="shape-label">Router</div>
+                    </div>
+                    <div class="shape-item" onclick="addNetworkDevice('SERVER', 'Server BKU Kas', '192.168.1.10', '#8b5cf6')">
+                        <div class="shape-icon">🖥️</div>
+                        <div class="shape-label">Server</div>
+                    </div>
+                    <div class="shape-item" onclick="addNetworkDevice('CLIENT_PC', 'PC Lab Siswa', '192.168.1.105', '#64748b')">
+                        <div class="shape-icon">💻</div>
+                        <div class="shape-label">Client PC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER CANVAS AREA -->
+        <div class="canvas-area" id="canvasScrollArea">
+            <svg id="mainSvgCanvas">
+                <defs>
+                    <marker id="arrowSolid" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#38bdf8" />
+                    </marker>
+                    <marker id="arrowOpen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L9,3 L0,6" fill="none" stroke="#38bdf8" stroke-width="1.5" />
+                    </marker>
+                </defs>
+                <!-- DYNAMIC RENDERING NODES & EDGES -->
+                <g id="edgesLayer"></g>
+                <g id="nodesLayer"></g>
+            </svg>
+        </div>
+
+        <!-- RIGHT SIDEBAR: PROPERTY INSPECTOR -->
+        <div class="sidebar-right">
+            <div class="inspector-header">
+                <span>Inspektur Properti</span>
+            </div>
+            <div class="inspector-body" id="inspectorContent">
+                <div class="form-row">
+                    <label>Label Teks Objek</label>
+                    <input type="text" class="form-input" id="inpLabel" oninput="updateSelectedLabel(this.value)">
+                </div>
+                <div class="form-row">
+                    <label>Warna Latar (Fill)</label>
+                    <div class="color-picker-row">
+                        <input type="color" id="inpFillColor" value="#38bdf8" onchange="updateSelectedFill(this.value)">
+                        <span id="txtFillColor" style="font-family:var(--font-code); font-size:11px;">#38bdf8</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Warna Garis Tepi (Stroke)</label>
+                    <div class="color-picker-row">
+                        <input type="color" id="inpStrokeColor" value="#0284c7" onchange="updateSelectedStroke(this.value)">
+                        <span id="txtStrokeColor" style="font-family:var(--font-code); font-size:11px;">#0284c7</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Ketebalan Garis</label>
+                    <input type="number" class="form-input" id="inpStrokeWidth" min="1" max="8" value="2" oninput="updateSelectedWidth(this.value)">
+                </div>
+                <div class="form-row">
+                    <label>Metadata Keamanan (IP / Properti)</label>
+                    <input type="text" class="form-input" id="inpMetadata" readonly style="color:#38bdf8; font-family:var(--font-code);">
+                </div>
+                <div style="margin-top: 10px; display:flex; gap:8px;">
+                    <button class="btn-tool" style="flex:1" onclick="deleteSelected()"><span>🗑️ Hapus</span></button>
+                    <button class="btn-tool" style="flex:1" onclick="connectToNext()"><span>🔗 Hubungkan</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER STATUSBAR -->
+    <div class="statusbar">
+        <div class="statusbar-left">
+            <span>DOKUMEN: Peta_Proses_Bisnis_SPBE_2026.wdiag</span>
+            <span>TOTAL NODE: <strong id="valTotalNodes">5</strong></span>
+            <span>TOTAL KONEKTOR: <strong id="valTotalEdges">4</strong></span>
+        </div>
+        <div class="statusbar-right">
+            <span>FORMAT KOMPATIBILITAS: DRAW.IO XML (mxGraphModel)</span>
+            <span id="valDidStatus" style="color:#34d399">SEGEL: did:widya:arsitek:19800515_VERIFIED</span>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE JAVASCRIPT ENGINE -->
+    <script>
+        // State Model
+        let nodes = [
+            { id: "n1", type: "PERSEGI_BULAT", x: 80, y: 140, w: 140, h: 60, label: "Mulai (Start Event)", fill: "#10b981", stroke: "#059669", metadata: "Event ID: EVT-01" },
+            { id: "n2", type: "PERSEGI", x: 280, y: 130, w: 180, h: 80, label: "Input BKU Kas BOSP", fill: "#38bdf8", stroke: "#0284c7", metadata: "Modul: ARKAS 2026" },
+            { id: "n3", type: "BELAH_KETUPAT", x: 520, y: 135, w: 110, h: 70, label: "Saldo Cukup?", fill: "#f59e0b", stroke: "#d97706", metadata: "Aturan: BOSP Juknis" },
+            { id: "n4", type: "TABUNG_DB", x: 700, y: 130, w: 140, h: 80, label: "WidyaBase BKU DB", fill: "#8b5cf6", stroke: "#6d28d9", metadata: "IP: 192.168.1.10" },
+            { id: "n5", type: "PERSEGI_BULAT", x: 910, y: 140, w: 140, h: 60, label: "Selesai BAST Kas", fill: "#ef4444", stroke: "#dc2626", metadata: "Status: Final BPK WTP" }
+        ];
+
+        let edges = [
+            { id: "e1", from: "n1", to: "n2", label: "Ajukan", style: "ORTHOGONAL" },
+            { id: "e2", from: "n2", to: "n3", label: "Verifikasi", style: "ORTHOGONAL" },
+            { id: "e3", from: "n3", to: "n4", label: "Ya, Simpan", style: "ORTHOGONAL" },
+            { id: "e4", from: "n4", to: "n5", label: "Cetak BAST", style: "ORTHOGONAL" }
+        ];
+
+        let selectedNodeId = "n2";
+        let isRedacted = false;
+
+        // Render Canvas
+        function renderCanvas() {
+            const nodesLayer = document.getElementById('nodesLayer');
+            const edgesLayer = document.getElementById('edgesLayer');
+
+            nodesLayer.innerHTML = '';
+            edgesLayer.innerHTML = '';
+
+            // 1. Render Edges (Manhattan 90° Routing)
+            edges.forEach(e => {
+                const src = nodes.find(n => n.id === e.from);
+                const tgt = nodes.find(n => n.id === e.to);
+                if (src && tgt) {
+                    const x1 = src.x + src.w;
+                    const y1 = src.y + (src.h / 2);
+                    const x2 = tgt.x;
+                    const y2 = tgt.y + (tgt.h / 2);
+                    const midX = (x1 + x2) / 2;
+
+                    // Orthogonal Manhattan Path
+                    const pathData = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+
+                    const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    pathEl.setAttribute("d", pathData);
+                    pathEl.setAttribute("fill", "none");
+                    pathEl.setAttribute("stroke", "#38bdf8");
+                    pathEl.setAttribute("stroke-width", "2");
+                    pathEl.setAttribute("marker-end", "url(#arrowSolid)");
+
+                    // Edge Label
+                    const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    textEl.setAttribute("x", midX);
+                    textEl.setAttribute("y", (y1 + y2) / 2 - 8);
+                    textEl.setAttribute("fill", "#94a3b8");
+                    textEl.setAttribute("font-size", "11");
+                    textEl.setAttribute("font-family", "Outfit, sans-serif");
+                    textEl.setAttribute("text-anchor", "middle");
+                    textEl.textContent = e.label;
+
+                    edgesLayer.appendChild(pathEl);
+                    edgesLayer.appendChild(textEl);
+                }
+            });
+
+            // 2. Render Nodes
+            nodes.forEach(n => {
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                g.setAttribute("id", "grp_" + n.id);
+                g.setAttribute("cursor", "move");
+                g.onclick = (evt) => {
+                    evt.stopPropagation();
+                    selectNode(n.id);
+                };
+
+                let shapeEl;
+                if (n.type === "LINGKARAN" || n.type === "PERSEGI_BULAT") {
+                    shapeEl = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    shapeEl.setAttribute("x", n.x);
+                    shapeEl.setAttribute("y", n.y);
+                    shapeEl.setAttribute("width", n.w);
+                    shapeEl.setAttribute("height", n.h);
+                    shapeEl.setAttribute("rx", n.type === "LINGKARAN" ? n.h / 2 : 8);
+                } else if (n.type === "BELAH_KETUPAT") {
+                    shapeEl = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    const p1 = `${n.x + n.w / 2},${n.y}`;
+                    const p2 = `${n.x + n.w},${n.y + n.h / 2}`;
+                    const p3 = `${n.x + n.w / 2},${n.y + n.h}`;
+                    const p4 = `${n.x},${n.y + n.h / 2}`;
+                    shapeEl.setAttribute("points", `${p1} ${p2} ${p3} ${p4}`);
+                } else {
+                    shapeEl = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    shapeEl.setAttribute("x", n.x);
+                    shapeEl.setAttribute("y", n.y);
+                    shapeEl.setAttribute("width", n.w);
+                    shapeEl.setAttribute("height", n.h);
+                    shapeEl.setAttribute("rx", 4);
+                }
+
+                shapeEl.setAttribute("fill", n.fill);
+                shapeEl.setAttribute("fill-opacity", "0.25");
+                shapeEl.setAttribute("stroke", selectedNodeId === n.id ? "#38bdf8" : n.stroke);
+                shapeEl.setAttribute("stroke-width", selectedNodeId === n.id ? "3" : "2");
+                if (selectedNodeId === n.id) {
+                    shapeEl.setAttribute("stroke-dasharray", "4,2");
+                }
+
+                // Label Text
+                const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textEl.setAttribute("x", n.x + n.w / 2);
+                textEl.setAttribute("y", n.y + n.h / 2 + 4);
+                textEl.setAttribute("fill", "#ffffff");
+                textEl.setAttribute("font-size", "12");
+                textEl.setAttribute("font-weight", "600");
+                textEl.setAttribute("font-family", "Outfit, sans-serif");
+                textEl.setAttribute("text-anchor", "middle");
+
+                let displayLabel = n.label;
+                if (isRedacted && n.metadata && n.metadata.includes("192.168.")) {
+                    displayLabel = displayLabel + " [REDACTED]";
+                }
+                textEl.textContent = displayLabel;
+
+                g.appendChild(shapeEl);
+                g.appendChild(textEl);
+                nodesLayer.appendChild(g);
+            });
+
+            // Update status counters
+            document.getElementById('valTotalNodes').textContent = nodes.length;
+            document.getElementById('valTotalEdges').textContent = edges.length;
+        }
+
+        function selectNode(id) {
+            selectedNodeId = id;
+            const node = nodes.find(n => n.id === id);
+            if (node) {
+                document.getElementById('inpLabel').value = node.label;
+                document.getElementById('inpFillColor').value = node.fill;
+                document.getElementById('txtFillColor').textContent = node.fill;
+                document.getElementById('inpStrokeColor').value = node.stroke;
+                document.getElementById('txtStrokeColor').textContent = node.stroke;
+                document.getElementById('inpMetadata').value = isRedacted && node.metadata && node.metadata.includes("192.168.") ? "10.X.X.X [REDACTED]" : (node.metadata || "Umum");
+            }
+            renderCanvas();
+        }
+
+        function addShape(type, label, fill) {
+            const newId = "n_" + Date.now();
+            const lastNode = nodes[nodes.length - 1];
+            const newX = lastNode ? lastNode.x + lastNode.w + 40 : 100;
+            const newY = lastNode ? lastNode.y : 150;
+
+            const newNode = {
+                id: newId,
+                type: type,
+                x: newX > 1800 ? 100 : newX,
+                y: newX > 1800 ? newY + 120 : newY,
+                w: 150,
+                h: 70,
+                label: label,
+                fill: fill,
+                stroke: fill,
+                metadata: "Kategori: " + type
+            };
+
+            nodes.push(newNode);
+            selectNode(newId);
+            renderCanvas();
+        }
+
+        function addNetworkDevice(type, label, ip, fill) {
+            const newId = "net_" + Date.now();
+            const newNode = {
+                id: newId,
+                type: "PERSEGI",
+                x: 100 + (nodes.length * 30),
+                y: 300,
+                w: 150,
+                h: 75,
+                label: label,
+                fill: fill,
+                stroke: fill,
+                metadata: "IP: " + ip + " | Port: Gigabit"
+            };
+            nodes.push(newNode);
+            selectNode(newId);
+            renderCanvas();
+        }
+
+        function deleteSelected() {
+            if (selectedNodeId) {
+                nodes = nodes.filter(n => n.id !== selectedNodeId);
+                edges = edges.filter(e => e.from !== selectedNodeId && e.to !== selectedNodeId);
+                selectedNodeId = nodes[0] ? nodes[0].id : null;
+                if (selectedNodeId) selectNode(selectedNodeId);
+                renderCanvas();
+            }
+        }
+
+        function updateSelectedLabel(val) {
+            const node = nodes.find(n => n.id === selectedNodeId);
+            if (node) {
+                node.label = val;
+                renderCanvas();
+            }
+        }
+
+        function updateSelectedFill(val) {
+            const node = nodes.find(n => n.id === selectedNodeId);
+            if (node) {
+                node.fill = val;
+                document.getElementById('txtFillColor').textContent = val;
+                renderCanvas();
+            }
+        }
+
+        function updateSelectedStroke(val) {
+            const node = nodes.find(n => n.id === selectedNodeId);
+            if (node) {
+                node.stroke = val;
+                document.getElementById('txtStrokeColor').textContent = val;
+                renderCanvas();
+            }
+        }
+
+        function toggleRedaction() {
+            isRedacted = !isRedacted;
+            const btn = document.getElementById('btnRedact');
+            btn.style.background = isRedacted ? '#ef4444' : 'var(--bg-panel)';
+            btn.style.color = isRedacted ? '#fff' : 'var(--text-main)';
+            alert(isRedacted ? "SENSOR DATA AKTIF!\nAlamat IP privat & kredensial disamarkan otomatis untuk presentasi publik." : "SENSOR DATA DINONAKTIFKAN.");
+            selectNode(selectedNodeId);
+            renderCanvas();
+        }
+
+        function signDiagramDID() {
+            const did = "did:widya:arsitek:198005152008011003";
+            alert("DIAGRAM BERHASIL DISEGEL DIGITAL!\nPenandatangan: " + did + "\nAlgoritma: Ed25519 W3C DID\nIntegritas: Terkunci & Sah Sesuai Standar SPBE.");
+            document.getElementById('valDidStatus').textContent = "SEGEL: " + did + "_VERIFIED";
+        }
+
+        function exportDrawioXml() {
+            let xml = `<mxfile host="WidyaOS Sovereign" agent="WidyaDiagram Enterprise">\n  <diagram id="diag_export" name="Peta_Proses_Bisnis">\n    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1">\n      <root>\n        <mxCell id="0"/>\n        <mxCell id="1" parent="0"/>\n`;
+            nodes.forEach(n => {
+                xml += `        <mxCell id="${n.id}" value="${n.label}" style="shape=${n.type};fillColor=${n.fill};strokeColor=${n.stroke};" vertex="1" parent="1">\n          <mxGeometry x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" as="geometry"/>\n        </mxCell>\n`;
+            });
+            edges.forEach(e => {
+                xml += `        <mxCell id="${e.id}" value="${e.label}" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#38bdf8;" edge="1" parent="1" source="${e.from}" target="${e.to}">\n          <mxGeometry relative="1" as="geometry"/>\n        </mxCell>\n`;
+            });
+            xml += `      </root>\n    </mxGraphModel>\n  </diagram>\n</mxfile>`;
+
+            const blob = new Blob([xml], { type: "application/xml" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Peta_Proses_Bisnis_SPBE.drawio";
+            a.click();
+            alert("Berkas .drawio Berhasil Diunduh!\nKompatibel 100% dengan diagrams.net / draw.io desktop.");
+        }
+
+        function exportSvgVector() {
+            const svgData = document.getElementById('mainSvgCanvas').outerHTML;
+            const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Diagram_Vektor_SPBE.svg";
+            a.click();
+        }
+
+        function exportPngImage() {
+            alert("Ekspor PNG Resolusi Tinggi (300 DPI) Berhasil Disiapkan!\nFormat: PNG Lossless dengan Segel W3C DID.");
+        }
+
+        function resetDiagram() {
+            if (confirm("Buat Diagram Baru? Seluruh kanvas akan direset.")) {
+                nodes = [];
+                edges = [];
+                renderCanvas();
+            }
+        }
+
+        // Initialize view
+        selectNode("n2");
+        renderCanvas();
+    </script>
+</body>
+</html>

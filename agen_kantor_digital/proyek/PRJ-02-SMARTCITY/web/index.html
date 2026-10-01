@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widya SmartCity — Platform Telemetri ISPU & GIS Geospasial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-wrap">
+    <!-- HEADER -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-ico">🏙️</div>
+        <div>
+          <h2>Widya SmartCity & GIS Telemetry</h2>
+          <span class="sub">Standar Permen LHK No. P.14/2020 • ATCS Lalu Lintas • Geofencing Haversine</span>
+        </div>
+      </div>
+      <div class="header-tools">
+        <div class="pill-stat">
+          <span class="dot-green"></span>
+          <span>Stasiun Aktif: <strong>18 Titik Sensor</strong></span>
+        </div>
+        <div class="pill-stat">
+          <span>Indeks Kualitas Udara Rata-rata: <strong id="hdr-ispu-val" class="text-green">42 (BAIK)</strong></span>
+        </div>
+        <button class="btn-primary" onclick="simulasiAnomaliSensor()">🚨 Uji Anomali Asap/Macet</button>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <div class="main-layout">
+      <!-- LEFT: INTERACTIVE GEOSPATIAL MAP -->
+      <section class="map-section">
+        <div class="panel-header">
+          <h3>Peta Geospasial Kawasan Cerdas (Multi-Layer GIS)</h3>
+          <div class="layer-toggles">
+            <button class="layer-btn active" onclick="toggleLayer('ispu')">🌬️ Sensor ISPU</button>
+            <button class="layer-btn active" onclick="toggleLayer('traffic')">🚦 Lampu ATCS</button>
+            <button class="layer-btn active" onclick="toggleLayer('fleet')">🚛 Armada Truk</button>
+          </div>
+        </div>
+
+        <div class="interactive-map-container" id="map-container">
+          <svg id="city-svg-map" viewBox="0 0 800 500">
+            <!-- Grid Roads -->
+            <rect width="800" height="500" fill="#080c14"/>
+            <!-- Rivers / Greenery -->
+            <path d="M 0,220 Q 200,260 400,200 T 800,240 L 800,280 Q 600,240 400,240 T 0,260 Z" fill="#064e3b" opacity="0.4"/>
+            <path d="M 0,230 Q 200,270 400,210 T 800,250" stroke="#0284c7" stroke-width="16" fill="none" opacity="0.6"/>
+            
+            <!-- Roads Grid -->
+            <line x1="120" y1="0" x2="120" y2="500" stroke="#1e293b" stroke-width="14"/>
+            <line x1="380" y1="0" x2="380" y2="500" stroke="#334155" stroke-width="22"/>
+            <line x1="640" y1="0" x2="640" y2="500" stroke="#1e293b" stroke-width="14"/>
+            <line x1="0" y1="120" x2="800" y2="120" stroke="#1e293b" stroke-width="14"/>
+            <line x1="0" y1="360" x2="800" y2="360" stroke="#334155" stroke-width="20"/>
+
+            <!-- Geofencing Circle -->
+            <circle cx="380" cy="360" r="160" fill="rgba(59, 130, 246, 0.06)" stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,6"/>
+            <text x="390" y="220" fill="#60a5fa" font-size="11" font-family="'JetBrains Mono'">Zona Geofence Radius 2.5 KM (Kelurahan Inti)</text>
+
+            <!-- Node 1: Sensor ISPU Barat -->
+            <g class="map-node ispu-node" onclick="pilihNode('ispu-1', 'Stasiun Barat - Taman Kota', 35, 'PM2.5: 8.2 µg/m³')">
+              <circle cx="120" cy="120" r="18" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+              <text x="120" y="125" text-anchor="middle" font-size="14">🌬️</text>
+              <text x="120" y="152" text-anchor="middle" fill="#34d399" font-size="10" font-weight="700">ISPU: 35 (Baik)</text>
+            </g>
+
+            <!-- Node 2: Sensor ISPU Pusat Kota -->
+            <g class="map-node ispu-node" onclick="pilihNode('ispu-2', 'Stasiun Pusat - Alun-Alun', 68, 'PM2.5: 24.5 µg/m³')">
+              <circle cx="380" cy="360" r="22" fill="rgba(245, 158, 11, 0.2)" stroke="#f59e0b" stroke-width="2"/>
+              <text x="380" y="366" text-anchor="middle" font-size="16">🌬️</text>
+              <text x="380" y="398" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="700">ISPU: 68 (Sedang)</text>
+            </g>
+
+            <!-- Node 3: Sensor ISPU Kawasan Industri -->
+            <g class="map-node ispu-node" onclick="pilihNode('ispu-3', 'Stasiun Timur - Kawasan Industri', 124, 'PM2.5: 65.0 µg/m³')">
+              <circle cx="640" cy="120" r="20" fill="rgba(239, 68, 68, 0.2)" stroke="#ef4444" stroke-width="2"/>
+              <text x="640" y="126" text-anchor="middle" font-size="14">🏭</text>
+              <text x="640" y="154" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700">ISPU: 124 (T.Sehat)</text>
+            </g>
+
+            <!-- Traffic Light Node: Simpang Utama -->
+            <g class="map-node traffic-node" onclick="pilihTraffic('Simpang Protokol Sudirman', 0.85, 'Fase Hijau: 45s')">
+              <circle cx="380" cy="120" r="14" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+              <circle cx="380" cy="120" r="6" fill="#10b981" id="traffic-light-bulb"/>
+              <text x="380" y="100" text-anchor="middle" fill="#93c5fd" font-size="10">ATCS V/C: 0.85</text>
+            </g>
+
+            <!-- Moving Fleet Truck -->
+            <g class="map-node fleet-node" id="fleet-truck-01">
+              <circle cx="280" cy="360" r="14" fill="rgba(59, 130, 246, 0.3)" stroke="#3b82f6" stroke-width="1.5"/>
+              <text x="280" y="365" text-anchor="middle" font-size="12">🚛</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <!-- RIGHT: ISPU CALCULATOR & TELEMETRY CONTROLS -->
+      <aside class="control-panel">
+        <!-- NODE DETAILS -->
+        <div class="card-glass">
+          <div class="card-header">
+            <h3>Detail Telemetri Titik Terpilih</h3>
+            <span class="badge-tag" id="node-tag">Stasiun Aktif</span>
+          </div>
+          <div class="node-info-body mt-3">
+            <h4 id="node-title">Stasiun Pusat - Alun-Alun</h4>
+            <div class="ispu-big-score" id="node-score-box">
+              <span class="score-num" id="node-ispu-num">68</span>
+              <div class="score-meta">
+                <span class="score-cat text-amber" id="node-cat">SEDANG</span>
+                <span class="score-sub">Parameter Kunci: PM2.5</span>
+              </div>
+            </div>
+            <p class="text-xs text-muted mt-2" id="node-recom">Kualitas udara masih dapat diterima, namun bagi kelompok sensitif disarankan mengurangi aktivitas fisik berat di luar ruangan.</p>
+          </div>
+        </div>
+
+        <!-- PERMEN LHK CALCULATOR -->
+        <div class="card-glass mt-4">
+          <div class="card-header">
+            <h3>Kalkulator Interpolasi ISPU Permen LHK</h3>
+            <span class="badge-tag">No. P.14/2020</span>
+          </div>
+          <div class="calc-form mt-3">
+            <div class="input-group">
+              <label>Konsentrasi Terukur PM2.5 (µg/m³):</label>
+              <input type="number" id="input-pm25" value="24.5" min="0" max="500" step="0.5" oninput="kalkulasiISPU()">
+            </div>
+            <div class="calc-res-strip mt-3" id="calc-result-strip">
+              <span>Hasil Indeks ISPU:</span>
+              <strong id="calc-ispu-val">68</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- ATCS TRAFFIC OPTIMIZER -->
+        <div class="card-glass mt-4">
+          <div class="card-header">
+            <h3>ATCS Traffic Adaptive Optimizer</h3>
+            <span class="badge-tag">Webster Formula</span>
+          </div>
+          <div class="traffic-opt-body mt-3">
+            <div class="traffic-row">
+              <span>Rasio Volume/Kapasitas (V/C):</span>
+              <strong id="disp-vc">0.85 (Padat Lancar)</strong>
+            </div>
+            <div class="traffic-row">
+              <span>Durasi Fase Lampu Hijau:</span>
+              <strong id="disp-green" class="text-green">45 Detik</strong>
+            </div>
+            <button class="btn-sm w-full mt-3" onclick="optimasiLampuLaluLintas()">⚡ Hitung Ulang Optimasi Fase</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

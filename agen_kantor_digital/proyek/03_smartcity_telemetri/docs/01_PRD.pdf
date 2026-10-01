@@ -1,0 +1,71 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R ] /Count 3 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 881 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 3) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SMARTCITY ISPU TELEMETRI & SPATIAL GIS) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_analis` \(SOP-02\) & `agen_arsitek` \(SOP-03\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 673.89 Tm (**Standar Regulasi:** Permen LHK No. P.14/2020 tentang Indeks Standar Pencemar Udara \(ISPU\)) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1071 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 3) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Problem Statement & Target Solusi) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Dinas Lingkungan Hidup \(DLH\) dan Dinas Perhubungan di berbagai kabupaten/kota membutuhkan platform pemantauan kualitas udara dan manajemen lalu lintas cerdas yang terintegrasi secara mandiri tanpa tergantung server cloud asing.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (**Tujuan**: Mengembangkan platform telemetri IoT multi-sensor dengan visualisasi GIS peta geospasial interaktif, kalkulator baku mutu resmi ISPU \(PM2.5, PM10, SO2, CO, O3\), optimasi durasi lampu lalu lintas adaptif \(ATCS\) rasio V/C, dan geofencing armada truk sampah/patroli.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1218 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 3) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Fitur Utama) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (1. **Peta Geospasial Multi-Layer SVG/GIS**: Menampilkan titik stasiun sensor lingkungan, status lampu lalu lintas, dan pergerakan armada secara real-time.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (2. **Kalkulator Interpolasi ISPU Permen LHK**: Konversi otomatis konsentrasi mikrogram/m¬≥ menjadi kategori \(Baik, Sedang, Tidak Sehat, Sangat Tidak Sehat, Berbahaya\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (3. **Adaptive Traffic Control System \(ATCS\)**: Perhitungan optimasi fase hijau berbasis formula Webster rasio Volume/Kapasitas \(V/C\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (4. **Geofencing Haversine**: Deteksi radius masuk/keluar armada truk ke zona kelurahan/desa inti.) Tj ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000167 00000 n 
+0000000264 00000 n 
+0000000366 00000 n 
+0000001297 00000 n 
+0000001399 00000 n 
+0000002521 00000 n 
+0000002623 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R /Info << /Title (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) /Author (Widya-Lang Sovereign OS \(Proyek: 03_smartcity_telemetri\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261001221606Z) >> >>
+startxref
+3892
+%%EOF

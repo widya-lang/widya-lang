@@ -1,0 +1,7 @@
+{
+  "aktif": true,
+  "bot_token": "TOKEN_BOT_TELEGRAM_ANDA",
+  "chat_id": "CHAT_ID_ANDA",
+  "username_bot": "@WidyaDigitalBot",
+  "parse_mode": "HTML"
+}

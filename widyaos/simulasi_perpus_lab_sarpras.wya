@@ -1,0 +1,158 @@
+// =================================================================
+// SIMULASI TERPADU: PERPUSTAKAAN SMART, LABORATORIUM, BENGKEL & SARPRAS
+// Menguji MOD-18 (Perpustakaan & Bebas Pustaka) dan MOD-06 (Lab & Sarpras)
+// =================================================================
+
+impor "widyaos/modul/perpustakaan_smart.wya";
+impor "widyaos/modul/laboratorium_sarpras.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║   === SIMULASI PERPUSTAKAAN, LAB & SARPRAS WIDYAOS v1.0 ===      ║");
+cetak("║   Standar Fasilitas, Sirkulasi Digital & Depresiasi Aset SAP    ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+// -------------------------------------------------------------
+// [TEST 1] MOD-18: Manajemen Perpustakaan & Sirkulasi Kilat
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[1] MOD-18: Pendaftaran Buku & Sirkulasi Kilat Barcode");
+cetak("================================================================");
+misal buku_rpl = pustaka_daftarkan_buku(
+    "BUKU-001",
+    "978-602-001-2",
+    "Arsitektur Sistem Operasi Terdistribusi & Kompiler Modern",
+    "Tim Riset Widya",
+    "005.133", // DDC Informatika
+    5 // 5 Eksemplar
+);
+
+misal eks1 = pustaka_daftarkan_eksemplar("BARCODE-LIB-001", buku_rpl.id_buku, "INV/2026/001", "RAK-A1");
+cetak("📚 Judul Buku       :", buku_rpl.judul);
+cetak("🏷️ Barcode Eksemplar:", eks1.barcode_item, "| Lokasi Rak:", eks1.kode_rak);
+cetak("📦 Stok Awal        :", buku_rpl.eksemplar_tersedia, "dari", buku_rpl.total_eksemplar, "tersedia");
+
+// Peminjaman oleh Siswa Ahmad Fauzi selama 7 hari
+misal pinjam_res = pustaka_pinjam_buku("TRX-PJM-001", eks1, buku_rpl, "0081234567", "Ahmad Fauzi", 7);
+cetak("📖 Status Peminjaman:", pinjam_res.pesan);
+cetak("📦 Stok Setelah Pinjam:", buku_rpl.eksemplar_tersedia, "eksemplar tersisa di rak");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika pinjam_res.sukses == benar dan eks1.status == "SEDANG_DIPINJAM" dan buku_rpl.eksemplar_tersedia == 4 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1] Peminjaman Buku Kilat Terintegrasi Barcode: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 2] MOD-18: Pengembalian Buku, Denda & Bebas Pustaka
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[2] MOD-18: Pengembalian Buku Tepat Waktu & Surat Bebas Pustaka");
+cetak("================================================================");
+// Siswa mengembalikan buku sebelum jatuh tempo
+misal kembali_res = pustaka_kembalikan_buku(pinjam_res.transaksi, eks1, buku_rpl, waktu() + 100);
+cetak("📥 Pengembalian Buku : Status =", kembali_res.status, "| Denda = Rp", kembali_res.denda_rp);
+cetak("📦 Stok Kembali      :", buku_rpl.eksemplar_tersedia, "eksemplar tersedia di rak");
+
+// Terbitkan Surat Bebas Pustaka (Syarat Kelulusan / Mutasi)
+misal skbp = pustaka_terbitkan_bebas_pustaka("0081234567", "Ahmad Fauzi", 0, 0.0);
+cetak("📜 Surat Bebas Pustaka Terbit :");
+cetak("   No. Surat         :", skbp.nomor_surat);
+cetak("   Status Tanggungan :", skbp.status_bebas);
+cetak("   Hash QR Verifikasi:", skbp.hash_verifikasi_qr);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika kembali_res.status == "SELESAI" dan skbp.status_bebas == "BEBAS_TANGGUNGAN" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2] Sirkulasi Pengembalian & Penerbitan Bebas Pustaka: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 3] MOD-06: Laboratorium & Depresiasi Garis Lurus Aset SAP
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[3] MOD-06: Inventarisasi Aset Lab & Depresiasi Standar SAP");
+cetak("================================================================");
+misal lab_komputer = lab_daftarkan_ruang("R-LAB-KOMP", "Laboratorium Komputer & Server AI", "LAB_KOMPUTER_AI", 36, "Budi Santoso, S.Kom");
+cetak("🖥️ Ruang Lab Didaftar :", lab_komputer.nama_lab, "| Kapasitas:", lab_komputer.kapasitas_siswa, "siswa");
+
+// Tambah Aset Server AI ke Kartu Inventaris Ruangan (KIR)
+// Pembelian tahun 2024 seharga Rp 40.000.000, masa manfaat 4 tahun
+misal server_ai = lab_tambah_aset_kir(
+    lab_komputer.id_ruang,
+    "Workstation Server AI Edge Rockchip RK3588",
+    "PERANGKAT_TIK",
+    40000000.0,
+    2024,
+    4 // 4 Tahun Masa Manfaat
+);
+
+cetak("🏷️ Aset KIR Terdaftar  :", server_ai.nama_aset);
+cetak("   Kode QR Aset        :", server_ai.kode_aset_qr);
+cetak("   Harga Perolehan     : Rp", server_ai.harga_perolehan);
+
+// Hitung Penyusutan Standar Akuntansi Pemerintah (SAP) per Tahun 2026 (Umur 2 tahun)
+misal depresiasi = lab_hitung_penyusutan_sap(server_ai, 2026);
+cetak("📊 Evaluasi Depresiasi SAP (Tahun 2026 / Pemakaian 2 Tahun):");
+cetak("   Akumulasi Penyusutan: Rp", depresiasi.akumulasi_penyusutan, "(Rp 10.000.000/tahun)");
+cetak("   Nilai Buku Saat Ini : Rp", depresiasi.nilai_buku_saat_ini, "(Nilai Wajar Aset)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika depresiasi.nilai_buku_saat_ini == 20000000.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 3] Depresiasi Aset Garis Lurus SAP Permendagri 19/2016: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 4] MOD-06: Penjadwalan Lab & Bahan Habis Pakai (BHP)
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[4] MOD-06: Reservasi Jadwal Praktikum & Kontrol Stok BHP Lab");
+cetak("================================================================");
+// Booking 1: Kelas X RPL 1 di Jam 08.00 - 10.00
+misal book1 = lab_booking_jadwal(lab_komputer, "BK-01", "X RPL 1", "Pemrograman Sistem", "Budi Santoso, S.Kom", "08:00-10:00");
+cetak("📅 Booking 1 (X RPL 1) :", book1.jam_slot, "-> Status:", book1.status_booking);
+
+// Booking 2: Guru lain mencoba booking slot jam yang sama (Bentrok!)
+misal book2 = lab_booking_jadwal(lab_komputer, "BK-02", "XI TKJ 2", "Jaringan Komputer", "Siti Aminah, M.Pd", "08:00-10:00");
+cetak("⚠️ Booking 2 (Bentrok) :", book2.jam_slot, "-> Status:", book2.status_booking, "(Otomatis Ditolak!)");
+
+// Kontrol Bahan Habis Pakai (BHP / Reagen / Kabel UTP)
+misal kabel_utp = BahanHabisPakaiBHP(
+    "BHP-LAN-01",
+    lab_komputer.id_ruang,
+    "Konektor RJ45 & Kabel LAN Cat6",
+    15, // Sisa 15 pcs
+    "Pcs",
+    20, // Ambang batas restock 20 pcs
+    "AMAN"
+);
+
+misal hasil_bhp = lab_pakai_reagen_bhp(kabel_utp, 10); // Terpakai 10 pcs -> Sisa 5 pcs
+cetak("🧪 Pemakaian Bahan Habis Pakai (BHP) :");
+cetak("   Nama Bahan          :", hasil_bhp.nama_bahan);
+cetak("   Sisa Stok           :", hasil_bhp.sisa_stok, hasil_bhp.satuan);
+cetak("   Sinyal Belanja BOS  :", hasil_bhp.status, "(Auto-Trigger Belanja SIPLah!)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika book1.status_booking == "DIKONFIRMASI" dan book2.status_booking == "BENTROK_JADWAL" dan hasil_bhp.status == "PERLU_PENGADAAN_SIPLAH" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 4] Reservasi Anti-Bentrok & Sinyal Restock BHP SIPLah: LULUS");
+}
+
+cetak("");
+cetak("================================================================");
+cetak("HASIL SIMULASI PERPUSTAKAAN, LABORATORIUM & SARPRAS");
+cetak("Total Skenario Diuji :", TOTAL_TEST);
+cetak("Lulus Verifikasi     :", LULUS_TEST);
+cetak("================================================================");
+jika TOTAL_TEST == LULUS_TEST {
+    cetak("🎉 SEMPURNA! SELURUH MANAJEMEN PERPUSTAKAAN & LAB SARPRAS 100% LULUS!");
+}

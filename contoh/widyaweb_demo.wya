@@ -1,0 +1,50 @@
+// ==============================================================================
+// WidyaWeb Demo - Server REST API Ringan & Modern
+// ==============================================================================
+// Jalankan dengan:
+//   widya contoh/widyaweb_demo.wya
+// ==============================================================================
+
+cetak("====================================================");
+cetak("🚀 Memulai Server WidyaWeb pada port 8080...");
+cetak("====================================================");
+
+misal server = ServerHttp(8080);
+
+// Endpoint 1: Beranda / Health Check
+tambah_rute(server, "GET", "/", fungsi(req) {
+    kembalikan {
+        "nama": "WidyaWeb Sovereign Server",
+        "versi": "1.0.0",
+        "status": "AKTIF",
+        "waktu": waktu(),
+        "pesan": "Selamat datang di kerangka kerja web Widya-Lang!"
+    };
+});
+
+// Endpoint 2: API Informasi Sistem & Metrik
+tambah_rute(server, "GET", "/api/metrik", fungsi(req) {
+    kembalikan {
+        "status": "SEHAT",
+        "latensi_ms": 0.45,
+        "kedaulatan": "UU PDP No. 27/2022 Patuh",
+        "engine": "Widya Native Runtime"
+    };
+});
+
+// Endpoint 3: API Echo Data (POST)
+tambah_rute(server, "POST", "/api/echo", fungsi(req) {
+    kembalikan {
+        "sukses": benar,
+        "pesan": "Data berhasil diterima oleh WidyaWeb",
+        "muatan": req
+    };
+});
+
+cetak("✅ Rute terdaftar: ");
+cetak("   - GET  http://localhost:8080/");
+cetak("   - GET  http://localhost:8080/api/metrik");
+cetak("   - POST http://localhost:8080/api/echo");
+cetak("Tekan Ctrl+C di terminal VS Code untuk menghentikan.");
+
+jalankan(server);

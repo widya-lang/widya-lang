@@ -1,0 +1,104 @@
+// ============================================================================
+// MODUL: TATA KELOLA KEPANITIAAN & TIM KERJA SEKOLAH TERPADU (SCHOOL COMMITTEES)
+// Mengelola Seluruh Tim Regulasi, Siklus Akademik, dan Penugasan Tambahan Guru
+// Sesuai Regulasi Kemendikdasmen RI, Juknis BOSP, dan Akreditasi BAN-PDM
+// ============================================================================
+
+struktur AnggotaPanitia {
+    nuptk_atau_nik,
+    nama_lengkap,
+    jabatan_kepanitiaan,        // 'PENANGGUNG_JAWAB', 'KETUA', 'SEKRETARIS', 'BENDAHARA', 'SEKSI_ACARA', 'SEKSI_LOGISTIK'
+    peran_pokok                 // 'GURU_KELAS', 'GURU_MAPEL', 'TENDIK', 'KOMITE_WALI'
+}
+
+struktur KepanitiaanSekolah {
+    id_panitia,
+    nama_kepanitiaan,
+    kategori,                   // 'MANDATORI_REGULASI_PUSAT', 'SIKLUS_AKADEMIK_TAHUNAN', 'PENGEMBANGAN_KARAKTER_EVENT', 'SARPRAS_SWAKELOLA'
+    nomor_sk_kepala_sekolah,
+    tanggal_sk,
+    tahun_ajaran,
+    ketua_panitia,
+    status_legalitas_sk,        // 'TERBIT_RESMI_TERTANDATANGANI_KEPSEK'
+    kebijakan_honor_bos,        // 'DILARANG_HONOR_ASN_JUKNIS_BOS', 'OPERASIONAL_KONSUMSI_ATK_DIIZINKAN'
+    status_lpj                  // 'SEDANG_BERJALAN', 'LPJ_TERVERIFIKASI_SELESAI'
+}
+
+struktur DeteksiBebanKepanitiaanGuru {
+    nuptk_guru,
+    nama_guru,
+    total_panitia_aktif,
+    status_beban_kerja,         // 'BEBAN_IDEAL_SEIMBANG', 'PERINGATAN_OVERLOAD_BURNOUT'
+    rekomendasi_distribusi
+}
+
+// ============================================================================
+// LOGIKA BISNIS MANAJEMEN KEPANITIAAN SEKOLAH
+// ============================================================================
+
+// [1] Pembentukan Kepanitiaan Resmi dengan SK Kepala Sekolah
+fungsi terbitkan_sk_kepanitiaan(
+    id_panitia,
+    nama_panitia,
+    kategori,
+    nomor_sk,
+    tanggal_sk,
+    tahun_ajaran,
+    ketua,
+    aturan_bos
+) {
+    kembalikan KepanitiaanSekolah(
+        id_panitia,
+        nama_panitia,
+        kategori,
+        nomor_sk,
+        tanggal_sk,
+        tahun_ajaran,
+        ketua,
+        "TERBIT_RESMI_TERTANDATANGANI_KEPSEK",
+        aturan_bos,
+        "SEDANG_BERJALAN"
+    );
+}
+
+// [2] Deteksi Pencegahan Tumpang Tindih Kepanitiaan Guru (Anti-Committee Fatigue)
+// Mencegah fenomena "4L" (Lu Lagi Lu Lagi) yang membuat guru kelelahan
+fungsi audit_beban_kepanitiaan_guru(
+    nuptk,
+    nama_guru,
+    jumlah_panitia_yang_diikuti
+) {
+    jika jumlah_panitia_yang_diikuti >= 4 {
+        kembalikan DeteksiBebanKepanitiaanGuru(
+            nuptk,
+            nama_guru,
+            jumlah_panitia_yang_diikuti,
+            "PERINGATAN_OVERLOAD_BURNOUT",
+            "MOHON_REDISTRIBUSI_KE_GURU_LAIN_YANG_BELUM_ADA_TUGAS_TAMBAHAN"
+        );
+    }
+
+    kembalikan DeteksiBebanKepanitiaanGuru(
+        nuptk,
+        nama_guru,
+        jumlah_panitia_yang_diikuti,
+        "BEBAN_IDEAL_SEIMBANG",
+        "KAPASITAS_KERJA_MASIH_OPTIMAL"
+    );
+}
+
+// [3] Penutupan Kepanitiaan & Pengesahan LPJ Kegiatan
+fungsi sahkan_lpj_kepanitiaan(
+    panitia,
+    catatan_evaluasi
+) {
+    panitia.status_lpj = "LPJ_TERVERIFIKASI_SELESAI";
+    kembalikan {
+        "id_panitia": panitia.id_panitia,
+        "nama": panitia.nama_kepanitiaan,
+        "nomor_sk": panitia.nomor_sk_kepala_sekolah,
+        "status_lpj": panitia.status_lpj,
+        "evaluasi": catatan_evaluasi,
+        "siap_arsip_akreditasi": benar
+    };
+}

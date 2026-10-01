@@ -1,0 +1,380 @@
+<!-- BAB 15 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">15</span> Keamanan Siber, Kriptografi & Kepatuhan UU PDP</h1>
+
+<h2>15.1 Kriptografi Pasca-Kuantum (Post-Quantum Cryptography: ML-KEM / Kyber-768)</h2>
+<p>
+Perkembangan komputer kuantum di masa depan berpotensi meruntuhkan sistem enkripsi RSA dan kurva eliptis klasik. Widya-Lang adalah salah satu pelopor bahasa berdaulat yang telah mengintegrasikan modul pertukaran kunci berbasis kekisi (<em>lattice-based cryptography</em>) standar NIST <strong>ML-KEM (Kyber-768)</strong> di dalam <code>modul/kripto_aman.wya</code>:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/kripto_aman.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">pertukaran_kunci_kuantum</span>() {
+    <span class="com">// 1. Penerima (Server Bank) Membangkitkan Pasangan Kunci Kyber-768</span>
+    <span class="kw">misal</span> kunci_server = <span class="fn">BuatPasanganKunciKyber768</span>();
+    <span class="fn">cetak</span>(<span class="str">"Kunci Publik Kuantum Server (1184 Bita):"</span>, <span class="fn">panjang</span>(kunci_server.publik));
+
+    <span class="com">// 2. Pengirim (Aplikasi Nasabah) Melakukan Enkapsulasi Kunci Bersama</span>
+    <span class="kw">misal</span> enkapsulasi = <span class="fn">EnkapsulasiKyber768</span>(kunci_server.publik);
+    <span class="com">// enkapsulasi menghasilkan: ciphertext (1088 bita) dan kunci_bersama (32 bita)</span>
+
+    <span class="com">// 3. Penerima Melakukan Dekapsulasi Kunci Bersama dengan Kunci Privat</span>
+    <span class="kw">misal</span> kunci_terdekapsulasi = <span class="fn">DekapsulasiKyber768</span>(enkapsulasi.ciphertext, kunci_server.privat);
+
+    <span class="com">// Verifikasi kedua pihak memiliki kunci rahasia simetris yang identik</span>
+    <span class="kw">misal</span> aman = <span class="fn">perbandingan_waktu_konstan</span>(enkapsulasi.kunci_bersama, kunci_terdekapsulasi);
+    <span class="fn">cetak</span>(<span class="str">"Kunci Bersama Kuantum Sukses Disepakati:"</span>, aman); <span class="com">// benar</span>
+}
+</code></pre>
+
+<h2>15.2 Perbandingan Waktu Konstan (Constant-Time Comparison)</h2>
+<p>
+Serangan waktu (<em>timing attacks</em>) memanfaatkan perbedaan mikro-detik dalam pembandingan string untuk menebak sandi atau token. Widya-Lang menyediakan fungsi pembandingan yang kebal terhadap kebocoran waktu komputasi:
+</p>
+
+<pre><code><span class="fn">fungsi</span> <span class="fn">perbandingan_waktu_konstan</span>(teks_a, teks_b) {
+    <span class="kw">jika</span> <span class="fn">panjang</span>(teks_a) != <span class="fn">panjang</span>(teks_b) {
+        <span class="kw">kembalikan</span> <span class="kw">salah</span>;
+    }
+    <span class="kw">misal</span> akumulasi_xor = <span class="num">0</span>;
+    <span class="kw">misal</span> n = <span class="fn">panjang</span>(teks_a);
+    <span class="kw">untuk</span> i <span class="kw">dalam</span> <span class="num">0</span>..(n - <span class="num">1</span>) {
+        akumulasi_xor = akumulasi_xor | (<span class="fn">kode_karakter</span>(teks_a, i) ^ <span class="fn">kode_karakter</span>(teks_b, i));
+    }
+    <span class="kw">kembalikan</span> akumulasi_xor == <span class="num">0</span>;
+}
+</code></pre>
+
+<h2>15.3 Daftar Periksa Audit Kepatuhan UU PDP No. 27/2022</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Pasal Regulasi</th>
+      <th>Kewajiban Pengendali Data Pribadi</th>
+      <th>Mekanisme Implementasi di Widya-Lang</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Pasal 20</strong></td>
+      <td>Memiliki dasar pemrosesan data pribadi yang sah & eksplisit</td>
+      <td>Pencatatan field <code>persetujuan_pengguna_ts</code> saat registrasi entitas.</td>
+    </tr>
+    <tr>
+      <td><strong>Pasal 35</strong></td>
+      <td>Melindungi keamanan data dari pemrosesan tanpa hak</td>
+      <td>Enkripsi kolom database sensitif menggunakan AES-256-GCM.</td>
+    </tr>
+    <tr>
+      <td><strong>Pasal 37</strong></td>
+      <td>Mencegah akses yang tidak sah melalui kontrol ketat</td>
+      <td>Autentikasi JWT Bearer bertanda tangan Ed25519 & Role-Based Access Control.</td>
+    </tr>
+    <tr>
+      <td><strong>Pasal 43</strong></td>
+      <td>Menghapus data pribadi jika masa retensi telah berakhir</td>
+      <td>Kueri terjadwal <code>HAPUS_PERMANEN DARI pelanggan DIMANA kedaluwarsa &lt; SEKARANG()</code> dengan penghapusan memori kriptografis nol.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- BAB 16 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">16</span> Praktik Pengujian Perangkat Lunak, Benchmarking & Standar Koding</h1>
+
+<h2>16.1 Pengujian Berbasis Properti (Property-Based Testing)</h2>
+<p>
+Selain pengujian kasus unit statis, pengujian berbasis properti menguji apakah invarian logika matematis tetap berlaku di bawah ribuan masukan acak:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/pengujian.wya"</span>;
+
+<span class="fn">tes_properti</span> <span class="str">"Invarian: Komutatif Penjumlahan Selalu Berlaku"</span> {
+    <span class="fn">uji_untuk_semua</span>(<span class="fn">tipe_data_acak</span>(<span class="str">"angka"</span>), <span class="fn">tipe_data_acak</span>(<span class="str">"angka"</span>), <span class="fn">fungsi</span>(a, b) {
+        <span class="fn">pastikan_sama</span>(a + b, b + a);
+    });
+}
+
+<span class="fn">tes_properti</span> <span class="str">"Invarian: Enkripsi yang Diikuti Dekripsi Mengembalikan Nilai Asli"</span> {
+    <span class="fn">uji_untuk_semua</span>(<span class="fn">tipe_data_acak</span>(<span class="str">"teks"</span>), <span class="fn">fungsi</span>(pesan_asli) {
+        <span class="kw">misal</span> sandi = <span class="fn">EnkripsiAES256GCM</span>(pesan_asli, KUNCI_UJI);
+        <span class="kw">misal</span> balik = <span class="fn">DekripsiAES256GCM</span>(sandi.ciphertext, KUNCI_UJI, sandi.nonce, sandi.tag);
+        <span class="fn">pastikan_sama</span>(pesan_asli, balik);
+    });
+}
+</code></pre>
+
+<!-- BAB 17 -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">17</span> Panduan Distribusi, Kompilasi Biner & DevOps</h1>
+
+<h2>17.1 Konfigurasi Unit Layanan Linux (systemd service)</h2>
+<div class="diagram-box">
+[Unit]
+Description=Layanan Server Mikroservis Widya-Lang Nusantara
+After=network.target
+
+[Service]
+Type=simple
+User=widya
+WorkingDirectory=/opt/widya_app
+ExecStart=/usr/local/bin/widya jalan aplikasi_server.wya
+Restart=always
+RestartSec=5s
+LimitNOFILE=65535
+Environment="WIDYA_ENV=produksi"
+Environment="PORT=8080"
+
+[Install]
+WantedBy=multi-user.target
+</div>
+
+<h2>17.2 Metrik Operasional Prometheus Exporter</h2>
+<p>
+Widya-Lang menyediakan endpoint metrik standar Prometheus pada <code>/metrik</code> untuk monitoring performa CPU, memori heap, dan latensi query secara realtime melalui dashboard Grafana:
+</p>
+
+<pre><code><span class="kw">impor</span> <span class="str">"./modul/metrik.wya"</span>;
+
+<span class="fn">fungsi</span> <span class="fn">ekspos_metrik_prometheus</span>(server) {
+    <span class="kw">misal</span> counter_transaksi = <span class="fn">BuatPenghitungMetrik</span>(<span class="str">"transaksi_total"</span>, <span class="str">"Jumlah transaksi kasir berhasil"</span>);
+
+    server.<span class="fn">rute_get</span>(<span class="str">"/metrik"</span>, <span class="fn">fungsi</span>(req, res) {
+        <span class="kw">misal</span> data_metrik = <span class="fn">KumpulkanMetrikSistem</span>();
+        res.<span class="fn">kirim_teks</span>(<span class="num">200</span>, data_metrik, <span class="str">"text/plain; version=0.0.4"</span>);
+    });
+}
+</code></pre>
+
+<!-- LAMPIRAN A -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">A</span> Lampiran: Kamus Lengkap Sintaks Dialek Nusantara</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kata Kunci Nusantara</th>
+      <th>Padanan Bahasa Inggris</th>
+      <th>Kategori Sintaksis</th>
+      <th>Deskripsi Semantik & Contoh Penggunaan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>misal</code></td><td><code>let / var / mut</code></td><td>Variabel</td><td>Mendeklarasikan variabel mutable dinamis: <code>misal x = 10;</code></td></tr>
+    <tr><td><code>tetap</code> / <code>tetapan</code></td><td><code>const / immutable</code></td><td>Konstanta</td><td>Mendeklarasikan konstanta terkunci: <code>tetap PI = 3.14;</code></td></tr>
+    <tr><td><code>fungsi</code></td><td><code>function / def / fn</code></td><td>Subrutin</td><td>Mendefinisikan blok fungsi komputasi: <code>fungsi hitung() { }</code></td></tr>
+    <tr><td><code>kembalikan</code></td><td><code>return</code></td><td>Alur Fungsi</td><td>Mengembalikan nilai dari eksekusi fungsi: <code>kembalikan total;</code></td></tr>
+    <tr><td><code>jika</code></td><td><code>if</code></td><td>Percabangan</td><td>Mengevaluasi kondisi logika pertama: <code>jika nilai >= 75 { }</code></td></tr>
+    <tr><td><code>kalau</code></td><td><code>else if / elif</code></td><td>Percabangan</td><td>Mengevaluasi cabang kondisi berikutnya: <code>kalau nilai >= 60 { }</code></td></tr>
+    <tr><td><code>lainnya</code></td><td><code>else</code></td><td>Percabangan</td><td>Cabang alternatif jika seluruh kondisi salah: <code>lainnya { }</code></td></tr>
+    <tr><td><code>untuk</code></td><td><code>for</code></td><td>Perulangan</td><td>Iterasi rentang angka atau koleksi data: <code>untuk i dalam 1..10 { }</code></td></tr>
+    <tr><td><code>selama</code></td><td><code>while</code></td><td>Perulangan</td><td>Perulangan berbasis syarat kondisi benar: <code>selama aktif { }</code></td></tr>
+    <tr><td><code>henti</code></td><td><code>break</code></td><td>Kendali Loop</td><td>Menghentikan perulangan seketika: <code>henti;</code></td></tr>
+    <tr><td><code>lanjut</code></td><td><code>continue</code></td><td>Kendali Loop</td><td>Melompati iterasi saat ini menuju iterasi berikutnya: <code>lanjut;</code></td></tr>
+    <tr><td><code>struktur</code></td><td><code>struct / class</code></td><td>Tipe Bentukan</td><td>Mendefinisikan entitas data terstruktur: <code>struktur Nasabah { }</code></td></tr>
+    <tr><td><code>sifat</code></td><td><code>trait / interface</code></td><td>Kontrak Perilaku</td><td>Mendefinisikan antarmuka polimorfisme: <code>sifat Transaksi { }</code></td></tr>
+    <tr><td><code>coba</code></td><td><code>try</code></td><td>Penanganan Galat</td><td>Membuka blok eksekusi rawan kegagalan: <code>coba { ... }</code></td></tr>
+    <tr><td><code>tangkap</code></td><td><code>catch / except</code></td><td>Penanganan Galat</td><td>Menangkap objek galat yang terlempar: <code>tangkap (galat) { ... }</code></td></tr>
+    <tr><td><code>akhirnya</code></td><td><code>finally</code></td><td>Penanganan Galat</td><td>Blok yang dijamin selalu dieksekusi: <code>akhirnya { tutup(); }</code></td></tr>
+    <tr><td><code>lempar</code></td><td><code>throw / raise</code></td><td>Pemicu Galat</td><td>Memicu galat terstruktur secara eksplisit: <code>lempar "Saldo minus";</code></td></tr>
+    <tr><td><code>impor</code></td><td><code>import / use</code></td><td>Modularitas</td><td>Memuat berkas atau pustaka lain: <code>impor "./modul/desktop.wya";</code></td></tr>
+    <tr><td><code>cetak</code></td><td><code>print / println</code></td><td>I/O Standar</td><td>Mencetak baris data ke terminal konsol: <code>cetak("Halo Indonesia");</code></td></tr>
+    <tr><td><code>dan</code></td><td><code>&& / and</code></td><td>Operator Logika</td><td>Evaluasi konjungsi logika biner: <code>jika a dan b { }</code></td></tr>
+    <tr><td><code>atau</code></td><td><code>|| / or</code></td><td>Operator Logika</td><td>Evaluasi disjungsi logika biner: <code>jika a atau b { }</code></td></tr>
+    <tr><td><code>bukan</code></td><td><code>! / not</code></td><td>Operator Logika</td><td>Negasi nilai kebenaran logika: <code>jika bukan aktif { }</code></td></tr>
+    <tr><td><code>benar</code> / <code>salah</code></td><td><code>true / false</code></td><td>Literal Boolean</td><td>Konstanta nilai kebenaran logika: <code>misal valid = benar;</code></td></tr>
+    <tr><td><code>nihil</code></td><td><code>null / nil / none</code></td><td>Literal Ketiadaan</td><td>Menandakan ketiadaan nilai: <code>misal data = nihil;</code></td></tr>
+    <tr><td><code>panjang</code></td><td><code>len / length / size</code></td><td>Fungsi Bawaan</td><td>Menghitung panjang deret atau jumlah karakter string: <code>panjang(deret)</code></td></tr>
+    <tr><td><code>tambah</code></td><td><code>push / append</code></td><td>Fungsi Bawaan</td><td>Menyisipkan elemen ke bagian ekor deret: <code>tambah(daftar, item)</code></td></tr>
+    <tr><td><code>iris</code></td><td><code>slice / substring</code></td><td>Fungsi Bawaan</td><td>Mengambil potongan deret atau string: <code>iris(teks, 0, 5)</code></td></tr>
+    <tr><td><code>ke_angka</code></td><td><code>parseInt / toInt</code></td><td>Konversi Tipe</td><td>Mengonversi representasi string menjadi integer: <code>ke_angka("150")</code></td></tr>
+    <tr><td><code>ke_teks</code></td><td><code>toString / str</code></td><td>Konversi Tipe</td><td>Mengonversi nilai tipe apapun menjadi string teks: <code>ke_teks(42)</code></td></tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN B -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">B</span> Lampiran: Tabel Komparasi Bahasa Lintas Platform</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fitur / Karakteristik</th>
+      <th>Widya-Lang v1.0</th>
+      <th>Rust 1.80</th>
+      <th>Python 3.12</th>
+      <th>Go 1.22</th>
+      <th>TypeScript / Node</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Dialek Bahasa Asli</strong></td>
+      <td>Bahasa Indonesia (Nusantara)</td>
+      <td>Bahasa Inggris</td>
+      <td>Bahasa Inggris</td>
+      <td>Bahasa Inggris</td>
+      <td>Bahasa Inggris</td>
+    </tr>
+    <tr>
+      <td><strong>Mesin Komputasi</strong></td>
+      <td>Native Rust VM & Compiler</td>
+      <td>LLVM Native Binary</td>
+      <td>CPython Bytecode VM</td>
+      <td>Go SSA Native Compiler</td>
+      <td>V8 JIT Engine</td>
+    </tr>
+    <tr>
+      <td><strong>Jejak Startup Biner</strong></td>
+      <td>&lt; 5 ms (Instan)</td>
+      <td>&lt; 2 ms (Instan)</td>
+      <td>~ 50-100 ms</td>
+      <td>&lt; 5 ms (Instan)</td>
+      <td>~ 150-250 ms</td>
+    </tr>
+    <tr>
+      <td><strong>Basis Data Tersemat</strong></td>
+      <td>WidyaBase 16 Pilar Bawaan</td>
+      <td>Membutuhkan Crate Luar</td>
+      <td>SQLite Bawaan</td>
+      <td>Membutuhkan Driver Cgo</td>
+      <td>Membutuhkan Paket NPM</td>
+    </tr>
+    <tr>
+      <td><strong>Dukungan GUI Native</strong></td>
+      <td>Tersedia (modul/desktop.wya)</td>
+      <td>Pustaka Eksternal Rumit</td>
+      <td>Tkinter Lambat</td>
+      <td>Eksternal Cgo</td>
+      <td>Electron Berat (&gt;150MB)</td>
+    </tr>
+    <tr>
+      <td><strong>Dukungan Model AI Lokal</strong></td>
+      <td>WidyaCoder (Ollama Native)</td>
+      <td>Candle / Burn bindings</td>
+      <td>PyTorch / Transformers</td>
+      <td>Ollama REST client</td>
+      <td>LangChain / Ollama JS</td>
+    </tr>
+    <tr>
+      <td><strong>Standar Finansial Nasional</strong></td>
+      <td>QRIS ASPI EMVCo Terintegrasi</td>
+      <td>Tidak Ada Standar</td>
+      <td>Tidak Ada Standar</td>
+      <td>Tidak Ada Standar</td>
+      <td>Tidak Ada Standar</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN C -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">C</span> Lampiran: Direktori Modul Ekosistem Resmi</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Path Berkas Modul Resmi</th>
+      <th>Fungsi Utama & Tanggung Jawab Komputasi</th>
+      <th>Contoh Penggunaan API Kunci</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>modul/widyabase.wya</code></td>
+      <td>Mesin basis data relasional slotted-page 4KB, transaksi ACID, WAL, CTE rekursif, dan window functions.</td>
+      <td><code>misal db = BukaWidyaBase("data.wdb");</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/desktop.wya</code></td>
+      <td>Framework antarmuka grafis desktop native ringan (Windows/Linux) untuk aplikasi kasir & dashboard.</td>
+      <td><code>misal app = AplikasiDesktop("Kasir", 800, 600);</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/mobile.wya</code></td>
+      <td>Framework mobile sentuh dengan pembacaan kamera QRIS ASPI, printer bluetooth, dan outbox offline.</td>
+      <td><code>misal mob = AplikasiMobile("Warung Mobile");</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/dataframe_analitika.wya</code></td>
+      <td>Struktur data tabel kolumnar bervolume tinggi, operasi pembersihan missing values, agregasi GroupBy.</td>
+      <td><code>misal df = MuatDataframeCSV("omzet.csv");</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/vektor_hnsw.wya</code></td>
+      <td>Indeks pencarian semantik vektor kemiripan kosinus untuk arsitektur Retrieval-Augmented Generation (RAG).</td>
+      <td><code>misal idx = IndeksVektorHNSW(128);</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/kripto_aman.wya</code></td>
+      <td>Kriptografi kelas militer: AES-256-GCM, kurva Ed25519, hashing Argon2id, dan Post-Quantum Kyber.</td>
+      <td><code>misal enc = EnkripsiAES256GCM(teks, kunci);</code></td>
+    </tr>
+    <tr>
+      <td><code>modul/http_server.wya</code></td>
+      <td>Server HTTP mikroservis berkecepatan tinggi dengan router RESTful dan penangan JSON otomatis.</td>
+      <td><code>misal srv = BuatServerHTTP("0.0.0.0", 8080);</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- LAMPIRAN D -->
+<div class="page-break"></div>
+<h1 class="chapter-title"><span class="chapter-number">D</span> Lampiran: Diagnostik Galat Compiler & Solusi Perbaikan</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kode Galat</th>
+      <th>Pesan Diagnostik Kompiler</th>
+      <th>Akar Penyebab Permasalahan</th>
+      <th>Tindakan Solusi Pemulihan Kode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>W001</strong></td>
+      <td>Tanda titik koma (<code>;</code>) tidak ditemukan di akhir baris</td>
+      <td>Lupa menutup pernyataan perintah komputasi</td>
+      <td>Tambahkan karakter <code>;</code> pada akhir baris instruksi.</td>
+    </tr>
+    <tr>
+      <td><strong>W002</strong></td>
+      <td>Simbol pengenal variabel belum dideklarasikan</td>
+      <td>Mengakses variabel sebelum dideklarasikan dengan <code>misal</code></td>
+      <td>Pastikan mendeklarasikan variabel dengan <code>misal nama = nilai;</code> sebelum diakses.</td>
+    </tr>
+    <tr>
+      <td><strong>W004</strong></td>
+      <td>Upaya mutasi pada tetapan abadi terlarang</td>
+      <td>Mencoba mengubah nilai variabel yang dideklarasikan dengan <code>tetap</code></td>
+      <td>Ganti kata kunci deklarasi menjadi <code>misal</code> jika nilai memang perlu berubah.</td>
+    </tr>
+    <tr>
+      <td><strong>W008</strong></td>
+      <td>Indeks deret berada di luar batas alokasi memori</td>
+      <td>Mengakses elemen deret dengan indeks &gt;= panjang deret</td>
+      <td>Periksa panjang koleksi dengan fungsi <code>panjang(deret)</code> sebelum mengakses indeks.</td>
+    </tr>
+    <tr>
+      <td><strong>W015</strong></td>
+      <td>Kueri WidyaBase melanggar kendala kunci asing</td>
+      <td>Menyisipkan ID relasi yang tidak terdaftar di tabel induk</td>
+      <td>Pastikan entitas pada tabel rujukan telah terdaftar sebelum menyisipkan baris anak.</td>
+    </tr>
+    <tr>
+      <td><strong>W021</strong></td>
+      <td>Checksum CRC-16 QRIS tidak sesuai dengan payload</td>
+      <td>String QRIS mengalami korupsi atau manipulasi data saat pemindaian</td>
+      <td>Minta pembeli melakukan scan ulang kode QRIS dari aplikasi perbankan resmi.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout callout-tip" style="margin-top: 30px;">
+  <div class="callout-title">🇮🇩 Penutup: Menyongsong Masa Depan Teknologi Berdaulat</div>
+  Dengan selesainya buku panduan resmi jilid 2 ini, Anda telah menguasai seluruh spektrum rekayasa perangkat lunak modern: dari algoritma dasar Nusantara, rekayasa desktop kasir UMKM, transaksi pembayaran QRIS nasional, basis data mandiri WidyaBase, hingga orkestrasi agen AI lokal tanpa ketergantungan asing. Selamat berkarya, berinovasi, dan mengibarkan kedaulatan teknologi Indonesia Emas 2045!
+</div>
+
+</body>
+</html>

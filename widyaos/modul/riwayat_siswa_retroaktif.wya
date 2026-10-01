@@ -1,0 +1,146 @@
+// ==============================================================================
+// WIDYAOS: MODUL MANAJEMEN RIWAYAT SISWA BERLAKU SURUT (RETROACTIVE / BACKDATED)
+// Mengakomodasi:
+// 1. Siswa Mutasi / Pindahan (Input Nilai Rapor Semester Lampau)
+// 2. Anak Tidak Sekolah (ATS) yang Kembali Bersekolah (Rekonstruksi Riwayat Belajar)
+// 3. Koreksi Data Pokok Lampau (Pembetulan Nama, NIK, Ibu Kandung, Tgl Lahir)
+// 4. Klaim Prestasi / Beasiswa Afirmasi Susulan
+// Guardrail: Dilengkapi Audit Trail Kriptografi, Approval Berjenjang & Anti-Siswa Siluman
+// ==============================================================================
+
+impor "widyaos/modul/dapodik_edge.wya";
+
+struktur EntriRiwayatSurut {
+    id_transaksi_surut,
+    nisn,
+    nama_siswa,
+    kategori_surut, // NILAI_RAPOR_MUTASI_LAMPAU, KOREKSI_IDENTITAS_LAMPAU, REAKTIVASI_ATS, PRESTASI_BEASISWA_SUSULAN
+    tahun_ajaran_efektif, // e.g. "2023/2024 Ganjil"
+    tanggal_efektif_surut, // e.g. "2023-12-15"
+    tanggal_input_riil, // Waktu nyata saat operator menginput
+    uraian_perubahan,
+    nilai_atau_data_baru,
+    nomor_surat_dasar_hukum, // No. Surat Keterangan Mutasi / Penetapan Pengadilan / Berita Acara
+    tingkat_otoritas, // KEPALA_SEKOLAH (jika <= 1 semester), DINAS_PENDIDIKAN (jika > 1 tahun)
+    status_approval, // MENUNGGU_VERIFIKASI, DISETUJUI_SAH, DITOLAK
+    did_pengesah,
+    hash_audit_kripto
+}
+
+struktur BukuIndukHistoris {
+    nisn,
+    nama_siswa,
+    daftar_semester_kronologis,
+    total_entri_surut,
+    status_kelengkapan_ijazah
+}
+
+// -------------------------------------------------------------
+// [1] Pengajuan Entri Riwayat Berlaku Surut (Backdated Transaction)
+// -------------------------------------------------------------
+fungsi ajukan_riwayat_berlaku_surut(
+    id_transaksi,
+    nisn,
+    nama_siswa,
+    kategori,
+    tahun_ajaran_efektif,
+    tanggal_efektif,
+    uraian,
+    data_baru,
+    no_surat_dasar,
+    jarak_semester_lampau // Jumlah semester ke belakang
+) {
+    misal waktu_sekarang = waktu();
+    
+    // Tentukan tingkat kewenangan approval berdasarkan jarak waktu surut
+    // Jika <= 1 semester lampau: Cukup approval Kepala Sekolah
+    // Jika > 1 semester (apalagi beda tahun ajaran): Wajib persetujuan Dinas Pendidikan / Pusdatin
+    misal otoritas = "KEPALA_SEKOLAH";
+    jika jarak_semester_lampau > 1 {
+        otoritas = "DINAS_PENDIDIKAN_WILAYAH";
+    }
+
+    // Generate Hash Kriptografis Awal untuk audit trail
+    misal hash_audit = "0x" + sha256(id_transaksi + nisn + tanggal_efektif + ke_teks(waktu_sekarang));
+
+    kembalikan EntriRiwayatSurut(
+        id_transaksi,
+        nisn,
+        nama_siswa,
+        kategori,
+        tahun_ajaran_efektif,
+        tanggal_efektif,
+        ke_teks(waktu_sekarang),
+        uraian,
+        data_baru,
+        no_surat_dasar,
+        otoritas,
+        "MENUNGGU_VERIFIKASI",
+        "NIHIL",
+        hash_audit
+    );
+}
+
+// -------------------------------------------------------------
+// [2] Otorisasi & Pengesahan Data Surut oleh Pejabat Berwenang
+// -------------------------------------------------------------
+fungsi verifikasi_riwayat_surut(
+    entri,
+    disetujui,
+    did_pengesah,
+    peran_pengesah, // "KEPALA_SEKOLAH" atau "DINAS_PENDIDIKAN"
+    catatan_verifikasi
+) {
+    // Validasi apakah peran pengesah memenuhi syarat otoritas
+    jika entri.tingkat_otoritas == "DINAS_PENDIDIKAN_WILAYAH" dan peran_pengesah != "DINAS_PENDIDIKAN" {
+        kembalikan {
+            "status": "DITOLAK_WEWENANG_TIDAK_CUKUP",
+            "keterangan": "Perubahan berlaku surut lebih dari 1 tahun wajib disahkan oleh Pejabat Dinas Pendidikan / Pusdatin!",
+            "entri_terupdate": entri
+        };
+    }
+
+    misal status_baru = "DITOLAK";
+    jika disetujui {
+        status_baru = "DISETUJUI_SAH";
+    }
+
+    // Segel ulang hash kripto dengan signature pengesah
+    misal hash_final = "0x" + sha256(entri.hash_audit_kripto + did_pengesah + status_baru);
+
+    entri.status_approval = status_baru;
+    entri.did_pengesah = did_pengesah;
+    entri.hash_audit_kripto = hash_final;
+
+    kembalikan {
+        "status": "BERHASIL_DIPROSES",
+        "keterangan": "Status riwayat berlaku surut: " + status_baru + " (" + catatan_verifikasi + ")",
+        "entri_terupdate": entri
+    };
+}
+
+// -------------------------------------------------------------
+// [3] Rekonstruksi Kronologis Buku Induk Siswa
+// Menggabungkan data berjalan dan data susulan surut ke urutan historis yang benar
+// -------------------------------------------------------------
+fungsi susun_rekonstruksi_buku_induk(
+    nisn,
+    nama_siswa,
+    daftar_semester_lengkap, // misal [Sem 1, Sem 2, Sem 3, Sem 4]
+    jumlah_entri_surut
+) {
+    misal status_ijazah = "BELUM_LENGKAP";
+    jika panjang(daftar_semester_lengkap) >= 6 {
+        status_ijazah = "LENGKAP_SIAP_PENERBITAN_IJAZAH";
+    } kalau panjang(daftar_semester_lengkap) >= 4 {
+        status_ijazah = "LENGKAP_TINGKAT_MENENGAH";
+    }
+
+    kembalikan BukuIndukHistoris(
+        nisn,
+        nama_siswa,
+        daftar_semester_lengkap,
+        jumlah_entri_surut,
+        status_ijazah
+    );
+}

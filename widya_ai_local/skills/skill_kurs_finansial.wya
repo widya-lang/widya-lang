@@ -1,0 +1,73 @@
+// ============================================================================
+// SKILL: KALKULATOR KURS FINANSIAL & MATA UANG (skill_kurs_finansial.wya)
+// Konversi Mata Uang Asing ke Rupiah (IDR) & Perhitungan Finansial
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/akses_internet.wya";
+
+fungsi info_skill_kurs_finansial() {
+    kembalikan {
+        "id_skill": "skill_kurs_finansial",
+        "nama": "Kalkulator Kurs & Konversi Finansial",
+        "deskripsi": "Menghitung nilai tukar valuta asing (USD, EUR, SGD, JPY, CNY, MYR) ke Rupiah (IDR) atau sebaliknya.",
+        "versi": "v1.0.0",
+        "pemicu": ["kurs", "konversi mata uang", "dollar ke rupiah", "usd ke idr", "nilai tukar", "valas", "uang asing", "rupiah ke dollar"],
+        "status": "AKTIF",
+        "sumber": "BAWAAN_LOKAL"
+    };
+}
+
+// Kurs referensi devisa (baseline Bank Indonesia / pasar riil)
+fungsi ambil_tabel_kurs_dasar() {
+    kembalikan {
+        "USD": 16250.0,
+        "EUR": 17800.0,
+        "SGD": 12600.0,
+        "JPY": 110.5,
+        "CNY": 2280.0,
+        "MYR": 3750.0,
+        "IDR": 1.0
+    };
+}
+
+fungsi eksekusi_skill_kurs_finansial(jumlah, dari_valas, ke_valas) {
+    misal asal = huruf_besar(dari_valas);
+    misal target = huruf_besar(ke_valas);
+    misal tabel = ambil_tabel_kurs_dasar();
+
+    // Verifikasi ketersediaan mata uang
+    jika (!ada_kunci(tabel, asal)) {
+        kembalikan {
+            "sukses": salah,
+            "pesan": "Mata uang asal '" + asal + "' belum didukung. Tersedia: USD, EUR, SGD, JPY, CNY, MYR, IDR."
+        };
+    }
+    jika (!ada_kunci(tabel, target)) {
+        kembalikan {
+            "sukses": salah,
+            "pesan": "Mata uang tujuan '" + target + "' belum didukung. Tersedia: USD, EUR, SGD, JPY, CNY, MYR, IDR."
+        };
+    }
+
+    // Hitung konversi berbasis Rupiah (IDR sebagai pivot)
+    misal rate_asal_idr = tabel[asal];
+    misal rate_target_idr = tabel[target];
+
+    misal nilai_dalam_idr = jumlah * rate_asal_idr;
+    misal hasil_akhir = nilai_dalam_idr / rate_target_idr;
+    misal hasil_bulat = bulat(hasil_akhir * 100.0) / 100.0;
+
+    misal tampilan = "Hasil Konversi Valuta Asing:\n" +
+                    "  Jumlah Asal  : " + ke_teks(jumlah) + " " + asal + "\n" +
+                    "  Hasil Konversi: " + ke_teks(hasil_bulat) + " " + target + "\n" +
+                    "  Estimasi Rate : 1 " + asal + " = " + ke_teks(rate_asal_idr / rate_target_idr) + " " + target;
+
+    kembalikan {
+        "sukses": benar,
+        "jumlah_asal": jumlah,
+        "mata_uang_asal": asal,
+        "jumlah_hasil": hasil_bulat,
+        "mata_uang_tujuan": target,
+        "tampilan": tampilan
+    };
+}

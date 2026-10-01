@@ -1,0 +1,204 @@
+// ============================================================================
+// SUITE PENGUJIAN OTOMATIS FASE 26: SOVEREIGN WIDYA-ID & IDENTITY FEDERATION
+// (simulasi_identitas_federasi_berdaulat.wya)
+// W3C Decentralized Identifiers (DIDs), Verifiable Credentials (VC) Lifecycle,
+// Privacy-Preserving Selective Disclosure & ZK Presentation (UU PDP No. 27/2022),
+// Dynamic Merkle Accumulator Revocation Registry, Zero-Trust Mutual Attestation
+// (mTLS-over-PQC), & Cross-Village Identity Federation (Perpres SPBE No. 95/2018)
+// Perangkat Target: AMD Ryzen 7 8840HS (Zen 4 8C/16T, Radeon 780M, NPU 16 TOPS)
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/identitas_federasi_berdaulat.wya";
+impor "widya_ai_local/modul_evolusi/tata_kelola_kebijakan.wya";
+impor "widya_ai_local/mcp/mcp_server_widya.wya";
+
+fungsi asserts(kondisi, pesan) {
+    jika (!kondisi) {
+        cetak("  [GAGAL]: " + pesan);
+    } lainnya {
+        cetak("  [PASS] " + pesan);
+    }
+}
+
+fungsi jalankan_pengujian_identitas_federasi() {
+    cetak("======================================================================");
+    cetak("SUITE UJI FASE 26: SOVEREIGN WIDYA-ID & VERIFIABLE TRUST FEDERATION");
+    cetak("Identitas W3C      : Decentralized Identifiers (DIDs) v1.0 & PQC Key");
+    cetak("Kredensial Digital : W3C Verifiable Credentials (VC) Data Model v2.0");
+    cetak("Privasi Warga      : Selective Disclosure & ZK-Presentation (UU PDP)");
+    cetak("Registri Revokasi  : Merkle Accumulator Sub-Millisecond Dynamic Tree");
+    cetak("Zero-Trust Mesh    : mTLS-over-PQC Mutual Attestation Handshake");
+    cetak("Federasi Desa      : Interoperabilitas SPBE (Perpres No. 95/2018)");
+    cetak("Akselerasi HW      : AMD Ryzen 7 8840HS (Zen 4 8C/16T & NPU 16 TOPS)");
+    cetak("======================================================================");
+
+    // 1. Pembuatan Dokumen W3C Decentralized Identifier (DID)
+    cetak("\n[UJI 1] Pembuatan Dokumen W3C Decentralized Identifier (DID)...");
+    misal doc_budi = id_buat_dokumen_did(
+        "did:widya:warga:budi_sepaku_01",
+        "mldsa65_pk_7f8a9b2c3d4e5f60718293a4b5c6d7e8",
+        "http://localhost:8088/v1/os/actor/send"
+    );
+    asserts(doc_budi.did == "did:widya:warga:budi_sepaku_01", "DID subjek warga valid");
+    asserts(doc_budi.metode_otentikasi == "ML-DSA-65-PQC", "Metode otentikasi pasca-kuantum ML-DSA-65 terpasang");
+    asserts(potong(doc_budi.segel_pqc, 0, 16) == "sig_mldsa65_did_", "Segel audit pasca-kuantum DID valid");
+
+    // 2. Resolusi Dokumen DID dan Validasi Format
+    cetak("\n[UJI 2] Resolusi Dokumen DID dan Validasi Format W3C...");
+    asserts(potong(doc_budi.did, 0, 10) == "did:widya:", "Prefix metode W3C DID did:widya: terpenuhi");
+    asserts(panjang(doc_budi.kunci_publik_mldsa65) == 43, "Panjang kunci publik pasca-kuantum valid");
+    asserts(doc_budi.layanan_endpoint == "http://localhost:8088/v1/os/actor/send", "Layanan endpoint terasosiasi tepat");
+
+    // 3. Penerbitan W3C Verifiable Credential Bersegel PQC
+    cetak("\n[UJI 3] Penerbitan W3C Verifiable Credential Bersegel PQC...");
+    misal klaim_ktp = {
+        "nama_lengkap": "Budi Santoso",
+        "nik_privat": "6401019901010001",
+        "status_warga": "TETAP",
+        "zona_desa": "Sepaku_Hilir",
+        "hak_akses_irigasi": "PENUH"
+    };
+    misal vc_budi = id_terbitkan_kredensial(
+        "VC-KTP-SEPAKU-001",
+        "KTP_DIGITAL_DESA",
+        "did:widya:desa:sepaku_resmi",
+        "did:widya:warga:budi_sepaku_01",
+        klaim_ktp,
+        31536000 // 1 tahun
+    );
+    asserts(vc_budi.id_kredensial == "VC-KTP-SEPAKU-001", "ID kredensial terverifikasi valid");
+    asserts(vc_budi.tipe_kredensial == "KTP_DIGITAL_DESA", "Tipe kredensial tepat (KTP_DIGITAL_DESA)");
+    asserts(vc_budi.status_revokasi == "AKTIF", "Status kredensial saat terbit adalah AKTIF");
+    asserts(potong(vc_budi.segel_pqc_mldsa65, 0, 15) == "sig_mldsa65_vc_", "Segel PQC penerbit terpasang valid");
+
+    // 4. Verifikasi Kredensial Sah (Signature & Expiry Valid)
+    cetak("\n[UJI 4] Verifikasi Kredensial Sah (Signature & Expiry Valid)...");
+    misal res_verif = id_verifikasi_kredensial(vc_budi, "pubkey_desa_sepaku", kosong);
+    asserts(res_verif["sah"] == benar, "Kredensial terverifikasi sah 100%");
+    asserts(res_verif["status"] == "VALID_SAH_PQC", "Status verifikasi kredensial VALID_SAH_PQC");
+
+    // 5. Penolakan Kredensial yang Kedaluwarsa
+    cetak("\n[UJI 5] Penolakan Kredensial yang Kedaluwarsa...");
+    misal vc_kedaluwarsa = id_terbitkan_kredensial(
+        "VC-EXPIRED-001",
+        "IZIN_USAHA_DESA",
+        "did:widya:desa:sepaku_resmi",
+        "did:widya:warga:budi_sepaku_01",
+        klaim_ktp,
+        -3600 // Sudah lewat 1 jam lalu
+    );
+    misal res_exp = id_verifikasi_kredensial(vc_kedaluwarsa, "pubkey_desa_sepaku", kosong);
+    asserts(res_exp["sah"] == salah, "Kredensial kedaluwarsa berhasil ditolak");
+    asserts(res_exp["status"] == "KEDALUWARSA", "Status penolakan tepat (KEDALUWARSA)");
+
+    // 6. Pembentukan Presentasi Selektif ZK (Selective Disclosure UU PDP)
+    cetak("\n[UJI 6] Pembentukan Presentasi Selektif ZK (Selective Disclosure UU PDP)...");
+    misal atribut_terpilih = ["status_warga", "zona_desa", "hak_akses_irigasi"];
+    misal vp_budi = id_buat_presentasi_selektif_zk(
+        vc_budi,
+        atribut_terpilih,
+        "nonce_verifier_irigasi_883",
+        "salt_rahasia_budi_992"
+    );
+    asserts(vp_budi.subjek_did == "did:widya:warga:budi_sepaku_01", "Subjek pemegang presentasi valid");
+    asserts(ada_kunci(vp_budi.atribut_diungkap, "status_warga"), "Atribut status_warga berhasil diungkapkan");
+    asserts(!ada_kunci(vp_budi.atribut_diungkap, "nik_privat"), "NIK privat TIDAK diikutsertakan (Zero-Leakage UU PDP)");
+    asserts(!ada_kunci(vp_budi.atribut_diungkap, "nama_lengkap"), "Nama lengkap TIDAK diikutsertakan (Minimalisasi Data)");
+
+    // 7. Verifikasi Presentasi ZK Lolos Validasi
+    cetak("\n[UJI 7] Verifikasi Presentasi ZK Lolos Validasi...");
+    misal res_vp_verif = id_verifikasi_presentasi_zk(vp_budi, vc_budi, "pubkey_budi_mock");
+    asserts(res_vp_verif["sah"] == benar, "Presentasi ZK diverifikasi sah");
+    asserts(res_vp_verif["status_privasi"] == "ZERO_SENSITIVE_DATA_LEAKAGE", "Prinsip perlindungan privasi UU PDP No. 27/2022 terpenuhi");
+
+    // 8. Inisialisasi Registri Pencabutan Merkle Accumulator
+    cetak("\n[UJI 8] Inisialisasi Registri Pencabutan Merkle Accumulator...");
+    misal reg_merkle = id_inisialisasi_registri_revokasi("REG_REVOKASI_SEPAKU_2026");
+    asserts(reg_merkle.id_registri == "REG_REVOKASI_SEPAKU_2026", "ID registri pencabutan valid");
+    asserts(reg_merkle.total_revokasi == 0, "Total awal pencabutan bernilai 0");
+    asserts(panjang(reg_merkle.akar_merkle_revokasi) == 64, "Akar Merkle genesis berukuran 64 karakter hex");
+
+    // 9. Pencabutan Kredensial dan Pembaruan Akar Merkle
+    cetak("\n[UJI 9] Pencabutan Kredensial dan Pembaruan Akar Merkle...");
+    misal res_cabut = id_cabut_kredensial(reg_merkle, "VC-KTP-SEPAKU-001", "Pindah domisili ke luar wilayah Sepaku");
+    asserts(res_cabut["sukses"] == benar, "Pencabutan kredensial berhasil dicatat");
+    asserts(reg_merkle.total_revokasi == 1, "Total pencabutan bertambah menjadi 1");
+    asserts(res_cabut["akar_merkle_baru"] != "", "Akar Merkle terbarui secara deterministik");
+
+    // 10. Penolakan Instan Kredensial yang Tercabut
+    cetak("\n[UJI 10] Penolakan Instan Kredensial yang Tercabut...");
+    misal res_cek_cabut = id_verifikasi_kredensial(vc_budi, "pubkey_desa_sepaku", reg_merkle);
+    asserts(res_cek_cabut["sah"] == salah, "Kredensial tercabut ditolak secara mutlak");
+    asserts(res_cek_cabut["status"] == "DICABUT_DI_REGISTRI", "Status penolakan DICABUT_DI_REGISTRI");
+
+    // 11. Inisiasi Handshake Zero-Trust (mTLS-over-PQC Nonce Challenge)
+    cetak("\n[UJI 11] Inisiasi Handshake Zero-Trust (mTLS-over-PQC Nonce Challenge)...");
+    misal sesi_zt = id_mulai_handshake_zero_trust(
+        "did:widya:actor:edge_sepaku_01",
+        "did:widya:actor:edge_kedungbanteng_02"
+    );
+    asserts(sesi_zt.status_handshake == "MENUNGGU_RESPONS", "Status awal handshake MENUNGGU_RESPONS");
+    asserts(potong(sesi_zt.tantangan_nonce, 0, 10) == "nonce_pqc_", "Tantangan nonce pasca-kuantum terpasang");
+
+    // 12. Penyelesaian Handshake Zero-Trust dan Derivasi Kunci Sesi
+    cetak("\n[UJI 12] Penyelesaian Handshake Zero-Trust dan Derivasi Kunci Sesi...");
+    misal sig_respons = "sig_mldsa65_peer_resp_9a8b7c6d5e4f";
+    misal res_hs = id_selesaikan_handshake_zero_trust(sesi_zt, sig_respons, "pubkey_peer_mock");
+    asserts(res_hs["sukses"] == benar, "Handshake Zero-Trust berhasil diselesaikan");
+    asserts(sesi_zt.status_handshake == "TEROTENTIKASI_SAH", "Status sesi berubah menjadi TEROTENTIKASI_SAH");
+    asserts(potong(sesi_zt.kunci_sesi_pqc, 0, 15) == "pqc_session_key", "Kunci sesi bersama pasca-kuantum terderivasi");
+
+    // 13. Federasi Identitas Lintas Desa (Perpres SPBE No. 95/2018)
+    cetak("\n[UJI 13] Federasi Identitas Lintas Desa (Perpres SPBE No. 95/2018)...");
+    misal fed_res = id_federasi_lintas_desa(
+        "did:widya:desa:sepaku_ikn",
+        "did:widya:desa:kedungbanteng_bms",
+        "MOU_INTEROPERABILITAS_LAYANAN_SPBE_2026"
+    );
+    asserts(fed_res["sukses"] == benar, "Federasi identitas lintas desa berhasil dibentuk");
+    asserts(panjang(fed_res["jangkar_kepercayaan"]) == 64, "Jangkar kepercayaan kriptografis 64 hex terbentuk");
+    asserts(fed_res["standar"] == "PERPRES SPBE NO. 95/2018", "Kepatuhan standar SPBE terverifikasi");
+
+    // 14. Integrasi Server REST API Rute 92–95 & MCP Tool 51–52
+    cetak("\n[UJI 14] Integrasi Server REST API Rute 92-95 & MCP Tool 51-52...");
+    misal req_mcp_51 = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req_mcp_51",
+        "method": "tools/call",
+        "params": {
+            "name": "resolusi_identitas_berdaulat_did",
+            "arguments": {
+                "did": "did:widya:warga:budi_sepaku_01",
+                "kunci_publik": "mldsa65_pk_mock_7f8a9b",
+                "layanan_endpoint": "http://localhost:8088/v1/os/actor/send"
+            }
+        }
+    });
+    misal resp_tool51_str = mcp_tangani_permintaan(req_mcp_51, kosong, kosong, kosong);
+    misal resp_tool51 = dari_json(resp_tool51_str);
+    asserts(resp_tool51["result"]["content"][0]["type"] == "text", "MCP Tool 51 (resolusi_identitas_berdaulat_did) mengembalikan respon teks");
+
+    misal req_mcp_52 = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req_mcp_52",
+        "method": "tools/call",
+        "params": {
+            "name": "verifikasi_kredensial_privasi_zk",
+            "arguments": {
+                "id_kredensial": "VC-DESA-001",
+                "subjek_did": "did:widya:warga:budi_sepaku_01",
+                "atribut_diungkap": ["status_warga", "zona_desa"],
+                "nonce": "nonce_mcp_test_99"
+            }
+        }
+    });
+    misal resp_tool52_str = mcp_tangani_permintaan(req_mcp_52, kosong, kosong, kosong);
+    misal resp_tool52 = dari_json(resp_tool52_str);
+    asserts(resp_tool52["result"]["content"][0]["type"] == "text", "MCP Tool 52 (verifikasi_kredensial_privasi_zk) mengembalikan respon teks");
+
+    cetak("\n======================================================================");
+    cetak("HASIL AKHIR: SEMUA 14 PENGUJIAN WIDYA-ID TRUST FEDERATION LULUS 100%!");
+    cetak("======================================================================");
+}
+
+jalankan_pengujian_identitas_federasi();

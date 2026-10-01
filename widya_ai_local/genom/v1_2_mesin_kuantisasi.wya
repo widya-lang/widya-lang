@@ -1,0 +1,20 @@
+// ============================================================================
+// GENOM v1.2.0 (v1_2_mesin_kuantisasi.wya)
+// Modul Kuantisasi Tensor INT8 Adaptif Disintesis Mandiri oleh AI
+// ============================================================================
+
+fungsi kuantisasi_vektor_desa(vektor_fp32, skala) {
+    misal kuantisasi = [];
+    untuk val di vektor_fp32 {
+        tambah(kuantisasi, val * skala);
+    }
+    kembalikan kuantisasi;
+}
+
+fungsi dekuantisasi_vektor_desa(vektor_int8, skala) {
+    misal dekuantisasi = [];
+    untuk val di vektor_int8 {
+        tambah(dekuantisasi, val / skala);
+    }
+    kembalikan dekuantisasi;
+}

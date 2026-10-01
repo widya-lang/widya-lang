@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>Presentasi Eksekutif: Sistem Koperasi Digital Berdaulat (KDMP 7 Pilar) (PRJ-01-KOPERASI) - Presentasi WidyaOffice</title><style>
+            * { box-sizing: border-box; }
+            body { margin: 0; background: #020617; color: white; font-family: 'Segoe UI', -apple-system, sans-serif; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+            .slide-viewport { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+            .slide-canvas { width: 1280px; height: 720px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); padding: 60px 80px; display: none; flex-direction: column; justify-content: center; position: relative; border: 1px solid #334155; }
+            .slide-canvas.active { display: flex; animation: fadeIn 0.3s ease; }
+            @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+            h1 { font-size: 3.5rem; color: #38bdf8; margin: 0 0 16px 0; line-height: 1.2; font-weight: 800; }
+            h2 { font-size: 2.2rem; color: #f8fafc; margin: 0 0 24px 0; border-bottom: 2px solid #38bdf8; padding-bottom: 12px; }
+            p.subtitle { font-size: 1.8rem; color: #94a3b8; line-height: 1.4; margin: 0; }
+            ul { font-size: 1.6rem; line-height: 1.8; color: #e2e8f0; margin: 0; padding-left: 30px; }
+            .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+            .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 20px; }
+            .kpi-card { background: rgba(30, 41, 59, 0.7); border: 1px solid #334155; border-radius: 12px; padding: 24px; }
+            .kpi-label { font-size: 1.1rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+            .kpi-val { font-size: 2.5rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; }
+            .kpi-sub { font-size: 1.0rem; color: #34d399; }
+            .controls { height: 60px; background: #020617; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; }
+            .nav-btn { background: #38bdf8; color: #020617; border: none; padding: 8px 18px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+            .nav-btn:hover { opacity: 0.9; }
+            .slide-counter { font-size: 14px; color: #94a3b8; font-weight: 500; }
+        </style></head><body><div class='slide-viewport'><div class='slide-canvas active' id='slide-1'><h1>Presentasi Eksekutif: Sistem Koperasi Digital Berdaulat (KDMP 7 Pilar) (PRJ-01-KOPERASI)</h1><p class='subtitle'>Kategori: Fintech & Ledger Core • Lead: agen_coder</p></div><div class='slide-canvas' id='slide-2'><h2>Ringkasan Kesiapan Produksi (SLA & QA)</h2><div class='kpi-grid'><div class='kpi-card'><div class='kpi-label'>Uji Mutu QA Automated</div><div class='kpi-val'>100% PASS</div><div class='kpi-sub' style='color:#34d399;'>0 Cacat Kritis</div></div><div class='kpi-card'><div class='kpi-label'>Kepatuhan UU PDP No. 27/2022</div><div class='kpi-val'>LEVEL A</div><div class='kpi-sub' style='color:#34d399;'>Segel Kripto BSrE</div></div><div class='kpi-card'><div class='kpi-label'>Runtime Latency Overhead</div><div class='kpi-val'>< 2.5 ms</div><div class='kpi-sub' style='color:#34d399;'>Proses Native Widya</div></div></div></div><div class='slide-canvas' id='slide-3'><h2>Capaian Fitur & Deliverables Utama</h2><ul><li>P1: Otentikasi Argon2id & Session Guard Terdesentralisasi</li><li>P2: Skema Basis Data Simpan Pinjam ACID WidyaBase</li><li>P3: Pengujian Beban Jalur SSE & Stress-Test Transaksi</li></ul></div><div class='slide-canvas' id='slide-4'><h2>Arsitektur Sistem & Kedaulatan Data</h2><ul><li>Zero Cloud Dependency: Seluruh proses berjalan di bare-metal / on-premise lokal</li><li>WidyaBase ACID Storage: Struktur pohon B+Tree dengan Write-Ahead Logging (WAL)</li><li>Keamanan Berlapis: Verifikasi identitas berbasis IAM RBAC & WORM Audit Trail</li></ul></div></div><div class='controls'>
+            <button class='nav-btn' onclick='prevSlide()'>◀ Sebelumnya</button>
+            <div class='slide-counter'><span id='curr-idx'>1</span> / 4</div>
+            <button class='nav-btn' onclick='nextSlide()'>Berikutnya ▶</button>
+        </div><script>
+            let current = 1;
+            const total = 4;
+            function showSlide(idx) {
+                if (idx < 1 || idx > total) return;
+                document.querySelectorAll('.slide-canvas').forEach(s => s.classList.remove('active'));
+                document.getElementById('slide-' + idx).classList.add('active');
+                document.getElementById('curr-idx').innerText = idx;
+                current = idx;
+            }
+            function nextSlide() { showSlide(current + 1); }
+            function prevSlide() { showSlide(current - 1); }
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+            });
+        </script></body></html>

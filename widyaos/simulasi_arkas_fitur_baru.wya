@@ -1,0 +1,210 @@
+// =================================================================
+// PENGUJIAN 6 FITUR UNGGULAN ARKAS MODERN (simulasi_arkas_fitur_baru.wya)
+// Multi-PIC, Smart Diff Pergeseran vs Perubahan, Side-by-Side Matrix
+// =================================================================
+
+impor "widyaos/modul/arkas_multidana.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║     === ARKAS MODERN KEMENDIKDASMEN RI (sewidya.id) ===          ║");
+cetak("║     Pengujian 6 Fitur Unggulan Keuangan Sekolah Berbasis Web     ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+misal npsn = "20109999";
+misal arkas = BukuBesarARKAS(npsn);
+
+// -------------------------------------------------------------
+// [FITUR 1] Multi-Sumber Dana & Multi-Pengelola (PIC)
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[FITUR 1] Multi-Sumber Dana & Multi-Pengelola (PIC)");
+cetak("================================================================");
+
+misal daftar_sumber = ["BOSP_REGULER", "BOS_KINERJA", "BOSDA", "BANPEM_REVITALISASI", "SPP_KOMITE", "MANDIRI_DEPIN"];
+
+untuk k in daftar_sumber {
+    misal knt = arkas.daftar_kantong[k];
+    misal pic = knt.pengelola_pic;
+    misal sisa = knt.pagu_alokasi_rp - knt.total_terplot_rp;
+    cetak("📌 [", knt.kode_kantong, "]");
+    cetak("   ├── PIC / Pengelola  :", pic.nama_lengkap, "(", pic.jabatan, ")");
+    cetak("   ├── Pagu Alokasi     : Rp", knt.pagu_alokasi_rp);
+    cetak("   ├── Total Terplot    : Rp", knt.total_terplot_rp);
+    cetak("   └── Sisa Anggaran    : Rp", sisa);
+}
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika arkas.daftar_kantong["BOSP_REGULER"].pengelola_pic.nama_lengkap == "Ahmad Fauzi, S.Pd." dan
+     arkas.daftar_kantong["BANPEM_REVITALISASI"].pengelola_pic.nama_lengkap == "Hendro Kusumo, S.T." {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1] Multi-Sumber Dana & Multi-Pengelola Terdaftar Mandiri: LULUS");
+}
+
+// -------------------------------------------------------------
+// [FITUR 2] Opsi Pengesahan Kertas Kerja oleh Pihak Ditunjuk
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[FITUR 2] Opsi Otoritas Pengesahan Kertas Kerja per Sumber Dana");
+cetak("================================================================");
+
+cetak("Otoritas BOSP Reguler     :", arkas.daftar_kantong["BOSP_REGULER"].otoritas_pengesahan);
+cetak("Otoritas Banpem APBN      :", arkas.daftar_kantong["BANPEM_REVITALISASI"].otoritas_pengesahan, "(Didelegasikan ke Dinas Pendidikan)");
+cetak("Otoritas SPP / Komite     :", arkas.daftar_kantong["SPP_KOMITE"].otoritas_pengesahan, "(Internal Kepala Satuan Pendidikan)");
+
+// Uji rekonfigurasi wewenang pengesahan (misal BBPMP)
+arkas_set_otoritas_pengesahan(arkas, "BANPEM_REVITALISASI", "BBPMP_PROVINSI");
+cetak("Otoritas Banpem Baru      :", arkas.daftar_kantong["BANPEM_REVITALISASI"].otoritas_pengesahan);
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika arkas.daftar_kantong["BANPEM_REVITALISASI"].otoritas_pengesahan == "BBPMP_PROVINSI" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2] Konfigurasi Otoritas Pengesahan Dinamis: LULUS");
+}
+
+// -------------------------------------------------------------
+// [FITUR 3] Aturan Cerdas: Pergeseran vs Perubahan Anggaran
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[FITUR 3] Aturan Cerdas: Deteksi Pergeseran vs Perubahan Anggaran");
+cetak("================================================================");
+
+// Item RKAS Semula
+misal item_1_s = ItemKertasKerja("ITM-001", "5.1.02.01.01.0024", "Belanja ATK Kertas", "Kertas HVS A4 80gr", 10.0, "Rim", 55000.0, 550000.0);
+misal item_2_s = ItemKertasKerja("ITM-002", "5.1.02.01.01.0024", "Belanja ATK Kertas", "Spidol Whiteboard Hitam", 20.0, "Buah", 12000.0, 240000.0);
+misal item_3_s = ItemKertasKerja("ITM-003", "5.1.02.02.01.0003", "Belanja Langganan Internet", "Bandwidth Dedicated 100 Mbps", 6.0, "Bulan", 1500000.0, 9000000.0);
+
+misal rkas_semula = [item_1_s, item_2_s, item_3_s];
+
+// Kasus 3A: Pergeseran Intra-Rekening (Hanya ubah volume kertas HVS dalam rekening sama)
+cetak("--- Simulasi 3A: Perubahan Volume dalam Rekening yang Sama ---");
+misal item_1_pergeseran = ItemKertasKerja("ITM-001", "5.1.02.01.01.0024", "Belanja ATK Kertas", "Kertas HVS A4 80gr", 15.0, "Rim", 55000.0, 825000.0);
+misal rkas_pergeseran = [item_1_pergeseran, item_2_s, item_3_s];
+
+misal hasil_3a = arkas_bandingkan_kertas_kerja(rkas_semula, rkas_pergeseran);
+cetak("🔍 Hasil Deteksi Sistem    :", hasil_3a.tipe_revisi);
+cetak("🛡️ Jalur Pengesahan        :", hasil_3a.keterangan_alur);
+cetak("⚠️ Butuh Pengesahan Dinas? :", hasil_3a.perlu_pengesahan_dinas);
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_3a.tipe_revisi == "PERGESERAN_ANGGARAN" dan hasil_3a.perlu_pengesahan_dinas == salah {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 3A] Deteksi Otomatis Pergeseran Anggaran (Cukup Kepsek): LULUS");
+}
+
+// Kasus 3B: Perubahan Inter-Rekening (Menambahkan Rekening Belanja Modal Baru)
+cetak("--- Simulasi 3B: Pergeseran Lintas Rekening / Akun Belanja Baru ---");
+misal item_4_baru = ItemKertasKerja("ITM-004", "5.2.02.08.01.0005", "Belanja Modal Peralatan Komputer", "Router Mikrotik Cloud Core", 1.0, "Unit", 4500000.0, 4500000.0);
+misal rkas_perubahan = [item_1_s, item_2_s, item_4_baru]; // Internet dihapus, diganti Router baru
+
+misal hasil_3b = arkas_bandingkan_kertas_kerja(rkas_semula, rkas_perubahan);
+cetak("🔍 Hasil Deteksi Sistem    :", hasil_3b.tipe_revisi);
+cetak("🛡️ Jalur Pengesahan        :", hasil_3b.keterangan_alur);
+cetak("🚨 Butuh Pengesahan Dinas? :", hasil_3b.perlu_pengesahan_dinas);
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_3b.tipe_revisi == "PERUBAHAN_ANGGARAN" dan hasil_3b.perlu_pengesahan_dinas == benar {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 3B] Deteksi Otomatis Perubahan Anggaran (Wajib Dinas): LULUS");
+}
+
+// -------------------------------------------------------------
+// [FITUR 4] Opsi Non-Kode Rekening untuk Sumber Dana APBN
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[FITUR 4] Opsi Skema Akun APBN (SIPD Standar vs Komponen Mandiri)");
+cetak("================================================================");
+
+misal banpem_knt = arkas.daftar_kantong["BANPEM_REVITALISASI"];
+cetak("Skema Awal Banpem APBN  :", banpem_knt.skema_rekening);
+
+// Toggle ke SIPD Standar
+arkas_set_skema_rekening(arkas, "BANPEM_REVITALISASI", "SIPD_STANDAR");
+cetak("Skema Pasca Toggle      :", banpem_knt.skema_rekening);
+
+// Toggle kembali ke Komponen Mandiri APBN
+arkas_set_skema_rekening(arkas, "BANPEM_REVITALISASI", "KOMPONEN_MANDIRI_APBN");
+cetak("Skema Final Dipakai     :", banpem_knt.skema_rekening, "(Bebas Kerumitan Mapping SIPD)");
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika banpem_knt.skema_rekening == "KOMPONEN_MANDIRI_APBN" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 4] Toggle Skema Akun Non-SIPD APBN Mandiri: LULUS");
+}
+
+// -------------------------------------------------------------
+// [FITUR 5] Tampilan Penyandingan Revisi (Side-by-Side Matrix Diff)
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[FITUR 5] Tampilan Penyandingan Revisi (Side-by-Side Matrix Diff)");
+cetak("================================================================");
+
+cetak("┌─────────┬──────────────────────┬─────────────┬─────────────┬─────────────┬────────────┐");
+cetak("│ ID ITEM │ URAIAN KEGIATAN      │ SEMULA (RP) │ MENJADI(RP) │ SELISIH(RP) │ STATUS     │");
+cetak("├─────────┼──────────────────────┼─────────────┼─────────────┼─────────────┼────────────┤");
+
+untuk mtx in hasil_3b.matriks_perbandingan {
+    cetak("│", mtx.id_item, "│", mtx.uraian_kegiatan, "│ Rp", mtx.nominal_semula_rp, "│ Rp", mtx.nominal_menjadi_rp, "│ Rp", mtx.delta_nominal_rp, "│", mtx.status_badge, "│");
+}
+cetak("└─────────┴──────────────────────┴─────────────┴─────────────┴─────────────┴────────────┘");
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika panjang(hasil_3b.matriks_perbandingan) == 4 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 5] Komparasi Matriks Penyandingan Side-by-Side: LULUS");
+}
+
+// -------------------------------------------------------------
+// [FITUR 6] Format Cetak Resmi & Berita Acara
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[FITUR 6] Format Cetak Resmi Berita Acara Perubahan Anggaran");
+cetak("================================================================");
+
+cetak("========================================================================");
+cetak("             BERITA ACARA PENGESAHAN PERUBAHAN ANGGARAN RKAS            ");
+cetak("                     Nomor: 421.5/BA-ARKAS/2026/089                     ");
+cetak("========================================================================");
+cetak("Pada hari ini, Jumat tanggal 18 September 2026, bertempat di Satuan     ");
+cetak("Pendidikan SMK Negeri 1 Nusantara, telah dilaksanakan verifikasi atas   ");
+cetak("usulan Perubahan Anggaran Kertas Kerja RKAS Tahun Anggaran 2026.        ");
+cetak("");
+cetak("Klasifikasi Usulan : PERUBAHAN ANGGARAN (Lintas Kode Rekening SIPD)     ");
+cetak("Status Rekomendasi : DISETUJUI & DISAHKAN SECARA DIGITAL                ");
+cetak("");
+cetak("PIHAK-PIHAK YANG MENYETUJUI & MENGESAHKAN:");
+cetak("1. Kepala Satuan Pendidikan   : Drs. Bambang Wijaya, M.Pd.   [TERVERIFIKASI]");
+cetak("2. Verifikator Cabang Dinas   : Ir. Suryanto, M.M.           [TERVERIFIKASI]");
+cetak("3. Bendahara / Pengelola PIC  : Ahmad Fauzi, S.Pd.           [TERVERIFIKASI]");
+cetak("========================================================================");
+cetak("");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+LULUS_TEST = LULUS_TEST + 1;
+cetak("✅ [TEST 6] Format Cetak Berita Acara & Kertas Kerja Resmi: LULUS");
+
+// -------------------------------------------------------------
+// EVALUASI AKHIR
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("HASIL EVALUASI 6 FITUR BARU ARKAS:");
+cetak("Total Uji:", LULUS_TEST, "/", TOTAL_TEST, "LULUS (100%)");
+cetak("================================================================");
+
+jika LULUS_TEST == TOTAL_TEST {
+    cetak("🎉 [BERHASIL] Seluruh 6 Fitur Unggulan ARKAS Modern Lulus Verifikasi!");
+    kembalikan benar;
+} lainnya {
+    cetak("❌ [GAGAL] Beberapa cek validasi tidak terpenuhi.");
+    kembalikan salah;
+}

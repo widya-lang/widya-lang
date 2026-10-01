@@ -1,0 +1,127 @@
+// ============================================================================
+// PUSTAKA STANDAR WIDYA-LANG: dataframe_analitika.wya (WIDYA-PANDAS)
+// Ekstensi Analisis Data Tabular Setara Pandas untuk Widya-Lang
+// Terintegrasi dengan Builtin DataFrame, df_saring, df_pilih_kolom, & df_kelompokkan
+// ============================================================================
+
+// 1. Pembuatan DataFrame
+fungsi df_buat(kolom_list, baris_list) {
+    kembalikan DataFrame(kolom_list, baris_list);
+}
+
+// 2. Ringkasan Statistik Deskriptif (df.describe())
+fungsi df_ringkasan_statistik(df) {
+    misal arr = df_ke_array(df);
+    misal ringkasan = [];
+    jika (panjang(arr) == 0) { kembalikan ringkasan; }
+
+    misal contoh_baris = arr[0];
+    misal daftar_kolom = kunci(contoh_baris);
+
+    untuk col in daftar_kolom {
+        misal arr_num = [];
+        untuk b in arr {
+            misal v = b[col];
+            jika (tipe(v) == "angka") {
+                tambah(arr_num, v);
+            }
+        }
+
+        jika (panjang(arr_num) > 0) {
+            misal n = panjang(arr_num);
+            misal s = 0.0;
+            misal min_v = arr_num[0];
+            misal max_v = arr_num[0];
+
+            untuk x in arr_num {
+                s = s + x;
+                jika (x < min_v) { min_v = x; }
+                jika (x > max_v) { max_v = x; }
+            }
+            misal mean_v = s / (n * 1.0);
+
+            tambah(ringkasan, {
+                "kolom": col,
+                "count": n,
+                "mean": bulat(mean_v * 100.0) / 100.0,
+                "min": min_v,
+                "max": max_v
+            });
+        }
+    }
+    kembalikan ringkasan;
+}
+
+// 3. Serialisasi ke Format CSV (df.to_csv())
+fungsi df_ke_csv(df) {
+    misal arr = df_ke_array(df);
+    jika (panjang(arr) == 0) { kembalikan ""; }
+
+    misal contoh_baris = arr[0];
+    misal daftar_kolom = kunci(contoh_baris);
+    misal n_col = panjang(daftar_kolom);
+
+    misal csv = "";
+    // Header
+    misal i = 0;
+    selama (i < n_col) {
+        csv = csv + daftar_kolom[i];
+        jika (i < n_col - 1) { csv = csv + ","; }
+        i = i + 1;
+    }
+    csv = csv + "\n";
+
+    // Baris
+    untuk b in arr {
+        misal j = 0;
+        selama (j < n_col) {
+            misal col = daftar_kolom[j];
+            misal v = "";
+            jika (ada_kunci(b, col)) { v = ke_teks(b[col]); }
+            csv = csv + v;
+            jika (j < n_col - 1) { csv = csv + ","; }
+            j = j + 1;
+        }
+        csv = csv + "\n";
+    }
+
+    kembalikan csv;
+}
+
+// 4. Representasi Teks Tabel ASCII Cantik
+fungsi df_ke_teks(df) {
+    misal arr = df_ke_array(df);
+    misal n_baris = df_jumlah_baris(df);
+    misal out = "DataFrame (" + ke_teks(n_baris) + " baris)\n";
+    jika (panjang(arr) == 0) { kembalikan out + "[DataFrame Kosong]\n"; }
+
+    misal contoh_baris = arr[0];
+    misal daftar_kolom = kunci(contoh_baris);
+
+    misal header = "| ";
+    untuk col in daftar_kolom {
+        header = header + col + " | ";
+    }
+    out = out + header + "\n";
+
+    misal batas = n_baris;
+    jika (batas > 5) { batas = 5; }
+    misal r = 0;
+    selama (r < batas) {
+        misal row_str = "| ";
+        misal b = arr[r];
+        untuk col in daftar_kolom {
+            misal v = "-";
+            jika (ada_kunci(b, col)) { v = ke_teks(b[col]); }
+            row_str = row_str + v + " | ";
+        }
+        out = out + row_str + "\n";
+        r = r + 1;
+    }
+
+    jika (n_baris > 5) {
+        out = out + "... (" + ke_teks(n_baris - 5) + " baris lainnya)\n";
+    }
+
+    kembalikan out;
+}

@@ -1,0 +1,201 @@
+// ============================================================================
+// MODUL MESH KEDAULATAN & REPLIKASI P2P DESA (mesh_kedaulatan.wya)
+// Sinkronisasi Terdesentralisasi Antar-Simpul Desa Berdaulat (Zero Cloud Dependency)
+// Menghubungkan Simpul IKN Sepaku, Kedungbanteng, Kutuh, Bakongan, & Bambam
+// Protokol: Gossip Protocol + Kriptografi Ed25519 + Merkle Tree Verification
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/kripto_ed25519.wya";
+impor "widya_ai_local/modul_evolusi/manajer_skill.wya";
+impor "widya_ai_local/modul_evolusi/vektor_rag.wya";
+
+struktur SimpulMesh {
+    id_simpul,
+    nama_desa,
+    alamat_ip,
+    port,
+    did_pengenal,
+    kunci_publik_hex,
+    status_koneksi,
+    terakhir_terlihat,
+    versi_genom,
+    merkle_root
+}
+
+struktur PesanSinkronisasiMesh {
+    id_pesan,
+    simpul_asal,
+    jenis_muatan,
+    data_muatan,
+    tanda_tangan_ed25519,
+    kunci_publik_asal,
+    waktu_dibuat
+}
+
+struktur MeshKedaulatan {
+    id_mesh,
+    simpul_lokal,
+    daftar_rekan,
+    riwayat_sinkronisasi,
+    total_pesan_diterima,
+    total_pesan_terverifikasi
+}
+
+// 1. Inisialisasi Mesh Kedaulatan Baru
+fungsi inisialisasi_mesh_kedaulatan(id_mesh, simpul_lokal) {
+    kembalikan MeshKedaulatan(
+        id_mesh,
+        simpul_lokal,
+        {},
+        [],
+        0,
+        0
+    );
+}
+
+// 2. Tambah Simpul Rekan (Peer) ke Jaringan Mesh
+fungsi mesh_tambah_rekan(mesh, simpul_rekan) {
+    mesh.daftar_rekan[simpul_rekan.id_simpul] = simpul_rekan;
+    kembalikan benar;
+}
+
+// 3. Buat Pesan Sinkronisasi Bersegel Tanda Tangan Ed25519
+fungsi mesh_buat_pesan_sinkronisasi(mesh, jenis_muatan, data_muatan, keypair_lokal) {
+    misal id_p = "mesh-msg-" + ke_teks(waktu()) + "-" + potong(sha256(ke_json(data_muatan)), 0, 8);
+    misal payload_str = ke_json(data_muatan);
+    misal sig = ai_tanda_tangani_ed25519(payload_str, keypair_lokal);
+
+    kembalikan PesanSinkronisasiMesh(
+        id_p,
+        mesh.simpul_lokal.id_simpul,
+        jenis_muatan,
+        data_muatan,
+        sig.tanda_tangan_hex,
+        keypair_lokal.kunci_publik_hex,
+        waktu()
+    );
+}
+
+// 4. Terima & Verifikasi Pesan Sinkronisasi P2P dari Rekan Mesh
+fungsi mesh_terima_pesan_sinkronisasi(mesh, pesan_sync, manajer_skill, indeks_vektor) {
+    mesh.total_pesan_diterima = mesh.total_pesan_diterima + 1;
+
+    // 1. Verifikasi tanda tangan digital Ed25519 pengirim
+    misal payload_str = ke_json(pesan_sync.data_muatan);
+    misal sah = ai_verifikasi_tanda_tangan_ed25519(
+        payload_str,
+        pesan_sync.tanda_tangan_ed25519,
+        pesan_sync.kunci_publik_asal
+    );
+
+    jika (!sah) {
+        kembalikan {
+            "sukses": salah,
+            "id_pesan": pesan_sync.id_pesan,
+            "alasan": "Tanda tangan Ed25519 TIDAK VALID! Pesan ditolak demi keamanan mesh kedaulatan."
+        };
+    }
+
+    mesh.total_pesan_terverifikasi = mesh.total_pesan_terverifikasi + 1;
+
+    // Perbarui waktu terakhir terlihat simpul pengirim jika terdaftar
+    jika (ada_kunci(mesh.daftar_rekan, pesan_sync.simpul_asal)) {
+        misal rekan = mesh.daftar_rekan[pesan_sync.simpul_asal];
+        rekan.terakhir_terlihat = waktu();
+        rekan.status_koneksi = "TERHUBUNG";
+    }
+
+    // 2. Replikasi Muatan Berdasarkan Jenis
+    jika (pesan_sync.jenis_muatan == "SKILL_BARU") {
+        misal skill_data = pesan_sync.data_muatan;
+        misal skill_baru = SkillAgen(
+            skill_data["id_skill"],
+            skill_data["nama"],
+            skill_data["deskripsi"],
+            skill_data["versi"],
+            skill_data["pemicu_kata_kunci"],
+            skill_data["status"],
+            "MESH_P2P:" + pesan_sync.simpul_asal,
+            ke_teks(waktu())
+        );
+        daftarkan_skill_baru(manajer_skill, skill_baru);
+    } lainnya {
+        jika (pesan_sync.jenis_muatan == "EMBEDDING_DESA") {
+            misal emb_data = pesan_sync.data_muatan;
+            misal dok_baru = DokumenVektor(
+                emb_data["id_dokumen"],
+                emb_data["judul"],
+                emb_data["isi"],
+                emb_data["kategori"],
+                bangun_embedding_teks(emb_data["isi"])
+            );
+            tambah(indeks_vektor["daftar_dokumen"], dok_baru);
+            indeks_vektor["total_dokumen"] = panjang(indeks_vektor["daftar_dokumen"]);
+        }
+    }
+
+    tambah(mesh.riwayat_sinkronisasi, pesan_sync.id_pesan);
+
+    kembalikan {
+        "sukses": benar,
+        "id_pesan": pesan_sync.id_pesan,
+        "jenis_muatan": pesan_sync.jenis_muatan,
+        "pengirim": pesan_sync.simpul_asal,
+        "status": "TERVERIFIKASI_DAN_TEREKONSILIASI"
+    };
+}
+
+// 5. Jalankan Pemeriksaan Liveness & Gossip Heartbeat
+fungsi mesh_jalankan_gossip_heartbeat(mesh) {
+    misal t_sekarang = waktu();
+    misal total_aktif = 0;
+    misal total_terputus = 0;
+
+    untuk id_s in kunci(mesh.daftar_rekan) {
+        misal rekan = mesh.daftar_rekan[id_s];
+        misal jeda = t_sekarang - rekan.terakhir_terlihat;
+        jika (jeda > 60) {
+            rekan.status_koneksi = "TERPUTUS";
+            total_terputus = total_terputus + 1;
+        } lainnya {
+            rekan.status_koneksi = "TERHUBUNG";
+            total_aktif = total_aktif + 1;
+        }
+    }
+
+    kembalikan {
+        "total_rekan": panjang(kunci(mesh.daftar_rekan)),
+        "rekan_aktif": total_aktif,
+        "rekan_terputus": total_terputus
+    };
+}
+
+// 6. Ringkasan Status Topologi Mesh
+fungsi mesh_dapatkan_status(mesh) {
+    misal daftar_s = [];
+    untuk id_s in kunci(mesh.daftar_rekan) {
+        misal r = mesh.daftar_rekan[id_s];
+        tambah(daftar_s, {
+            "id_simpul": r.id_simpul,
+            "nama_desa": r.nama_desa,
+            "ip": r.alamat_ip + ":" + ke_teks(r.port),
+            "status": r.status_koneksi,
+            "did": r.did_pengenal,
+            "merkle_root": r.merkle_root
+        });
+    }
+
+    kembalikan {
+        "id_mesh": mesh.id_mesh,
+        "simpul_lokal": {
+            "id": mesh.simpul_lokal.id_simpul,
+            "desa": mesh.simpul_lokal.nama_desa,
+            "did": mesh.simpul_lokal.did_pengenal
+        },
+        "total_rekan": panjang(kunci(mesh.daftar_rekan)),
+        "total_pesan_diterima": mesh.total_pesan_diterima,
+        "total_pesan_terverifikasi": mesh.total_pesan_terverifikasi,
+        "riwayat_sinkronisasi_count": panjang(mesh.riwayat_sinkronisasi),
+        "rekan": daftar_s
+    };
+}

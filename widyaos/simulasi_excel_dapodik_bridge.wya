@@ -1,0 +1,266 @@
+// ==============================================================================
+// WIDYAOS: SIMULASI KESELARASAN FORMULIR EXCEL DAPODIK (PD, PTK, SEKOLAH)
+// Memvalidasi 100% integrasi data langsung dari berkas resmi:
+// 1. FORMULIR_SEKOLAH.xlsx (Identitas, Ruangan, Listrik, Rekening Bank)
+// 2. FORMULIR_PTK_DAPODIK.xlsx (Data Pribadi, Kepegawaian, Serdik, Kontak)
+// 3. FORMULIR_PD_DAPODIK.xlsx (Identitas, Ayah, Ibu, Periodik, KIP/KPS, Prestasi)
+// ==============================================================================
+
+impor "widyaos/modul/dapodik_edge.wya";
+impor "widyaos/modul/dapodik_excel_bridge.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║   === SIMULASI KESELARASAN FORMULIR EXCEL DAPODIK v1.0 ===       ║");
+cetak("║   Verifikasi Keselarasan FORMULIR PD, PTK & SEKOLAH Excel        ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+misal dapodik_node = inisialisasi_dapodik_edge("20108888", "SMA Negeri 1 Garudaprana Nusantara");
+
+// ==============================================================================
+// [TEST 1] KESELARASAN FORMULIR_SEKOLAH.xlsx (Identitas, Lokasi, Ruangan)
+// ==============================================================================
+cetak("================================================================");
+cetak("[1] Ingesti & Keselarasan Data FORMULIR_SEKOLAH.xlsx");
+cetak("================================================================");
+
+misal excel_sekolah = FormulirSekolahExcel(
+    "SMA Negeri 1 Garudaprana Nusantara",
+    "301026000001", // NSS
+    "20108888",     // NPSN
+    "Jl. Merdeka Pendidikan No. 45",
+    "Garudamekar",
+    "Coblong",
+    "Kota Bandung",
+    "Indonesia",
+    "Perkotaan",
+    -6.8912, // Latitude
+    107.6105, // Longitude
+    "022-2501234",
+    "022-2501235",
+    "Fiber Optik",
+    "info@sman1garudaprana.sch.id",
+    "http://www.sman1garudaprana.sch.id",
+    "Negeri",
+    "Pemerintah Daerah",
+    "SK-PENDIRIAN-1980",
+    "SK-OP-421/001/Disdik/2015",
+    "A",
+    "SK-AKRED-001/BAN-SM/2024",
+    "ISO 9001:2015",
+    "Pagi",
+    "130-00-1234567-8",
+    "Bank BJB",
+    "BOS SMAN 1 Garudaprana",
+    "PLN",
+    13200,
+    100
+);
+
+// Sheet Ruangan dari FORMULIR_SEKOLAH.xlsx
+misal excel_ruangan = [
+    FormulirRuangExcel("R-TEORI-01", "Ruang Teori X-A", "PRAS-01", 9.0, 8.0, "BAIK", "BAIK", "BAIK", "BAIK", "BAIK"),
+    FormulirRuangExcel("R-LAB-KOMP", "Laboratorium Komputer AI & IFP", "PRAS-02", 12.0, 9.0, "BAIK", "BAIK", "BAIK", "BAIK", "BAIK"),
+    FormulirRuangExcel("R-PERPUS", "Perpustakaan Digital Terpadu", "PRAS-03", 15.0, 10.0, "BAIK", "BAIK", "BAIK", "BAIK", "BAIK")
+];
+
+// Buat juga tanah & sanitasi dasar untuk melengkapi pilar sekolah
+dapodik_tambah_tanah(dapodik_node, "TNH-01", "HP-No.45/Pemda/2012", 12500, "MILIK_SENDIRI");
+dapodik_set_sanitasi(dapodik_node, "PDAM", "TERSEDIA_HIGIENIS", 6, 8, 2, 15, "3_JENIS");
+
+misal hasil_impor_sekolah = impor_excel_formulir_sekolah(dapodik_node, excel_sekolah, excel_ruangan);
+
+cetak("🏫 Data Terimpor dari FORMULIR_SEKOLAH.xlsx :");
+cetak("   Nama Sekolah       :", hasil_impor_sekolah.nama_sekolah, "(NPSN:", hasil_impor_sekolah.npsn + ")");
+cetak("   Status Akreditasi  :", hasil_impor_sekolah.akreditasi, "(ISO:", excel_sekolah.sertifikasi_iso + ")");
+cetak("   Lokasi Geospasial  : Lintang", excel_sekolah.posisi_lintang, "| Bujur", excel_sekolah.posisi_bujur);
+cetak("   Rekening Bank BOS  :", excel_sekolah.nama_bank, "| No Rek:", excel_sekolah.nomor_rekening_bank);
+cetak("   Ruangan Masuk      :", hasil_impor_sekolah.total_ruangan_terimpor, "ruangan terpetakan");
+cetak("   Hasil Keselarasan  :", hasil_impor_sekolah.status_selaras);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_impor_sekolah.status_selaras == "100%_SELARAS_DENGAN_FORMULIR_SEKOLAH_EXCEL" dan hasil_impor_sekolah.total_ruangan_terimpor == 3 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1] Keselarasan FORMULIR_SEKOLAH.xlsx: LULUS");
+} lainnya {
+    cetak("❌ [TEST 1] Keselarasan FORMULIR_SEKOLAH.xlsx: GAGAL");
+}
+
+// ==============================================================================
+// [TEST 2] KESELARASAN FORMULIR_PTK_DAPODIK.xlsx (Data Pribadi, Kepegawaian, Serdik)
+// ==============================================================================
+cetak("");
+cetak("================================================================");
+cetak("[2] Ingesti & Keselarasan Data FORMULIR_PTK_DAPODIK.xlsx");
+cetak("================================================================");
+
+misal excel_ptk_bambang = FormulirPTKExcel(
+    "Bambang Irawan", // Nama tanpa gelar
+    "3201017508120001",
+    "L",
+    "Bandung",
+    "1975-08-12",
+    "Rukmini", // Nama Ibu Kandung
+    "Jl. Dago Asri No. 12",
+    "Dusun 1",
+    "Dago",
+    "Coblong",
+    "Kota Bandung",
+    "Jawa Barat",
+    "40135",
+    "Islam",
+    "12.345.678.9-421.000", // NPWP
+    "Kawin",
+    "Eni Nuraini",
+    "PNS",
+    "197508122000031002", // NIP
+    "PNS",
+    "",
+    "19750812001", // NUPTK
+    "Guru Mapel",
+    "SK-PNS-821/2000",
+    "2000-03-01",
+    "Gubernur Jawa Barat",
+    "Pembina / IV/a",
+    "APBD Provinsi",
+    benar, // Lisensi Kepala Sekolah
+    "022-2509876",
+    "081234567890",
+    "bambang.irawan@sewidya.id"
+);
+
+misal hasil_impor_ptk = impor_excel_formulir_ptk(dapodik_node, excel_ptk_bambang, 26);
+
+cetak("👨‍🏫 Data Terimpor dari FORMULIR_PTK_DAPODIK.xlsx :");
+cetak("   Nama Lengkap       :", hasil_impor_ptk.nama_guru, "(NUPTK:", hasil_impor_ptk.nuptk + ")");
+cetak("   NIP / Status       :", excel_ptk_bambang.nip, "|", hasil_impor_ptk.status_kepegawaian);
+cetak("   Ibu Kandung        :", excel_ptk_bambang.nama_ibu_kandung, "| NPWP:", excel_ptk_bambang.npwp);
+cetak("   Pangkat/Golongan   :", excel_ptk_bambang.pangkat_golongan, "| Lisensi Kepsek:", excel_ptk_bambang.lisensi_kepala_sekolah);
+cetak("   Beban JJM / TPG    :", hasil_impor_ptk.total_jjm, "JJM -> Status TPG:", hasil_impor_ptk.status_tpg);
+cetak("   Hasil Keselarasan  :", hasil_impor_ptk.status_selaras);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_impor_ptk.status_selaras == "100%_SELARAS_DENGAN_FORMULIR_PTK_EXCEL" dan hasil_impor_ptk.status_tpg == "MEMENUHI_SYARAT_TPG_24_JAM" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2] Keselarasan FORMULIR_PTK_DAPODIK.xlsx: LULUS");
+} lainnya {
+    cetak("❌ [TEST 2] Keselarasan FORMULIR_PTK_DAPODIK.xlsx: GAGAL");
+}
+
+// ==============================================================================
+// [TEST 3] KESELARASAN FORMULIR_PD_DAPODIK.xlsx (Data Siswa, Ortu, Periodik, KIP/KPS)
+// ==============================================================================
+cetak("");
+cetak("================================================================");
+cetak("[3] Ingesti & Keselarasan Data FORMULIR_PD_DAPODIK.xlsx");
+cetak("================================================================");
+
+// Registrasikan Rombel dulu agar terhubung rapi
+dapodik_tambah_rombel_lengkap(dapodik_node, "ROMBEL-X-A", "Kelas X-A", 10, "Kurikulum Merdeka 2024", "R-TEORI-01", "19750812001", "REGULER");
+
+misal excel_pd_fauzi = FormulirPDExcel(
+    "Ahmad Fauzi",
+    "L",
+    "0081234567", // NISN
+    "242510001",  // NIS
+    "DN-02/D.SMP/13/0012345", // No Seri Ijazah SMP
+    "DN-02/SKHUN/13/0012345", // No Seri SKHUN
+    "2-18-02-01-045-001-8",   // No Ujian Nasional SMP
+    "3201012345670001",       // NIK
+    "Bandung",
+    "2008-05-14",
+    "Islam",
+    "Tidak Ada",
+    "Jl. Cikutra Barat No. 88",
+    "Dusun Sukamaju",
+    "Sukapada",
+    "Cibeunying Kidul",
+    "40125",
+    "Rahmat Hidayat",
+    "3201010101700001",
+    1970,
+    "SMA",
+    "Buruh Harian Lepas",
+    850000, // < 1jt
+    "Siti Aminah",
+    "3201010202750002",
+    1975,
+    "SMP",
+    "Ibu Rumah Tangga",
+    0,
+    "", // Tidak ada wali
+    "Ya", // Penerima KPS
+    "KPS-3201-998811",
+    168.0, // TB cm
+    56.0,  // BB kg
+    "2.5 km",
+    30, // 30 menit
+    2   // 2 saudara
+);
+
+misal hasil_impor_pd = impor_excel_formulir_pd(dapodik_node, excel_pd_fauzi, "ROMBEL-X-A");
+
+cetak("👦 Data Terimpor dari FORMULIR_PD_DAPODIK.xlsx :");
+cetak("   Nama Lengkap       :", hasil_impor_pd.nama_siswa, "(NISN:", hasil_impor_pd.nisn, "| NIS:", excel_pd_fauzi.nis + ")");
+cetak("   Ijazah / SKHUN SMP :", excel_pd_fauzi.no_seri_ijazah_smp, "| No UN:", excel_pd_fauzi.no_un_smp);
+cetak("   Orang Tua Kandung  : Ayah =", excel_pd_fauzi.nama_ayah, "| Ibu =", hasil_impor_pd.ibu_kandung);
+cetak("   Afirmasi KPS / PIP : Penerima KPS =", excel_pd_fauzi.is_penerima_kps, "(No KPS:", excel_pd_fauzi.no_kps + ") -> Status:", hasil_impor_pd.status_pip);
+cetak("   Data Periodik Fisik: Antropometri =", hasil_impor_pd.antropometri, "| Waktu Tempuh:", excel_pd_fauzi.waktu_tempuh_menit, "menit");
+cetak("   Hasil Keselarasan  :", hasil_impor_pd.status_selaras);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_impor_pd.status_selaras == "100%_SELARAS_DENGAN_FORMULIR_PD_EXCEL" dan hasil_impor_pd.status_pip == "LAYAK_PIP_DTKS" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 3] Keselarasan FORMULIR_PD_DAPODIK.xlsx: LULUS");
+} lainnya {
+    cetak("❌ [TEST 3] Keselarasan FORMULIR_PD_DAPODIK.xlsx: GAGAL");
+}
+
+// ==============================================================================
+// [TEST 4] INTEGRITAS & KESIAPAN SINKRONISASI PUSDATIN DARI HASIL IMPOR EXCEL
+// ==============================================================================
+cetak("");
+cetak("================================================================");
+cetak("[4] Uji Integritas Validasi & Sinkronisasi Pusdatin Hasil Impor");
+cetak("================================================================");
+
+misal hasil_audit_excel = dapodik_audit_validasi(dapodik_node);
+cetak("🔍 Hasil Audit Integritas:");
+cetak("   Total Invalid      :", hasil_audit_excel.total_invalid, "(Wajib 0 agar bisa sinkron)");
+cetak("   Total Warning      :", hasil_audit_excel.total_warning);
+cetak("   Status Kunci Sync  :", hasil_audit_excel.status_izin_sync);
+
+misal sinkron_resmi = dapodik_sinkronisasi_resmi_pusdatin(dapodik_node);
+cetak("🚀 Status Sinkronisasi :");
+cetak("   Eksekusi Cloud     :", sinkron_resmi.status);
+cetak("   Keterangan         :", sinkron_resmi.keterangan);
+cetak("   Kriptografi Hash   :", sinkron_resmi.hash_pusdatin);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_audit_excel.total_invalid == 0 dan sinkron_resmi.status == "SINKRONISASI_BERHASIL_PUSDATIN" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 4] Validasi & Sinkronisasi Pusdatin Hasil Ingesti Excel: LULUS");
+} lainnya {
+    cetak("❌ [TEST 4] Validasi & Sinkronisasi Pusdatin Hasil Ingesti Excel: GAGAL");
+}
+
+// ==============================================================================
+// REKAPITULASI EVALUASI
+// ==============================================================================
+cetak("");
+cetak("================================================================");
+cetak("HASIL EVALUASI KESELARASAN FORMULIR EXCEL DAPODIK");
+cetak("Total Berkas & Skenario Diuji :", TOTAL_TEST);
+cetak("Lulus Verifikasi              :", LULUS_TEST);
+cetak("================================================================");
+
+jika LULUS_TEST == TOTAL_TEST {
+    cetak("🎉 SEMPURNA! SELURUH FORMULIR EXCEL (PD, PTK, SEKOLAH) 100% SELARAS!");
+} lainnya {
+    cetak("⚠️ ADA SKENARIO YANG BELUM LULUS, SILAKAN PERIKSA LOG DI ATAS.");
+}
+cetak("");

@@ -1,0 +1,81 @@
+// ============================================================================
+// CONTOH WIDYA-LANG 181: INTEGRASI MARKETPLACE SIPLah PANGAN MBG & SEKOLAH
+// Pengadaan Bahan Pangan Lokal Dapur SPPG, Verifikasi Penyedia & BAST Digital
+// ============================================================================
+
+fungsi utama() {
+    cetak("============================================================================");
+    cetak("   SISTEM E-PROCUREMENT PANGAN MBG BERBASIS MARKETPLACE SIPLah KEMENDIKBUD   ");
+    cetak("============================================================================");
+
+    // 1. Profil Penyedia Bahan Pangan Lokal
+    misal nama_penyedia = "Koperasi Desa Merah Putih Somagede (Unit Sembako & Logistik)";
+    misal jenis_badan_usaha = "Koperasi Produsen Pangan Rakyat";
+    misal status_legalitas = "TERVERIFIKASI (NIB: 9120001234567, NPWP, Sertifikat Halal BPJPH, SKP Higiene)";
+    misal radius_pengiriman_km = 25.0;
+
+    cetak("[1] REGISTRASI & KURASI PENYEDIA SIPLah:");
+    cetak("    - Nama Penyedia  : " + nama_penyedia);
+    cetak("    - Badan Usaha    : " + jenis_badan_usaha);
+    cetak("    - Status Izin    : " + status_legalitas);
+    cetak("    - Radius Distrib : " + teks(radius_pengiriman_km) + " KM (Layanan Cold Chain)");
+
+    // 2. Katalog Bahan Pokok MBG di SIPLah
+    cetak("\n[2] KATALOG KOMODITAS PANGAN TERSEDIA DI MARKETPLACE SIPLah:");
+    misal harga_beras_kg = 14500.0;
+    misal stok_beras_kg = 2500.0;
+    misal harga_telur_tray = 48000.0;
+    misal stok_telur_tray = 600.0;
+    misal harga_daging_ayam_kg = 36000.0;
+    misal stok_ayam_kg = 800.0;
+
+    cetak("    1. Beras Organik Premium IR64   : Rp " + teks(harga_beras_kg) + "/kg (Stok: " + teks(stok_beras_kg) + " kg)");
+    cetak("    2. Telur Ayam Ras Segar Grade A : Rp " + teks(harga_telur_tray) + "/tray 30 butir (Stok: " + teks(stok_telur_tray) + " tray)");
+    cetak("    3. Daging Ayam Karkas Dingin    : Rp " + teks(harga_daging_ayam_kg) + "/kg (Stok: " + teks(stok_ayam_kg) + " kg)");
+
+    // 3. E-Order: Pembuatan Surat Pesanan (SP / PO Digital) oleh Dapur Sentral SPPG
+    cetak("\n[3] PENERBITAN SURAT PESANAN (SP) DIGITAL OLEH DAPUR SENTRAL SPPG:");
+    misal no_sp = "SP-SIPLah-20261001-0089";
+    misal pemesan = "Dapur Sentral SPPG Kecamatan Somagede (Kapasitas 3.000 Porsi)";
+    misal qty_beras = 200.0;
+    misal qty_telur = 100.0;
+    misal qty_ayam = 150.0;
+
+    misal subtotal_beras = qty_beras * harga_beras_kg;
+    misal subtotal_telur = qty_telur * harga_telur_tray;
+    misal subtotal_ayam = qty_ayam * harga_daging_ayam_kg;
+    misal total_bruto = subtotal_beras + subtotal_telur + subtotal_ayam;
+
+    misal tarif_pph_22 = 0.005; // 0.5% pengadaan rekanan pemerintah ber-NPWP
+    misal nilai_pph_22 = total_bruto * tarif_pph_22;
+    misal tagihan_netto = total_bruto; // PPh dipotong saat pencairan kas daerah/SIPD
+
+    cetak("    - Nomor SP         : " + no_sp);
+    cetak("    - Satuan Kerja     : " + pemesan);
+    cetak("    - Beras Premium    : 200 kg x Rp 14.500  = Rp " + teks(subtotal_beras));
+    cetak("    - Telur Segar      : 100 tray x Rp 48.000 = Rp " + teks(subtotal_telur));
+    cetak("    - Ayam Karkas      : 150 kg x Rp 36.000  = Rp " + teks(subtotal_ayam));
+    cetak("    ---------------------------------------------------------");
+    cetak("    - Total Nilai PBJ  : Rp " + teks(total_bruto));
+    cetak("    - PPh Pasal 22 (0.5%): Rp " + teks(nilai_pph_22) + " (Dipotong Otomatis)");
+    cetak("    - Status Pesanan   : DIKONFIRMASI PENYEDIA & DALAM PENGIRIMAN");
+
+    // 4. Uji Terima Fisik & Penerbitan BAST Digital di Lokasi Dapur
+    cetak("\n[4] VERIFIKASI UJI TERIMA & BAST ELEKTRONIK (BERITA ACARA SERAH TERIMA):");
+    misal suhu_cold_chain = 6.8; // Celsius (Aman < 8.0 C)
+    misal berat_aktual_kg = 530.0; // 200kg beras + 180kg telur + 150kg ayam
+    misal berat_target_kg = 530.0;
+
+    cetak("    - Suhu Logistik Diterima : " + teks(suhu_cold_chain) + " °C [MEMENUHI SYARAT]");
+    cetak("    - Timbangan Aktual       : " + teks(berat_aktual_kg) + " kg / Target: " + teks(berat_target_kg) + " kg [AKURAT]");
+    cetak("    - Nomor BAST Elektronik  : BAST-SIPLah-20261002-0042");
+    cetak("    - Tanda Tangan Digital   : SAH (Petugas SPPG & Kurir Armada Koperasi)");
+    cetak("    - Status Escrow Dana     : DITERUSKAN KE REKENING BANK PENYEDIA");
+
+    cetak("\n============================================================================");
+    cetak("       INTEGRASI SIPLah DENGAN EKOSISTEM MBG & KOPERASI DESA BERHASIL       ");
+    cetak("============================================================================");
+}
+
+utama();
+

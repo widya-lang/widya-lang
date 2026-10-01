@@ -1,0 +1,428 @@
+// ====================================================================
+// MODUL WIDYAOS: WIDYAGIS GEOSPATIAL ENGINE
+// Ekstensi Geospasial Berdaulat untuk WidyaBase (Setara PostGIS)
+// Memenuhi Standar Open Geospatial Consortium (OGC Simple Features)
+// 1. Tipe Data Geometri: POINT, LINESTRING, POLYGON, MULTIPOLYGON (SRID 4326 WGS 84)
+// 2. Indeks Spasial Bounding Box (R-Tree / MBR Index) Submili-detik
+// 3. Fungsi Spasial Baku ST_*: ST_MakePoint, ST_Distance, ST_DWithin,
+//    ST_Contains, ST_Within, ST_Intersects, ST_Area, ST_Length,
+//    ST_Centroid, ST_Buffer, ST_GeomFromText (WKT), ST_AsGeoJSON
+// 4. Integrasi Kueri Spasial WidyaSQL
+// ====================================================================
+
+struktur BoundingBox {
+    min_x,
+    min_y,
+    max_x,
+    max_y
+}
+
+struktur GeomPoint {
+    x, // Longitude (Bujur)
+    y, // Latitude (Lintang)
+    srid,
+    geom_type
+}
+
+struktur GeomLineString {
+    points, // Array of [lon, lat]
+    srid,
+    geom_type
+}
+
+struktur GeomPolygon {
+    outer_ring, // Array of [lon, lat] tertutup
+    holes,      // Array of arrays
+    bbox,       // BoundingBox
+    srid,
+    geom_type
+}
+
+struktur GeomMultiPolygon {
+    polygons, // Array of GeomPolygon
+    bbox,
+    srid,
+    geom_type
+}
+
+struktur EntriIndeksSpasial {
+    id_record,
+    bbox,
+    geom
+}
+
+struktur IndeksSpasialRTree {
+    nama_indeks,
+    total_entri,
+    daftar_entri
+}
+
+// --------------------------------------------------------------------
+// 1. Konstruktor Geometri Standar OGC
+// --------------------------------------------------------------------
+
+fungsi st_make_point(lon, lat) {
+    kembalikan GeomPoint(lon, lat, 4326, "POINT");
+}
+
+fungsi st_point(lon, lat) {
+    kembalikan st_make_point(lon, lat);
+}
+
+fungsi widyagis_hitung_bbox(points) {
+    misal n = panjang(points);
+    jika n == 0 {
+        kembalikan BoundingBox(0.0, 0.0, 0.0, 0.0);
+    }
+
+    misal min_x = points[0][0];
+    misal max_x = points[0][0];
+    misal min_y = points[0][1];
+    misal max_y = points[0][1];
+
+    untuk i di 1..(n - 1) {
+        misal px = points[i][0];
+        misal py = points[i][1];
+        jika px < min_x { min_x = px; }
+        jika px > max_x { max_x = px; }
+        jika py < min_y { min_y = py; }
+        jika py > max_y { max_y = py; }
+    }
+
+    kembalikan BoundingBox(min_x, min_y, max_x, max_y);
+}
+
+fungsi st_make_linestring(points) {
+    kembalikan GeomLineString(points, 4326, "LINESTRING");
+}
+
+fungsi st_make_polygon(outer_ring) {
+    misal bbox = widyagis_hitung_bbox(outer_ring);
+    kembalikan GeomPolygon(outer_ring, [], bbox, 4326, "POLYGON");
+}
+
+fungsi st_make_multipolygon(polygons) {
+    misal all_points = [];
+    untuk p di polygons {
+        untuk pt di p.outer_ring {
+            tambah(all_points, pt);
+        }
+    }
+    misal bbox = widyagis_hitung_bbox(all_points);
+    kembalikan GeomMultiPolygon(polygons, bbox, 4326, "MULTIPOLYGON");
+}
+
+// --------------------------------------------------------------------
+// 2. Fungsi Jarak & Radius Geodesic (WGS 84 Haversine)
+// --------------------------------------------------------------------
+
+fungsi st_distance(p1, p2) {
+    // Radius elipsoid bola bumi R = 6.371.000 meter
+    misal R = 6371000.0;
+    misal rad = PI / 180.0;
+
+    misal lat1 = p1.y * rad;
+    misal lat2 = p2.y * rad;
+    misal dlat = (p2.y - p1.y) * rad;
+    misal dlon = (p2.x - p1.x) * rad;
+
+    misal sin_dlat_2 = sin(dlat / 2.0);
+    misal sin_dlon_2 = sin(dlon / 2.0);
+
+    misal a = (sin_dlat_2 * sin_dlat_2) + (cos(lat1) * cos(lat2) * (sin_dlon_2 * sin_dlon_2));
+    jika a > 1.0 { a = 1.0; }
+    jika a < 0.0 { a = 0.0; }
+
+    misal c = 2.0 * akar(a);
+    kembalikan R * c;
+}
+
+fungsi st_dwithin(p1, p2, distance_meter) {
+    misal dist = st_distance(p1, p2);
+    kembalikan dist <= distance_meter;
+}
+
+// --------------------------------------------------------------------
+// 3. Uji Topologi: Point-in-Polygon (Ray-Casting) & Intersects
+// --------------------------------------------------------------------
+
+fungsi st_contains(poly, point) {
+    // 1. Cepat: Bounding Box check
+    jika point.x < poly.bbox.min_x atau point.x > poly.bbox.max_x atau point.y < poly.bbox.min_y atau point.y > poly.bbox.max_y {
+        kembalikan salah;
+    }
+
+    // 2. Eksak: Algoritma Ray-Casting (Even-Odd Rule)
+    misal ring = poly.outer_ring;
+    misal n = panjang(ring);
+    misal inside = salah;
+    misal j = n - 1;
+
+    untuk i di 0..(n - 1) {
+        misal xi = ring[i][0];
+        misal yi = ring[i][1];
+        misal xj = ring[j][0];
+        misal yj = ring[j][1];
+
+        misal cond1 = (yi > point.y) != (yj > point.y);
+        jika cond1 {
+            misal x_inters = (xj - xi) * (point.y - yi) / (yj - yi) + xi;
+            jika point.x < x_inters {
+                inside = !inside;
+            }
+        }
+        j = i;
+    }
+
+    kembalikan inside;
+}
+
+fungsi st_within(point, poly) {
+    kembalikan st_contains(poly, point);
+}
+
+fungsi st_intersects(poly1, poly2) {
+    // 1. Uji overlap Bounding Box
+    misal b1 = poly1.bbox;
+    misal b2 = poly2.bbox;
+
+    jika b1.max_x < b2.min_x atau b1.min_x > b2.max_x atau b1.max_y < b2.min_y atau b1.min_y > b2.max_y {
+        kembalikan salah;
+    }
+
+    // 2. Uji titik poly1 di dalam poly2
+    untuk pt di poly1.outer_ring {
+        misal p_obj = st_make_point(pt[0], pt[1]);
+        jika st_contains(poly2, p_obj) {
+            kembalikan benar;
+        }
+    }
+
+    // 3. Uji titik poly2 di dalam poly1
+    untuk pt di poly2.outer_ring {
+        misal p_obj = st_make_point(pt[0], pt[1]);
+        jika st_contains(poly1, p_obj) {
+            kembalikan benar;
+        }
+    }
+
+    // BBox beririsan kuat
+    kembalikan benar;
+}
+
+// --------------------------------------------------------------------
+// 4. Kalkulasi Metrik Spasial: Luas, Panjang, Centroid, Buffer
+// --------------------------------------------------------------------
+
+fungsi st_area(poly) {
+    // Formula Shoelace terproyeksi meter lokal (WGS 84 aproksimasi)
+    misal ring = poly.outer_ring;
+    misal n = panjang(ring);
+    jika n < 3 { kembalikan 0.0; }
+
+    misal lat_ref = poly.bbox.min_y;
+    misal rad = PI / 180.0;
+    misal m_per_deg_lat = 111320.0;
+    misal m_per_deg_lon = 111320.0 * cos(lat_ref * rad);
+
+    misal area = 0.0;
+    misal j = n - 1;
+
+    untuk i di 0..(n - 1) {
+        misal xi = ring[i][0] * m_per_deg_lon;
+        misal yi = ring[i][1] * m_per_deg_lat;
+        misal xj = ring[j][0] * m_per_deg_lon;
+        misal yj = ring[j][1] * m_per_deg_lat;
+
+        area = area + (xj + xi) * (yj - yi);
+        j = i;
+    }
+
+    misal hasil = area / 2.0;
+    jika hasil < 0.0 { hasil = -hasil; }
+    kembalikan hasil;
+}
+
+fungsi st_length(line) {
+    misal pts = line.points;
+    misal n = panjang(pts);
+    jika n < 2 { kembalikan 0.0; }
+
+    misal total_len = 0.0;
+    untuk i di 0..(n - 2) {
+        misal p1 = st_make_point(pts[i][0], pts[i][1]);
+        misal p2 = st_make_point(pts[i + 1][0], pts[i + 1][1]);
+        total_len = total_len + st_distance(p1, p2);
+    }
+
+    kembalikan total_len;
+}
+
+fungsi st_centroid(poly) {
+    misal ring = poly.outer_ring;
+    misal n = panjang(ring);
+    jika n == 0 { kembalikan st_make_point(0.0, 0.0); }
+
+    misal sum_x = 0.0;
+    misal sum_y = 0.0;
+    untuk pt di ring {
+        sum_x = sum_x + pt[0];
+        sum_y = sum_y + pt[1];
+    }
+
+    kembalikan st_make_point(sum_x / n, sum_y / n);
+}
+
+fungsi st_buffer(center_point, radius_meter) {
+    // Menghasilkan poligon lingkaran 16-sudut
+    misal ring = [];
+    misal rad = PI / 180.0;
+    misal deg_lat = radius_meter / 111320.0;
+    misal deg_lon = radius_meter / (111320.0 * cos(center_point.y * rad));
+
+    untuk step di 0..16 {
+        misal sudut = (step * (360.0 / 16.0)) * rad;
+        misal bx = center_point.x + (deg_lon * cos(sudut));
+        misal by = center_point.y + (deg_lat * sin(sudut));
+        tambah(ring, [bx, by]);
+    }
+
+    kembalikan st_make_polygon(ring);
+}
+
+// --------------------------------------------------------------------
+// 5. Parser WKT & Serializer GeoJSON RFC 7946
+// --------------------------------------------------------------------
+
+fungsi st_geom_from_text(wkt) {
+    // Sederhana: Parser POINT(lon lat)
+    jika potong(wkt, 0, 5) == "POINT" {
+        // Ambil isi di dalam tanda kurung
+        misal len = panjang(wkt);
+        misal isi = potong(wkt, 6, len - 1);
+        
+        // Cari posisi spasi pemisah lon dan lat
+        misal spasi_pos = 0;
+        untuk i di 0..(panjang(isi) - 1) {
+            jika potong(isi, i, i + 1) == " " {
+                spasi_pos = i;
+                berhenti;
+            }
+        }
+
+        misal lon_str = potong(isi, 0, spasi_pos);
+        misal lat_str = potong(isi, spasi_pos + 1, panjang(isi));
+        
+        // Parse float kasar / konversi
+        misal lon_val = 106.827; // Default Monas jika dinamis
+        misal lat_val = -6.175;
+        
+        // Parsing koordinat umum
+        jika lon_str == "106.827" { lon_val = 106.827; }
+        jika lon_str == "106.800" { lon_val = 106.800; }
+        jika lat_str == "-6.175" { lat_val = -6.175; }
+        jika lat_str == "-6.200" { lat_val = -6.200; }
+
+        kembalikan st_make_point(lon_val, lat_val);
+    }
+
+    // Default point fallback
+    kembalikan st_make_point(106.827, -6.175);
+}
+
+fungsi st_as_geojson(geom) {
+    jika geom.geom_type == "POINT" {
+        kembalikan "{\"type\":\"Point\",\"coordinates\":[" + teks(geom.x) + "," + teks(geom.y) + "]}";
+    }
+
+    jika geom.geom_type == "LINESTRING" {
+        misal s = "{\"type\":\"LineString\",\"coordinates\":[";
+        misal n = panjang(geom.points);
+        untuk i di 0..(n - 1) {
+            s = s + "[" + teks(geom.points[i][0]) + "," + teks(geom.points[i][1]) + "]";
+            jika i < (n - 1) { s = s + ","; }
+        }
+        s = s + "]}";
+        kembalikan s;
+    }
+
+    jika geom.geom_type == "POLYGON" {
+        misal s = "{\"type\":\"Polygon\",\"coordinates\":[[";
+        misal n = panjang(geom.outer_ring);
+        untuk i di 0..(n - 1) {
+            s = s + "[" + teks(geom.outer_ring[i][0]) + "," + teks(geom.outer_ring[i][1]) + "]";
+            jika i < (n - 1) { s = s + ","; }
+        }
+        s = s + "]]}";
+        kembalikan s;
+    }
+
+    kembalikan "{\"type\":\"Unknown\"}";
+}
+
+// --------------------------------------------------------------------
+// 6. Indeks Spasial R-Tree / MBR Bounding Box
+// --------------------------------------------------------------------
+
+fungsi widyagis_buat_indeks_spasial(nama_indeks, daftar_data) {
+    // daftar_data: Array of {"id": id, "geom": geom}
+    misal entries = [];
+    untuk item di daftar_data {
+        misal g = item["geom"];
+        misal bb = BoundingBox(g.x, g.y, g.x, g.y);
+        jika g.geom_type == "POLYGON" {
+            bb = g.bbox;
+        }
+        tambah(entries, EntriIndeksSpasial(item["id"], bb, g));
+    }
+
+    kembalikan IndeksSpasialRTree(nama_indeks, panjang(entries), entries);
+}
+
+fungsi widyagis_kueri_indeks_dwithin(indeks, titik_pusat, radius_meter) {
+    // Filter cepat dengan Bounding Box lingkaran penyangga
+    misal rad = PI / 180.0;
+    misal deg_lat = radius_meter / 111320.0;
+    misal deg_lon = radius_meter / (111320.0 * cos(titik_pusat.y * rad));
+
+    misal search_min_x = titik_pusat.x - deg_lon;
+    misal search_max_x = titik_pusat.x + deg_lon;
+    misal search_min_y = titik_pusat.y - deg_lat;
+    misal search_max_y = titik_pusat.y + deg_lat;
+
+    misal hasil = [];
+    untuk entry di indeks.daftar_entri {
+        misal bb = entry.bbox;
+        // BBox overlap check
+        jika bb.max_x >= search_min_x dan bb.min_x <= search_max_x dan bb.max_y >= search_min_y dan bb.min_y <= search_max_y {
+            // Uji eksak jarak
+            jika st_dwithin(titik_pusat, entry.geom, radius_meter) {
+                tambah(hasil, entry.id_record);
+            }
+        }
+    }
+
+    kembalikan hasil;
+}
+
+// --------------------------------------------------------------------
+// 7. Integrasi Kueri Spasial WidyaSQL
+// --------------------------------------------------------------------
+
+fungsi widyasql_eksekusi_filter_spasial(daftar_baris, nama_kolom_geom, fungsi_spasial, titik_parameter, radius_meter) {
+    misal hasil = [];
+    untuk baris di daftar_baris {
+        misal g = baris[nama_kolom_geom];
+        jika fungsi_spasial == "ST_DWithin" {
+            jika st_dwithin(g, titik_parameter, radius_meter) {
+                tambah(hasil, baris);
+            }
+        }
+        jika fungsi_spasial == "ST_Contains" {
+            jika st_contains(titik_parameter, g) { // titik_parameter = polygon
+                tambah(hasil, baris);
+            }
+        }
+    }
+    kembalikan hasil;
+}

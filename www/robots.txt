@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://widya-lang.org/sitemap.xml

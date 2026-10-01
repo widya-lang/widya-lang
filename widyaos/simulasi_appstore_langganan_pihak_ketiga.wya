@@ -1,0 +1,158 @@
+// ============================================================================
+// SIMULASI MASTER: WIDYA APP STORE & PAKET BERLANGGANAN PIHAK KETIGA
+// (simulasi_appstore_langganan_pihak_ketiga.wya)
+//
+// 10 Skenario Pengujian Validasi:
+// 1. Registrasi Paket: Paket Tahunan Per-Sekolah (NPSN License)
+// 2. Registrasi Paket: Paket Bulanan Per-Siswa (SaaS Bimbel/Lab AI)
+// 3. Registrasi Paket: Paket Per-Device IFP (Smart Interactive Flat Panel)
+// 4. Guardrail Saldo: Pencegahan Pembelian saat Kas BOSP Sekolah Tidak Cukup
+// 5. Split Settlement: Verifikasi Otomatisasi Setoran PPN 11% ke DJP Kemenkeu
+// 6. Split Settlement: Verifikasi Otomatisasi Setoran PNBP 10% ke Kemendikdasmen
+// 7. Split Settlement: Verifikasi Hak Bersih Vendor 79% Siap Kliring BI-FAST
+// 8. Lifecycle Guardrail: Deteksi Status Mendekati Kadaluwarsa (H-30)
+// 9. Lifecycle Guardrail: Toleransi Grace Period 14 Hari Menunggu Pencairan BOSP
+// 10. Integrasi ARKAS: Auto-Posting Buku Kas Umum (BKU) Rekening 5.1.02.02.01.0063
+// ============================================================================
+
+impor "widyaos/modul/appstore_langganan_pihak_ketiga.wya";
+
+fungsi cetak_status(no, deskripsi, sukses) {
+    jika sukses {
+        tulis("[LULUS] Uji " + ke_teks(no) + ": " + deskripsi);
+    } selain_itu {
+        tulis("[GAGAL] Uji " + ke_teks(no) + ": " + deskripsi);
+    }
+}
+
+fungsi utama() {
+    tulis("============================================================================");
+    tulis("MEMULAI SIMULASI WIDYA APP STORE: PAKET BERLANGGANAN PIHAK KETIGA & ARKAS");
+    tulis("============================================================================");
+
+    misal lulus_semua = benar;
+
+    // ------------------------------------------------------------------------
+    // [1] REGISTRASI PAKET TAHUNAN PER-SEKOLAH
+    // ------------------------------------------------------------------------
+    misal pkt_tahunan = appstore_daftarkan_paket(
+        "PKT-SIM-SEKOLAH-2026",
+        "VND-EDUTECH-01",
+        "PT Inovasi Edukasi Nusantara",
+        "Sistem Manajemen Sekolah Cerdas 2026",
+        "PER_SEKOLAH_TAHUNAN",
+        2500000,
+        365,
+        "did:widya:developer:edutech-01"
+    );
+    misal uji_1_ok = (pkt_tahunan.harga_bruto_rp == 2500000) dan (pkt_tahunan.periode_hari == 365);
+    cetak_status(1, "Registrasi Paket: Paket Tahunan Per-Sekolah (NPSN License)", uji_1_ok);
+    jika uji_1_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [2] REGISTRASI PAKET BULANAN PER-SISWA
+    // ------------------------------------------------------------------------
+    misal pkt_siswa = appstore_daftarkan_paket(
+        "PKT-LAB-AI-SISWA",
+        "VND-KODING-02",
+        "PT Koding Anak Bangsa",
+        "Lab Robotika & AI Interaktif",
+        "PER_SISWA_BULANAN",
+        5000,
+        30,
+        "did:widya:developer:koding-02"
+    );
+    misal uji_2_ok = (pkt_siswa.model_tagihan == "PER_SISWA_BULANAN") dan (pkt_siswa.harga_bruto_rp == 5000);
+    cetak_status(2, "Registrasi Paket: Paket Bulanan Per-Siswa (SaaS Bimbel/Lab AI)", uji_2_ok);
+    jika uji_2_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [3] REGISTRASI PAKET PER-DEVICE IFP
+    // ------------------------------------------------------------------------
+    misal pkt_ifp = appstore_daftarkan_paket(
+        "PKT-IFP-WHITEBOARD-3D",
+        "VND-PANEL-03",
+        "PT Solusi Visual Edukasi",
+        "Interactive Whiteboard 3D Canvas",
+        "PER_DEVICE_IFP",
+        1200000,
+        365,
+        "did:widya:developer:panel-03"
+    );
+    misal uji_3_ok = (pkt_ifp.model_tagihan == "PER_DEVICE_IFP") dan (pkt_ifp.harga_bruto_rp == 1200000);
+    cetak_status(3, "Registrasi Paket: Paket Per-Device IFP (Smart Interactive Flat Panel)", uji_3_ok);
+    jika uji_3_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [4] GUARDRAIL SALDO KAS BOSP KURANG
+    // ------------------------------------------------------------------------
+    misal saldo_sedikit = 500000;
+    misal order_gagal = appstore_beli_langganan_sekolah(pkt_tahunan, "20104567", saldo_sedikit, "2026-07-01", "2027-06-30");
+    misal uji_4_ok = (order_gagal["sukses"] == salah) dan (order_gagal["pesan"] == "SALDO_KAS_BOSP_TIDAK_MENCUKUPI");
+    cetak_status(4, "Guardrail Saldo: Pencegahan Pembelian saat Kas BOSP Sekolah Tidak Cukup", uji_4_ok);
+    jika uji_4_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [5] SPLIT SETTLEMENT: PPN 11% DJP
+    // ------------------------------------------------------------------------
+    misal saldo_cukup = 15000000;
+    misal order_sukses = appstore_beli_langganan_sekolah(pkt_tahunan, "20104567", saldo_cukup, "2026-07-01", "2027-06-30");
+    misal stl = order_sukses["settlement"];
+    // 11% dari Rp 2.500.000 = Rp 275.000
+    misal uji_5_ok = (stl.setoran_ppn_11_rp == 275000) dan (stl.ntpn_pajak_djp != "");
+    cetak_status(5, "Split Settlement: Verifikasi Otomatisasi Setoran PPN 11% ke DJP Kemenkeu (Rp 275.000)", uji_5_ok);
+    jika uji_5_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [6] SPLIT SETTLEMENT: PNBP 10% KEMENDIKDASMEN
+    // ------------------------------------------------------------------------
+    // 10% dari Rp 2.500.000 = Rp 250.000
+    misal uji_6_ok = (stl.setoran_pnbp_10_rp == 250000) dan (stl.ntpn_pnbp_kemendikdasmen != "");
+    cetak_status(6, "Split Settlement: Verifikasi Otomatisasi Setoran PNBP 10% ke Kemendikdasmen (Rp 250.000)", uji_6_ok);
+    jika uji_6_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [7] SPLIT SETTLEMENT: HAK BERSIH VENDOR 79%
+    // ------------------------------------------------------------------------
+    // 79% dari Rp 2.500.000 = Rp 1.975.000
+    misal uji_7_ok = (stl.hak_bersih_vendor_79_rp == 1975000) dan (stl.metode_pencairan == "BI_FAST_SETTLEMENT_LANGSUNG");
+    cetak_status(7, "Split Settlement: Verifikasi Hak Bersih Vendor 79% Siap Kliring BI-FAST (Rp 1.975.000)", uji_7_ok);
+    jika uji_7_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [8] LIFECYCLE GUARDRAIL: NOTIFIKASI H-30 KADALUWARSA
+    // ------------------------------------------------------------------------
+    misal ktr = order_sukses["kontrak"];
+    // Simulasi hari ke-345 (sisa 20 hari, dalam rentang H-30)
+    ktr = appstore_evaluasi_siklus_langganan(ktr, 345);
+    misal uji_8_ok = (ktr.status_layanan == "MENDEKATI_KADALUWARSA") dan (ktr.hari_aktif_tersisa == 20);
+    cetak_status(8, "Lifecycle Guardrail: Deteksi Status Mendekati Kadaluwarsa (H-30)", uji_8_ok);
+    jika uji_8_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [9] LIFECYCLE GUARDRAIL: TOLERANSI GRACE PERIOD 14 HARI
+    // ------------------------------------------------------------------------
+    // Simulasi hari ke-370 (lewat 5 hari dari masa aktif 365, masuk toleransi 14 hari)
+    ktr = appstore_evaluasi_siklus_langganan(ktr, 25);
+    misal uji_9_ok = (ktr.status_layanan == "GRACE_PERIOD_14_HARI") dan (ktr.hari_aktif_tersisa == -5);
+    cetak_status(9, "Lifecycle Guardrail: Toleransi Grace Period 14 Hari Menunggu Pencairan BOSP", uji_9_ok);
+    jika uji_9_ok == salah { lulus_semua = salah; }
+
+    // ------------------------------------------------------------------------
+    // [10] INTEGRASI ARKAS: AUTO-POSTING BKU REKENING 5.1.02.02.01.0063
+    // ------------------------------------------------------------------------
+    misal bku = appstore_buat_jurnal_bku_arkas(ktr, stl, "2026-07-01");
+    misal uji_10_ok = (bku.kode_rekening == "5.1.02.02.01.0063") dan (bku.nominal_debet_rp == 2500000) dan (bku.status_bku == "TERPOSTING_BKU_BOSP");
+    cetak_status(10, "Integrasi ARKAS: Auto-Posting Buku Kas Umum (BKU) Rekening 5.1.02.02.01.0063", uji_10_ok);
+    jika uji_10_ok == salah { lulus_semua = salah; }
+
+    tulis("============================================================================");
+    jika lulus_semua {
+        tulis("HASIL AKHIR: 10/10 SKENARIO LULUS (100% SUKSES)");
+    } selain_itu {
+        tulis("HASIL AKHIR: ADA SKENARIO GAGAL");
+    }
+    tulis("============================================================================");
+}
+
+utama();

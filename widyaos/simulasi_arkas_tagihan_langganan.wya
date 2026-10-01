@@ -1,0 +1,174 @@
+// ============================================================================
+// SIMULASI PENGUJIAN: PEMBAYARAN LISTRIK & LANGGANAN DI ARKAS 4.0 (WidyaOS)
+// Menguji Kepatuhan Juknis BOSP, Fluktuasi Tagihan, Token Prabayar, & Pajak
+// ============================================================================
+
+impor "widyaos/modul/arkas_tagihan_langganan.wya";
+
+cetak("");
+cetak("====================================================================");
+cetak("⚡  SIMULASI: PEMBAYARAN LISTRIK & LANGGANAN DI ARKAS (BOSP/BOSDA)  ");
+cetak("====================================================================");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+// Inisialisasi Database Kontrak Sekolah
+misal daftar_kontrak = {};
+
+// 1. Daftarkan ID Pelanggan Resmi Sekolah
+misal pln_induk = MetadataLanggananSekolah(
+    "KTR-PLN-01",
+    "PLN_PASCABAYAR",
+    "537311029841",
+    "SMK NEGERI 1 WIDYAPURA",
+    "Gedung Utama & Lab TIK",
+    "5.1.02.02.01.0061",
+    "16500 VA",
+    2500000.0
+);
+arkas_registrasi_kontrak_utilitas(daftar_kontrak, pln_induk);
+
+misal pln_bengkel = MetadataLanggananSekolah(
+    "KTR-PLN-02",
+    "PLN_TOKEN_PRABAYAR",
+    "320019283741",
+    "SMK NEGERI 1 WIDYAPURA (BENGKEL OTOMOTIF)",
+    "Bengkel Praktik Motor",
+    "5.1.02.02.01.0061",
+    "5500 VA",
+    1000000.0
+);
+arkas_registrasi_kontrak_utilitas(daftar_kontrak, pln_bengkel);
+
+misal isp_sekolah = MetadataLanggananSekolah(
+    "KTR-ISP-01",
+    "INTERNET_ISP",
+    "122485901234",
+    "SMK NEGERI 1 WIDYAPURA",
+    "Server & WiFi Area Sekolah",
+    "5.1.02.02.01.0064",
+    "200 Mbps Dedicated",
+    3500000.0
+);
+arkas_registrasi_kontrak_utilitas(daftar_kontrak, isp_sekolah);
+
+// -------------------------------------------------------------
+// [UJI 1] Pembayaran Listrik Pascabayar PLN (Bulan Normal & ANBK)
+// -------------------------------------------------------------
+cetak("[1] Uji Tagihan Listrik Pascabayar PLN & Rekonsiliasi Pagu:");
+misal pagu_bulanan_listrik = 2000000.0;
+misal sisa_pagu_tahunan = 18000000.0;
+
+// Kasus 1A: Bulan Normal (Tagihan Rp 1.850.000, di bawah pagu Rp 2.000.000)
+misal trx_listrik_normal = arkas_proses_pembayaran_tagihan(
+    daftar_kontrak,
+    "537311029841",
+    "2026-03",
+    "2026-03-10",
+    1850000.0,
+    3000.0, // Admin loket
+    "CMS_DEBET_BANK",
+    "CMS-BPD-TRX-8821",
+    1450.0,
+    pagu_bulanan_listrik,
+    sisa_pagu_tahunan
+);
+
+cetak("  • Status Transaksi   :", trx_listrik_normal.status_validasi);
+cetak("  • Total Terdebet CMS : Rp", trx_listrik_normal.total_bayar_rp);
+cetak("  • Perlakuan Pajak    :", trx_listrik_normal.status_pajak, "(PPN: Rp", trx_listrik_normal.nominal_ppn, ")");
+cetak("  • Catatan Audit      :", trx_listrik_normal.pesan_audit);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika trx_listrik_normal.status_validasi == "VALID_SIAP_BKU" dan trx_listrik_normal.nominal_ppn == 0.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Listrik Pascabayar Resmi Bebas PPN Sesuai UU HPP & Masuk BKU!");
+}
+
+// Kasus 1B: Bulan ANBK (Lab Menyala Penuh, Tagihan melonjak Rp 2.450.000 > Pagu Rp 2.000.000)
+cetak("\n  [Kasus 1B] Fluktuasi Tagihan Saat Pelaksanaan ANBK (Melebihi Pagu Bulan):");
+misal rekon_anbk = arkas_rekonsiliasi_pagu_listrik(2000000.0, 2453000.0, sisa_pagu_tahunan);
+cetak("  • Status Rekonsiliasi:", rekon_anbk.status);
+cetak("  • Solusi ARKAS       :", rekon_anbk.tindakan_arkas);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika rekon_anbk.status == "TAGIHAN_MELONJAK_TERCOVER" dan rekon_anbk.jenis_pergeseran == "INTRA_REKENING_ANTAR_BULAN" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Auto-Pergeseran Intra-Rekening Antar-Bulan Aktif Tanpa Harus Ubah RKAS Dinas!");
+}
+
+// -------------------------------------------------------------
+// [UJI 2] Guardrail Pembelian Token Listrik Prabayar (Anti-Hoarding)
+// -------------------------------------------------------------
+cetak("\n[2] Uji Pembelian Token Listrik Prabayar (Anti-Temuan BPK):");
+
+// Kasus 2A: Pembelian Wajar (Bulan Maret, beli Rp 500.000)
+misal uji_token_wajar = arkas_validasi_pembelian_token_prabayar(500000.0, 150.0, 350.0, "03");
+cetak("  • Uji Token Reguler :", uji_token_wajar.status, "->", uji_token_wajar.pesan);
+
+// Kasus 2B: Pembelian Berlebihan Akhir Tahun (Bulan Desember, coba beli Rp 10.000.000)
+misal uji_token_borong = arkas_validasi_pembelian_token_prabayar(10000000.0, 2500.0, 350.0, "12");
+cetak("  • Uji Borong Akhir  :", uji_token_borong.status, "->", uji_token_borong.pesan);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika uji_token_wajar.lolos == benar dan uji_token_borong.lolos == salah {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Guardrail Berhasil Mencegah Penimbunan Token di Akhir Tahun Anggaran!");
+}
+
+// -------------------------------------------------------------
+// [UJI 3] Langganan Internet ISP (Pajak PPN 11% & PPh 23)
+// -------------------------------------------------------------
+cetak("\n[3] Uji Langganan Akses Internet ISP & Pajak:");
+misal tagihan_isp = 3330000.0; // Tagihan bruto sudah include PPN
+misal pajak_isp = arkas_hitung_pajak_langganan("INTERNET_ISP", tagihan_isp);
+
+cetak("  • Nominal Invoice ISP : Rp", tagihan_isp);
+cetak("  • Dasar Pengenaan DPP : Rp", pajak_isp.dpp_rp);
+cetak("  • PPN 11% Faktur Pajak: Rp", pajak_isp.ppn_rp);
+cetak("  • PPh 23 Jasa (2%)    : Rp", pajak_isp.pph23_rp);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika pajak_isp.status_pajak == "KENA_PPN_PPH" dan pajak_isp.pph23_rp > 59999.0 dan pajak_isp.pph23_rp < 60001.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Pajak Internet ISP (PPN 11% & PPh 23) Dihitung Akurat!");
+}
+
+// -------------------------------------------------------------
+// [UJI 4] Guardrail Anti-Fraud ID Pelanggan (Listrik Pribadi)
+// -------------------------------------------------------------
+cetak("\n[4] Uji Deteksi Penyusupan ID Pelanggan Pribadi (Anti-Fraud):");
+misal idpel_palsu = "519999888123"; // IDPEL rumah oknum yang tidak ada di daftar sarpras
+misal trx_palsu = arkas_proses_pembayaran_tagihan(
+    daftar_kontrak,
+    idpel_palsu,
+    "2026-03",
+    "2026-03-11",
+    450000.0,
+    2500.0,
+    "CMS_DEBET_BANK",
+    "CMS-TRX-FRAUD-001",
+    0.0,
+    2000000.0,
+    18000000.0
+);
+
+cetak("  • Status Validasi IDPEL :", trx_palsu.status_validasi);
+cetak("  • Pesan Perlindungan    :", trx_palsu.pesan_audit);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika trx_palsu.status_validasi == "DITOLAK_ANOMALI" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: ID Pelanggan Liar/Pribadi Berhasil Ditolak oleh Sistem!");
+}
+
+// -------------------------------------------------------------
+// REKAPITULASI HASIL AKHIR
+// -------------------------------------------------------------
+cetak("");
+cetak("====================================================================");
+cetak("🏆 HASIL SIMULASI: ", LULUS_TEST, "/", TOTAL_TEST, " KASUS PEMBAYARAN ARKAS LULUS (", (LULUS_TEST * 100) / TOTAL_TEST, "%)");
+cetak("====================================================================");
+cetak("");

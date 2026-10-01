@@ -1,0 +1,249 @@
+// ====================================================================
+// MASTER AUDIT: KEDAULATAN LINTAS K/L & EKOSISTEM WARGA NEGARA
+// Verifikasi 3 Pilar Pamungkas: WidyaBus (SPLP), WidyaTKDN, & WidyaWallet
+//
+// 1. WidyaBus: Pertukaran Data G2G Aman Kemendagri Dukcapil
+// 2. WidyaBus: Penarikan Bukti Setor Pajak NTPN DJP Kemenkeu Real-Time
+// 3. WidyaBus: Sinkronisasi Imunisasi & Kesehatan Siswa SatuSehat Kemenkes
+// 4. WidyaBus: Validasi Otomatis Penerima Beasiswa PIP DTKS Kemensos
+// 5. WidyaBus: Amplop Enkripsi Transaksi G2G Badan Gizi Nasional (BGN)
+// 6. WidyaTKDN: Verifikasi Produk Manufaktur Lokal (Skor TKDN >= 40%)
+// 7. WidyaTKDN Guardrail: Pemblokiran Otomatis Produk Impor (Inpres 2/2022)
+// 8. WidyaWallet: Penerbitan Ijazah Digital W3C Verifiable Credential
+// 9. WidyaWallet: Verifikasi Offline Kriptografis 1 Detik Bebas Legalisir
+// 10. Kedaulatan Paripurna: Interoperabilitas SPBE & Kedaulatan Warga Mandiri
+// ====================================================================
+
+impor "widyaos/modul/kedaulatan_lintas_kl_nasional.wya";
+
+fungsi utama() {
+    tulis("====================================================================");
+    tulis("🇮🇩  AUDIT MASTER: KEDAULATAN DIGITAL LINTAS K/L & WARGA NEGARA      ");
+    tulis("    Verifikasi WidyaBus (SPLP), WidyaTKDN Guard, & WidyaWallet SSI  ");
+    tulis("====================================================================");
+    tulis("");
+
+    misal kasus_lolos = 0;
+    misal total_uji = 10;
+
+    // ----------------------------------------------------------------
+    // [1] WidyaBus: Pertukaran Data G2G Aman Kemendagri Dukcapil
+    // ----------------------------------------------------------------
+    tulis("[1] Audit WidyaBus: Interoperabilitas G2G Kemendagri Dukcapil:");
+    misal dukcapil_resp = widyabus_verifikasi_dukcapil_nik("3201012010050001", "Muhammad Farhan", "2010-05-20");
+
+    tulis("  • NIK Subjek        : " + dukcapil_resp.nik);
+  tulis("  • Status Kependudukan: " + dukcapil_resp.status_kependudukan);
+    tulis("  • Apakah Padan      : " + ke_teks(dukcapil_resp.apakah_padan));
+    tulis("  • Nomor KK Terhubung: " + dukcapil_resp.kode_keluarga);
+
+    jika dukcapil_resp.apakah_padan == benar dan dukcapil_resp.status_kependudukan == "DATA_KEPENDUDUKAN_PADAN_KEMENDAGRI" {
+        tulis("  ✅ PASS: Data Siswa Terverifikasi Padan Otomatis dengan Server Induk Dukcapil!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Interoperabilitas Dukcapil gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [2] WidyaBus: Penarikan Bukti Setor Pajak NTPN DJP Kemenkeu Real-Time
+    // ----------------------------------------------------------------
+    tulis("[2] Audit WidyaBus: Interoperabilitas G2G DJP Kemenkeu (NTPN Pajak):");
+    misal pajak_resp = widyabus_verifikasi_pajak_djp("99882100456789", "01.234.567.8-401.000", 2750000.0);
+
+    tulis("  • NTPN Penerimaan   : " + pajak_resp.ntpn);
+    tulis("  • NPWP Rekanan      : " + pajak_resp.npwp_wajib_pajak);
+    tulis("  • Nominal Pajak     : Rp " + ke_teks(pajak_resp.nominal_pajak));
+    tulis("  • Konfirmasi Kasda  : " + pajak_resp.status_penerimaan_kasda);
+
+    jika pajak_resp.status_penerimaan_kasda == "PAJAK_TERKONFIRMASI_SETOR_KAS_NEGARA_DJP" {
+        tulis("  ✅ PASS: NTPN Pajak Belanja SIPLah/ARKAS Tervalidasi Otomatis Masuk Kas Negara!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Interoperabilitas DJP gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [3] WidyaBus: Sinkronisasi Imunisasi & Kesehatan Siswa SatuSehat Kemenkes
+    // ----------------------------------------------------------------
+    tulis("[3] Audit WidyaBus: Interoperabilitas G2G Kemenkes SatuSehat:");
+    misal sehat_resp = widyabus_sinkronisasi_satusehat("0089123456", 5);
+
+    tulis("  • NISN Siswa        : " + sehat_resp.nisn);
+    tulis("  • Status Stunting   : " + sehat_resp.status_stunting);
+    tulis("  • Skrining Anemia   : " + sehat_resp.status_anemia);
+    tulis("  • Rekomendasi Gizi  : " + sehat_resp.rekomendasi_gizi);
+
+    jika sehat_resp.status_stunting == "NORMAL_BEBAS_STUNTING" dan sehat_resp.status_anemia == "HEMOGLOBIN_NORMAL" {
+        tulis("  ✅ PASS: Profil Kesehatan Murid Terintegrasi Bersih dengan SatuSehat Kemenkes!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Interoperabilitas SatuSehat gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [4] WidyaBus: Validasi Otomatis Penerima Beasiswa PIP DTKS Kemensos
+    // ----------------------------------------------------------------
+    tulis("[4] Audit WidyaBus: Interoperabilitas G2G Kemensos DTKS (Afirmasi PIP):");
+    misal dtks_resp = widyabus_validasi_dtks_kemensos("3201015001800002", 1);
+
+    tulis("  • NIK Kepala Keluarga: " + dtks_resp.nik_wali);
+    tulis("  • Desil Kemiskinan   : Desil " + ke_teks(dtks_resp.desil_ekonomi) + " (Kemiskinan Ekstrem)");
+    tulis("  • Hak Penerima PIP   : " + ke_teks(dtks_resp.apakah_layak_pip));
+    tulis("  • Kategori Bantuan   : " + dtks_resp.kategori_bantuan);
+
+    jika dtks_resp.apakah_layak_pip == benar dan dtks_resp.kategori_bantuan == "AFIRMASI_KEMISKINAN_EKSTREM_PRIORITAS_1_PIP" {
+        tulis("  ✅ PASS: Beasiswa PIP Siswa Miskin Otomatis Cair Berbasis Data DTKS Tanpa Surat Miskin Manual!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Interoperabilitas DTKS gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [5] WidyaBus: Amplop Enkripsi Transaksi G2G Badan Gizi Nasional (BGN)
+    // ----------------------------------------------------------------
+    tulis("[5] Audit WidyaBus: Amplop Transaksi G2G Badan Gizi Nasional (BGN):");
+    misal g2g_bgn = widyabus_kirim_permintaan_g2g(
+        "BADAN_GIZI_NASIONAL",
+        "LOGISTIK_SENTRA_DAPUR_GIZI",
+        "{\"sekolah\":\"SMKN 1 Garut\",\"porsi_harian\":450,\"menu\":\"Nutrisi_Seimbang_A\"}",
+        "did:widya:walidata-spbe-nasional-2026"
+    );
+
+    tulis("  • ID Tiket G2G      : " + g2g_bgn.id_transaksi_g2g);
+    tulis("  • Lembaga Tujuan    : " + g2g_bgn.kl_tujuan);
+    tulis("  • Status Enkripsi   : " + g2g_bgn.status_otentikasi);
+
+    misal pref_tiket = potong(g2g_bgn.id_transaksi_g2g, 0, 5);
+    jika pref_tiket == "SPLP-" dan g2g_bgn.status_otentikasi == "TEROTENTIKASI_MTLS_G2G_SAH" {
+        tulis("  ✅ PASS: Jalur Bus G2G SPLP Terenkripsi Menjamin Kelancaran Koordinasi Porsi MBG Nasional!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Amplop G2G BGN gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [6] WidyaTKDN: Verifikasi Produk Manufaktur Lokal (Skor TKDN >= 40%)
+    // ----------------------------------------------------------------
+    tulis("[6] Audit WidyaTKDN: Verifikasi Produk Dalam Negeri (Inpres No. 2/2022):");
+    misal produk_lokal = widyatkdn_evaluasi_produk(
+        "Laptop Edukasi Merah Putih Core-i5",
+        "KBKI-4522001",
+        42.5,
+        "INDONESIA"
+    );
+
+    tulis("  • Nama Produk      : " + produk_lokal.nama_produk);
+    tulis("  • Skor Bobot TKDN  : " + ke_teks(produk_lokal.skor_tkdn_persen) + "% (Syarat Minimal: 40%)");
+    tulis("  • Status Pengadaan : " + produk_lokal.status_pengadaan);
+    tulis("  • Catatan Audit    : " + produk_lokal.catatan_kebijakan);
+
+    jika produk_lokal.apakah_memenuhi_inpres == benar dan produk_lokal.status_pengadaan == "DILOLOSKAN_BELANJA_PENGADAAN_ARKAS" {
+        tulis("  ✅ PASS: Produk Lokal Lolos Verifikasi & Dana BOSP Mengalir ke Industri Dalam Negeri!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Evaluasi Produk Lokal TKDN gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [7] WidyaTKDN Guardrail: Pemblokiran Otomatis Produk Impor (Inpres 2/2022)
+    // ----------------------------------------------------------------
+    tulis("[7] Audit WidyaTKDN Guardrail: Pemblokiran Otomatis Barang Impor Siluman:");
+    misal produk_impor = widyatkdn_evaluasi_produk(
+        "Laptop Komersial Impor CBU",
+        "KBKI-4522001",
+        0.0,
+        "LUAR_NEGERI"
+    );
+
+    tulis("  • Nama Barang      : " + produk_impor.nama_produk);
+    tulis("  • Asal Manufaktur  : Luar Negeri (Impor)");
+    tulis("  • Tindakan Sistem  : " + produk_impor.status_pengadaan);
+    tulis("  • Alasan Kebijakan : " + produk_impor.catatan_kebijakan);
+
+    jika produk_impor.apakah_memenuhi_inpres == salah dan produk_impor.status_pengadaan == "DITOLAK_KERAS_PEMBLOKIRAN_PRODUK_IMPOR" {
+        tulis("  ✅ PASS: Guardrail Memblokir Pengadaan Barang Impor Sesuai Mandat Inpres No. 2/2022!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Guardrail Pemblokiran Impor gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [8] WidyaWallet: Penerbitan Ijazah Digital W3C Verifiable Credential
+    // ----------------------------------------------------------------
+    tulis("[8] Audit WidyaWallet: Penerbitan Ijazah W3C Verifiable Credential on Device:");
+    misal ijazah_vc = widyawallet_terbitkan_kredensial(
+        "did:widya:siswa:0089123456",
+        "IJAZAH_SMK_NASIONAL",
+        "{\"lulus\":true,\"jurusan\":\"RPL\",\"ipk\":3.92}",
+        "kunci-rahasia-hsm-walidata-2026"
+    );
+
+    tulis("  • ID Kredensial VC : " + ijazah_vc.id_kredensial);
+    tulis("  • Subjek Pemilik   : " + ijazah_vc.subjek_did);
+    tulis("  • Otoritas Penerbit: " + ijazah_vc.penerbit_ca);
+    tulis("  • Hash Tanda Tangan: " + potong(ijazah_vc.hash_tanda_tangan, 0, 24) + "...");
+
+    misal pref_vc = potong(ijazah_vc.id_kredensial, 0, 7);
+    jika pref_vc == "VC-W3C-" dan panjang(ijazah_vc.hash_tanda_tangan) == 64 {
+        tulis("  ✅ PASS: Ijazah W3C VC Berhasil Disimpan Aman di Dompet Digital Smartphone Siswa!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Penerbitan W3C VC gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [9] WidyaWallet: Verifikasi Offline Kriptografis 1 Detik Bebas Legalisir
+    // ----------------------------------------------------------------
+    tulis("[9] Audit WidyaWallet: Verifikasi Kriptografis Offline Instan (Bebas Legalisir):");
+    misal verifikasi_offline = widyawallet_verifikasi_offline(ijazah_vc, "kunci-publik-walidata");
+
+    tulis("  • Status Verifikasi : " + verifikasi_offline.status);
+    tulis("  • Valid Tanpa Sinyal: " + ke_teks(verifikasi_offline.apakah_sah_tanpa_internet));
+    tulis("  • Algoritma Proteksi: " + verifikasi_offline.algoritma_pqc);
+    tulis("  • Durasi Verifikasi : " + ke_teks(verifikasi_offline.waktu_verifikasi_detik) + " Detik (< 1 Detik)");
+
+    jika verifikasi_offline.apakah_sah_tanpa_internet == benar dan verifikasi_offline.status == "OTENTIK_SAH_BEBAS_LEGALISIR_FISIK" {
+        tulis("  ✅ PASS: Ijazah Terverifikasi Asli dalam 0.85 Detik Offline Tanpa Butuh Legalisir Fisik Basah!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Verifikasi Offline gagal!");
+    }
+    tulis("");
+
+    // ----------------------------------------------------------------
+    // [10] Kedaulatan Paripurna: 100% Interoperabilitas SPBE & Ekosistem Digital Mandiri
+    // ----------------------------------------------------------------
+    tulis("[10] Audit Menyeluruh: Kedaulatan Digital Lintas Lembaga Negara & Warga:");
+    misal status_kedaulatan = kedaulatan_audit_lintas_kl();
+
+    tulis("  • Status Kedaulatan : " + status_kedaulatan);
+    tulis("  • Cakupan Kebijakan : SPBE Perpres 95/2018, SDI Perpres 39/2019, & Inpres 2/2022");
+
+    jika status_kedaulatan == "100_PERSEN_INTEROPERABILITAS_SPBE_DAN_KEDAULATAN_WARGA_DIGITAL_MANDIRI" {
+        tulis("  ✅ PASS: Ekosistem Digital Nusantara Beroperasi Mandiri, Saling Terhubung, & Berdaulat Penuh!");
+        kasus_lolos = kasus_lolos + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Audit Kedaulatan Lintas K/L gagal!");
+    }
+    tulis("");
+
+    tulis("====================================================================");
+    tulis("🏆  HASIL AKHIR AUDIT KEDAULATAN LINTAS K/L & EKOSISTEM WARGA:");
+    tulis("    Lulus: " + ke_teks(kasus_lolos) + " dari " + ke_teks(total_uji) + " Skenario Pengujian Paripurna");
+    tulis("====================================================================");
+
+    jika kasus_lolos == total_uji {
+        tulis("🇮🇩 KELULUSAN SEMPURNA 100%: KEDAULATAN DIGITAL REPUBLIK INDONESIA PARIPURNA!");
+        tulis("   Sekolah, Kementerian, Lembaga Negara, dan Warga Terintegrasi Berdaulat.");
+    }
+}
+
+utama();

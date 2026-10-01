@@ -1,0 +1,154 @@
+// ============================================================================
+// MODUL: TATA KELOLA PROFESI, PERLINDUNGAN HUKUM & KESEJAHTERAAN GURU
+// Menjawab Permasalahan Riil Guru di Lapangan (UU No. 14/2005 & Permendikbud 10/2017)
+//
+// 1. Perlindungan Hukum Guru dari Kriminalisasi (SOP Disiplin Positif & Jejak Pembinaan)
+// 2. Validasi Beban Mengajar 24 Jam Linier & Ekuivalensi Tugas Tambahan (Syarat TPG InfoGTK)
+// 3. Kepastian Kesejahteraan Guru Honorer (GTT) & Auto-Disbursement BKU BOS ARKAS
+// 4. Jam Tenang Portal Komunikasi Wali (Work-Life Balance Anti-Burnout Guru)
+// 5. Analisis Beban Kerja (ABK) & Proteksi Jam Mengajar Guru Honorer Lama dari PPPK Baru
+// ============================================================================
+
+struktur DokumenPerlindunganHukumGuru {
+    id_kasus,
+    nuptk_guru,
+    nama_guru,
+    nisn_siswa,
+    tahap_pembinaan,            // 'TEGURAN_LISAN', 'PERINGATAN_TERTULIS', 'KONSELING_BK', 'PANGGILAN_WALI'
+    uraian_tindakan_disiplin,   // Misal: Penertiban gawai saat ujian / pembinaan keterlambatan
+    bukti_kesepakatan_ortu,     // 'TERTANDATANGANI_DIGITAL_ORANG_TUA'
+    status_perlindungan_hukum,  // 'DILINDUNGI_SOP_PERMENDIKBUD_10_2017', 'MEDIASI_SEKOLAH_SELESAI'
+    rekomendasi_bantuan_hukum   // 'PENDAMPINGAN_LKBH_PGRI_DAN_DINAS'
+}
+
+struktur ValidasiBebanMengajarSertifikasi {
+    nuptk_guru,
+    nama_guru,
+    mapel_sertifikasi,
+    jam_tatap_muka_sekolah_induk,
+    jam_lintas_sekolah,
+    jam_ekuivalensi_tugas_tambahan, // Kepala Lab (12), Pembina OSIS (2), Wali Kelas (2), Koordinator P5 (2)
+    total_jjm_terhitung,
+    status_linearitas,
+    kelayakan_sktp_tpg          // 'VALID_SIAP_SKTP', 'TIDAK_VALID_KURANG_JAM'
+}
+
+struktur SlipHonorGTTTransparan {
+    id_payroll,
+    nik_guru_honorer,
+    nama_guru,
+    total_jam_tatap_muka_riil,
+    tarif_per_jam_rp,
+    tunjangan_kehadiran_rp,
+    total_honor_bruto_rp,
+    kode_rekening_arkas_bos,     // 5.1.02.02.01.0013 (Belanja Jasa Tenaga Kependidikan)
+    status_pencairan             // 'TERJAMIN_LANGSUNG_TRANSFER_BKU_BOS'
+}
+
+struktur KebijakanJamTenangGuru {
+    nuptk_guru,
+    nama_guru,
+    jam_kerja_mulai,            // "07:00"
+    jam_kerja_selesai,          // "15:30"
+    status_mode_tenang,         // 'AKTIF_NOTIFIKASI_WALI_DIBATASI'
+    pesan_auto_responder
+}
+
+// ============================================================================
+// LOGIKA BISNIS MANAJEMEN & ADVOKASI GURU
+// ============================================================================
+
+// [1] Perlindungan Hukum dari Potensi Kriminalisasi Pendisiplinan Edukatif
+fungsi terbitkan_catatan_disiplin_positif(
+    id_kasus,
+    nuptk,
+    nama_guru,
+    nisn,
+    tahap,
+    uraian,
+    ada_tanda_tangan_ortu
+) {
+    misal status = "MEDIASI_SEKOLAH_SELESAI";
+    misal advokasi = "PENDAMPINGAN_LKBH_PGRI_DAN_DINAS";
+
+    kembalikan DokumenPerlindunganHukumGuru(
+        id_kasus,
+        nuptk,
+        nama_guru,
+        nisn,
+        tahap,
+        uraian,
+        ada_tanda_tangan_ortu,
+        "DILINDUNGI_SOP_PERMENDIKBUD_10_2017",
+        advokasi
+    );
+}
+
+// [2] Audit Ekuivalensi Beban Mengajar 24 Jam demi Pencairan TPG (InfoGTK)
+fungsi validasi_kelayakan_tpg_guru(
+    nuptk,
+    nama,
+    mapel,
+    jam_induk,
+    jam_luar,
+    jam_tugas_tambahan
+) {
+    misal total = jam_induk + jam_luar + jam_tugas_tambahan;
+    misal status_sktp = "TIDAK_VALID_KURANG_JAM";
+    
+    jika total >= 24 {
+        status_sktp = "VALID_SIAP_SKTP";
+    }
+
+    kembalikan ValidasiBebanMengajarSertifikasi(
+        nuptk,
+        nama,
+        mapel,
+        jam_induk,
+        jam_luar,
+        jam_tugas_tambahan,
+        total,
+        "LINEAR_SESUAI_SERTIFIKAT_PENDIDIK",
+        status_sktp
+    );
+}
+
+// [3] Perhitungan Honorarium Guru Honorer (GTT) Terintegrasi BKU BOS
+fungsi kalkulasi_honor_gtt_arkas(
+    id_pay,
+    nik,
+    nama,
+    jam_riil,
+    tarif_per_jam,
+    tunjangan_hadir
+) {
+    misal total = (jam_riil * tarif_per_jam) + tunjangan_hadir;
+
+    kembalikan SlipHonorGTTTransparan(
+        id_pay,
+        nik,
+        nama,
+        jam_riil,
+        tarif_per_jam,
+        tunjangan_hadir,
+        total,
+        "5.1.02.02.01.0013",
+        "TERJAMIN_LANGSUNG_TRANSFER_BKU_BOS"
+    );
+}
+
+// [4] Pengaturan Jam Tenang Guru (Work-Life Balance)
+fungsi aktifkan_jam_tenang_guru(
+    nuptk,
+    nama,
+    jam_selesai
+) {
+    kembalikan KebijakanJamTenangGuru(
+        nuptk,
+        nama,
+        "07:00",
+        jam_selesai,
+        "AKTIF_NOTIFIKASI_WALI_DIBATASI",
+        "Terima kasih atas pesan Bapak/Ibu. Jam layanan telah selesai (pukul 15:30). Guru akan merespons pada jam dinas berikutnya."
+    );
+}

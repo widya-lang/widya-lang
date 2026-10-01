@@ -1,0 +1,86 @@
+// =========================================================================
+// Contoh 169: WidyaDesktop Framework Showcase
+// Mendemonstrasikan Siklus Hidup Jendela Desktop Native, Baki Sistem,
+// Menu Bilah, Sinyal Reaktif, dan Integrasi IPC Dua Arah
+// =========================================================================
+
+impor "./modul/desktop.wya";
+
+fungsi utama() {
+    cetak("=================================================================");
+    cetak("   🖥️  DEMO WIDYADESKTOP FRAMEWORK - APLIKASI DESKTOP NATIVE     ");
+    cetak("=================================================================");
+
+    // 1. Inisialisasi Aplikasi Desktop melalui Modul
+    misal app = BuatAplikasiDesktop("Widya Studio Pro Desktop", 1200, 800);
+    cetak("1. Jendela Dibuat: " + app.jendela.judul + " [" + ke_teks(app.jendela.lebar) + "x" + ke_teks(app.jendela.tinggi) + "]");
+
+    // 2. Pusatkan Jendela dan Ubah Judul
+    app.set_judul("Widya Studio Pro (Desktop Enterprise Edition)");
+    app.pusatkan();
+    cetak("2. Jendela Terpusat pada Koordinat: X=" + ke_teks(app.jendela.posisi_x) + ", Y=" + ke_teks(app.jendela.posisi_y));
+
+    // 3. Tambahkan Menu Bilah Khusus
+    app.tambah_menu("Buka Terminal", "Ctrl+`");
+    app.tambah_menu("Audit Keamanan", "Ctrl+Shift+A");
+    cetak("3. Menu Bilah Dikonfigurasi dengan Sukses.");
+
+    // 4. Kirim Notifikasi ke Baki Sistem (System Tray)
+    app.kirim_notifikasi(
+        "WidyaDesktop Aktif",
+        "Aplikasi desktop siap melayani permintaan pengguna."
+    );
+    cetak("4. Notifikasi Baki Terkirim: " + app.baki.notifikasi_terakhir);
+
+    // 5. Daftarkan RPC Handlers (Prosedur yang Dipanggil dari Frontend)
+    app.daftarkan_rpc("hitung_metrik", fungsi(data) {
+        cetak("   [RPC Backend] Menghitung metrik performa untuk target: " + data.target);
+        kembalikan {
+            "sukses": benar,
+            "metrik": {
+                "throughput_ops_sec": 850000,
+                "latency_us": 1.2,
+                "status": "Optimal"
+            }
+        };
+    });
+
+    app.daftarkan_rpc("ambil_profil_pengembang", fungsi(data) {
+        kembalikan {
+            "nama": "Insinyur Widya",
+            "peran": "Arsitek Sistem Desktop",
+            "bahasa": "Widya-Lang",
+            "sistem": "Windows / Linux / macOS"
+        };
+    });
+
+    // 6. Simulasikan Pemanggilan RPC dari Klien Antarmuka Web
+    misal hasil_metrik = app.jalankan_rpc("hitung_metrik", { "target": "Kompilator" });
+    cetak("5. Hasil Eksekusi RPC 'hitung_metrik':");
+    cetak("   - Status: " + hasil_metrik.metrik.status);
+    cetak("   - Throughput: " + ke_teks(hasil_metrik.metrik.throughput_ops_sec) + " ops/detik");
+
+    misal profil = app.jalankan_rpc("ambil_profil_pengembang", {});
+    cetak("6. Profil Pengembang: " + profil.nama + " (" + profil.peran + ")");
+
+    // 7. Pengujian Dialog File Native
+    misal berkas_masukan = BukaDialogPilihBerkas("*.wya");
+    misal berkas_keluaran = BukaDialogSimpanBerkas("laporan_desktop.json");
+    cetak("7. Dialog Pemilih Berkas: " + berkas_masukan);
+    cetak("   Dialog Simpan Berkas : " + berkas_keluaran);
+
+    // 8. Audit Keamanan Industri
+    misal audit = AuditKeamananAplikasi();
+    cetak("8. Audit Keamanan Aplikasi: " + audit.status + " (Skor: " + ke_teks(audit.skor) + ")");
+    cetak("   Enkripsi Brankas: " + audit.brankas_kripto + " | Token IPC: " + ke_teks(audit.token_aktif));
+
+    // 9. Bersihkan dan Tutup Jendela
+    app.tutup();
+    cetak("9. Status Terbuka Jendela Setelah Tutup: " + ke_teks(jendela_apakah_terbuka(app.jendela)));
+
+    cetak("=================================================================");
+    cetak("   ✅ SELURUH PILAR WIDYADESKTOP BERFUNGSI SEMPURNA (100% PASS)  ");
+    cetak("=================================================================");
+}
+
+utama();

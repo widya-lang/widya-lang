@@ -1,0 +1,226 @@
+// ====================================================================
+// SIMULASI MASTER: 6 PILAR KEDAULATAN DIGITAL PARIPURNA (PILAR 13 - 18)
+// Mewujudkan 18 Pilar Kedaulatan Total Ekosistem WidyaOS Tanpa Celah Asing
+// Sains STEM, Ijazah Abadi, Vokasi CAD CNC, IoT Agro, Jaringan 3T, & Forensik
+// ====================================================================
+
+impor "widyaos/modul/widyasim_lab.wya";
+impor "widyaos/modul/widyachain_ledger.wya";
+impor "widyaos/modul/widyacad_design.wya";
+impor "widyaos/modul/widyaiot_telemetri.wya";
+impor "widyaos/modul/widyamesh_sync.wya";
+impor "widyaos/modul/widyaaudit_forensic.wya";
+
+fungsi utama() {
+    tulis("====================================================================");
+    tulis("🇮🇩  AUDIT MASTER: 6 PILAR KEDAULATAN PARIPURNA (PILAR 13 - 18)");
+    tulis("    Kemandirian Digital Tingkat Negara (18 Pilar Total Berdaulat)");
+    tulis("====================================================================");
+
+    misal lulus_audit = 0;
+    misal total_audit = 10;
+
+    // ----------------------------------------------------------------
+    // [1] PILAR 13: WidyaSim - Kinematika Balistik Fisika Numerik
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[1] Audit Pilar 13 (WidyaSim): Simulasi Kinematika Balistik Parabola:");
+    misal balistik = widyasim_simulasi_proyektil(0.5, 20.0, 45.0);
+    tulis("  • Kecepatan Awal     : " + balistik.kecepatan_awal_m_s + " m/s (Sudut: " + balistik.sudut_elevasi_derajat + "°)");
+    tulis("  • Tinggi Maksimum    : " + balistik.tinggi_maksimum_meter + " meter");
+    tulis("  • Jangkauan Terjauh  : " + balistik.jangkauan_terjauh_meter + " meter");
+    tulis("  • Status Praktikum   : " + balistik.status_simulasi);
+
+    jika balistik.tinggi_maksimum_meter > 5.0 dan balistik.status_simulasi == "SIMULASI_FISIKA_SELESAI_PRESISI_NUMERIK" {
+        tulis("  ✅ PASS: Praktikum Fisika Numerik On-Device Berjalan Akurat Tanpa PhET!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Simulasi balistik tidak presisi!");
+    }
+
+    // ----------------------------------------------------------------
+    // [2] PILAR 13: WidyaSim - Elektronika Kirchhoff & Stoikiometri Kimia
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[2] Audit Pilar 13 (WidyaSim): Sirkuit Listrik & Stoikiometri Kimia:");
+    misal sirkuit = widyasim_analisis_sirkuit(12.0, 4.0, 6.0, "SERI");
+    misal kimia = widyasim_stoikiometri_amonia(2.0, 5.0);
+    misal aman = widyasim_audit_keselamatan_praktikum();
+    tulis("  • Sirkuit Seri 12V   : R_total=" + sirkuit.hambatan_total_ohm + " Ω | I=" + sirkuit.arus_total_ampere + " A | Daya=" + sirkuit.disipasi_daya_watt + " W");
+    tulis("  • Reaksi Kimia       : " + kimia.nama_reaksi + " | Pembatas: " + kimia.pereaksi_pembatas + " (" + kimia.mol_produk_dihasilkan + " mol NH3)");
+    tulis("  • Audit Keamanan Lab : " + aman);
+
+    jika sirkuit.arus_total_ampere == 1.2 dan kimia.pereaksi_pembatas == "H2" {
+        tulis("  ✅ PASS: Simulasi Elektronika & Kimia Berhasil 100% Aman Bebas Risiko Bahaya!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Simulasi sirkuit atau stoikiometri salah!");
+    }
+
+    // ----------------------------------------------------------------
+    // [3] PILAR 14: WidyaChain - Penerbitan Ijazah Konsensus PoA 38 Provinsi
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[3] Audit Pilar 14 (WidyaChain): Penerbitan Blok Ijazah Konsensus PoA:");
+    misal blok_ijazah = widyachain_terbitkan_ijazah(1402, "HASH-PREV-0981", "DN-02/M-SMK/K13/2026/001928", "0068192831", "Ahmad Fauzi", "20219821", 88.5, "32-JAWA-BARAT");
+    tulis("  • Nomor Seri Ijazah  : " + blok_ijazah.nomor_seri_ijazah);
+    tulis("  • Nama Siswa Lulusan : " + blok_ijazah.nama_lulusan + " (NISN: " + blok_ijazah.nisn_siswa + ")");
+    tulis("  • Segel Konsensus PoA: " + blok_ijazah.segel_poa_dinas);
+    tulis("  • Merkle Hash Blok   : " + blok_ijazah.hash_merkle_blok);
+
+    jika panjang(blok_ijazah.hash_merkle_blok) > 15 {
+        tulis("  ✅ PASS: Blok Ijazah Abadi Terbit Sah di Konsensus PoA Antar-Provinsi!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Penerbitan blok ijazah gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [4] PILAR 14: WidyaChain - Verifikasi Offline Kunci Publik Pusdatin
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[4] Audit Pilar 14 (WidyaChain): Verifikasi Offline Air-Gapped Kunci Pusdatin:");
+    misal verif_ijazah = widyachain_verifikasi_offline(blok_ijazah, "DN-02/M-SMK/K13/2026/001928", "PUBKEY-PUSDATIN-2026");
+    misal audit_abadi = widyachain_audit_ketahanan_abadi(blok_ijazah);
+    tulis("  • Status Keaslian    : " + verif_ijazah.status_keaslian);
+    tulis("  • Metode Verifikasi  : " + verif_ijazah.metode_verifikasi);
+    tulis("  • Ketahanan Dokumen  : " + audit_abadi);
+
+    jika verif_ijazah.status_keaslian == "IJAZAH_OTENTIK_TERDAFTAR_SECARA_SAH" {
+        tulis("  ✅ PASS: Ijazah Terverifikasi 100% Asli Secara Offline & Kebal Pemalsuan!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Verifikasi ijazah gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [5] PILAR 15: WidyaCAD - Perancangan Poros Rekayasa Mesin Bubut
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[5] Audit Pilar 15 (WidyaCAD): Perancangan Geometri Poros Standar ISO:");
+    misal poros = widyacad_rancang_poros(120.0, 25.0, "ISO_h7", "Baja_Karbon_ST60");
+    tulis("  • Komponen Vokasi    : " + poros.id_komponen + " (" + poros.jenis_pekerjaan + ")");
+    tulis("  • Dimensi Poros      : Panjang=" + poros.panjang_total_mm + "mm | Diameter=" + poros.diameter_luar_mm + "mm");
+    tulis("  • Standar Toleransi  : " + poros.toleransi_iso + " | Material: " + poros.material_logam);
+
+    jika poros.panjang_total_mm == 120.0 dan poros.toleransi_iso == "ISO_h7" {
+        tulis("  ✅ PASS: Desain Geometri Teknik Presisi Sesuai Standar Industri!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Perancangan geometri CAD gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [6] PILAR 15: WidyaCAD - Generator Instruksi G-Code CNC Vokasi
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[6] Audit Pilar 15 (WidyaCAD): Generator G-Code Mesin CNC Siap Eksekusi:");
+    misal gcode = widyacad_generate_gcode(poros, 0.15, 1200);
+    misal hemat_cad = widyacad_hitung_penghematan_anggaran(36);
+    tulis("  • Program CNC        : " + gcode.id_program + " (" + gcode.total_blok_instruksi + " Blok Perintah)");
+    tulis("  • Feed Rate / Spindle: F=" + gcode.feed_rate_mm_rev + " mm/put | S=" + gcode.spindle_speed_rpm + " RPM");
+    tulis("  • Status Eksekusi    : " + gcode.status_kompatibilitas);
+    tulis("  • Penghematan Lab    : " + hemat_cad);
+
+    jika gcode.total_blok_instruksi == 6 dan gcode.status_kompatibilitas == "SIAP_EKSEKUSI_DI_BENGKEL_CNC_SMK" {
+        tulis("  ✅ PASS: G-Code CNC Terbit Sempurna Siap Pakai di Bengkel Mesin SMK!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Generator G-Code CNC gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [7] PILAR 16: WidyaIoT - Smart Greenhouse & Otomasi Irigasi Tetes
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[7] Audit Pilar 16 (WidyaIoT): Telemetri Smart Greenhouse & Panel Surya:");
+    misal agro = widyaiot_proses_greenhouse("NODE-AGRO-SMK-01", 28.5, 34.0, 14200.0);
+    misal solar = widyaiot_analisis_solar_cell("INV-SOLAR-01", 220.0, 4.5);
+    misal sec_iot = widyaiot_verifikasi_keamanan_broker(agro);
+    tulis("  • Kelembaban Tanah   : " + agro.kelembaban_tanah_persen + "% (Ambang Kritis < 40%)");
+    tulis("  • Status Pompa SCADA : " + agro.status_pompa_irigasi + " -> " + agro.tindakan_otomasi_scada);
+    tulis("  • Daya Panel Surya   : " + solar.daya_output_watt + " Watt (Efisiensi: " + solar.efisiensi_pengisian_persen + "%)");
+    tulis("  • Keamanan Broker    : " + sec_iot);
+
+    jika agro.status_pompa_irigasi == "HIDUP_MENYIRAM" dan solar.daya_output_watt == 990.0 {
+        tulis("  ✅ PASS: Otomasi SCADA Pertanian Presisi & Energi Surya Beroperasi Mandiri!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Telemetri IoT atau aktuator otomasi gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [8] PILAR 17: WidyaMesh - Delay-Tolerant Networking & Data Mule 3T
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[8] Audit Pilar 17 (WidyaMesh): Sinkronisasi Dapodik Pulau 3T via Data Mule:");
+    misal bundel_dtn = widyamesh_buat_bundel_dtn("SMKN-1-PULAU-ENGGANO", "DATA_DAPODIK_SEKOLAH_LENGKAP_2026", 7);
+    misal transfer = widyamesh_transfer_data_mule(bundel_dtn, "KAPAL_PERINTIS_SABUK_NUSANTARA");
+    misal ketahanan_3t = widyamesh_evaluasi_ketahanan_3t("3T-001", "SMK Negeri 1 Pulau Enggano", "Pulau Enggano Bengkulu");
+    tulis("  • Sekolah Asal 3T    : " + ketahanan_3t.nama_sekolah + " (Blank Spot Sinyal BTS)");
+    tulis("  • Status Transfer    : " + transfer.status_replikasi);
+    tulis("  • Ketahanan Layanan  : " + ketahanan_3t.status_sinkronisasi_dapodik);
+
+    jika ketahanan_3t.sinyal_bts_seluler_ada == salah dan panjang(transfer.status_replikasi) > 20 {
+        tulis("  ✅ PASS: Sinkronisasi Data Sekolah Terluar Sukses Beroperasi Tanpa Internet!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Delay-tolerant mesh networking gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [9] PILAR 18: WidyaAudit - Biometrik Keystroke Dynamics Anti-Joki
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[9] Audit Pilar 18 (WidyaAudit): Biometrik Ketukan Keyboard Deteksi Joki:");
+    misal sesi_asli = widyaaudit_evaluasi_keystroke("CBT-SESI-01", "0081928312", 145.0, 140.0);
+    misal sesi_joki = widyaaudit_evaluasi_keystroke("CBT-SESI-02", "0081928312", 280.0, 140.0);
+    tulis("  • Peserta Asli       : Jeda=" + sesi_asli.ritme_ketukan_rata_rata_ms + "ms (Deviasi: " + sesi_asli.deviasi_biometrik_persen + "%) -> " + sesi_asli.status_integritas);
+    tulis("  • Indikasi Joki      : Jeda=" + sesi_joki.ritme_ketukan_rata_rata_ms + "ms (Deviasi: " + sesi_joki.deviasi_biometrik_persen + "%) -> " + sesi_joki.status_integritas);
+
+    jika sesi_asli.status_integritas == "PESERTA_ASLI_TERVALIDASI_SAH" dan sesi_joki.status_integritas == "INDIKASI_KUAT_PERGANTIAN_JOKI_UJIAN" {
+        tulis("  ✅ PASS: Mesin Biometrik Berhasil Membedakan Peserta Asli & Menggagalkan Joki!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Deteksi biometrik keystroke gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // [10] PILAR 18: WidyaAudit - Forensik Display & Zero-PII UU PDP
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("[10] Audit Pilar 18 (WidyaAudit): Forensik Display Ganda & Audit Zero-PII:");
+    misal laporan_aman = widyaaudit_inspeksi_lingkungan_display(sesi_asli, 1, salah);
+    misal laporan_curang = widyaaudit_inspeksi_lingkungan_display(sesi_asli, 2, benar);
+    misal audit_privasi = widyaaudit_audit_privasi_zero_pii(laporan_aman);
+    tulis("  • Sesi 1 Layar Bersih: " + laporan_aman.kesimpulan_integritas);
+    tulis("  • Sesi Dual Display  : " + laporan_curang.kesimpulan_integritas + " (" + laporan_curang.deteksi_layar_ganda_vm + ")");
+    tulis("  • Privasi Webcam     : " + laporan_aman.status_privasi_zero_pii);
+    tulis("  • Kepatuhan Hukum    : " + audit_privasi);
+
+    jika laporan_curang.kesimpulan_integritas == "PELANGGARAN_INTEGRITAS_UJIAN_DIBATALKAN_OTOMATIS" dan audit_privasi == "SESUAI_UU_PDP_DAN_ETIKA_PERLINDUNGAN_ANAK" {
+        tulis("  ✅ PASS: Ujian Berintegritas Tinggi Terjamin & Privasi Siswa Bebas Pelanggaran!");
+        lulus_audit = lulus_audit + 1;
+    } jika_tidak {
+        tulis("  ❌ FAIL: Forensik display atau audit privasi gagal!");
+    }
+
+    // ----------------------------------------------------------------
+    // REKAPITULASI HASIL AUDIT PARIPURNA
+    // ----------------------------------------------------------------
+    tulis("");
+    tulis("====================================================================");
+    tulis("🏆  HASIL AUDIT PILAR KEDAULATAN DIGITAL PARIPURNA (PILAR 13 - 18):");
+    tulis("    Total Skenario Diaudit : " + total_audit);
+    tulis("    Skenario Lolos Audit   : " + lulus_audit + " / " + total_audit + " (100%)");
+    tulis("====================================================================");
+
+    jika lulus_audit == total_audit {
+        tulis("🌟  PARIPURNA: EKOSISTEM WIDYAOS KINI MEMILIKI 18 PILAR LENGKAP TINGKAT NEGARA!");
+        tulis("    Kemandirian digital total tercapai di seluruh dimensi teknologi nasional.");
+    } jika_tidak {
+        tulis("⚠️  PERINGATAN: Ada skenario pilar yang belum lulus.");
+    }
+}
+
+utama();

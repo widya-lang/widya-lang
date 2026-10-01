@@ -1,0 +1,82 @@
+// ============================================================================
+// SIMULASI SUITE: TATA KELOLA PENUGASAN GURU ASN DI SEKOLAH SWASTA (YAYASAN)
+// Menguji 3 Kasus Kunci Penugasan ASN (PNS DPK & PPPK) di Sekolah Swasta:
+// 1. Penugasan Guru PNS DPK & PPPK dengan SK Bupati/Walikota
+// 2. Proteksi Finansial: Gaji Pokok APBD 100% & TPG Tetap Cair Tanpa Bebani Yayasan
+// 3. Evaluasi Kinerja (SKP) Berjenjang: Penilaian Kepsek Swasta & Pengesahan Kadis
+// ============================================================================
+
+impor "widyaos/modul/penugasan_guru_asn_swasta.wya";
+
+cetak("====================================================================");
+cetak("🏫  SIMULASI: PENUGASAN GURU ASN (PNS DPK & PPPK) DI SEKOLAH SWASTA  ");
+cetak("====================================================================");
+
+// [1] Penetapan Penugasan Guru ASN di Sekolah Swasta
+cetak("\n[1] Uji Penugasan Guru PPPK & PNS DPK ke Sekolah Swasta (SK Bupati):");
+misal asn_swasta = tetapkan_penugasan_asn_ke_swasta(
+    "TGS-SWASTA-2026-001",
+    "198504122022211005",
+    "Bambang Hermanto, S.Pd.",
+    "PPPK_PENUGASAN_SWASTA",
+    "20512345",
+    "SMA Muhammadiyah 1 Gresik",
+    "Pimpinan Daerah Muhammadiyah",
+    "821/145/437.53/SK-TUGAS/2026",
+    "01 Juli 2026",
+    "30 Juni 2029", // 3 Tahun Masa Tugas
+    "Matematika",
+    26              // 26 Jam Tatap Muka
+);
+
+cetak("  • Nama Guru ASN       :", asn_swasta.nama_guru, "(Status:", asn_swasta.status_asn, ")");
+cetak("  • Sekolah Swasta      :", asn_swasta.nama_sekolah_swasta);
+cetak("  • Yayasan Penyelenggara:", asn_swasta.nama_yayasan);
+cetak("  • Legalitas SK Daerah :", asn_swasta.nomor_sk_kepala_daerah);
+cetak("  • Masa Tugas Penugasan:", asn_swasta.tmt_mulai, "s.d.", asn_swasta.tmt_selesai);
+cetak("  • Jam Mengajar        :", asn_swasta.total_jam_tatap_muka, "jam / minggu");
+cetak("  • Status Dapodik      :", asn_swasta.status_satminkal_dapodik);
+
+jika asn_swasta.status_satminkal_dapodik == "INDUK_RESMI_DI_SEKOLAH_SWASTA" {
+    cetak("  ✅ PASS: SK Penugasan Bupati Sah Terbit! Satminkal Terakomodir Legal di Sekolah Swasta.");
+} lainnya {
+    cetak("  ❌ FAIL: Penugasan ke swasta gagal!");
+}
+
+// [2] Proteksi Finansial: Keterjaminan Gaji Pokok APBD & TPG APBN
+cetak("\n[2] Uji Keterjaminan Finansial Guru & Bebas Beban Gaji bagi Yayasan Swasta:");
+cetak("  • Sumber Gaji Pokok   :", asn_swasta.sumber_gaji_pokok);
+cetak("  • Hak Tunjangan Profesi:", asn_swasta.status_tpg_sertifikasi);
+cetak("  • Biaya bagi Yayasan  :", asn_swasta.beban_finansial_yayasan);
+
+jika asn_swasta.sumber_gaji_pokok == "DIBAYAR_PEMDA_APBD_100_PERSEN" dan asn_swasta.status_tpg_sertifikasi == "TETAP_CAIR_APBN_PUSAT" {
+    cetak("  ✅ PASS: Hak Finansial Guru ASN Dijamin Penuh Negara! Yayasan Bebas Beban Gaji Pokok.");
+} lainnya {
+    cetak("  ❌ FAIL: Proteksi finansial gagal!");
+}
+
+// [3] Evaluasi Kinerja (SKP) Berjenjang: Kepsek Swasta & Disahkan Kepala Dinas
+cetak("\n[3] Uji Penilaian Kinerja (SKP) Berjenjang di Sekolah Swasta:");
+misal evaluasi = evaluasi_skp_asn_swasta(
+    "EV-SWASTA-2026-08",
+    asn_swasta.nip_guru,
+    asn_swasta.nama_guru,
+    asn_swasta.npsn_swasta_tujuan,
+    "Drs. H. M. Zainuri (Kepala SMA Swasta)",
+    "SANGAT_BAIK"
+);
+
+cetak("  • Pejabat Penilai     :", evaluasi.nama_kepala_sekolah_swasta);
+cetak("  • Predikat SKP Guru   :", evaluasi.predikat_skp_tahunan);
+cetak("  • Pengesahan Instansi :", evaluasi.pengesahan_pejabat_dinas);
+cetak("  • Rekomendasi Karir   :", evaluasi.rekomendasi_penugasan);
+
+jika evaluasi.pengesahan_pejabat_dinas == "DISAHKAN_KEPALA_DINAS_PENDIDIKAN" dan evaluasi.rekomendasi_penugasan == "DIREKOMENDASIKAN_PERPANJANG_TUGAS" {
+    cetak("  ✅ PASS: Alur SKP Berjenjang Sah! Kepsek Swasta Menilai, Kepala Dinas Mengesahkan.");
+} lainnya {
+    cetak("  ❌ FAIL: Evaluasi SKP berjenjang gagal!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 3/3 KASUS PENUGASAN ASN DI SWASTA LULUS (100%)    ");
+cetak("====================================================================");

@@ -1,0 +1,335 @@
+<!-- BAB 3 -->
+<div class="page-break"></div>
+<h1>Bab 3: Program Web Pertama ("Halo Dunia Web") & Siklus Hidup main.wya</h1>
+
+<h2>3.1 Membedah Berkas main.wya Baris demi Baris</h2>
+<p>
+Mari buka berkas <code>main.wya</code> yang baru saja dibuat di proyek Anda. Berkas ini adalah "jantung" aplikasi Anda. Bagi orang awam, melihat kode pemrograman untuk pertama kali mungkin terasa asing, tetapi jika kita bedah satu per satu, logikanya sangat sederhana dan masuk akal:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// ==============================================================================</span>
+<span class="comment">// main.wya - Saklar Utama Aplikasi Web Anda</span>
+<span class="comment">// ==============================================================================</span>
+
+<span class="comment">// 1. MENGAMBIL ALAT-ALAT BANTU (IMPOR)</span>
+<span class="kw">impor</span> <span class="str">"./config.base.wya"</span>;        <span class="comment">// Mengambil catatan nama website dan nomor port</span>
+<span class="kw">impor</span> <span class="str">"./app/logger.wya"</span>;         <span class="comment">// Mengambil alat pencatat aktivitas (CCTV digital)</span>
+<span class="kw">impor</span> <span class="str">"./app/sanitizer.wya"</span>;      <span class="comment">// Mengambil alat pembersih teks masukan</span>
+<span class="kw">impor</span> <span class="str">"./app/database.wya"</span>;       <span class="comment">// Mengambil alat penghubung ke lemari basis data</span>
+<span class="kw">impor</span> <span class="str">"./app/web_framework.wya"</span>;  <span class="comment">// Mengambil mesin web server utama</span>
+<span class="kw">impor</span> <span class="str">"./routes/api.wya"</span>;         <span class="comment">// Mengambil daftar alamat rute API kita</span>
+
+<span class="comment">// 2. MEMBUAT PROSEDUR UTAMA (FUNGSI UTAMA)</span>
+<span class="kw">fungsi</span> <span class="fn">utama</span>() {
+    <span class="fn">cetak</span>(<span class="str">"=================================================================="</span>);
+    <span class="fn">cetak</span>(<span class="str">"🚀 Memulai Server Toko Saya (WidyaWeb Framework)..."</span>);
+    <span class="fn">cetak</span>(<span class="str">"=================================================================="</span>);
+
+    <span class="comment">// A. Membaca pengaturan</span>
+    <span class="kw">misal</span> cfg = <span class="fn">dapatkan_konfigurasi_dasar</span>();
+    <span class="kw">misal</span> port = cfg[<span class="str">"server"</span>][<span class="str">"port"</span>];
+
+    <span class="comment">// B. Menyiapkan papan petunjuk arah (Router)</span>
+    <span class="kw">misal</span> router = <span class="fn">buat_router</span>();
+
+    <span class="comment">// C. Mendaftarkan Pintu Masuk Halaman Utama (Alamat "/")</span>
+    <span class="fn">GET</span>(router, <span class="str">"/"</span>, <span class="kw">fungsi</span>(req, res) {
+        <span class="comment">// Saat pengunjung membuka alamat utama, beri jawaban sambutan ini:</span>
+        <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+            <span class="str">"status"</span>: <span class="str">"AKTIF"</span>,
+            <span class="str">"pesan"</span>: <span class="str">"Selamat datang di website Toko Saya!"</span>,
+            <span class="str">"pemilik"</span>: <span class="str">"Saya Sendiri"</span>,
+            <span class="str">"waktu_server"</span>: <span class="fn">waktu</span>()
+        }, <span class="num">200</span>); <span class="comment">// 200 artinya: Permintaan berhasil (OK)</span>
+    });
+
+    <span class="comment">// D. Mendaftarkan rute-rute tambahan dari berkas routes/api.wya</span>
+    <span class="fn">daftarkan_rute_api</span>(router);
+
+    <span class="comment">// E. Membuka pintu gerbang jaringan dan menyalakan server</span>
+    <span class="fn">jalankan_server</span>(router);
+}
+
+<span class="comment">// 3. NYALAKAN APLIKASI SEKARANG</span>
+<span class="fn">utama</span>();
+</code></pre>
+
+<h3>🔍 Penjelasan Rinci Bagian demi Bagian:</h3>
+<ol>
+  <li><strong>Bagian <code>impor</code></strong>: Di awal program, kita memanggil modul-modul yang dibutuhkan. Sama seperti koki yang mengambil pisau, wajan, dan bumbu dapur sebelum mulai memasak.</li>
+  <li><strong><code>buat_router()</code></strong>: Router adalah papan penunjuk jalan. Ketika pengunjung datang dan mengetik alamat di browsernya, router bertugas mengarahkan: "Oh, pengunjung ingin melihat Beranda, panggilkan fungsi Beranda! Pengunjung ingin melihat Daftar Produk, panggilkan fungsi Produk!".</li>
+  <li><strong><code>GET(router, "/", fungsi(req, res) { ... })</code></strong>: Garis miring <code>"/"</code> melambangkan halaman beranda utama website (pintu depan toko). Variabel <code>req</code> adalah surat permintaan dari pengunjung, dan <code>res</code> adalah amplop jawaban yang akan kita kirim kembali.</li>
+  <li><strong><code>jalankan_server(router)</code></strong>: Ini adalah saklar pemancar. Perintah inilah yang membuat laptop Anda mulai mendengarkan koneksi jaringan dan melayani pengunjung.</li>
+</ol>
+
+<h2>3.2 Menjalankan Server & Membuka di Browser</h2>
+<p>
+Ada dua cara sangat mudah untuk menyalakan website Anda:
+</p>
+
+<h3>Cara 1: Menggunakan Tombol Pintas VS Code (Satu Klik!)</h3>
+<ol>
+  <li>Pastikan Anda sedang membuka folder proyek Anda di VS Code.</li>
+  <li>Tekan tombol keyboard <strong><code>Ctrl + Shift + B</code></strong> secara bersamaan.</li>
+  <li>Jendela terminal bawah akan otomatis terbuka dan menampilkan teks log server sedang menyala!</li>
+</ol>
+
+<h3>Cara 2: Lewat Terminal PowerShell</h3>
+<pre><code class="language-powershell">cd c:\widya-lang\AplikasiTokoSaya
+& "c:\widya-lang\widya.exe" "main.wya"</code></pre>
+
+<div class="callout tip">
+  <div class="callout-title">🎯 Saatnya Melihat Hasil Karya Anda di Layar!</div>
+  Setelah server menyala di terminal:
+  <ol>
+    <li>Buka browser internet Anda (Google Chrome, Microsoft Edge, atau Mozilla Firefox).</li>
+    <li>Ketik alamat berikut di bilah alamat atas: <strong><code>http://localhost:8080/</code></strong> lalu tekan <code>Enter</code>.</li>
+    <li>Di layar monitor Anda akan langsung muncul data JSON sambutan yang baru saja Anda buat:
+      <pre><code class="language-json">{
+  "status": "AKTIF",
+  "pesan": "Selamat datang di website Toko Saya!",
+  "pemilik": "Saya Sendiri",
+  "waktu_server": 1790409021.28
+}</code></pre>
+    </li>
+  </ol>
+  Selamat! Anda baru saja berhasil membuat dan menjalankan server web modern buatan Anda sendiri!
+</div>
+
+<h2>3.3 Troubleshooting: Bagaimana Jika Muncul Pesan Galat?</h2>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Port 8080 Sudah Terpakai (*Address already in use*)</div>
+  <strong>Gejala:</strong> Di terminal muncul pesan <em>"Only one usage of each socket address is normally permitted"</em> atau gagal bind.<br>
+  <strong>Penyebab:</strong> Ada aplikasi lain (atau jendela server Widya sebelumnya yang belum dimatikan) yang sedang memakai pintu kamar 8080.<br>
+  <strong>Solusi Mudah:</strong> Cukup buka berkas <code>config.base.wya</code>, ubah angka <code>8080</code> menjadi <code>8090</code> atau <code>3000</code>, lalu simpan berkas dan nyalakan kembali server Anda. Sekarang website Anda bisa diakses di <code>http://localhost:8090/</code>!
+</div>
+
+<!-- BAB 4 -->
+<div class="page-break"></div>
+<h1>Bab 4: Sistem Routing (Membuat Rute & Pintu Masuk Halaman)</h1>
+
+<h2>4.1 Apa itu Routing & Metode HTTP?</h2>
+<p>
+Ketika kita mengunjungi sebuah website (seperti toko online), kita tidak hanya berada di halaman depan. Kita ingin membuka halaman profil (<code>/profil</code>), halaman daftar barang (<code>/produk</code>), halaman keranjang belanja (<code>/keranjang</code>), atau mengirim formulir pemesanan. Proses pembagian alamat URL ini disebut <strong>Routing</strong>.
+</p>
+
+<div class="callout info">
+  <div class="callout-title">💡 Mengenal 4 Macam Metode HTTP Sehari-hari</div>
+  Di dunia internet, browser berkomunikasi dengan server menggunakan beberapa "kata kerja" utama:
+  <ul>
+    <li><strong>GET (Ambilkan Saya Data)</strong>: Dipakai saat kita hanya ingin melihat atau membaca informasi tanpa mengubah apapun di server (contoh: membuka halaman berita, melihat katalog barang).</li>
+    <li><strong>POST (Simpan Data Baru Ini)</strong>: Dipakai saat kita mengirim data baru untuk disimpan ke server (contoh: mendaftar akun baru, mengirim komentar, memesan makanan).</li>
+    <li><strong>PUT (Perbarui Data yang Ada)</strong>: Dipakai saat kita ingin mengganti atau mengedit data yang sudah ada (contoh: mengganti foto profil, mengedit nomor telepon akun).</li>
+    <li><strong>DELETE (Hapus Data Ini)</strong>: Dipakai saat kita ingin membuang data (contoh: menghapus item dari keranjang belanja).</li>
+  </ul>
+</div>
+
+<h2>4.2 Membuat Berkas Rute Baru (routes/api.wya)</h2>
+<p>
+Mari buka berkas <code>routes/api.wya</code>. Di sini kita akan menambahkan beberapa pintu alamat baru untuk toko kita:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// routes/api.wya - Daftar Rute API Toko Kita</span>
+<span class="kw">fungsi</span> <span class="fn">daftarkan_rute_api</span>(router) {
+
+    <span class="comment">// 1. Halaman Informasi Toko (GET /api/v1/tentang)</span>
+    <span class="fn">GET</span>(router, <span class="str">"/api/v1/tentang"</span>, <span class="kw">fungsi</span>(req, res) {
+        <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+            <span class="str">"nama_toko"</span>: <span class="str">"Warung Berkah Digital"</span>,
+            <span class="str">"jam_buka"</span>: <span class="str">"08:00 - 21:00 WIB"</span>,
+            <span class="str">"lokasi"</span>: <span class="str">"Jakarta, Indonesia"</span>
+        }, <span class="num">200</span>);
+    });
+
+    <span class="comment">// 2. Rute Dinamis dengan Parameter ID (GET /api/v1/produk/:id)</span>
+    <span class="fn">GET</span>(router, <span class="str">"/api/v1/produk/:id"</span>, <span class="kw">fungsi</span>(req, res) {
+        <span class="comment">// Mengambil nomor ID yang diketik pengunjung di browser</span>
+        <span class="kw">misal</span> id_barang = req[<span class="str">"params"</span>][<span class="str">"id"</span>];
+
+        <span class="comment">// Contoh sederhana pengecekan barang</span>
+        <span class="kw">jika</span> (id_barang == <span class="str">"1"</span>) {
+            <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+                <span class="str">"id"</span>: <span class="num">1</span>,
+                <span class="str">"nama"</span>: <span class="str">"Kopi Robusta Nusantara"</span>,
+                <span class="str">"harga"</span>: <span class="num">25000</span>,
+                <span class="str">"stok"</span>: <span class="num">50</span>
+            }, <span class="num">200</span>);
+        } <span class="kw">kalau</span> {
+            <span class="comment">// Jika nomor ID selain 1, beri tahu bahwa barang tidak ada (404)</span>
+            <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+                <span class="str">"sukses"</span>: <span class="kw">salah</span>,
+                <span class="str">"pesan"</span>: <span class="str">"Maaf, produk nomor "</span> + id_barang + <span class="str">" belum tersedia"</span>
+            }, <span class="num">404</span>);
+        }
+    });
+
+    <span class="comment">// 3. Rute Menerima Data Kiriman (POST /api/v1/pesan)</span>
+    <span class="fn">POST</span>(router, <span class="str">"/api/v1/pesan"</span>, <span class="kw">fungsi</span>(req, res) {
+        <span class="kw">misal</span> data_masuk = req[<span class="str">"badan"</span>]; <span class="comment">// Membaca paket data kiriman</span>
+
+        <span class="kw">kembalikan</span> <span class="fn">response_json</span>(res, {
+            <span class="str">"sukses"</span>: <span class="kw">benar</span>,
+            <span class="str">"pesan"</span>: <span class="str">"Pesanan Anda berhasil kami terima!"</span>,
+            <span class="str">"rincian"</span>: data_masuk
+        }, <span class="num">201</span>); <span class="comment">// 201 artinya: Data berhasil dibuat (Created)</span>
+    });
+}
+</code></pre>
+
+<div class="callout tip">
+  <div class="callout-title">🎯 Coba Uji Rute Dinamis Anda di Browser!</div>
+  Simpan berkas <code>routes/api.wya</code>, nyalakan kembali server Anda, lalu buka browser:
+  <ul>
+    <li>Ketik: <code>http://localhost:8080/api/v1/produk/1</code> ➔ Anda akan melihat data Kopi Robusta!</li>
+    <li>Ketik: <code>http://localhost:8080/api/v1/produk/99</code> ➔ Anda akan melihat pesan ramah produk belum tersedia dengan kode status 404.</li>
+  </ul>
+</div>
+
+<!-- BAB 5 -->
+<div class="page-break"></div>
+<h1>Bab 5: Satpam Pengaman Web (Pipeline Middleware & Keamanan)</h1>
+
+<h2>5.1 Apa itu Middleware? (Analogi Pos Satpam Perumahan)</h2>
+<p>
+Bayangkan Anda tinggal di sebuah perumahan klaster tertutup (*gated community*). Di gerbang utama perumahan ada pos satpam:
+</p>
+
+<div class="diagram-box">
+ PENGUNJUNG DATANG
+        │
+        ▼
+ ┌────────────────────────────────────────────────────────┐
+ │                   POS SATPAM UTAMA                    │
+ │               (Middleware Before Hook)                 │
+ │  1. Periksa KTP & Identitas Pengunjung                 │
+ │  2. Periksa apakah pengunjung membawa senjata tajam?   │
+ │  3. Catat plat nomor kendaraan ke buku tamu log        │
+ └───────────────────────┬────────────────────────────────┘
+                         │ Jika Lolos Pemeriksaan
+                         ▼
+ ┌────────────────────────────────────────────────────────┐
+ │                 RUMAH TUJUAN / KAMAR                   │
+ │                  (Handler Rute Anda)                   │
+ │         Menyiapkan hidangan & data yang diminta        │
+ └───────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+ ┌────────────────────────────────────────────────────────┐
+ │                  POS SATPAM KELUAR                     │
+ │               (Middleware After Hook)                  │
+ │  4. Tempelkan stempel segel keamanan di amplop keluar  │
+ │  5. Pasang 6 Tameng HTTP Security Headers              │
+ └────────────────────────────────────────────────────────┘
+        │
+        ▼
+ PENGUNJUNG PULANG MEMBAWA JAWABAN AMAN
+</div>
+
+<p>
+Di dalam WidyaWeb, <strong>Middleware</strong> adalah kode yang berjalan otomatis sebelum atau sesudah fungsi halaman web Anda dipanggil. Middleware memastikan bahwa fungsi bisnis Anda (seperti menghitung total belanja) tidak perlu dipusingkan dengan urusan keamanan, karena satpam middleware telah menyaringnya terlebih dahulu di gerbang depan.
+</p>
+
+<h2>5.2 Enam Tameng Keamanan Bawaan (Menjaga Anda Tanpa Pusing)</h2>
+<p>
+Setiap jawaban yang keluar dari WidyaWeb otomatis ditempeli 6 tameng pelindung tingkat perbankan:
+</p>
+
+<ol>
+  <li><strong>Tameng Anti-Pembajakan Bingkai (<code>X-Frame-Options: DENY</code>)</strong>: Mencegah penjahat siber membungkus website Anda di dalam situs palsu untuk menipu klik tombol perbankan (*Clickjacking attack*).</li>
+  <li><strong>Tameng Anti-Manipulasi Tipe Berkas (<code>X-Content-Type-Options: nosniff</code>)</strong>: Memaksa browser membaca file teks murni sebagai teks, dan tidak tertipu menjalankan file berbahaya yang menyamar sebagai gambar.</li>
+  <li><strong>Tameng Kebijakan Keamanan Konten Ketat (<code>Content-Security-Policy</code>)</strong>: Membatasi agar browser hanya mengeksekusi skrip dari sumber terpercaya, sehingga virus atau injeksi kode jahat (*Cross-Site Scripting / XSS*) otomatis ditolak oleh browser.</li>
+  <li><strong>Tameng Jalur Aman Terenkripsi (<code>Strict-Transport-Security</code>)</strong>: Menjamin komunikasi selalu lewat jalur gembok hijau HTTPS yang terenkripsi.</li>
+</ol>
+
+<h2>5.3 Membatasi Pengunjung Nakal dengan Rate Limiter</h2>
+<p>
+Pernahkah Anda mendengar tentang serangan <em>Brute-Force</em>? Di mana peretas menggunakan robot komputer untuk menebak kata sandi login 1.000 kali dalam satu detik?
+</p>
+<p>
+WidyaWeb memiliki sistem <strong>Rate Limiter Bawaan</strong>. Jika ada satu alamat IP komputer yang meminta akses terlalu sering melebihi batas wajar (misal lebih dari 120 kali dalam 1 menit), server WidyaWeb akan langsung memberi kartu merah:
+</p>
+<pre><code class="language-json">{
+  "sukses": false,
+  "galat": "Terlalu banyak permintaan. Silakan coba lagi setelah 60 detik.",
+  "kode_galat": "RATE_LIMIT_TERCAPAI"
+}</code></pre>
+<p>
+Dengan tameng ini, server Anda tetap tenang, tidak akan kehabisan tenaga, dan terhindar dari kelumpuhan akibat serangan robot botnet (*Denial of Service*).
+</p>
+
+<!-- BAB 6 -->
+<div class="page-break"></div>
+<h1>Bab 6: Menyimpan Data Permanen (Basis Data & Fluent ORM)</h1>
+
+<h2>6.1 Mengapa Kita Membutuhkan Basis Data?</h2>
+<p>
+Jika Anda hanya menyimpan data di dalam variabel program (misal: <code>misal nama = "Budi";</code>), saat server komputer Anda dimatikan atau laptop Anda restart, seluruh data tersebut akan langsung lenyap tak berbekas!
+</p>
+<p>
+<strong>Basis Data (Database)</strong> adalah lemari arsip baja yang bertugas menyimpan data secara permanen ke dalam piringan harddisk. Kapanpun komputer dinyalakan kembali, catatan data pelanggan, pesanan, dan transaksi Anda tetap aman tersimpan rapi.
+</p>
+
+<h2>6.2 Membaca Data Semudah Berbahasa Manusia (Fluent ORM db_dari)</h2>
+<p>
+Di zaman dulu, untuk membaca data dari tabel, programmer harus mengetik perintah SQL yang kaku seperti <code>SELECT id, nama, harga FROM produk WHERE harga &gt; 10000 ORDER BY id DESC LIMIT 20;</code>. Jika salah satu tanda koma atau spasi saja, program akan langsung error.
+</p>
+<p>
+Di WidyaWeb, Anda cukup menggunakan <strong>Fluent Query Builder</strong> <code>db_dari()</code> yang mengalir wajar seperti kalimat bahasa manusia:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// Contoh Membaca Data Produk dengan db_dari()</span>
+<span class="kw">misal</span> daftar_produk = <span class="fn">db_dari</span>(<span class="str">"produk"</span>)
+    .<span class="fn">pilih</span>([<span class="str">"id"</span>, <span class="str">"nama"</span>, <span class="str">"harga"</span>, <span class="str">"stok"</span>])  <span class="comment">// Kolom apa saja yang ingin diambil?</span>
+    .<span class="fn">dimana</span>(<span class="str">"kategori"</span>, <span class="str">"minuman"</span>)            <span class="comment">// Hanya ambil yang kategorinya minuman</span>
+    .<span class="fn">dimana_lebih_dari</span>(<span class="str">"harga"</span>, <span class="num">15000</span>)        <span class="comment">// Dan yang harganya di atas Rp 15.000</span>
+    .<span class="fn">urutkan</span>(<span class="str">"harga"</span>, <span class="str">"DESC"</span>)                  <span class="comment">// Urutkan dari harga paling mahal</span>
+    .<span class="fn">paginasi</span>(<span class="num">1</span>, <span class="num">10</span>);                         <span class="comment">// Tampilkan halaman 1 (10 barang per halaman)</span>
+</code></pre>
+
+<h2>6.3 Menambah, Mengubah, dan Menghapus Data (Operasi CRUD)</h2>
+<p>
+Mari pelajari 4 operasi paling penting dalam pengelolaan data:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// 1. MENAMBAH DATA BARU (CREATE)</span>
+<span class="fn">db_jalan</span>(<span class="str">"INSERT INTO produk (nama, harga, stok) VALUES (?, ?, ?)"</span>,
+         [<span class="str">"Teh Melati Segar"</span>, <span class="num">12000</span>, <span class="num">100</span>]);
+
+<span class="comment">// 2. MEMBACA SATU DATA SPESIFIK (READ)</span>
+<span class="kw">misal</span> barang = <span class="fn">db_dari</span>(<span class="str">"produk"</span>).<span class="fn">dimana</span>(<span class="str">"id"</span>, <span class="num">1</span>).<span class="fn">pertama</span>();
+<span class="fn">cetak</span>(<span class="str">"Nama Barang: "</span> + barang[<span class="str">"nama"</span>]);
+
+<span class="comment">// 3. MENGUBAH / MEMPERBARUI DATA (UPDATE)</span>
+<span class="fn">db_jalan</span>(<span class="str">"UPDATE produk SET stok = ? WHERE id = ?"</span>, [<span class="num">85</span>, <span class="num">1</span>]);
+
+<span class="comment">// 4. MENGHAPUS DATA (DELETE)</span>
+<span class="fn">db_jalan</span>(<span class="str">"DELETE FROM produk WHERE id = ?"</span>, [<span class="num">99</span>]);
+</code></pre>
+
+<h2>6.4 Transaksi Atomik: Menjamin Uang Tidak Hilang di Tengah Jalan!</h2>
+<p>
+Bayangkan Anda sedang mentransfer uang sebesar Rp 100.000 dari rekening Andi ke rekening Budi. Ada 2 langkah yang harus terjadi:
+<br>1. Saldo Andi dipotong Rp 100.000.
+<br>2. Saldo Budi ditambah Rp 100.000.
+</p>
+<p>
+Bagaimana jika tepat setelah saldo Andi dipotong, tiba-tiba listrik padam atau koneksi server terputus sebelum saldo Budi bertambah? Uang Rp 100.000 itu akan raib di antah berantah!
+</p>
+<p>
+WidyaWeb menyelesaikan masalah ini dengan <strong>Transaksi Atomik ACID (<code>db_transaksi</code>)</strong>:
+</p>
+
+<pre><code class="language-widya"><span class="comment">// Transaksi Keuangan Aman Terpadu</span>
+<span class="kw">misal</span> sukses = <span class="fn">db_transaksi</span>(<span class="kw">fungsi</span>(tx) {
+    <span class="comment">// Langkah 1: Kurangi uang Andi</span>
+    tx.<span class="fn">eksekusi</span>(<span class="str">"UPDATE dompet SET saldo = saldo - 100000 WHERE nama = 'Andi'"</span>, []);
+
+    <span class="comment">// Langkah 2: Tambahkan uang Budi</span>
+    tx.<span class="fn">eksekusi</span>(<span class="str">"UPDATE dompet SET saldo = saldo + 100000 WHERE nama = 'Budi'"</span>, []);
+
+    <span class="kw">kembalikan</span> <span class="kw">benar</span>;
+});
+<span class="comment">// Jika salah satu langkah gagal, seluruh perubahan otomatis DIBATALKAN (Rollback)</span>
+<span class="comment">// seolah-olah tidak pernah terjadi apa-apa. Saldo Andi tetap utuh 100%!</span>
+</code></pre>

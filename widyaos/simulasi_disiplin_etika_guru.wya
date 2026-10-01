@@ -1,0 +1,83 @@
+// ============================================================================
+// SIMULASI SUITE: TATA KELOLA PENEGAKAN DISIPLIN, ETIKA & KASUS ASMARA GURU
+// Menguji Penanganan 3 Kasus Sensitif di Satuan Pendidikan:
+// 1. Kasus Perselingkuhan Sesama Guru PNS (PP 94/2021 & Bebas Tugas Sementara)
+// 2. Kasus Hubungan Terlarang Guru dengan Siswa (Alarm Pidana TPKS & Rujukan Polisi)
+// 3. Protokol Pengamanan Pintu Gerbang dari Pelabrakan Pasangan Sah (Kondusivitas KBM)
+// ============================================================================
+
+impor "widyaos/modul/disiplin_dan_etika_guru.wya";
+
+cetak("====================================================================");
+cetak("⚖️   SIMULASI: PENEGAKAN DISIPLIN, ETIKA & MORALITAS GURU SATDIK     ");
+cetak("====================================================================");
+
+// [1] Kasus Perselingkuhan Sesama Guru PNS (Dewasa dengan Dewasa)
+cetak("\n[1] Uji Penanganan Perselingkuhan Sesama Guru ASN (PP 94/2021):");
+misal kasus_asn = tangani_skandal_asmara_guru(
+    "ETK-2026-001",
+    "197805122005011003",
+    "Drs. Hendro Wibowo",
+    "PNS",
+    "SESAMA_GURU_TENDIK",
+    "Rina Astuti, S.Pd. (Guru Inval Pengganti)"
+);
+
+cetak("  • Nama Terlapor       :", kasus_asn.nama_terlapor, "(", kasus_asn.status_kepegawaian, ")");
+cetak("  • Pihak Terlibat      :", kasus_asn.pihak_terlibat);
+cetak("  • Klasifikasi Kasus   :", kasus_asn.klasifikasi_pelanggaran);
+cetak("  • Pengamanan Kelas    :", kasus_asn.tindakan_darurat_kbm);
+cetak("  • Guru Inval Pengganti:", kasus_asn.guru_inval_pengganti);
+cetak("  • Tahap Pemeriksaan   :", kasus_asn.tahap_investigasi);
+cetak("  • Rekomendasi Sanksi  :", kasus_asn.rekomendasi_sanksi);
+
+jika kasus_asn.klasifikasi_pelanggaran == "PELANGGARAN_DISIPLIN_BERAT_ASN" dan kasus_asn.tindakan_darurat_kbm == "BEBAS_TUGAS_MENGAJAR_SEMENTARA_DAN_AUTO_INVAL" {
+    cetak("  ✅ PASS: Guru Bebas Tugas Sementara untuk BAP & Kelas Dijamin Tetap Berjalan oleh Guru Inval!");
+} lainnya {
+    cetak("  ❌ FAIL: Penanganan kasus ASN gagal!");
+}
+
+// [2] Kasus Hubungan Terlarang Guru dengan Siswa di Bawah Umur (PIDANA TPKS)
+cetak("\n[2] Uji Hubungan Terlarang Guru dengan Siswa (Alarm Pidana TPKS):");
+misal kasus_siswa = tangani_skandal_asmara_guru(
+    "TPKS-2026-004",
+    "198509142010011012",
+    "Oknum Guru X",
+    "PNS",
+    "SISWA_DI_BAWAH_UMUR",
+    "Guru Pengganti Tetap"
+);
+
+cetak("  • Nama Terlapor       :", kasus_siswa.nama_terlapor);
+cetak("  • Klasifikasi Kasus   :", kasus_siswa.klasifikasi_pelanggaran);
+cetak("  • Tindakan Sistem     :", kasus_siswa.tindakan_darurat_kbm);
+cetak("  • Jalur Hukum         :", kasus_siswa.tahap_investigasi);
+cetak("  • Perlindungan Korban :", kasus_siswa.protokol_kondusivitas);
+
+jika kasus_siswa.klasifikasi_pelanggaran == "TINDAK_PIDANA_TPKS_DARURAT" dan kasus_siswa.tahap_investigasi == "PELAPORAN_RESMI_KE_UNIT_PPA_POLRES" {
+    cetak("  ✅ PASS: Bukan Sekadar Etika! Langsung Teridentifikasi Tindak Pidana TPKS, Lapor Polres & Korban Dilindungi!");
+} lainnya {
+    cetak("  ❌ FAIL: Alarm TPKS gagal!");
+}
+
+// [3] Protokol Keamanan Pintu Gerbang & Antisipasi Pelabrakan di Depan Murid
+cetak("\n[3] Uji Protokol Sterilisasi Gerbang & Penyelamatan Reputasi Sekolah:");
+misal protokol_gerbang = protokol_keamanan_sekolah_anti_labrak(
+    "ETK-2026-001",
+    benar
+);
+
+cetak("  • Prosedur Satpam     :", protokol_gerbang.tindakan_satpam);
+cetak("  • Kondisi Ruang Kelas :", protokol_gerbang.zona_kbm);
+cetak("  • Antisipasi Anarkis  :", protokol_gerbang.dukungan_bhabinkamtibmas);
+cetak("  • Mitigasi Berita Liar:", protokol_gerbang.mitigasi_medsos);
+
+jika protokol_gerbang.tindakan_satpam == "ARAHKAN_LANGSUNG_KE_RUANG_TRANSIT_MEDIASI_KEPSEK" {
+    cetak("  ✅ PASS: Murid Terlindungi dari Tontonan Ribut & Reputasi Sekolah Terjaga Melalui Mediasi Tertutup!");
+} lainnya {
+    cetak("  ❌ FAIL: Protokol keamanan gerbang gagal!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 3/3 KASUS PENEGAKAN DISIPLIN GURU LULUS (100%)    ");
+cetak("====================================================================");

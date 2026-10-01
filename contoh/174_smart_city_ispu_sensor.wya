@@ -1,0 +1,47 @@
+// ============================================================================
+// CONTOH 174: WIDYA SMARTCITY & PEMANTAUAN SENSOR IOT LINGKUNGAN ISPU
+// Berdasarkan Standar Permen LHK No. P.14/2020, Spasial GIS & Mikrogrid EBT
+// ============================================================================
+
+cetak("====================================================================")
+cetak("  🏙️ SISTEM PUSAT KOMANDO WIDYA SMARTCITY & SPATIAL INTELLIGENCE")
+cetak("====================================================================")
+
+// 1. Pemantauan Telemetri Kualitas Udara (ISPU PM2.5)
+biar konsentrasi_pm25 = 42.8 // ug/m3
+biar ispu = smartcity_hitung_ispu_pm25(konsentrasi_pm25)
+
+cetak("\n[1] STATUS KUALITAS UDARA (ISPU):")
+cetak("  Parameter Uji      : " + ispu["parameter"])
+cetak("  Konsentrasi Polutan: " + teks(ispu["konsentrasi_ug_m3"]) + " ug/m3")
+cetak("  Indeks ISPU        : " + teks(ispu["nilai_ispu"]))
+cetak("  Kategori           : " + teks(ispu["kategori"]))
+cetak("  Rekomendasi        : " + ispu["saran_kesehatan"])
+
+// 2. Analisis Jarak Geodesik Antar Fasilitas Publik (Haversine)
+// Titik 1: Balai Kota (-6.2088, 106.8456)
+// Titik 2: Rumah Sakit Umum Daerah (-6.2297, 106.8184)
+biar jarak_km = smartcity_jarak_haversine(-6.2088, 106.8456, -6.2297, 106.8184)
+
+cetak("\n[2] SPASIAL GIS & RUTE DARURAT:")
+cetak("  Jarak Balai Kota -> RSUD: " + teks(jarak_km) + " km")
+
+// 3. Optimasi Rekayasa Lampu Lalu Lintas Cerdas
+biar lalin = smartcity_optimasi_lalu_lintas("Jl. Gatot Subroto", 1450.0, 1600.0, 120)
+
+cetak("\n[3] REKAYASA LALU LINTAS CERDAS (ADAPTIVE TRAFFIC):")
+cetak("  Ruas Jalan        : " + lalin["nama_ruas_jalan"])
+cetak("  Volume Arus       : " + teks(lalin["volume_kendaraan_smp"]) + " smp/jam")
+cetak("  V/C Ratio         : " + teks(lalin["vc_ratio"]))
+cetak("  Level of Service  : " + teks(lalin["level_of_service"]))
+cetak("  Durasi Lampu Hijau: " + teks(lalin["durasi_lampu_hijau_detik"]) + " detik (Disesuaikan otomatis)")
+
+// 4. Analisis Bauran Energi Baru Terbarukan (EBT)
+biar energi = smartcity_analisis_bauran_energi(45.0, 60.0, 35.0, 20.0)
+
+cetak("\n[4] MIKROGRID ENERGI & DEKARBONISASI:")
+cetak("  Total Pembangkit  : " + teks(energi["total_daya_mw"]) + " MW")
+cetak("  Bauran EBT Bersih : " + teks(energi["persentase_ebt"]) + "%")
+cetak("  Reduksi Emisi CO2 : " + teks(energi["reduksi_emisi_ton_co2_harian"]) + " ton CO2/hari")
+
+cetak("\n✅ Seluruh Subsistem Widya SmartCity Beroperasi Optimal!")

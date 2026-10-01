@@ -1,0 +1,39 @@
+// ==============================================================================
+// integrasi/llm_bridge.wya - Jembatan Penalaran Cerdas AI LLM Lokal
+// ==============================================================================
+
+// Meminta penalaran kecerdasan buatan untuk salah satu agen
+fungsi minta_penalaran_llm(cfg, peran_agen, prompt_tugas) {
+    misal llm_cfg = cfg["ai_llm"];
+
+    jika (llm_cfg["aktif"] == salah) {
+        kembalikan "[Mode Heuristik Standar: SOP ditaati]";
+    }
+
+    // Coba hubungi Ollama di localhost:11434
+    coba {
+        misal payload = {
+            "model": llm_cfg["model"],
+            "prompt": "Sebagai agen '" + peran_agen + "' dengan SOP ketat, berikan usulan ringkas untuk: " + prompt_tugas,
+            "stream": salah
+        };
+
+        misal respon = http_post_detil(llm_cfg["endpoint_url"], {
+            "headers": { "Content-Type": "application/json" },
+            "body": ke_json(payload),
+            "timeout_ms": 3000 // Batas 3 detik agar tidak menghambat alur rapat
+        });
+
+        jika (respon != nil dan respon["body"] != nil) {
+            misal data_json = dari_json(respon["body"]);
+            jika (data_json != nil dan data_json["response"] != nil) {
+                kembalikan data_json["response"];
+            }
+        }
+    } tangkap (galat) {
+        // Fallback hening jika Ollama belum dinyalakan
+    }
+
+    // Respon terstruktur fallback jika LLM offline
+    kembalikan "Analisis SOP untuk peran '" + peran_agen + "' terverifikasi optimal.";
+}

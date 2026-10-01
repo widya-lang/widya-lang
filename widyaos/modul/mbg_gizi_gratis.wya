@@ -1,0 +1,107 @@
+// =================================================================
+// Modul Makan Bergizi Gratis / MBG BGN (mbg_gizi_gratis.wya)
+// Diadopsi dari Eduphala MOD-08: Logistik Dapur SPPG, Nutrisi,
+// Validasi Presensi Siswa vs Porsi Nyata, & Audit Anti-Fiktif
+// =================================================================
+
+struktur PenyediaDapurMBG {
+    id_dapur,
+    nama_dapur_desa,
+    penanggung_jawab,
+    sertifikasi_higiene,
+    kontak_telepon
+}
+
+struktur MenuGiziHarian {
+    id_menu,
+    tanggal_saji,
+    nama_paket,
+    kalori_kkal,
+    protein_gram,
+    karbohidrat_gram,
+    serat_gram,
+    susu_disediakan
+}
+
+struktur DistribusiPorsiMBG {
+    id_pengiriman,
+    tanggal,
+    npsn_sekolah,
+    id_dapur,
+    menu,
+    total_porsi_dikirim,
+    total_siswa_hadir_presensi,
+    porsi_layak_konsumsi,
+    porsi_retur_rusak,
+    status_verifikasi, // "LENGKAP_SESUAI", "DEFISIT_PORSI", "SURPLUS_PORSI", "TIDAK_LAYAK"
+    hash_audit_blockchain,
+    petugas_penerima_did
+}
+
+fungsi mbg_buat_dapur_rekanan(id_dapur, nama, pj, no_telp) {
+    kembalikan PenyediaDapurMBG(
+        id_dapur,
+        nama,
+        pj,
+        "SERTIFIKAT_HIGIENE_SANITASI_DINKES_2026",
+        no_telp
+    );
+}
+
+fungsi mbg_susun_menu_seimbang(id_menu, tgl, nama, kkal, protein, karbo, serat, ada_susu) {
+    kembalikan MenuGiziHarian(
+        id_menu,
+        tgl,
+        nama,
+        kkal,
+        protein,
+        karbo,
+        serat,
+        ada_susu
+    );
+}
+
+fungsi mbg_verifikasi_penerimaan_sekolah(
+    id_kirim,
+    tgl,
+    npsn,
+    id_dapur,
+    menu_obj,
+    total_kirim,
+    siswa_hadir,
+    porsi_layak,
+    porsi_rusak,
+    petugas_did
+) {
+    misal status = "LENGKAP_SESUAI";
+
+    // Validasi Kelayakan dan Kecukupan Porsi (Anti-Porsi Fiktif)
+    jika porsi_layak < siswa_hadir {
+        status = "DEFISIT_PORSI";
+    } lainnya jika porsi_layak > siswa_hadir {
+        status = "SURPLUS_PORSI";
+    }
+
+    jika porsi_rusak > (total_kirim * 0.10) {
+        status = "KUALITAS_TIDAK_LAYAK_RETUR";
+    }
+
+    // Penerbitan Bukti Kriptografis Blockchain Badan Gizi Nasional (BGN)
+    misal payload_str = id_kirim + ":" + npsn + ":" + id_dapur + ":" + ke_teks(porsi_layak) + ":" + ke_teks(waktu());
+    misal bukti_hash = "BGN-EVIDENCE-" + sha256(payload_str);
+
+    kembalikan DistribusiPorsiMBG(
+        id_kirim,
+        tgl,
+        npsn,
+        id_dapur,
+        menu_obj,
+        total_kirim,
+        siswa_hadir,
+        porsi_layak,
+        porsi_rusak,
+        status,
+        bukti_hash,
+        petugas_did
+    );
+}

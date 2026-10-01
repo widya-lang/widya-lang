@@ -1,0 +1,75 @@
+// =================================================================
+// Modul Widya App Store & Smart Split Settlement (appstore_settlement.wya)
+// Ekosistem Pihak Ketiga: Auto-Deduct PPN 11% (DJP) & 10% PNBP (Kemendikdasmen)
+// =================================================================
+
+struktur LisensiAplikasi {
+    id_lisensi,
+    id_aplikasi,
+    nama_aplikasi,
+    npsn_sekolah,
+    stempel_waktu_aktif,
+    berlaku_sampai_hari,
+    status_aktif
+}
+
+struktur TransaksiAppStore {
+    id_transaksi,
+    id_aplikasi,
+    nama_aplikasi,
+    npsn_sekolah,
+    dompet_sekolah,
+    total_bruto_rp,
+    setoran_ppn_djp_rp,
+    setoran_pnbp_kemen_rp,
+    pendapatan_bersih_vendor_rp,
+    ntpn_pajak,
+    ntpn_pnbp,
+    status
+}
+
+var TARIF_PPN_APP_STORE = 0.11; // 11% PPN
+var TARIF_PNBP_KEMENDIKDASMEN = 0.10; // 10% PNBP Platform Pendidikan
+
+fungsi appstore_beli_aplikasi(id_app, nama_app, harga_bruto, npsn, dompet_sch, alamat_vendor) {
+    // 1. Kalkulasi Pemotongan Otomatis
+    misal nominal_ppn = harga_bruto * TARIF_PPN_APP_STORE;
+    misal nominal_pnbp = harga_bruto * TARIF_PNBP_KEMENDIKDASMEN;
+    misal hak_vendor = harga_bruto - (nominal_ppn + nominal_pnbp);
+
+    // 2. Penerbitan Bukti Pajak & PNBP
+    misal id_trx = "APPSTORE-TRX-" + sha256(id_app + npsn + ke_teks(waktu()));
+    misal ntpn_djp = "NTPN-PPN-" + sha256(id_trx + "_DJP_PAJAK");
+    misal ntpn_pnbp = "PNBP-KEMEN-" + sha256(id_trx + "_KEMENDIKDASMEN");
+
+    misal trx = TransaksiAppStore(
+        id_trx,
+        id_app,
+        nama_app,
+        npsn,
+        dompet_sch,
+        harga_bruto,
+        nominal_ppn,
+        nominal_pnbp,
+        hak_vendor,
+        ntpn_djp,
+        ntpn_pnbp,
+        "LUNAS_TERPOTONG_OTOMATIS"
+    );
+
+    // 3. Penerbitan Lisensi Digital untuk IFP / Sekolah
+    misal lisensi = LisensiAplikasi(
+        "LIC-" + sha256(id_trx + "_SEWIDYA_KEY"),
+        id_app,
+        nama_app,
+        npsn,
+        waktu(),
+        365,
+        benar
+    );
+
+    kembalikan {
+        "transaksi": trx,
+        "lisensi": lisensi
+    };
+}

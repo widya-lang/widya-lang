@@ -1,0 +1,190 @@
+// ============================================================================
+// MODUL: PUSDATIN KOMANDO NASIONAL KEMENDIKDASMEN (pusdatin_komando_nasional.wya)
+// Pusat Agregasi Telemetri IFP Zero-PII, Pengawasan BOSP Real-Time,
+// Monitoring MBG Anti-Fiktif, & Agregasi DePIN Grid Nasional
+// ============================================================================
+
+impor "widyaos/modul/telemetri_ifp.wya";
+impor "widyaos/modul/mbg_gizi_gratis.wya";
+impor "widyaos/modul/depin_grid.wya";
+impor "widyaos/modul/widyasci_komputasi_ilmiah.wya";
+
+struktur MetrikProvinsi {
+    kode_provinsi,
+    nama_provinsi,
+    total_sekolah,
+    ifp_aktif,
+    persentase_keaktifan,
+    bosp_pagu_miliar,
+    bosp_realisasi_miliar,
+    persentase_bosp,
+    porsi_mbg_terlayani,
+    porsi_mbg_fiktif_ditolak,
+    depin_kontribusi_tflops
+}
+
+struktur RingkasanNasionalKPI {
+    total_provinsi,
+    total_sekolah_nasional,
+    total_ifp_aktif,
+    rata_keaktifan_nasional,
+    total_pagu_bosp_triliun,
+    total_realisasi_bosp_triliun,
+    persentase_serapan_nasional,
+    total_porsi_mbg_hari_ini,
+    total_porsi_mbg_fraud_dicegah,
+    total_daya_depin_pflops,
+    status_kesehatan_anggaran
+}
+
+struktur HasilAuditMBGNasional {
+    total_transaksi_pengiriman,
+    porsi_layak,
+    porsi_fiktif_dibatalkan,
+    dana_apbn_terselamatkan_rp,
+    catatan_inspektorat
+}
+
+// ----------------------------------------------------------------------------
+// 1. FUNGSI INISIALISASI DATA WILAYAH 38 PROVINSI
+// ----------------------------------------------------------------------------
+
+fungsi pusdatin_buat_metrik_provinsi(kode, nama, jml_sekolah, ifp_on, pagu, realisasi, mbg_ok, mbg_fraud, tflops) {
+    misal rasio_ifp = 0.0;
+    jika jml_sekolah > 0 {
+        rasio_ifp = (ifp_on / (jml_sekolah * 1.0)) * 100.0;
+    }
+
+    misal rasio_bosp = 0.0;
+    jika pagu > 0.0 {
+        rasio_bosp = (realisasi / pagu) * 100.0;
+    }
+
+    kembalikan MetrikProvinsi(
+        kode,
+        nama,
+        jml_sekolah,
+        ifp_on,
+        rasio_ifp,
+        pagu,
+        realisasi,
+        rasio_bosp,
+        mbg_ok,
+        mbg_fraud,
+        tflops
+    );
+}
+
+// ----------------------------------------------------------------------------
+// 2. AGREGASI TELEMETRI IFP & KEUANGAN BOSP NASIONAL
+// ----------------------------------------------------------------------------
+
+fungsi pusdatin_agregasi_kpi_nasional(daftar_metrik_prov) {
+    misal n_prov = panjang(daftar_metrik_prov);
+    misal sum_sekolah = 0;
+    misal sum_ifp = 0;
+    misal sum_rasio_ifp = 0.0;
+    misal sum_pagu_miliar = 0.0;
+    misal sum_realisasi_miliar = 0.0;
+    misal sum_mbg_ok = 0;
+    misal sum_mbg_fraud = 0;
+    misal sum_tflops = 0.0;
+
+    untuk prov dalam daftar_metrik_prov {
+        sum_sekolah = sum_sekolah + prov.total_sekolah;
+        sum_ifp = sum_ifp + prov.ifp_aktif;
+        sum_rasio_ifp = sum_rasio_ifp + prov.persentase_keaktifan;
+        sum_pagu_miliar = sum_pagu_miliar + prov.bosp_pagu_miliar;
+        sum_realisasi_miliar = sum_realisasi_miliar + prov.bosp_realisasi_miliar;
+        sum_mbg_ok = sum_mbg_ok + prov.porsi_mbg_terlayani;
+        sum_mbg_fraud = sum_mbg_fraud + prov.porsi_mbg_fiktif_ditolak;
+        sum_tflops = sum_tflops + prov.depin_kontribusi_tflops;
+    }
+
+    misal rata_keaktifan = 0.0;
+    jika n_prov > 0 {
+        rata_keaktifan = sum_rasio_ifp / (n_prov * 1.0);
+    }
+
+    misal rasio_serapan = 0.0;
+    jika sum_pagu_miliar > 0.0 {
+        rasio_serapan = (sum_realisasi_miliar / sum_pagu_miliar) * 100.0;
+    }
+
+    misal pagu_triliun = sum_pagu_miliar / 1000.0;
+    misal realisasi_triliun = sum_realisasi_miliar / 1000.0;
+    misal depin_pflops = sum_tflops / 1000.0;
+
+    misal status_anggaran = "OPTIMAL";
+    jika rasio_serapan < 75.0 {
+        status_anggaran = "PERINGATAN_SERAPAN_RENDAH";
+    }
+    jika rasio_serapan > 98.0 {
+        status_anggaran = "SANGAT_TINGGI_HAMPIR_HABIS";
+    }
+
+    kembalikan RingkasanNasionalKPI(
+        n_prov,
+        sum_sekolah,
+        sum_ifp,
+        rata_keaktifan,
+        pagu_triliun,
+        realisasi_triliun,
+        rasio_serapan,
+        sum_mbg_ok,
+        sum_mbg_fraud,
+        depin_pflops,
+        status_anggaran
+    );
+}
+
+// ----------------------------------------------------------------------------
+// 3. AUDIT MBG NASIONAL ANTI-FIKTIF (CROSS-VALIDATION DENGAN PRESENSI)
+// ----------------------------------------------------------------------------
+
+fungsi pusdatin_audit_mbg_nasional(daftar_distribusi_mbg, biaya_per_porsi_rp) {
+    misal total_transaksi = panjang(daftar_distribusi_mbg);
+    misal total_layak = 0;
+    misal total_fiktif = 0;
+
+    untuk dist dalam daftar_distribusi_mbg {
+        // Validasi porsi terkirim vs presensi nyata murid
+        jika dist.total_porsi_dikirim > dist.total_siswa_hadir_presensi {
+            // Ada kelebihan porsi yang tidak sesuai presensi siswa
+            misal selisih_fiktif = dist.total_porsi_dikirim - dist.total_siswa_hadir_presensi;
+            total_fiktif = total_fiktif + selisih_fiktif;
+            total_layak = total_layak + dist.total_siswa_hadir_presensi;
+        } lainnya {
+            total_layak = total_layak + dist.total_porsi_dikirim;
+        }
+    }
+
+    misal uang_diselamatkan = total_fiktif * biaya_per_porsi_rp;
+
+    kembalikan HasilAuditMBGNasional(
+        total_transaksi,
+        total_layak,
+        total_fiktif,
+        uang_diselamatkan,
+        "Audit Otomatis Pusdatin: Tagihan klaim porsi fiktif otomatis dibekukan di modul pembayaran."
+    );
+}
+
+// ----------------------------------------------------------------------------
+// 4. PREDIKSI ANALITIK WIDYASCI UNTUK KEMENDIKDASMEN
+// ----------------------------------------------------------------------------
+
+// Memprediksi realisasi BOSP kuartal 4 berdasarkan tren kuartal 1, 2, 3
+fungsi pusdatin_prediksi_serapan_kuartal(serapan_q1, serapan_q2, serapan_q3) {
+    misal x_kuartal = [1.0, 2.0, 3.0];
+    misal y_realisasi = [serapan_q1, serapan_q2, serapan_q3];
+
+    misal regresi = widyasci_regresi_linier(x_kuartal, y_realisasi);
+    misal prediksi_q4 = (regresi.gradien_m * 4.0) + regresi.intersep_c;
+
+    kembalikan {
+        "model_r2": regresi.r_squared,
+        "laju_pertumbuhan_miliar": regresi.gradien_m,
+        "proyeksi_q4_miliar": prediksi_q4
+    };
+}

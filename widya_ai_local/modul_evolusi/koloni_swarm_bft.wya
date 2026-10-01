@@ -1,0 +1,411 @@
+// ============================================================================
+// MODUL KOLONI SWARM OTONOM & KONSENSUS BFT BERDAULAT (koloni_swarm_bft.wya)
+// Kolaborasi Multi-Agen Terdistribusi dengan Pasar Tugas & Kontrak Eksekusi Pintar
+// Toleran Kesalahan Bizantium (BFT 3f + 1), Segel Ed25519, & Kredensial W3C DID
+// Kepatuhan Penuh UU PDP No. 27/2022 (Zero Raw Data Transfer)
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/kripto_ed25519.wya";
+
+struktur AgenKoloni {
+    id_agen,
+    peran,
+    simpul_edge,
+    status,
+    beban_komputasi,
+    latensi_rata_ms,
+    skor_keandalan,
+    kredit_komputasi,
+    kunci_publik_hex
+}
+
+struktur TawaranTugas {
+    id_tawaran,
+    id_tugas,
+    id_agen,
+    skor_bid,
+    estimasi_durasi_ms,
+    biaya_kredit,
+    tanda_tangan_bid
+}
+
+struktur KontrakEksekusiSwarm {
+    id_kontrak,
+    id_tugas,
+    deskripsi,
+    agen_terpilih,
+    max_latensi_ms,
+    min_akurasi,
+    kuota_privasi_epsilon,
+    kredit_imbalan,
+    penalti_slashing,
+    status_kontrak,
+    hasil_eksekusi,
+    segel_did
+}
+
+struktur SuaraBFT {
+    id_ronde,
+    id_proposal,
+    id_agen,
+    tahap_bft,
+    keputusan,
+    tanda_tangan_ed25519,
+    waktu_suara
+}
+
+struktur StatusKoloniSwarm {
+    nama_koloni,
+    total_agen,
+    agen_terdaftar,
+    pasar_tugas_aktif,
+    kontrak_berjalan,
+    ronde_bft_aktif,
+    kuorum_bft_terpenuhi,
+    log_audit_keamanan
+}
+
+// 1. Inisialisasi Koloni Swarm Berdaulat
+fungsi koloni_inisialisasi(nama_koloni) {
+    misal daftar_agen = {};
+
+    // Daftarkan 5 Agen Koloni Terspesialisasi di Simpul Nusantara
+    daftar_agen["agen_perencana"] = AgenKoloni(
+        "agen_perencana",
+        "PLANNER",
+        "node_sepaku_ikn",
+        "AKTIF",
+        0.15,
+        4.2,
+        0.99,
+        1000,
+        "ed25519_pk_sepaku_planner_99a8"
+    );
+
+    daftar_agen["agen_peneliti"] = AgenKoloni(
+        "agen_peneliti",
+        "RESEARCHER",
+        "node_kedungbanteng_bms",
+        "AKTIF",
+        0.28,
+        6.5,
+        0.98,
+        1000,
+        "ed25519_pk_kedungbanteng_res_88b1"
+    );
+
+    daftar_agen["agen_coder"] = AgenKoloni(
+        "agen_coder",
+        "CODER",
+        "node_kutuh_bali",
+        "AKTIF",
+        0.35,
+        8.1,
+        0.97,
+        1000,
+        "ed25519_pk_kutuh_coder_77c2"
+    );
+
+    daftar_agen["agen_auditor"] = AgenKoloni(
+        "agen_auditor",
+        "AUDITOR",
+        "node_bakongan_aceh",
+        "AKTIF",
+        0.20,
+        5.0,
+        0.99,
+        1000,
+        "ed25519_pk_bakongan_auditor_66d3"
+    );
+
+    daftar_agen["agen_verifikator"] = AgenKoloni(
+        "agen_verifikator",
+        "VERIFIER",
+        "node_sepaku_ikn",
+        "AKTIF",
+        0.18,
+        3.8,
+        1.00,
+        1000,
+        "ed25519_pk_sepaku_verifier_55e4"
+    );
+
+    kembalikan StatusKoloniSwarm(
+        nama_koloni,
+        5,
+        daftar_agen,
+        [],
+        [],
+        1,
+        benar,
+        []
+    );
+}
+
+// 2. Pelelangan Tugas Dinamis di Pasar Tugas (Dynamic Task Bidding)
+fungsi koloni_lelang_tugas(koloni, id_tugas, peran_dibutuhkan, batas_latensi_ms) {
+    misal daftar_tawaran = [];
+
+    untuk id_a in kunci(koloni.agen_terdaftar) {
+        misal ag = koloni.agen_terdaftar[id_a];
+
+        jika (ag.peran == peran_dibutuhkan dan ag.status == "AKTIF") {
+            // Formula Skor Bid: Semakin rendah beban dan latensi, semakin tinggi skor
+            misal skor_beban = 1.0 - ag.beban_komputasi;
+            misal skor_latensi = 1.0;
+            jika (ag.latensi_rata_ms > 0.0) {
+                skor_latensi = batas_latensi_ms / (ag.latensi_rata_ms + batas_latensi_ms);
+            }
+            misal skor_akhir = (skor_beban * 0.4) + (skor_latensi * 0.3) + (ag.skor_keandalan * 0.3);
+
+            misal raw_bid = id_tugas + ":" + id_a + ":" + ke_teks(skor_akhir);
+            misal sig_bid = potong(sha256(raw_bid + ag.kunci_publik_hex), 0, 32);
+
+            misal tawaran = TawaranTugas(
+                "bid-" + id_tugas + "-" + id_a,
+                id_tugas,
+                id_a,
+                skor_akhir,
+                ag.latensi_rata_ms * 1.2,
+                50,
+                sig_bid
+            );
+            tambah(daftar_tawaran, tawaran);
+        }
+    }
+
+    // Pilih Pemenang Lelang dengan Skor Tertinggi
+    misal pemenang = kosong;
+    misal skor_maks = -1.0;
+
+    untuk tw in daftar_tawaran {
+        jika (tw.skor_bid > skor_maks) {
+            skor_maks = tw.skor_bid;
+            pemenang = tw;
+        }
+    }
+
+    kembalikan {
+        "id_tugas": id_tugas,
+        "total_peserta_lelang": panjang(daftar_tawaran),
+        "daftar_tawaran": daftar_tawaran,
+        "pemenang_lelang": pemenang
+    };
+}
+
+// 3. Pembuatan Kontrak Eksekusi Pintar Berdaulat (Smart Execution Contract)
+fungsi koloni_buat_kontrak(koloni, id_tugas, deskripsi, agen_terpilih, max_latensi, min_akurasi, kuota_eps) {
+    misal id_k = "kontrak-" + id_tugas + "-" + ke_teks(waktu());
+
+    misal payload_kontrak = id_k + ":" + agen_terpilih + ":" + ke_teks(max_latensi) + ":" + ke_teks(min_akurasi);
+    misal did_k = "did:widya:swarm:contract:" + potong(sha256(payload_kontrak), 0, 16);
+
+    misal kontrak = KontrakEksekusiSwarm(
+        id_k,
+        id_tugas,
+        deskripsi,
+        agen_terpilih,
+        max_latensi,
+        min_akurasi,
+        kuota_eps,
+        100,
+        200,
+        "DITANDATANGANI",
+        {},
+        did_k
+    );
+
+    tambah(koloni.kontrak_berjalan, kontrak);
+    kembalikan kontrak;
+}
+
+// 4. Protokol Konsensus BFT 3f + 1 (Pre-Prepare, Prepare, Commit, Decide)
+fungsi koloni_jalankan_bft_konsensus(koloni, id_proposal, data_proposal, daftar_suara_agen) {
+    misal total_suara = panjang(daftar_suara_agen);
+    misal suara_setuju = 0;
+    misal suara_byzantine = 0;
+    misal rincian_suara = [];
+
+    // Verifikasi Suara dari Setiap Agen Berdaulat
+    untuk s in daftar_suara_agen {
+        misal id_ag = s["id_agen"];
+        misal keputusan = s["keputusan"];
+        misal tanda_tangan = s["tanda_tangan_ed25519"];
+
+        // Validasi identitas agen di registri
+        jika (ada_kunci(koloni.agen_terdaftar, id_ag)) {
+            misal ag = koloni.agen_terdaftar[id_ag];
+            misal valid_sig = benar;
+
+            // Simulasi verifikasi tanda tangan kriptografis Ed25519
+            jika (tanda_tangan == "" atau tanda_tangan == "PALSU_BYZANTINE") {
+                valid_sig = salah;
+            }
+
+            jika (valid_sig dan keputusan == "SETUJU") {
+                suara_setuju = suara_setuju + 1;
+                tambah(rincian_suara, {
+                    "id_agen": id_ag,
+                    "simpul": ag.simpul_edge,
+                    "status_suara": "VALID_SETUJU",
+                    "tanda_tangan": tanda_tangan
+                });
+            } lainnya {
+                suara_byzantine = suara_byzantine + 1;
+                tambah(rincian_suara, {
+                    "id_agen": id_ag,
+                    "simpul": ag.simpul_edge,
+                    "status_suara": "DITOLAK_BYZANTINE_ATAU_TIDAK_SETUJU",
+                    "tanda_tangan": tanda_tangan
+                });
+            }
+        }
+    }
+
+    // Syarat Kuorum BFT: Untuk N = 4 node/suara, f = 1 kegagalan/Byzantine.
+    // Kuorum tercapai jika suara_setuju >= 2f + 1 = 3 dari 4
+    misal n = total_suara;
+    misal f = 1;
+    misal ambang_kuorum = (2 * f) + 1;
+
+    misal kuorum_terpenuhi = (suara_setuju >= ambang_kuorum);
+    misal status_akhir = "KONSENSUS_BFT_TERCAPAI";
+
+    jika (!kuorum_terpenuhi) {
+        status_akhir = "KONSENSUS_BFT_GAGAL_KURANG_KUORUM";
+    }
+
+    misal hash_konsensus = sha256(id_proposal + ":" + ke_teks(suara_setuju) + ":" + ke_teks(waktu()));
+
+    kembalikan {
+        "id_proposal": id_proposal,
+        "ronde": koloni.ronde_bft_aktif,
+        "total_suara_masuk": total_suara,
+        "suara_setuju": suara_setuju,
+        "suara_byzantine": suara_byzantine,
+        "ambang_kuorum_bft": ambang_kuorum,
+        "kuorum_terpenuhi": kuorum_terpenuhi,
+        "status_akhir": status_akhir,
+        "rincian_suara": rincian_suara,
+        "hash_konsensus": hash_konsensus,
+        "did_keputusan": "did:widya:swarm:bft:" + potong(hash_konsensus, 0, 16)
+    };
+}
+
+// 5. Evaluasi Kontrak Pintar: Alokasi Kredit Komputasi & Penalti Slashing
+fungsi koloni_evaluasi_kontrak(koloni, kontrak, hasil_latensi_ms, hasil_akurasi, ada_pelanggaran_taint) {
+    misal ag_id = kontrak.agen_terpilih;
+
+    jika (!ada_kunci(koloni.agen_terdaftar, ag_id)) {
+        kembalikan {
+            "sukses": salah,
+            "alasan": "Agen pelaksana tidak terdaftar di koloni"
+        };
+    }
+
+    misal ag = koloni.agen_terdaftar[ag_id];
+
+    // Cek Pelanggaran Taint AST & Sandbox Keamanan
+    jika (ada_pelanggaran_taint) {
+        // Terapkan Slashing Penalti
+        ag.kredit_komputasi = ag.kredit_komputasi - kontrak.penalti_slashing;
+        ag.skor_keandalan = ag.skor_keandalan - 0.20;
+        ag.status = "DIKARANTINA";
+        kontrak.status_kontrak = "DIBATALKAN_KARENA_PELANGGARAN_TAINT";
+
+        tambah(koloni.log_audit_keamanan, {
+            "id_agen": ag_id,
+            "id_kontrak": kontrak.id_kontrak,
+            "jenis": "SLASHING_PENALTY",
+            "pemotongan": kontrak.penalti_slashing,
+            "alasan": "Pelanggaran AST Taint / Upaya Kebocoran Data (UU PDP)",
+            "waktu": waktu()
+        });
+
+        kembalikan {
+            "id_kontrak": kontrak.id_kontrak,
+            "agen_pelaksana": ag_id,
+            "status_kontrak": kontrak.status_kontrak,
+            "tindakan": "SLASHING_PENALTY_APPLIED",
+            "kredit_dipotong": kontrak.penalti_slashing,
+            "sisa_kredit": ag.kredit_komputasi,
+            "skor_keandalan_baru": ag.skor_keandalan,
+            "status_agen": ag.status
+        };
+    }
+
+    // Periksa SLA Latensi & Akurasi
+    misal sla_lulus = (hasil_latensi_ms <= kontrak.max_latensi_ms) dan (hasil_akurasi >= kontrak.min_akurasi);
+
+    jika (sla_lulus) {
+        // Berikan Hadiah Kredit Komputasi
+        ag.kredit_komputasi = ag.kredit_komputasi + kontrak.kredit_imbalan;
+        kontrak.status_kontrak = "TERPENUHI_SEMPURNA";
+        kontrak.hasil_eksekusi = {
+            "latensi_ms": hasil_latensi_ms,
+            "akurasi": hasil_akurasi,
+            "sla": "MEMENUHI"
+        };
+
+        kembalikan {
+            "id_kontrak": kontrak.id_kontrak,
+            "agen_pelaksana": ag_id,
+            "status_kontrak": kontrak.status_kontrak,
+            "tindakan": "REWARD_CREDITS_AWARDED",
+            "kredit_diterima": kontrak.kredit_imbalan,
+            "total_kredit": ag.kredit_komputasi,
+            "sla_latensi": "LULUS",
+            "sla_akurasi": "LULUS"
+        };
+    } lainnya {
+        kontrak.status_kontrak = "GAGAL_SLA_SEBAGIAN";
+        kembalikan {
+            "id_kontrak": kontrak.id_kontrak,
+            "agen_pelaksana": ag_id,
+            "status_kontrak": kontrak.status_kontrak,
+            "tindakan": "NO_REWARD",
+            "alasan": "Latensi atau Akurasi berada di bawah batas minimum SLA"
+        };
+    }
+}
+
+// 6. Migrasi Tugas Otonom saat Simpul Terputus / Gagal (Self-Healing Failover)
+fungsi koloni_migrasi_tugas(koloni, id_kontrak, simpul_baru) {
+    misal kontrak_target = kosong;
+
+    untuk k in koloni.kontrak_berjalan {
+        jika (k.id_kontrak == id_kontrak) {
+            kontrak_target = k;
+        }
+    }
+
+    jika (kontrak_target == kosong) {
+        kembalikan {
+            "sukses": salah,
+            "pesan": "Kontrak tidak ditemukan untuk migrasi"
+        };
+    }
+
+    misal agen_lama = kontrak_target.agen_terpilih;
+    misal agen_pengganti = "agen_verifikator";
+
+    // Pilih agen sehat pengganti
+    untuk id_a in kunci(koloni.agen_terdaftar) {
+        misal ag = koloni.agen_terdaftar[id_a];
+        jika (id_a != agen_lama dan ag.status == "AKTIF" dan ag.simpul_edge == simpul_baru) {
+            agen_pengganti = id_a;
+        }
+    }
+
+    kontrak_target.agen_terpilih = agen_pengganti;
+    kontrak_target.status_kontrak = "DIMIGRASIKAN_KE_" + simpul_baru;
+
+    kembalikan {
+        "sukses": benar,
+        "id_kontrak": id_kontrak,
+        "agen_lama": agen_lama,
+        "agen_pengganti": agen_pengganti,
+        "simpul_tujuan": simpul_baru,
+        "status": "MIGRASI_BERHASIL_NOL_DATA_LOSS"
+    };
+}

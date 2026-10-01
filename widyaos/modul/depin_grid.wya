@@ -1,0 +1,69 @@
+// =================================================================
+// Modul DePIN Grid Komputasi & Bagi Hasil (depin_grid.wya)
+// Agregasi Komputasi Luar Jam Sekolah (16.00 - 06.00) & Reward Sekolah
+// =================================================================
+
+struktur NodeKomputasiSekolah {
+    npsn_sekolah,
+    id_node,
+    kapasitas_tflops,
+    status_mode, // "MODE_BELAJAR" atau "MODE_DEPIN_GRID"
+    total_jam_kontribusi,
+    total_reward_didapat_rp
+}
+
+struktur TugasKomputasiNasional {
+    id_tugas,
+    deskripsi,
+    tingkat_kesulitan_tflops,
+    estimasi_durasi_detik,
+    reward_per_detik_rp,
+    status
+}
+
+var JAM_SEKOLAH_MULAI = 7;
+var JAM_SEKOLAH_SELESAI = 16;
+
+fungsi depin_evaluasi_status_node(node, jam_saat_ini) {
+    jika jam_saat_ini >= JAM_SEKOLAH_MULAI dan jam_saat_ini < JAM_SEKOLAH_SELESAI {
+        node.status_mode = "MODE_BELAJAR";
+        kembalikan {
+            "mode": "MODE_BELAJAR",
+            "izin_komputasi": salah,
+            "alasan": "Jam belajar aktif sekolah (07.00 - 16.00). Semua resource didedikasikan untuk IFP & kelas."
+        };
+    } lainnya {
+        node.status_mode = "MODE_DEPIN_GRID";
+        kembalikan {
+            "mode": "MODE_DEPIN_GRID",
+            "izin_komputasi": benar,
+            "alasan": "Di luar jam sekolah. Perangkat IFP & Lab PC idle terhubung ke grid komputasi nasional."
+        };
+    }
+}
+
+fungsi depin_eksekusi_tugas_nasional(node, tugas) {
+    jika node.status_mode != "MODE_DEPIN_GRID" {
+        kembalikan {
+            "sukses": salah,
+            "pesan": "Node sedang dalam mode belajar. Tidak boleh menjalankan komputasi DePIN!"
+        };
+    }
+
+    // Simulasi komputasi NPU/GPU di perangkat IFP/Lab PC sekolah
+    misal reward_didapat = tugas.estimasi_durasi_detik * tugas.reward_per_detik_rp;
+    misal bukti_pouw = "zk-PoUW-" + sha256(tugas.id_tugas + node.id_node + ke_teks(waktu()));
+
+    node.total_jam_kontribusi = node.total_jam_kontribusi + (tugas.estimasi_durasi_detik / 3600.0);
+    node.total_reward_didapat_rp = node.total_reward_didapat_rp + reward_didapat;
+
+    tugas.status = "SELESAI_TERVERIFIKASI";
+
+    kembalikan {
+        "sukses": benar,
+        "id_tugas": tugas.id_tugas,
+        "reward_rp": reward_didapat,
+        "bukti_kerja": bukti_pouw,
+        "pesan": "Tugas komputasi berhasil diselesaikan. Hak bagi hasil siap disalurkan ke kas sekolah."
+    };
+}

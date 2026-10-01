@@ -1,0 +1,103 @@
+// ============================================================================
+// SIMULASI: WIDYA EDGE-TO-PUSAT SYNC PIPELINE (simulasi_widya_edge_pusat_sync_pipeline.wya)
+// Uji Komprehensif Aliran Data dari Sekolah Edge ke Cloud Pusdatin Kemendikdasmen SPBE
+// ============================================================================
+
+impor "widyaos/modul/widya_edge_pusat_sync_pipeline.wya";
+
+fungsi assert_sync(kondisi, nama_tes) {
+    jika (kondisi) {
+        cetak("[PASS] " + nama_tes);
+    } lainnya {
+        cetak("[FAIL] " + nama_tes);
+    }
+}
+
+fungsi utama() {
+    cetak("======================================================================");
+    cetak("MEMULAI SIMULASI WIDYA EDGE-TO-PUSAT SYNCHRONIZATION PIPELINE");
+    cetak("======================================================================");
+
+    // ------------------------------------------------------------------------
+    // TES 1: Inisialisasi Simpul Edge Sekolah & Cloud Pusat SPBE
+    // ------------------------------------------------------------------------
+    misal edge_sd = buat_simpul_edge("20103344", "SDN_01_Nusantara", "INTERMITTENT_4G");
+    misal cloud_pusat = buat_cloud_pusat("PUSDATIN_SPBE_IKN");
+    assert_sync(edge_sd.npsn == "20103344", "Tes 1.1: Simpul Edge Sekolah terdaftar dengan NPSN resmi");
+    assert_sync(cloud_pusat.id_pusat == "PUSDATIN_SPBE_IKN", "Tes 1.2: Cloud Pusat Pusdatin SPBE siap menerima koneksi");
+
+    // ------------------------------------------------------------------------
+    // TES 2: Pencatatan Mutasi Lokal Offline-First (WAL) di Edge
+    // ------------------------------------------------------------------------
+    edge_catat_mutasi(edge_sd, "DAPODIK", "{\"aksi\":\"UPDATE_ROMBEL\", \"nama_kelas\":\"6A\"}");
+    edge_catat_mutasi(edge_sd, "ARKAS_BKU", "{\"aksi\":\"SPJ_BOSP\", \"nominal\":15000000}");
+    edge_catat_mutasi(edge_sd, "MBG_GIZI", "{\"aksi\":\"PRESENSI_PORSI\", \"porsi\":185}");
+    assert_sync(panjang(edge_sd.antrean_wal) == 3, "Tes 2: 3 mutasi data tersimpan aman di WAL lokal saat luring/offline");
+
+    // ------------------------------------------------------------------------
+    // TES 3: Pembungkusan Paket Bundle & Perhitungan Merkle Root
+    // ------------------------------------------------------------------------
+    misal paket_sync = edge_bungkus_paket_sync(edge_sd, "WIDYAWAN_RESUMABLE");
+    assert_sync(paket_sync.total_mutasi == 3, "Tes 3.1: Seluruh 3 item terbundel dalam 1 paket sinkronisasi");
+    assert_sync(panjang(paket_sync.hash_merkle_root) > 10, "Tes 3.2: Hash Merkle Root mengunci integritas payload sebelum dikirim");
+
+    // ------------------------------------------------------------------------
+    // TES 4: Uji Ketahanan Jaringan Putus (Resumable Chunk Checkpoint)
+    // ------------------------------------------------------------------------
+    misal hasil_putus = kirim_paket_ke_pusat(edge_sd, cloud_pusat, paket_sync, 45);
+    assert_sync(hasil_putus["status"] == "TERPUTUS_RESUMABLE_CHECKPOINT", "Tes 4.1: Penanganan koneksi putus terdeteksi tanpa panik");
+    assert_sync(panjang(edge_sd.antrean_wal) == 3, "Tes 4.2: Data WAL di edge tetap utuh tidak hilang saat koneksi putus");
+
+    // ------------------------------------------------------------------------
+    // TES 5: Pengiriman Sukses 100% via WidyaWAN Secure Highway
+    // ------------------------------------------------------------------------
+    misal hasil_sukses = kirim_paket_ke_pusat(edge_sd, cloud_pusat, paket_sync, 100);
+    assert_sync(hasil_sukses["status"] == "TERKIRIM_KE_GATEWAY_PUSAT", "Tes 5.1: Paket berhasil tembus masuk ke Gateway Pusat");
+    assert_sync(panjang(cloud_pusat.antrean_ingesti_queue) == 1, "Tes 5.2: Paket terantre di WidyaQueue pusat siap diproses");
+
+    // ------------------------------------------------------------------------
+    // TES 6: Pengiriman Wilayah 3T Blank Spot via DTN (Store-and-Forward)
+    // ------------------------------------------------------------------------
+    misal edge_3t = buat_simpul_edge("69988776", "SDN_Pedalaman_Papua", "OFFLINE_3T_BLANKSPOT");
+    edge_catat_mutasi(edge_3t, "CBT_NILAI", "{\"siswa\":\"Budi\", \"nilai_akm\":88}");
+    misal paket_3t = edge_bungkus_paket_sync(edge_3t, "DTN_STORE_FORWARD");
+    misal hasil_dtn = kirim_via_dtn_data_mule(edge_3t, cloud_pusat, paket_3t, "KURIR_GURU_KAPAL_PERINTIS");
+    assert_sync(hasil_dtn["status"] == "DTN_DILAPORKAN_DI_PUSAT", "Tes 6: Protokol DTN RFC 5050 Data Mule sukses mengirim paket 3T");
+
+    // ------------------------------------------------------------------------
+    // TES 7: Pemrosesan Ingesti Pusat & Validasi Segel Kriptografis
+    // ------------------------------------------------------------------------
+    misal kuitansi_list = pusat_proses_antrean_ingesti(cloud_pusat);
+    assert_sync(panjang(kuitansi_list) == 2, "Tes 7.1: Dua paket (Edge 4G & Edge 3T) tuntas diproses oleh worker pusat");
+    assert_sync(kuitansi_list[0].status_ingesti == "BERHASIL_DIREKONSILIASI", "Tes 7.2: Status ingesti dinyatakan berhasil direkonsiliasi");
+
+    // ------------------------------------------------------------------------
+    // TES 8: Uji Idempotensi Mutlak (Anti-Duplikasi Data Kas & Siswa)
+    // ------------------------------------------------------------------------
+    // Coba kirim ulang paket yang sama (retransmit)
+    kirim_paket_ke_pusat(edge_sd, cloud_pusat, paket_sync, 100);
+    misal kuitansi_duplikat = pusat_proses_antrean_ingesti(cloud_pusat);
+    assert_sync(kuitansi_duplikat[0].status_ingesti == "TERDUPLIKASI_DIABAIKAN", "Tes 8: Idempotency gate menolak mutasi duplikat agar saldo kas tidak berlipat ganda");
+
+    // ------------------------------------------------------------------------
+    // TES 9: Distribusi Data Cerdas (Relasional vs Analitik)
+    // ------------------------------------------------------------------------
+    // Di Tes 2: DAPODIK & ARKAS_BKU (2 item) -> WidyaBase Relasional
+    // MBG_GIZI (1 item) -> WidyaOLAP Analitik
+    // Di Tes 6: CBT_NILAI (1 item) -> WidyaBase Relasional
+    assert_sync(panjang(cloud_pusat.basis_data_relasional_widyabase) == 3, "Tes 9.1: Data relasional (Dapodik, ARKAS, Nilai) masuk ke WidyaBase");
+    assert_sync(panjang(cloud_pusat.basis_data_analitik_widyaolap) == 1, "Tes 9.2: Data analitik (MBG Gizi) masuk ke WidyaOLAP");
+
+    // ------------------------------------------------------------------------
+    // TES 10: Commit Kuitansi Digital di Edge & Pengosongan WAL
+    // ------------------------------------------------------------------------
+    misal hasil_commit = edge_terima_kuitansi_pusat(edge_sd, kuitansi_list[0]);
+    assert_sync(hasil_commit["status"] == "SYNC_LENGKAP_DAN_TERVERIFIKASI", "Tes 10.1: Kuitansi ber-DID Pusdatin diverifikasi sah oleh Edge");
+    assert_sync(panjang(edge_sd.antrean_wal) == 0, "Tes 10.2: Antrean WAL lokal di edge dikosongkan dengan aman");
+
+    cetak("======================================================================");
+    cetak("SELURUH PENGUJIAN WIDYA EDGE-TO-PUSAT SYNC SELESAI (10/10 PASS)");
+    cetak("======================================================================");
+}
+
+utama();

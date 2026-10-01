@@ -1,0 +1,97 @@
+// ============================================================================
+// CONTOH WIDYA-LANG 182: TATA KELOLA ARKAS MULTI-SUMBER DANA & REVISI ANGGARAN
+// PKS Banper APBN, Pergeseran (Tanpa Dinas) vs Perubahan (Dengan Dinas), Sandingan
+// ============================================================================
+
+fungsi utama() {
+    cetak("============================================================================");
+    cetak("   SISTEM ARKAS 2026: MULTI-SUMBER DANA, PKS BANPER APBN & SANDINGAN REVISI   ");
+    cetak("============================================================================");
+
+    // 1. Profil Satuan Pendidikan & Multi-Sumber Dana
+    misal npsn = "20301234";
+    misal nama_sekolah = "SD Negeri 1 Somagede (Kabupaten Banyumas)";
+    misal bosp_reguler_t1 = 112500000.0; // Tahap 1 (Rp 112.500.000)
+    misal bos_kinerja = 45000000.0;     // Prestasi Rapor Mutu (Rp 45.000.000)
+    misal bosda_kabupaten = 25000000.0; // APBD Kab (Rp 25.000.000)
+
+    cetak("[1] IDENTITAS SEKOLAH & SALDO AWAL MULTI-SUMBER DANA:");
+    cetak("    - Nama Satuan Pendidikan : " + nama_sekolah + " (NPSN: " + npsn + ")");
+    cetak("    - 1. BOSP Reguler Tahap 1: Rp " + teks(bosp_reguler_t1));
+    cetak("    - 2. BOS Kinerja Mutu    : Rp " + teks(bos_kinerja));
+    cetak("    - 3. BOSDA Kabupaten     : Rp " + teks(bosda_kabupaten));
+
+    // 2. Perjanjian Kerja Sama (PKS) Bantuan Pemerintah (Banper) APBN
+    cetak("\n[2] PKS BANTUAN PEMERINTAH (BANPER) APBN KEMENDIKDASMEN RI:");
+    misal no_pks = "PKS-BANPER-APBN/2026/0412";
+    misal jenis_banper = "Digitalisasi Smart Classroom & Lab Vokasi";
+    misal total_nilai_banper = 150000000.0;
+    misal termin_1_cair = total_nilai_banper * 0.70; // 70% = Rp 105.000.000
+    misal termin_2_cair = total_nilai_banper * 0.30; // 30% = Rp 45.000.000
+
+    cetak("    - Nomor PKS Resmi        : " + no_pks);
+    cetak("    - Ruang Lingkup Bantuan  : " + jenis_banper);
+    cetak("    - Total Pagu Banper APBN : Rp " + teks(total_nilai_banper));
+    cetak("    - Pakta Integritas PPK   : DITANDATANGANI (Bebas KKN / Gratifikasi)");
+    cetak("    - Termin 1 (70% SP2D)    : Rp " + teks(termin_1_cair) + " [DANA CAIR DI BANK]");
+    cetak("    - Syarat Termin 2 (30%)  : Progres Fisik & Belanja SPJ Minimal 50.0%");
+
+    // 3. RKAS Murni Awal & Validasi Batas Honorarium (< 50% BOSP)
+    cetak("\n[3] RKAS MURNI AWAL TAHUN (8 STANDAR NASIONAL PENDIDIKAN):");
+    misal pagu_atk_awal = 30000000.0;
+    misal pagu_sanitasi_awal = 20000000.0;
+    misal total_rkas_murni = pagu_atk_awal + pagu_sanitasi_awal;
+
+    cetak("    - Pos 1: Pengadaan ATK & Kertas Kantor (SNP 7) : Rp " + teks(pagu_atk_awal));
+    cetak("    - Pos 2: Pemeliharaan Sanitasi MCK (SNP 6)     : Rp " + teks(pagu_sanitasi_awal));
+    cetak("    - Total Pagu RKAS Murni                        : Rp " + teks(total_rkas_murni));
+    cetak("    - Status Pengesahan Awal                       : DISAHKAN DINAS (MARKAS)");
+
+    // 4. Pergeseran Anggaran (Internal Sekolah Tanpa Pengesahan Dinas)
+    cetak("\n[4] PERGESERAN ANGGARAN (TIDAK PERLU PENGESAHAN DINAS):");
+    cetak("    Aturan Juknis: Pergeseran antar-item dalam total pagu yang sama cukup");
+    cetak("    disetujui Kepala Sekolah & Komite Sekolah.");
+
+    misal pergeseran_rp = 5000000.0; // Menggeser 5 Juta dari ATK ke Sanitasi
+    misal pagu_atk_baru = pagu_atk_awal - pergeseran_rp;
+    misal pagu_sanitasi_baru = pagu_sanitasi_awal + pergeseran_rp;
+    misal total_rkas_pergeseran = pagu_atk_baru + pagu_sanitasi_baru;
+
+    cetak("\n    --- TABEL SANDINGAN BEFORE-AFTER (PERGESERAN v1.1) ---");
+    cetak("    1. ATK & Kertas HVS :");
+    cetak("       • Sebelum  : Rp " + teks(pagu_atk_awal) + " (60 Rim)");
+    cetak("       • Sesudah  : Rp " + teks(pagu_atk_baru) + " (50 Rim)");
+    cetak("       • Selisih  : -Rp " + teks(pergeseran_rp) + " (Efisiensi Belanja)");
+    cetak("    2. Sanitasi & MCK Siswa :");
+    cetak("       • Sebelum  : Rp " + teks(pagu_sanitasi_awal));
+    cetak("       • Sesudah  : Rp " + teks(pagu_sanitasi_baru));
+    cetak("       • Selisih  : +Rp " + teks(pergeseran_rp) + " (Penambahan Kebutuhan)");
+    cetak("    ---------------------------------------------------------");
+    cetak("    • Total Pagu Semula : Rp " + teks(total_rkas_murni));
+    cetak("    • Total Pagu Baru   : Rp " + teks(total_rkas_pergeseran) + " [TETAP SAMA / TIDAK BERUBAH]");
+    cetak("    • Status Otorisasi  : LANGSUNG BERLAKU (Otomatis Tanpa Dinas)");
+
+    // 5. Perubahan Anggaran (Wajib Pengesahan Dinas Pendidikan MARKAS)
+    cetak("\n[5] PERUBAHAN ANGGARAN (WAJIB PENGESAHAN DINAS PENDIDIKAN / MARKAS):");
+    cetak("    Aturan Juknis: Terjadi penambahan pagu penerimaan BOS Kinerja Rp 25.000.000");
+
+    misal pagu_tablet_baru = 25000000.0;
+    misal total_rkas_perubahan = total_rkas_pergeseran + pagu_tablet_baru;
+
+    cetak("\n    --- TABEL SANDINGAN BEFORE-AFTER (PERUBAHAN v2.0) ---");
+    cetak("    1. Pengadaan Tablet Belajar Digital (Item Baru):");
+    cetak("       • Sebelum  : Rp 0 (0 Unit)");
+    cetak("       • Sesudah  : Rp " + teks(pagu_tablet_baru) + " (10 Unit Tablet)");
+    cetak("       • Selisih  : +Rp " + teks(pagu_tablet_baru) + " (Sumber: BOS Kinerja)");
+    cetak("    ---------------------------------------------------------");
+    cetak("    • Total Pagu Lama   : Rp " + teks(total_rkas_pergeseran));
+    cetak("    • Total Pagu Baru   : Rp " + teks(total_rkas_perubahan) + " (Pagu Bertambah)");
+    cetak("    • Status Otorisasi  : MENUNGGU VERIFIKASI & PENGESAHAN DINAS (MARKAS)");
+    cetak("    • Hasil Verifikasi  : TERVALIDASI & DISAHKAN OLEH DINAS PENDIDIKAN");
+
+    cetak("\n============================================================================");
+    cetak("       ARKAS MULTI-SUMBER DANA & MEKANISME REVISI BERJALAN SEMPURNA!       ");
+    cetak("============================================================================");
+}
+
+utama();

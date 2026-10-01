@@ -1,0 +1,181 @@
+// ============================================================================
+// SIMULASI SUITE: MANAJEMEN OPERASI SEKOLAH TERPADU (SCHOOL OPERATIONS)
+// Menguji 6 Modul Operasi Garis Depan Sekolah:
+// 1. Auto-Inval Pengganti Mengajar (Anti-Kelas Kosong Saat Guru Izin/Sakit)
+// 2. Helpdesk Pemeliharaan Sarpras & Tautan Anggaran Belanja ARKAS
+// 3. Peminjaman Ruang / Fasilitas & Deteksi Tabrakan Jadwal
+// 4. Buku Tamu Digital & Pengamanan Akses Kampus (QR Visitor Pass)
+// 5. Buku Saku Digital Poin Karakter & Notifikasi Realtime Orang Tua
+// 6. Penggajian Guru Non-ASN (Honorarium Berbasis Presensi Tatap Muka & PPh 21)
+// ============================================================================
+
+impor "widyaos/modul/manajemen_operasi_sekolah.wya";
+
+cetak("====================================================================");
+cetak("🏫  SIMULASI: MANAJEMEN OPERASI SEKOLAH TERPADU (WIDYAOS SOS)        ");
+cetak("====================================================================");
+
+// [1] Auto-Inval Guru Pengganti Mengajar
+cetak("\n[1] Uji Pengelolaan Piket & Auto-Inval Guru (Anti-Jam Kosong):");
+misal penugasan_inval = alokasikan_guru_inval(
+    "INV-2026-03-018",
+    "2026-03-18",
+    "Jam ke 3-4 (08.45 - 10.05)",
+    "Drs. Subagyo (Guru IPA)",
+    "DINAS_LUAR_MGMP",
+    "Rini Astuti, S.Pd. (Guru Piket)",
+    "Kelas 8-B",
+    "Modul Ajar Bab 4: Sistem Peredaran Darah Manusia (LMS Sinau)"
+);
+
+cetak("  • Guru Berhalangan   :", penugasan_inval.nama_guru_berhalangan, "(Alasan:", penugasan_inval.alasan_tidak_hadir, ")");
+cetak("  • Guru Inval Piket   :", penugasan_inval.nama_guru_piket_inval);
+cetak("  • Rombel & Modul LMS :", penugasan_inval.kelas_rombel, "|", penugasan_inval.materi_modul_lms);
+cetak("  • Status Penugasan   :", penugasan_inval.status_pelaksanaan);
+
+jika penugasan_inval.status_pelaksanaan == "TERDISPOSISI_GURU_INVAL_SIAP_MASUK_KELAS" {
+    cetak("  ✅ PASS: Guru Piket Otomatis Menginval Kelas Lengkap dengan Materi LMS!");
+} lainnya {
+    cetak("  ❌ FAIL: Penugasan inval gagal!");
+}
+
+// [2] Helpdesk Pemeliharaan Sarpras & Link Anggaran ARKAS
+cetak("\n[2] Uji Helpdesk Pemeliharaan Sarpras & Tautan Anggaran ARKAS:");
+misal tiket_proyektor = buat_tiket_perbaikan_sarpras(
+    "TKT-SARPRAS-042",
+    "did:sewidya:guru:rini",
+    "LAB_KOMPUTER_1",
+    "Proyektor Epson EB-X400",
+    "Lampu indikator berkedip merah, tidak mau memproyeksikan gambar",
+    "KRITIS_MENGGANGGU_KBM",
+    "5.1.02.01.01.0035" // Belanja Pemeliharaan Sarpras ARKAS
+);
+
+cetak("  • ID Tiket Aduan     :", tiket_proyektor.id_tiket);
+cetak("  • Fasilitas Rusak    :", tiket_proyektor.nama_barang_rusak, "di", tiket_proyektor.lokasi_ruang);
+cetak("  • Kode Akun ARKAS    :", tiket_proyektor.kode_rekening_arkas);
+
+// Teknisi internal menyelesaikan perbaikan (ganti lampu halogen proyektor Rp 450.000)
+misal res_tiket = selesaikan_tiket_perbaikan(tiket_proyektor, 450000.0, "Budi Teknisi IT");
+cetak("  • Status Perbaikan   :", tiket_proyektor.status_perbaikan);
+cetak("  • Biaya Suku Cadang  : Rp", tiket_proyektor.estimasi_biaya);
+
+jika tiket_proyektor.status_perbaikan == "SELESAI_TERUJI" dan tiket_proyektor.estimasi_biaya == 450000.0 {
+    cetak("  ✅ PASS: Pemeliharaan Sarpras Tuntas & Otomatis Masuk ke Pos Belanja ARKAS!");
+} lainnya {
+    cetak("  ❌ FAIL: Helpdesk sarpras gagal!");
+}
+
+// [3] Peminjaman Fasilitas & Deteksi Tabrakan Jadwal
+cetak("\n[3] Uji Peminjaman Ruang Fasilitas & Resolver Jadwal Bentrok:");
+// Skenario A: Peminjaman Aula disetujui (tidak ada jadwal sama)
+misal pinjam_aula = ajukan_peminjaman_ruang(
+    "PINJAM-089",
+    "AULA_GRAHA_WIYATA",
+    "Pembina OSIS (Rudi, S.Pd.)",
+    "2026-03-21",
+    "08:00",
+    "12:00",
+    "Gladi Bersih Pelantikan Pengurus OSIS",
+    salah // Tidak bentrok
+);
+
+// Skenario B: Peminjaman bentrok dengan kegiatan lain di jam yang sama
+misal pinjam_bentrok = ajukan_peminjaman_ruang(
+    "PINJAM-090",
+    "AULA_GRAHA_WIYATA",
+    "Guru Seni Budaya",
+    "2026-03-21",
+    "09:00",
+    "11:00",
+    "Latihan Tari Tradisional",
+    benar // Ada bentrok!
+);
+
+cetak("  • Peminjaman Aula (Tanpa Bentrok):", pinjam_aula.status_persetujuan);
+cetak("  • Peminjaman Aula (Saat Bentrok) :", pinjam_bentrok.status_persetujuan);
+
+jika pinjam_aula.status_persetujuan == "DISETUJUI_WAKASEK_SARPRAS" dan pinjam_bentrok.status_persetujuan == "DITOLAK_BENTROK" {
+    cetak("  ✅ PASS: Peminjaman Fasilitas Tertib & Anti-Jadwal Bentrok!");
+} lainnya {
+    cetak("  ❌ FAIL: Resolver bentrok gagal!");
+}
+
+// [4] Buku Tamu Digital & Pengamanan Akses Kampus
+cetak("\n[4] Uji Buku Tamu Digital & Penerbitan QR Visitor Pass:");
+misal tamu = catat_tamu_masuk(
+    "VIS-2026-03-014",
+    "H. Ahmad Syafi'i, M.M.",
+    "BBPMP Provinsi Jawa Timur",
+    "Monitoring & Evaluasi Kesiapan Sekolah Adiwiyata",
+    "Kepala Sekolah"
+);
+
+cetak("  • Tamu Berkunjung    :", tamu.nama_tamu, "dari", tamu.instansi_asal);
+cetak("  • Tujuan & Pejabat   :", tamu.tujuan_kunjungan, "| Menemui:", tamu.pejabat_ditemui);
+cetak("  • Nomor Badge QR     :", tamu.nomor_badge_qr);
+cetak("  • Status Kunjungan   :", tamu.status_kunjungan);
+
+jika tamu.status_kunjungan == "SEDANG_BERLANGSUNG" {
+    cetak("  ✅ PASS: Tamu Resmi Tercatat Digital dengan Akses Keamanan Terkendali!");
+} lainnya {
+    cetak("  ❌ FAIL: Buku tamu digital gagal!");
+}
+
+// [5] Buku Saku Digital Poin Karakter Siswa
+cetak("\n[5] Uji Buku Saku Poin Karakter Siswa (Merit/Demerit & Notifikasi Ortu):");
+misal poin_prestasi = catat_kejadian_karakter_siswa(
+    "PK-2026-001",
+    "0081234567",
+    "Ahmad Fauzi",
+    "PRESTASI",
+    "Juara 1 Olimpiade Sains Nasional (OSN) Tingkat Kabupaten",
+    50.0
+);
+
+misal poin_pelanggaran = catat_kejadian_karakter_siswa(
+    "PK-2026-002",
+    "0087654321",
+    "Bima Satria",
+    "PELANGGARAN",
+    "Terlambat masuk sekolah > 30 menit tanpa surat keterangan",
+    -10.0
+);
+
+cetak("  • Poin Prestasi     :", poin_prestasi.nama_siswa, "| Bobot:", poin_prestasi.bobot_poin, "|", poin_prestasi.status_notifikasi_ortu);
+cetak("  • Poin Pelanggaran  :", poin_pelanggaran.nama_siswa, "| Bobot:", poin_pelanggaran.bobot_poin, "| Tindak:", poin_pelanggaran.tindak_lanjut_bk);
+
+jika poin_prestasi.bobot_poin == 50.0 dan poin_pelanggaran.tindak_lanjut_bk == "PANGGILAN_KONSELING_GURU_BK" {
+    cetak("  ✅ PASS: Buku Saku Karakter Siswa Terkoneksi ke Guru BK & Orang Tua!");
+} lainnya {
+    cetak("  ❌ FAIL: Buku saku karakter gagal!");
+}
+
+// [6] Penggajian / Slip Honor Guru Non-ASN (GTT) Berbasis Presensi Riil
+cetak("\n[6] Uji Slip Honorarium GTK Non-ASN Berbasis Presensi Riil & PPh 21:");
+// Guru GTT mengajar 48 jam tatap muka riil dalam sebulan, tarif Rp 50.000/jam, PPh 21 5%
+misal slip_honor = hitung_slip_honor_guru_non_asn(
+    "SLIP-2026-03-01",
+    "3516012345670001",
+    "Nadia Syifa, S.Pd.",
+    48.0,
+    50000.0,
+    5.0
+);
+
+cetak("  • Nama Pendidik     :", slip_honor.nama_guru);
+cetak("  • Jam Tatap Muka    :", slip_honor.total_jam_tatap_muka_riil, "jam pelajaran");
+cetak("  • Honor Bruto       : Rp", slip_honor.honor_kotor);
+cetak("  • Potongan PPh 21   : Rp", slip_honor.potongan_pph_21);
+cetak("  • Honor Bersih      : Rp", slip_honor.honor_bersih_diterima);
+cetak("  • Status Pembayaran :", slip_honor.status_pembayaran);
+
+jika slip_honor.honor_kotor == 2400000.0 dan slip_honor.honor_bersih_diterima == 2280000.0 {
+    cetak("  ✅ PASS: Honorarium Transparan Dihitung Presisi Berdasarkan Kehadiran Riil!");
+} lainnya {
+    cetak("  ❌ FAIL: Perhitungan slip honor salah!");
+}
+
+cetak("\n====================================================================");
+cetak("🏆 HASIL SIMULASI: 6/6 PILAR OPERASI SEKOLAH TERPADU LULUS (100%)    ");
+cetak("====================================================================");

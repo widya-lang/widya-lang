@@ -1,0 +1,118 @@
+// ==============================================================================
+// integrasi/telegram_bridge.wya - Jembatan Pengiriman Telegram Bot Gateway Resmi
+// ==============================================================================
+
+// 1. Format Pesan Briefing Pagi (08:00 WIB) - Format HTML Telegram
+fungsi tg_format_pesan_pagi(tanggal_str, prioritas_list, deadline_list, catatan_obsidian) {
+    misal teks = "✈️ <b>WIDYA ENTERPRISE LABS • DAILY BRIEFING</b>\n" +
+        "📅 <b>" + tanggal_str + "</b> | ⏰ <b>08:00 WIB</b> | Bot: <code>@WidyaDigitalBot</code>\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "Halo Pak Satriyo! 9 AI Agent Berdaulat telah menyelesaikan Sidang Pagi. Berikut rencana fokus eksekutif hari ini:\n\n" +
+        "🎯 <b>3 PRIORITAS UTAMA HARI INI:</b>\n";
+
+    misal i = 0;
+    selama (i < panjang(prioritas_list)) {
+        teks = teks + ke_teks(i + 1) + ". " + prioritas_list[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n📋 <b>TARGET DEADLINE & PIC:</b>\n";
+    i = 0;
+    selama (i < panjang(deadline_list)) {
+        teks = teks + "• " + deadline_list[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n📁 <b>Catatan Lengkap Tersimpan di Obsidian:</b>\n" +
+        "<code>DailyNotes/" + catatan_obsidian + "</code>\n\n" +
+        "<i>Balas Telegram ini dengan <b>/acc</b> untuk persetujuan, atau ketik instruksi revisi.</i>";
+
+    kembalikan teks;
+}
+
+// 2. Format Pesan Evaluasi Malam (20:00 WIB) - Format HTML Telegram
+fungsi tg_format_pesan_malam(tanggal_str, selesai_list, kendala_str, usulan_besok_list, skor_efektivitas) {
+    misal teks = "🌙 <b>REKAP EVALUASI HARIAN EKSEKUTIF</b>\n" +
+        "📅 <b>" + tanggal_str + "</b> | ⏰ <b>20:00 WIB</b> | Telegram Gateway\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "Halo Komandan! Seluruh divisi telah merampungkan jam kerja. Berikut capaian terverifikasi:\n\n" +
+        "📊 <b>STATUS CAPAIAN PEKERJAAN:</b>\n";
+
+    misal i = 0;
+    selama (i < panjang(selesai_list)) {
+        teks = teks + "✅ " + selesai_list[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n⚠️ <b>CATATAN OPERASIONAL & KENDALA:</b>\n" +
+        "<blockquote>" + kendala_str + "</blockquote>\n\n" +
+        "🔮 <b>USULAN 3 PRIORITAS UNTUK BESOK:</b>\n";
+
+    i = 0;
+    selama (i < panjang(usulan_besok_list)) {
+        teks = teks + ke_teks(i + 1) + ". " + usulan_besok_list[i] + "\n";
+        i = i + 1;
+    }
+
+    teks = teks + "\n⭐ <b>Efektivitas Tim:</b> <b>" + ke_teks(skor_efektivitas) + "%</b>\n" +
+        "📁 Arsip Vault: <code>DailyNotes/" + tanggal_str + "-Malam.md</code>\n" +
+        "Selamat beristirahat, Komandan!";
+
+    kembalikan teks;
+}
+
+// 3. Eksekusi Pengiriman Pesan ke Telegram Bot API
+fungsi tg_kirim_pesan(cfg, pesan_teks) {
+    misal tg_cfg = cfg["telegram"];
+    misal bot_token = tg_cfg["bot_token"];
+    misal chat_id = tg_cfg["chat_id"];
+
+    cetak("\n=======================================================");
+    cetak("✈️ [Telegram Bot Gateway] Mengirim pesan ke chat ID: " + chat_id);
+    cetak("=======================================================");
+
+    // Selalu catat isi pesan ke berkas outbox lokal
+    coba {
+        misal outbox_log = "[WAKTU: " + ke_teks(waktu()) + "]\n" +
+            "[TARGET: " + chat_id + "]\n" +
+            "[BOT: " + tg_cfg["username_bot"] + "]\n\n" +
+            pesan_teks + "\n";
+        tulis_berkas("./telegram_terakhir.txt", outbox_log);
+    } tangkap (e) {}
+
+    // Cek apakah token masih dummy / belum diisi
+    jika (bot_token == "TOKEN_BOT_TELEGRAM_ANDA" atau tg_cfg["aktif"] == salah atau bot_token == "") {
+        cetak("💡 [Telegram Gateway Mode Standby / Simulasi]");
+        cetak("Pesan berhasil diformat rapi untuk Telegram Bot API:");
+        cetak("-------------------------------------------------------");
+        cetak(pesan_teks);
+        cetak("-------------------------------------------------------");
+        cetak("✓ Tersimpan ke berkas: ./telegram_terakhir.txt");
+        kembalikan { "sukses": benar, "status": 200, "pesan": "Tercatat di konsol & outbox log" };
+    }
+
+    // Eksekusi HTTP POST langsung ke endpoint resmi Telegram Bot API
+    coba {
+        misal url_target = "https://api.telegram.org/bot" + bot_token + "/sendMessage";
+        misal headers_req = { "Content-Type": "application/json" };
+        misal badan_req = ke_json({
+            "chat_id": chat_id,
+            "text": pesan_teks,
+            "parse_mode": "HTML",
+            "disable_web_page_preview": benar
+        });
+
+        misal respon = http_post_detil(url_target, {
+            "headers": headers_req,
+            "body": badan_req,
+            "timeout_ms": 10000
+        });
+
+        cetak("✓ [Telegram Bot Gateway] Pesan sukses terkirim ke Telegram!");
+        kembalikan { "sukses": benar, "respon": respon };
+    } tangkap (galat) {
+        cetak("⚠️ [Telegram Bot Gateway] Kendala koneksi ke Telegram API: " + galat);
+        cetak("Pesan tetap aman tersimpan di berkas outbox: ./telegram_terakhir.txt");
+        kembalikan { "sukses": salah, "galat": galat };
+    }
+}

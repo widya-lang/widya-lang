@@ -1,0 +1,290 @@
+// =================================================================
+// Modul Manajemen Akademik Lengkap WidyaOS (Jadwal, Penilaian, Mulok, e-Rapor)
+// 1. Penjadwalan Pelajaran Anti-Bentrok 3-Dimensi & Penugasan Guru Inval
+// 2. Integrasi Penuh Mapel Muatan Lokal (Bahasa Daerah, Budaya, Prakarya)
+// 3. Pengakuan Alokasi JJM Mulok (Maks 2 Jam) untuk TPG 24 Jam Guru
+// 4. Pengelolaan Penilaian Formatif & Sumatif Berbasis KKTP
+// 5. Penerbitan e-Rapor Resmi Kemendikdasmen (Tabel Nasional & Tabel Mulok)
+// 6. Leger Nilai Semester & Buku Induk Nilai Format F4 Pixel-Perfect
+// =================================================================
+
+struktur MataPelajaranMuatanLokal {
+    kode_mapel,
+    nama_mapel,
+    kategori_mulok,       // "BAHASA_DAERAH", "SENI_BUDAYA_LOKAL", "KERAJINAN_PRAKARYA_LOKAL"
+    dasar_hukum_pergub,   // Contoh: "Pergub Jabar No. 69/2013", "Pergub Bali No. 80/2018"
+    alokasi_jjm_mingguan, // Standar maksimal 2 Jam Pelajaran (2 JJM)
+    kode_provinsi_asal,
+    linearitas_tpg        // "DIAKUI_UNTUK_BEBAN_KERJA_TPG_24_JAM"
+}
+
+struktur SlotJadwalAkademik {
+    id_slot,
+    hari,                  // "SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"
+    jam_ke,                // 1 s.d. 10
+    id_rombel,
+    kode_mapel,
+    nama_mapel,
+    kelompok_kurikulum,    // "INTRAKURIKULER_NASIONAL" atau "MUATAN_LOKAL"
+    nuptk_guru,
+    nama_guru,
+    id_ruangan,
+    status_kehadiran_guru, // "HADIR_MENGAJAR", "IZIN_DINAS", "DIGANTIKAN_GURU_INVAL"
+    nuptk_guru_inval
+}
+
+struktur EvaluasiJadwal3D {
+    total_slot_terjadwal,
+    total_bentrok_guru,
+    total_bentrok_ruang,
+    total_bentrok_rombel,
+    status_kelayakan_jadwal // "JADWAL_VALID_BEBAS_BENTROK", "TERDAPAT_BENTROK"
+}
+
+struktur CapaianNilaiMapel {
+    kode_mapel,
+    nama_mapel,
+    kelompok_mapel, // "KELOMPOK_UMUM_NASIONAL" atau "KELOMPOK_MUATAN_LOKAL"
+    kktp_tuntas,    // Kriteria Ketercapaian Tujuan Pembelajaran (e.g. 75.0)
+    nilai_formatif,
+    nilai_sumatif_materi,
+    nilai_sumatif_akhir_semester,
+    nilai_akhir,
+    predikat,
+    deskripsi_capaian_tertinggi,
+    deskripsi_perlu_bimbingan
+}
+
+struktur LembarERaporSiswa {
+    nisn,
+    nama_siswa,
+    id_rombel,
+    tingkat_kelas,
+    semester,
+    tahun_ajaran,
+    daftar_nilai_nasional,
+    daftar_nilai_mulok,
+    catatan_wali_kelas,
+    presensi_sakit,
+    presensi_izin,
+    presensi_alpa,
+    status_kenaikan, // "NAIK_KE_KELAS_BERIKUTNYA", "LULUS_DARI_SATUAN_PENDIDIKAN", "TINGGAL_KELAS"
+    tte_kepsek_did,
+    tte_wali_kelas_did,
+    qr_verifikasi_hash
+}
+
+struktur LegerNilaiRombel {
+    id_rombel,
+    nama_rombel,
+    semester,
+    tahun_ajaran,
+    total_siswa,
+    daftar_nisn_terurut,
+    rata_rata_rombel
+}
+
+// -----------------------------------------------------------------
+// [1] Inisialisasi & Pendaftaran Mapel Muatan Lokal (Mulok)
+// -----------------------------------------------------------------
+fungsi daftarkan_mapel_muatan_lokal(kode, nama, kategori, pergub, jjm, kode_prov) {
+    misal status_tpg = "TIDAK_MEMENUHI";
+    // Maksimal 2 jam pelajaran yang diakui regulasi Kemendikdasmen
+    jika jjm <= 2 {
+        status_tpg = "DIAKUI_UNTUK_BEBAN_KERJA_TPG_24_JAM";
+    }
+    
+    kembalikan MataPelajaranMuatanLokal(
+        kode,
+        nama,
+        kategori,
+        pergub,
+        jjm,
+        kode_prov,
+        status_tpg
+    );
+}
+
+// -----------------------------------------------------------------
+// [2] Inisialisasi & Penjadwalan Pelajaran (Termasuk Slot Mulok)
+// -----------------------------------------------------------------
+fungsi inisialisasi_jadwal_akademik() {
+    kembalikan [];
+}
+
+fungsi tambah_slot_jadwal(daftar_jadwal, id_slot, hari, jam_ke, rombel, kd_mapel, mapel, kelompok, nuptk, guru, ruang) {
+    misal slot = SlotJadwalAkademik(
+        id_slot,
+        hari,
+        jam_ke,
+        rombel,
+        kd_mapel,
+        mapel,
+        kelompok,
+        nuptk,
+        guru,
+        ruang,
+        "HADIR_MENGAJAR",
+        "NIHIL"
+    );
+    tambah(daftar_jadwal, slot);
+    kembalikan slot;
+}
+
+// -----------------------------------------------------------------
+// [3] Deteksi Bentrok Jadwal 3-Dimensi (Guru, Ruang, Rombel)
+// -----------------------------------------------------------------
+fungsi audit_bentrok_jadwal_3d(daftar_jadwal) {
+    misal total = panjang(daftar_jadwal);
+    misal bentrok_guru = 0;
+    misal bentrok_ruang = 0;
+    misal bentrok_rombel = 0;
+    
+    misal i = 0;
+    untuk s1 in daftar_jadwal {
+        misal j = 0;
+        untuk s2 in daftar_jadwal {
+            jika i < j {
+                jika s1.hari == s2.hari dan s1.jam_ke == s2.jam_ke {
+                    jika s1.nuptk_guru == s2.nuptk_guru {
+                        bentrok_guru = bentrok_guru + 1;
+                    }
+                    jika s1.id_ruangan == s2.id_ruangan {
+                        bentrok_ruang = bentrok_ruang + 1;
+                    }
+                    jika s1.id_rombel == s2.id_rombel {
+                        bentrok_rombel = bentrok_rombel + 1;
+                    }
+                }
+            }
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+    
+    misal status = "JADWAL_VALID_BEBAS_BENTROK";
+    jika (bentrok_guru + bentrok_ruang + bentrok_rombel) > 0 {
+        status = "TERDAPAT_BENTROK";
+    }
+    
+    kembalikan EvaluasiJadwal3D(
+        total,
+        bentrok_guru,
+        bentrok_ruang,
+        bentrok_rombel,
+        status
+    );
+}
+
+// -----------------------------------------------------------------
+// [4] Penugasan Guru Inval / Pengganti (Saat Guru Berhalangan)
+// -----------------------------------------------------------------
+fungsi tugaskan_guru_inval(slot, nuptk_inval, nama_inval, alasan_izin) {
+    slot.status_kehadiran_guru = "DIGANTIKAN_GURU_INVAL";
+    slot.nuptk_guru_inval = nuptk_inval;
+    kembalikan {
+        "id_slot": slot.id_slot,
+        "mapel": slot.nama_mapel,
+        "guru_utama": slot.nama_guru,
+        "guru_inval": nama_inval,
+        "alasan": alasan_izin,
+        "status": "INVAL_BERHASIL_DITUGASKAN"
+    };
+}
+
+// -----------------------------------------------------------------
+// [5] Mesin Penilaian (Mapel Nasional & Mapel Muatan Lokal)
+// -----------------------------------------------------------------
+fungsi hitung_nilai_akhir_mapel_lengkap(kd_mapel, nama_mapel, kelompok, kktp, n_formatif, n_sumatif_materi, n_sas, materi_unggul, materi_lemah) {
+    // Bobot: 30% Formatif + 40% Sumatif Materi + 30% SAS
+    misal na = (n_formatif * 0.3) + (n_sumatif_materi * 0.4) + (n_sas * 0.3);
+    
+    misal predikat = "PERLU_BIMBINGAN";
+    jika na >= 86.0 {
+        predikat = "SANGAT_BAIK";
+    } kalau na >= 75.0 {
+        predikat = "BAIK";
+    } kalau na >= 65.0 {
+        predikat = "CUKUP";
+    }
+    
+    misal narasi_unggul = "Menunjukkan penguasaan yang sangat baik dalam " + materi_unggul;
+    misal narasi_lemah = "Perlu bimbingan dan penguatan lebih lanjut dalam " + materi_lemah;
+    
+    kembalikan CapaianNilaiMapel(
+        kd_mapel,
+        nama_mapel,
+        kelompok,
+        kktp,
+        n_formatif,
+        n_sumatif_materi,
+        n_sas,
+        na,
+        predikat,
+        narasi_unggul,
+        narasi_lemah
+    );
+}
+
+// -----------------------------------------------------------------
+// [6] Penerbitan e-Rapor Resmi Siswa (Format Kemendikdasmen RI)
+// Memisahkan Tabel Nilai Nasional dan Tabel Nilai Muatan Lokal
+// -----------------------------------------------------------------
+fungsi terbitkan_erapor_lengkap(nisn, nama, rombel, tingkat, sem, th_ajar, nilai_nasional, nilai_mulok, catatan, s, i, a, kenaikan, did_kepsek, did_wali) {
+    misal hash_verif = "0x" + nisn + "RAPOR" + sem + "VERIFIED_SEWIDYA";
+    kembalikan LembarERaporSiswa(
+        nisn,
+        nama,
+        rombel,
+        tingkat,
+        sem,
+        th_ajar,
+        nilai_nasional,
+        nilai_mulok,
+        catatan,
+        s,
+        i,
+        a,
+        kenaikan,
+        did_kepsek,
+        did_wali,
+        hash_verif
+    );
+}
+
+// -----------------------------------------------------------------
+// [7] Penyusunan Leger Nilai Semester Rombel (Format F4 Baku)
+// -----------------------------------------------------------------
+fungsi susun_leger_nilai_rombel(id_rombel, nama_rombel, sem, th_ajar, daftar_siswa_rapor) {
+    misal total_murid = panjang(daftar_siswa_rapor);
+    misal total_nilai_semua = 0.0;
+    misal daftar_nisn = [];
+    
+    untuk s in daftar_siswa_rapor {
+        tambah(daftar_nisn, s.nisn);
+        misal total_na_siswa = 0.0;
+        misal jml_mapel = panjang(s.daftar_nilai_nasional) + panjang(s.daftar_nilai_mulok);
+        
+        untuk mn in s.daftar_nilai_nasional {
+            total_na_siswa = total_na_siswa + mn.nilai_akhir;
+        }
+        untuk ml in s.daftar_nilai_mulok {
+            total_na_siswa = total_na_siswa + ml.nilai_akhir;
+        }
+        
+        misal rerata_siswa = total_na_siswa / jml_mapel;
+        total_nilai_semua = total_nilai_semua + rerata_siswa;
+    }
+    
+    misal rerata_rombel = total_nilai_semua / total_murid;
+    
+    kembalikan LegerNilaiRombel(
+        id_rombel,
+        nama_rombel,
+        sem,
+        th_ajar,
+        total_murid,
+        daftar_nisn,
+        rerata_rombel
+    );
+}

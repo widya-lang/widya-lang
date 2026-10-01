@@ -1,0 +1,439 @@
+// =================================================================
+// Modul ARKAS Multi-Sumber Dana & Multi-Pengelola (arkas_multidana.wya)
+// Versi Modern: Multi-PIC, Smart Diff Pergeseran vs Perubahan,
+// Toggle Non-SIPD APBN, Side-by-Side Matrix Diff, & Berita Acara
+// =================================================================
+
+struktur PengelolaSumberDana {
+    nama_lengkap,
+    nip,
+    jabatan,
+    did_pengelola
+}
+
+struktur KantongKas {
+    kode_kantong,
+    nama_kantong,
+    saldo_rp,
+    rekening_bank,
+    earmarked_terikat,
+    rincian_rab,
+    pagu_alokasi_rp,
+    total_terplot_rp,
+    pengelola_pic,
+    otoritas_pengesahan, // "DINAS_PENDIDIKAN", "KEPALA_SEKOLAH", "BBPMP", "DITJEN_PUSAT"
+    skema_rekening       // "SIPD_STANDAR" atau "KOMPONEN_MANDIRI_APBN"
+}
+
+struktur MutasiKas {
+    id_mutasi,
+    waktu_transaksi,
+    kode_kantong,
+    tipe_mutasi, // "MASUK" atau "KELUAR"
+    nominal_rp,
+    keterangan,
+    nomor_bukti_referensi,
+    penanggung_jawab_did
+}
+
+struktur ItemKertasKerja {
+    id_item,
+    kode_rekening,
+    nama_rekening,
+    uraian_kegiatan,
+    volume,
+    satuan,
+    harga_satuan_rp,
+    total_nominal_rp
+}
+
+struktur MatriksPenyandinganItem {
+    id_item,
+    kode_rekening_semula,
+    kode_rekening_menjadi,
+    uraian_kegiatan,
+    // Semula
+    vol_semula,
+    satuan_semula,
+    harga_semula_rp,
+    nominal_semula_rp,
+    // Menjadi
+    vol_menjadi,
+    satuan_menjadi,
+    harga_menjadi_rp,
+    nominal_menjadi_rp,
+    // Deviasi
+    delta_volume,
+    delta_nominal_rp,
+    status_badge // "BERTAMBAH", "BERKURANG", "TETAP", "BARU", "DIHAPUS"
+}
+
+struktur BukuBesarARKAS {
+    npsn_sekolah,
+    daftar_kantong,
+    riwayat_mutasi,
+
+    fungsi inisialisasi(npsn) {
+        ini.npsn_sekolah = npsn;
+        ini.daftar_kantong = {};
+        ini.riwayat_mutasi = [];
+
+        // 1. BOSP Reguler -> Ahmad Fauzi, S.Pd.
+        misal pic_bosp = PengelolaSumberDana("Ahmad Fauzi, S.Pd.", "198503152010011012", "Bendahara BOSP Reguler", "did:sewidya:guru:198503152010011012");
+        ini.daftar_kantong["BOSP_REGULER"] = KantongKas(
+            "BOSP_REGULER",
+            "Bantuan Operasional Satuan Pendidikan (BOSP)",
+            0.0,
+            "BPD-BOSP-" + npsn,
+            salah,
+            "Juknis Operasional Reguler",
+            120000000.0,
+            120000000.0,
+            pic_bosp,
+            "DINAS_PENDIDIKAN",
+            "SIPD_STANDAR"
+        );
+
+        // 2. Banpem APBN Revitalisasi -> Hendro Kusumo, S.T.
+        misal pic_banpem = PengelolaSumberDana("Hendro Kusumo, S.T.", "198007202008011009", "Ketua Tim Banpem TIK", "did:sewidya:guru:198007202008011009");
+        ini.daftar_kantong["BANPEM_REVITALISASI"] = KantongKas(
+            "BANPEM_REVITALISASI",
+            "Bantuan Pemerintah Revitalisasi Sarpras/SMK APBN",
+            0.0,
+            "BRI-BANPEM-" + npsn,
+            benar,
+            "RAB Khusus Renovasi & Alat TIK Kemendikdasmen",
+            250000000.0,
+            250000000.0,
+            pic_banpem,
+            "DINAS_PENDIDIKAN", // Dikonfigurasi: diverifikasi Dinas meski APBN
+            "KOMPONEN_MANDIRI_APBN" // Default: Komponen Mandiri APBN
+        );
+
+        // 3. BOS Kinerja -> Siti Rahmawati, M.Pd.
+        misal pic_kinerja = PengelolaSumberDana("Siti Rahmawati, M.Pd.", "198211042006042015", "Pengelola BOS Kinerja", "did:sewidya:guru:198211042006042015");
+        ini.daftar_kantong["BOS_KINERJA"] = KantongKas(
+            "BOS_KINERJA",
+            "BOS Kinerja Kemendikdasmen",
+            0.0,
+            "BPD-KINERJA-" + npsn,
+            benar,
+            "Peningkatan Prestasi & Rapor Mutu",
+            45000000.0,
+            40000000.0,
+            pic_kinerja,
+            "DINAS_PENDIDIKAN",
+            "SIPD_STANDAR"
+        );
+
+        // 4. BOSDA (APBD) -> Dewi Lestari, S.E.
+        misal pic_bosda = PengelolaSumberDana("Dewi Lestari, S.E.", "198902142014022003", "Bendahara BOSDA Daerah", "did:sewidya:pegawai:198902142014022003");
+        ini.daftar_kantong["BOSDA"] = KantongKas(
+            "BOSDA",
+            "Bantuan Operasional Sekolah Daerah (BOSDA)",
+            0.0,
+            "BPD-BOSDA-" + npsn,
+            salah,
+            "Perda APBD Dinas Pendidikan",
+            35000000.0,
+            32000000.0,
+            pic_bosda,
+            "DINAS_PENDIDIKAN",
+            "SIPD_STANDAR"
+        );
+
+        // 5. SPP & Iuran Komite Siswa -> Budi Santoso, S.Kom.
+        misal pic_komite = PengelolaSumberDana("Budi Santoso, S.Kom.", "198709182012011005", "Pengelola Kas Komite & Sarpras", "did:sewidya:guru:198709182012011005");
+        ini.daftar_kantong["SPP_KOMITE"] = KantongKas(
+            "SPP_KOMITE",
+            "Dana SPP & Sumbangan Komite Sekolah",
+            0.0,
+            "BSI-KOMITE-" + npsn,
+            salah,
+            "Musyawarah RKAS Pleno Komite",
+            50000000.0,
+            45000000.0,
+            pic_komite,
+            "KEPALA_SEKOLAH", // Otoritas pengesahan internal kepala sekolah
+            "SIPD_STANDAR"
+        );
+
+        // 6. Kas Mandiri / DePIN
+        misal pic_mandiri = PengelolaSumberDana("Ahmad Fauzi, S.Pd.", "198503152010011012", "Bendahara Unit Usaha & DePIN", "did:sewidya:guru:198503152010011012");
+        ini.daftar_kantong["MANDIRI_DEPIN"] = KantongKas(
+            "MANDIRI_DEPIN",
+            "Kas Mandiri Sekolah (Hasil Komputasi IFP & Unit Usaha)",
+            0.0,
+            "BNI-MANDIRI-" + npsn,
+            salah,
+            "Pendapatan Asli Sekolah Bebas Operasional",
+            10000000.0,
+            0.0,
+            pic_mandiri,
+            "KEPALA_SEKOLAH",
+            "KOMPONEN_MANDIRI_APBN"
+        );
+    }
+}
+
+fungsi arkas_set_pengelola(buku, kode_kantong, nama_pic, nip, jabatan, did_pic) {
+    jika ada_kunci(buku.daftar_kantong, kode_kantong) {
+        buku.daftar_kantong[kode_kantong].pengelola_pic = PengelolaSumberDana(nama_pic, nip, jabatan, did_pic);
+    }
+}
+
+fungsi arkas_set_otoritas_pengesahan(buku, kode_kantong, otoritas) {
+    jika ada_kunci(buku.daftar_kantong, kode_kantong) {
+        buku.daftar_kantong[kode_kantong].otoritas_pengesahan = otoritas;
+    }
+}
+
+fungsi arkas_set_skema_rekening(buku, kode_kantong, skema) {
+    jika ada_kunci(buku.daftar_kantong, kode_kantong) {
+        buku.daftar_kantong[kode_kantong].skema_rekening = skema;
+    }
+}
+
+// -------------------------------------------------------------
+// ENGINE ATURAN CERDAS: PERGESERAN VS PERUBAHAN ANGGARAN
+// -------------------------------------------------------------
+
+fungsi arkas_bandingkan_kertas_kerja(daftar_semula, daftar_menjadi) {
+    misal hasil_matriks = [];
+    misal pergeseran_inter_rekening = salah;
+    misal rekening_berubah_tambah = 0;
+
+    // Peta indeks item semula
+    misal peta_semula = {};
+    untuk s dalam daftar_semula {
+        peta_semula[s.id_item] = s;
+    }
+
+    misal peta_menjadi = {};
+    untuk m dalam daftar_menjadi {
+        peta_menjadi[m.id_item] = m;
+    }
+
+    // 1. Evaluasi item yang ada di daftar_menjadi (tetap, bertambah, berkurang, baru)
+    untuk item_m dalam daftar_menjadi {
+        jika ada_kunci(peta_semula, item_m.id_item) {
+            misal item_s = peta_semula[item_m.id_item];
+            misal d_vol = item_m.volume - item_s.volume;
+            misal d_nom = item_m.total_nominal_rp - item_s.total_nominal_rp;
+            
+            misal badge = "TETAP";
+            jika d_nom > 0.0 { badge = "BERTAMBAH"; }
+            lainnya jika d_nom < 0.0 { badge = "BERKURANG"; }
+
+            // Deteksi apakah kode rekening diubah
+            jika item_s.kode_rekening != item_m.kode_rekening {
+                pergeseran_inter_rekening = benar;
+            }
+
+            misal mtx = MatriksPenyandinganItem(
+                item_m.id_item,
+                item_s.kode_rekening,
+                item_m.kode_rekening,
+                item_m.uraian_kegiatan,
+                item_s.volume, item_s.satuan, item_s.harga_satuan_rp, item_s.total_nominal_rp,
+                item_m.volume, item_m.satuan, item_m.harga_satuan_rp, item_m.total_nominal_rp,
+                d_vol, d_nom, badge
+            );
+            tambah(hasil_matriks, mtx);
+        } lainnya {
+            // Item baru yang ditambahkan
+            rekening_berubah_tambah = rekening_berubah_tambah + 1;
+            pergeseran_inter_rekening = benar;
+
+            misal mtx_baru = MatriksPenyandinganItem(
+                item_m.id_item,
+                "-",
+                item_m.kode_rekening,
+                item_m.uraian_kegiatan,
+                0.0, "-", 0.0, 0.0,
+                item_m.volume, item_m.satuan, item_m.harga_satuan_rp, item_m.total_nominal_rp,
+                item_m.volume, item_m.total_nominal_rp, "BARU"
+            );
+            tambah(hasil_matriks, mtx_baru);
+        }
+    }
+
+    // 2. Evaluasi item yang dihapus
+    untuk item_s dalam daftar_semula {
+        jika !ada_kunci(peta_menjadi, item_s.id_item) {
+            pergeseran_inter_rekening = benar;
+            misal mtx_hapus = MatriksPenyandinganItem(
+                item_s.id_item,
+                item_s.kode_rekening,
+                "-",
+                item_s.uraian_kegiatan,
+                item_s.volume, item_s.satuan, item_s.harga_satuan_rp, item_s.total_nominal_rp,
+                0.0, "-", 0.0, 0.0,
+                -item_s.volume, -item_s.total_nominal_rp, "DIHAPUS"
+            );
+            tambah(hasil_matriks, mtx_hapus);
+        }
+    }
+
+    // Klasifikasi Hasil
+    misal tipe_klasifikasi = "PERGESERAN_ANGGARAN";
+    misal otoritas_wajib = "KEPALA_SEKOLAH";
+    misal perlu_dinas = salah;
+    misal deskripsi_alur = "Pergeseran Intra-Rekening. Cukup pengesahan internal Kepala Satuan Pendidikan.";
+
+    jika pergeseran_inter_rekening {
+        tipe_klasifikasi = "PERUBAHAN_ANGGARAN";
+        otoritas_wajib = "DINAS_PENDIDIKAN";
+        perlu_dinas = benar;
+        deskripsi_alur = "Perubahan Inter-Rekening / Akun Baru Terdeteksi. Wajib verifikasi & pengesahan Dinas Pendidikan / Otoritas Terkait.";
+    }
+
+    kembalikan {
+        "tipe_revisi": tipe_klasifikasi,
+        "perlu_pengesahan_dinas": perlu_dinas,
+        "otoritas_pengesah": otoritas_wajib,
+        "keterangan_alur": deskripsi_alur,
+        "matriks_perbandingan": hasil_matriks
+    };
+}
+
+// -------------------------------------------------------------
+// FUNGSI STANDAR TRANSAKSI KAS
+// -------------------------------------------------------------
+
+fungsi arkas_terima_kas(buku, kode_kantong, nominal, keterangan, no_ref, pj_did) {
+    jika !ada_kunci(buku.daftar_kantong, kode_kantong) {
+        kembalikan { "sukses": salah, "pesan": "Kantong dana tidak ditemukan!" };
+    }
+
+    misal kantong = buku.daftar_kantong[kode_kantong];
+    kantong.saldo_rp = kantong.saldo_rp + nominal;
+
+    misal mutasi = MutasiKas(
+        "MUT-IN-" + sha256(no_ref + ke_teks(waktu())),
+        waktu(),
+        kode_kantong,
+        "MASUK",
+        nominal,
+        keterangan,
+        no_ref,
+        pj_did
+    );
+
+    tambah(buku.riwayat_mutasi, mutasi);
+    kembalikan { "sukses": benar, "saldo_sekarang": kantong.saldo_rp, "id_mutasi": mutasi.id_mutasi };
+}
+
+fungsi arkas_belanja_kas(buku, kode_kantong, nominal, uraian, peruntukan_rab, no_ref, pj_did) {
+    jika !ada_kunci(buku.daftar_kantong, kode_kantong) {
+        kembalikan { "sukses": salah, "pesan": "Kantong kas tidak dikenal!" };
+    }
+
+    misal kantong = buku.daftar_kantong[kode_kantong];
+
+    jika nominal > kantong.saldo_rp {
+        kembalikan { "sukses": salah, "pesan": "Gagal! Saldo " + kantong.nama_kantong + " tidak mencukupi." };
+    }
+
+    jika kantong.earmarked_terikat {
+        jika peruntukan_rab != "REVITALISASI_SARPRAS_TIK" dan peruntukan_rab != "KONSTRUKSI_GEDUNG" {
+            kembalikan { 
+                "sukses": salah, 
+                "pesan": "Pelanggaran Juknis Banpem! Dana Bantuan Pemerintah hanya boleh digunakan sesuai RAB Revitalisasi." 
+            };
+        }
+    }
+
+    kantong.saldo_rp = kantong.saldo_rp - nominal;
+
+    misal mutasi = MutasiKas(
+        "MUT-OUT-" + sha256(no_ref + ke_teks(waktu())),
+        waktu(),
+        kode_kantong,
+        "KELUAR",
+        nominal,
+        uraian,
+        no_ref,
+        pj_did
+    );
+
+    tambah(buku.riwayat_mutasi, mutasi);
+    kembalikan { "sukses": benar, "saldo_tersisa": kantong.saldo_rp, "id_mutasi": mutasi.id_mutasi };
+}
+
+fungsi arkas_total_kas(buku) {
+    misal total = 0.0;
+    untuk k dalam ["BOSP_REGULER", "BANPEM_REVITALISASI", "BOS_KINERJA", "BOSDA", "SPP_KOMITE", "MANDIRI_DEPIN"] {
+        jika ada_kunci(buku.daftar_kantong, k) {
+            total = total + buku.daftar_kantong[k].saldo_rp;
+        }
+    }
+    kembalikan total;
+}
+
+// =============================================================
+// MOD-28 EDUPHALA: STANDAR SATUAN HARGA (SSH / SBU) REGIONAL
+// Guardrail Kepatuhan Fiskal terhadap SK Standar Harga Daerah
+// =============================================================
+
+struktur StandarSatuanHargaRegional {
+    kode_ssh,
+    nama_barang_jasa,
+    satuan,
+    harga_plafon_maksimal_rp,
+    wilayah_sk
+}
+
+fungsi arkas_buat_katalog_ssh(kode_wilayah) {
+    misal katalog = {};
+    
+    // Database SSH Regional Jawa Barat / DKI / Standar Nasional 2026
+    katalog["KERTAS_HVS_A4"] = StandarSatuanHargaRegional(
+        "SSH-ATK-001", "Kertas HVS A4 80gr", "Rim", 60000.0, "SK_GUB_JABAR_2026"
+    );
+    katalog["SPIDOL_WHITEBOARD"] = StandarSatuanHargaRegional(
+        "SSH-ATK-002", "Spidol Whiteboard Hitam", "Buah", 15000.0, "SK_GUB_JABAR_2026"
+    );
+    katalog["LAPTOP_LAB_TIK"] = StandarSatuanHargaRegional(
+        "SSH-TIK-001", "Laptop Core i7 Lab Praktik Siswa", "Unit", 13000000.0, "SK_GUB_JABAR_2026"
+    );
+    katalog["ROUTER_CORE"] = StandarSatuanHargaRegional(
+        "SSH-TIK-002", "Router Mikrotik Cloud Core", "Unit", 5000000.0, "SK_GUB_JABAR_2026"
+    );
+
+    kembalikan katalog;
+}
+
+fungsi arkas_validasi_kepatuhan_ssh(item_rkas, kunci_katalog, katalog_ssh) {
+    jika !ada_kunci(katalog_ssh, kunci_katalog) {
+        kembalikan {
+            "status": "NON_STANDAR",
+            "kepatuhan": benar,
+            "pesan": "Item belanja belum memiliki plafon SSH spesifik. Gunakan harga pasar wajar."
+        };
+    }
+
+    misal ssh = katalog_ssh[kunci_katalog];
+    jika item_rkas.harga_satuan_rp > ssh.harga_plafon_maksimal_rp {
+        misal selisih = item_rkas.harga_satuan_rp - ssh.harga_plafon_maksimal_rp;
+        kembalikan {
+            "status": "MELEBIHI_PLAFON_SSH",
+            "kepatuhan": salah,
+            "harga_usulan": item_rkas.harga_satuan_rp,
+            "plafon_maksimal": ssh.harga_plafon_maksimal_rp,
+            "selisih_lebih": selisih,
+            "dasar_hukum": ssh.wilayah_sk,
+            "pesan": "Peringatan Audit! Harga usulan melebihi standar satuan harga regional."
+        };
+    }
+
+    kembalikan {
+        "status": "PATUH_SSH",
+        "kepatuhan": benar,
+        "harga_usulan": item_rkas.harga_satuan_rp,
+        "plafon_maksimal": ssh.harga_plafon_maksimal_rp,
+        "dasar_hukum": ssh.wilayah_sk,
+        "pesan": "Harga usulan memenuhi batas kewajaran Standar Satuan Harga (SSH)."
+    };
+}
+

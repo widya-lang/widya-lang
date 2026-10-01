@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WidyaSync Drive | Penyimpanan Berkas Intranet Sekolah & Sinkronisasi Cerdas</title>
+    <meta name="description" content="Penyimpanan Berkas Intranet Sekolah Berdaulat Setara Nextcloud & Google Drive dengan Sinkronisasi Diferensial, Versioning, dan Bebas Kuota Internet.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0b0f19;
+            --bg-surface: #101726;
+            --bg-panel: #151e30;
+            --bg-table: #0f1626;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.4);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --secondary: #38bdf8;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-main: 'Outfit', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-base);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 54px;
+            background: #0d1322;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-badge svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary);
+        }
+
+        .brand-badge h1 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .btn-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-tool:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-tool.primary {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            overflow: hidden;
+        }
+
+        /* Left Navigation */
+        .sidebar {
+            background: #0e1422;
+            border-right: 1px solid var(--border);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .folder-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .folder-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .folder-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            font-weight: 600;
+        }
+
+        .quota-card {
+            margin-top: auto;
+            background: #141c2e;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .quota-bar-bg {
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .quota-bar-fill {
+            height: 100%;
+            background: var(--accent-green);
+            width: 15%;
+            border-radius: 3px;
+        }
+
+        /* Main Content */
+        .content-main {
+            background: var(--bg-table);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            height: 48px;
+            background: #0d121f;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 13px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+
+        .file-table {
+            flex: 1;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            overflow-y: auto;
+        }
+
+        .file-table th {
+            background: #0d121f;
+            padding: 10px 16px;
+            text-align: left;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .file-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+        }
+
+        .file-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+
+        .file-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .version-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--secondary);
+            color: #38bdf8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-code);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .vis-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .vis-guru {
+            background: rgba(129, 140, 248, 0.15);
+            color: #a5b4fc;
+        }
+
+        .vis-publik {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+        }
+
+        /* Modal Share */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .modal-card {
+            width: 480px;
+            background: #141c2e;
+            border: 1px solid var(--border-highlight);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="brand-section">
+            <div class="brand-badge">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
+                <h1>WidyaSync Drive</h1>
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted);">Penyimpanan Berkas Intranet Sekolah & Sinkronisasi Cerdas</span>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-tool" onclick="sinkronkanSekarang()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                <span>Sinkronkan Sekarang</span>
+            </button>
+            <button class="btn-tool primary" onclick="unggahBerkasBaru()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <span>Unggah Berkas</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <div class="workspace">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="folder-list">
+                <div class="folder-item active">
+                    <span>📁 Ruang Guru (Kurikulum)</span>
+                </div>
+                <div class="folder-item">
+                    <span>📁 Publik Sekolah (BSE)</span>
+                </div>
+                <div class="folder-item">
+                    <span>📁 Kelas X MIPA 1</span>
+                </div>
+                <div class="folder-item">
+                    <span>📁 Berkas Pribadi Saya</span>
+                </div>
+                <div class="folder-item">
+                    <span>🔗 Dibagikan dengan Saya</span>
+                </div>
+            </div>
+
+            <div class="quota-card">
+                <div style="font-size: 12px; font-weight: 700; color: #fff;">Kapasitas Server Intranet:</div>
+                <div class="quota-bar-bg">
+                    <div class="quota-bar-fill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); font-family: var(--font-code);">
+                    <span>15.0 MB Terpakai</span>
+                    <span>100.0 GB Total</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-main">
+            <div class="content-header">
+                <div class="breadcrumb">
+                    <span>Drive Sekolah</span>
+                    <span>/</span>
+                    <strong style="color: #fff;">Ruang Guru</strong>
+                </div>
+                <span style="font-size: 11.5px; color: var(--accent-green); font-family: var(--font-code);">&#10003; Server Lokal: widya-drive.sekolah.local</span>
+            </div>
+
+            <table class="file-table">
+                <thead>
+                    <tr>
+                        <th>Nama Berkas</th>
+                        <th>Ukuran</th>
+                        <th>Versi</th>
+                        <th>Hak Akses</th>
+                        <th>Tanggal Sinkronisasi</th>
+                        <th>Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="file-name-cell">
+                                <span>📄 Modul_Ajar_Informatika_Fase_E.docx</span>
+                            </div>
+                        </td>
+                        <td>15.0 MB</td>
+                        <td><span class="version-badge">v2 (Diff Sync)</span></td>
+                        <td><span class="vis-badge vis-guru">RUANG_GURU</span></td>
+                        <td style="font-family: var(--font-code); font-size: 12px;">19 Sep 2026 08:30</td>
+                        <td>
+                            <button class="btn-tool" style="padding: 4px 8px; font-size: 11px;" onclick="bukaModalShare('Modul_Ajar_Informatika_Fase_E.docx')">🔗 Bagikan</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="file-name-cell">
+                                <span>📊 BKU_ARKAS_BOSP_2026.xlsx</span>
+                            </div>
+                        </td>
+                        <td>1.8 MB</td>
+                        <td><span class="version-badge">v1</span></td>
+                        <td><span class="vis-badge vis-guru">RUANG_GURU</span></td>
+                        <td style="font-family: var(--font-code); font-size: 12px;">19 Sep 2026 08:15</td>
+                        <td>
+                            <button class="btn-tool" style="padding: 4px 8px; font-size: 11px;" onclick="bukaModalShare('BKU_ARKAS_BOSP_2026.xlsx')">🔗 Bagikan</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="file-name-cell">
+                                <span>📘 Buku_Teks_Fisika_Kelas_X.pdf</span>
+                            </div>
+                        </td>
+                        <td>42.5 MB</td>
+                        <td><span class="version-badge">v1</span></td>
+                        <td><span class="vis-badge vis-publik">PUBLIK_SEKOLAH</span></td>
+                        <td style="font-family: var(--font-code); font-size: 12px;">18 Sep 2026 14:20</td>
+                        <td>
+                            <button class="btn-tool" style="padding: 4px 8px; font-size: 11px;" onclick="bukaModalShare('Buku_Teks_Fisika_Kelas_X.pdf')">🔗 Bagikan</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <!-- MODAL SHARE -->
+    <div class="modal-overlay" id="modalShare" onclick="tutupModalShare(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h3 style="color: #fff; font-size: 16px; margin-bottom: 6px;">Bagikan Berkas Intranet</h3>
+            <p style="color: var(--text-muted); font-size: 12.5px; margin-bottom: 16px;" id="lblModalFileName">Modul_Ajar.docx</p>
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Tautan Lokal Intranet:</label>
+                <input type="text" style="width: 100%; background: #0c1220; border: 1px solid var(--border); color: #38bdf8; padding: 8px 12px; border-radius: 6px; font-family: var(--font-code); font-size: 12px;" value="http://widya-drive.sekolah.local/s/share_file_001" readonly>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Kata Sandi Tautan:</label>
+                <input type="text" style="width: 100%; background: #0c1220; border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 12px;" value="SandiRahasia2026">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
+                <button class="btn-tool" onclick="document.getElementById('modalShare').style.display='none'">Tutup</button>
+                <button class="btn-tool primary" onclick="salinTautan()">Salin Tautan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        function bukaModalShare(fileName) {
+            document.getElementById('lblModalFileName').textContent = fileName;
+            document.getElementById('modalShare').style.display = 'flex';
+        }
+
+        function tutupModalShare(e) {
+            if (e.target.id === 'modalShare') {
+                document.getElementById('modalShare').style.display = 'none';
+            }
+        }
+
+        function salinTautan() {
+            navigator.clipboard.writeText("http://widya-drive.sekolah.local/s/share_file_001").then(() => {
+                alert('Tautan Intranet sekolah berhasil disalin ke clipboard!');
+                document.getElementById('modalShare').style.display = 'none';
+            });
+        }
+
+        function sinkronkanSekarang() {
+            alert('Sinkronisasi Diferensial Selesai!\n\nSeluruh 3 berkas di drive intranet sekolah telah disinkronkan dengan server lokal.\nDelta data: 0 Byte (Up-To-Date).');
+        }
+
+        function unggahBerkasBaru() {
+            alert('Dialog Pengunggahan Berkas:\nSilakan pilih berkas dari perangkat Anda untuk diunggah ke server lokal sekolah tanpa menggunakan kuota internet.');
+        }
+    </script>
+</body>
+</html>

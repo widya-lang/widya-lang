@@ -1,0 +1,223 @@
+// ============================================================================
+// SIMULASI PENGUJIAN: WIDYABASE DATABASE ENGINE (simulasi_widyabase_engine.wya)
+// Menguji Kemampuan PostgreSQL (Relasional, ACID, SQL Join) + NocoDB (Smart Fields, API)
+// ============================================================================
+
+impor "widyaos/modul/widyabase_engine.wya";
+
+cetak("");
+cetak("====================================================================");
+cetak("🗄️  SIMULASI: WIDYABASE HYBRID ENGINE (POSTGRESQL + NOCODB STUDIO)   ");
+cetak("====================================================================");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+misal db = buat_database_widyabase("db_sekolah_widyapura");
+
+// -------------------------------------------------------------
+// [UJI 1] Relational Schema DDL & Foreign Key Enforcement
+// -------------------------------------------------------------
+cetak("[1] Uji DDL Relasional & Penegakan Integritas Foreign Key:");
+
+// 1. Tabel Jurusan (Tabel Induk)
+misal tbl_jurusan = widyabase_buat_tabel(db, "jurusan", "Data Program Keahlian / Jurusan");
+widyabase_tambah_kolom(tbl_jurusan, "id_jurusan", "STRING", benar, benar, benar, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_jurusan, "nama_jurusan", "STRING", salah, benar, benar, "", "", "RESTRICT", "", "", "");
+
+// 2. Tabel Kelas (Child Jurusan)
+misal tbl_kelas = widyabase_buat_tabel(db, "kelas", "Data Rombongan Belajar");
+widyabase_tambah_kolom(tbl_kelas, "id_kelas", "STRING", benar, benar, benar, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_kelas, "nama_kelas", "STRING", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_kelas, "wali_kelas", "STRING", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_kelas, "id_jurusan", "RELATION", salah, benar, salah, "jurusan", "id_jurusan", "RESTRICT", "", "", "");
+
+// 3. Tabel Siswa (Child Kelas)
+misal tbl_siswa = widyabase_buat_tabel(db, "siswa", "Data Induk Peserta Didik");
+widyabase_tambah_kolom(tbl_siswa, "nisn", "STRING", benar, benar, benar, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_siswa, "nama_siswa", "STRING", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_siswa, "id_kelas", "RELATION", salah, benar, salah, "kelas", "id_kelas", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_siswa, "status", "STRING", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_siswa, "spp_per_bulan", "FLOAT", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+
+// 4. Tabel Transaksi SPP (Untuk uji Formula & Rollup)
+misal tbl_spp = widyabase_buat_tabel(db, "pembayaran_spp", "Buku Mutasi Kas SPP Siswa");
+widyabase_tambah_kolom(tbl_spp, "id_transaksi", "STRING", benar, benar, benar, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_spp, "nisn", "RELATION", salah, benar, salah, "siswa", "nisn", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_spp, "nominal_dasar", "FLOAT", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_spp, "jumlah_bulan", "FLOAT", salah, benar, salah, "", "", "RESTRICT", "", "", "");
+widyabase_tambah_kolom(tbl_spp, "total_bayar", "FORMULA", salah, benar, salah, "", "", "RESTRICT", "[nominal_dasar]*[jumlah_bulan]", "", "");
+
+// Seed Data Jurusan & Kelas
+widyabase_insert(db, "jurusan", { "id_jurusan": "RPL", "nama_jurusan": "Rekayasa Perangkat Lunak" }, "did:admin:01");
+widyabase_insert(db, "jurusan", { "id_jurusan": "TKJ", "nama_jurusan": "Teknik Komputer & Jaringan" }, "did:admin:01");
+
+widyabase_insert(db, "kelas", { "id_kelas": "XII-RPL-1", "nama_kelas": "Kelas XII RPL 1", "wali_kelas": "Pak Budi, S.Kom.", "id_jurusan": "RPL" }, "did:admin:01");
+widyabase_insert(db, "kelas", { "id_kelas": "XII-TKJ-1", "nama_kelas": "Kelas XII TKJ 1", "wali_kelas": "Bu Siti, M.T.", "id_jurusan": "TKJ" }, "did:admin:01");
+
+// Coba Insert Siswa dengan FK Valid
+misal ins_valid = widyabase_insert(db, "siswa", {
+    "nisn": "0081234567",
+    "nama_siswa": "Ahmad Fauzi",
+    "id_kelas": "XII-RPL-1",
+    "status": "AKTIF",
+    "spp_per_bulan": 250000.0
+}, "did:admin:01");
+
+// Coba Insert Siswa dengan FK Tidak Valid (Jurusan / Kelas Hantu)
+misal ins_invalid = widyabase_insert(db, "siswa", {
+    "nisn": "0089999999",
+    "nama_siswa": "Siswa Ilegal",
+    "id_kelas": "KELAS_GHAIB_99",
+    "status": "AKTIF",
+    "spp_per_bulan": 250000.0
+}, "did:admin:01");
+
+cetak("  • Insert Siswa FK Valid    :", ins_valid.sukses, "-> Indeks:", ins_valid.index_baris);
+cetak("  • Insert Siswa FK Ilegal   :", ins_invalid.sukses, "->", ins_invalid.pesan);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika ins_valid.sukses == benar dan ins_invalid.sukses == salah {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Foreign Key Relasional Berhasil Menolak Referensi Kelas Hantu!");
+}
+
+// Tambah siswa kedua
+widyabase_insert(db, "siswa", {
+    "nisn": "0081234568",
+    "nama_siswa": "Rina Marlina",
+    "id_kelas": "XII-RPL-1",
+    "status": "AKTIF",
+    "spp_per_bulan": 250000.0
+}, "did:admin:01");
+
+// -------------------------------------------------------------
+// [UJI 2] PostgreSQL Query Engine: SELECT Filter & INNER JOIN
+// -------------------------------------------------------------
+cetak("\n[2] Uji PostgreSQL Query Engine: SELECT Filter & Relational JOIN:");
+
+// Eksekusi INNER JOIN antara siswa dan kelas
+misal hasil_join = widyabase_query_inner_join(
+    db,
+    "siswa",
+    "kelas",
+    "id_kelas",
+    "id_kelas",
+    ["nisn", "nama_siswa", "status"],
+    ["nama_kelas", "wali_kelas"]
+);
+
+cetak("  • Jumlah Rekor Hasil JOIN  :", panjang(hasil_join));
+untuk r dalam hasil_join {
+    cetak("    - [", r["siswa_nisn"], "]", r["siswa_nama_siswa"], "| Kelas:", r["kelas_nama_kelas"], "| Wali:", r["kelas_wali_kelas"]);
+}
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika panjang(hasil_join) == 2 dan hasil_join[0]["kelas_wali_kelas"] == "Pak Budi, S.Kom." {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Inner Join Relasional Berhasil Menghubungkan Siswa dengan Data Kelas!");
+}
+
+// -------------------------------------------------------------
+// [UJI 3] Transaksi ACID & Rollback Otomatis
+// -------------------------------------------------------------
+cetak("\n[3] Uji Transaksi ACID (Snapshot Isolation & Rollback):");
+
+// Mulai Transaksi
+misal sesi_trx = widyabase_mulai_transaksi(db, "TRX-ACID-9901");
+cetak("  • Transaksi Dimulai        : ID =", sesi_trx.id_transaksi, "Status =", sesi_trx.status);
+
+// Insert Siswa Sementara di dalam Transaksi
+widyabase_insert(db, "siswa", {
+    "nisn": "0088888888",
+    "nama_siswa": "Bambang Sementara",
+    "id_kelas": "XII-RPL-1",
+    "status": "DRAFT",
+    "spp_per_bulan": 200000.0
+}, "did:admin:01");
+
+cetak("  • Jumlah Siswa saat Transaksi Berjalan :", panjang(db.daftar_tabel["siswa"].daftar_baris), "siswa");
+
+// Terjadi Error di tengah jalan -> Rollback
+misal rb = widyabase_rollback_transaksi(db, "TRX-ACID-9901", "Pelanggaran aturan registrasi murid baru");
+cetak("  • Status Pasca Rollback    :", rb.status, "->", rb.pesan);
+cetak("  • Jumlah Siswa pasca Rollback          :", panjang(db.daftar_tabel["siswa"].daftar_baris), "siswa");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika panjang(db.daftar_tabel["siswa"].daftar_baris) == 2 dan rb.status == "ROLLED_BACK" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: ACID Rollback Sempurna Mengembalikan Snapshot Database ke Kondisi Semula!");
+}
+
+// -------------------------------------------------------------
+// [UJI 4] NocoDB Smart Fields: Virtual Formula, Lookup, Rollup
+// -------------------------------------------------------------
+cetak("\n[4] Uji NocoDB Smart Fields (Formula, Virtual Lookup, Rollup Agregasi):");
+
+// 4A. Virtual Formula: [nominal_dasar] * [jumlah_bulan]
+misal row_spp1 = {
+    "id_transaksi": "SPP-001",
+    "nisn": "0081234567",
+    "nominal_dasar": 250000.0,
+    "jumlah_bulan": 3.0
+};
+misal total_formula = widyabase_hitung_formula(row_spp1, "nominal_dasar", "*", "jumlah_bulan");
+row_spp1["total_bayar"] = total_formula;
+widyabase_insert(db, "pembayaran_spp", row_spp1, "did:kasir:01");
+
+misal row_spp2 = {
+    "id_transaksi": "SPP-002",
+    "nisn": "0081234568",
+    "nominal_dasar": 250000.0,
+    "jumlah_bulan": 2.0
+};
+row_spp2["total_bayar"] = widyabase_hitung_formula(row_spp2, "nominal_dasar", "*", "jumlah_bulan");
+widyabase_insert(db, "pembayaran_spp", row_spp2, "did:kasir:01");
+
+cetak("  • Formula Kalkulasi SPP 1  : Rp 250.000 x 3 Bulan = Rp", total_formula);
+
+// 4B. Virtual Lookup: Ambil wali kelas dari baris siswa
+misal baris_fauzi = db.daftar_tabel["siswa"].daftar_baris[0];
+misal wali_lookup = widyabase_evaluasi_lookup(db, "siswa", baris_fauzi, "id_kelas", "wali_kelas");
+cetak("  • Virtual Lookup Wali Kelas:", wali_lookup);
+
+// 4C. Cross-Table Rollup: Hitung SUM total pembayaran SPP seluruh murid
+misal rollup_sum = widyabase_evaluasi_rollup(db, "pembayaran_spp", "nisn", "0081234567", "total_bayar", "SUM");
+cetak("  • Rollup SUM Pembayaran SPP (NISN 0081234567): Rp", rollup_sum);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika total_formula == 750000.0 dan wali_lookup == "Pak Budi, S.Kom." dan rollup_sum == 750000.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: NocoDB Smart Fields (Formula, Virtual Lookup, Rollup) Berfungsi Sempurna!");
+}
+
+// -------------------------------------------------------------
+// [UJI 5] Auto-Generated REST API Gateway & Audit Trail Log
+// -------------------------------------------------------------
+cetak("\n[5] Uji Auto-Generated REST API Spec & Audit Trail Time-Travel:");
+
+// 5A. Generate REST API Spec untuk tabel siswa
+misal api_spec = widyabase_generate_api_spec(db, "siswa");
+cetak("  • API Endpoint GET All     :", api_spec.endpoints.GET_ALL.method, api_spec.endpoints.GET_ALL.path);
+cetak("  • API Endpoint POST Create :", api_spec.endpoints.POST_CREATE.method, api_spec.endpoints.POST_CREATE.path);
+
+// 5B. Audit Trail Log
+cetak("  • Total Log Audit Tercatat :", panjang(db.audit_trail), "aktivitas");
+misal log_terakhir = db.audit_trail[panjang(db.audit_trail) - 1];
+cetak("  • Log Terakhir             :", log_terakhir.aksi, "| Tabel:", log_terakhir.nama_tabel, "| User:", log_terakhir.did_pengguna);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika panjang(db.audit_trail) >= 5 dan api_spec.nama_tabel == "siswa" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("  ✅ PASS: Auto REST API Gateway & Audit Trail Kriptografis Berhasil Divalidasi!");
+}
+
+// -------------------------------------------------------------
+// REKAPITULASI HASIL AKHIR
+// -------------------------------------------------------------
+cetak("");
+cetak("====================================================================");
+cetak("🏆 HASIL SIMULASI: ", LULUS_TEST, "/", TOTAL_TEST, " KASUS WIDYABASE HYBRID LULUS (", (LULUS_TEST * 100) / TOTAL_TEST, "%)");
+cetak("====================================================================");
+cetak("");

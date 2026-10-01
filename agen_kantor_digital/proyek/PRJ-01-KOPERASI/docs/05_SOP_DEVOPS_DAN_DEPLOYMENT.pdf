@@ -1,0 +1,111 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R ] /Count 5 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 913 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SISTEM KOPERASI DESA MERAH PUTIH \(KDMP\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_devops` \(SOP-06: Monitoring Server, Backup Harian, & Service Daemon\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 673.89 Tm (**Status:** SIAP PRODUKSI \(PRODUCTION READY\)) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 893 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Prasyarat Lingkungan \(Environment Prerequisites\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- **Runtime Compiler**: `widya` binary v1.0.0+ \(Linux x86_64 / ARM64 / Windows\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- **Storage**: Direktori `/home/devops/widya-lang/proyek/01_koperasi_kdmp/`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- **Port Layanan**: `http://localhost:8001` \(Khusus Koperasi KDMP\).) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1166 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Panduan Menjalankan Layanan Mandiri \(Stand-alone Run\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Untuk menjalankan server mandiri Koperasi KDMP:) Tj ET
+0.94 0.97 1 rg 50 681.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 681.89 m 50 717.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 695.89 Tm (KODE \(BASH\): cd /home/devops/widya-lang/proyek/01_koperasi_kdmp ../../target/release/widya server.wya) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 661.89 Tm (Atau menggunakan perintah web server bawaan Widya:) Tj ET
+0.94 0.97 1 rg 50 611.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 611.89 m 50 647.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 625.89 Tm (KODE \(BASH\): ../../target/release/widya web dev ./web -p 8001) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 1187 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (3. Kebijakan Backup Harian & WAL Checkpoint) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (1. **Automasi Cron Job \(02:00 UTC / 09:00 WIB\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (* Snapshot basis data `database/koperasi.wdb` dan arsip WAL disalin ke folder `database/backups/`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (* Checkpoint WAL dibersihkan secara aman untuk menjaga ukuran file tetap ramping.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (2. **Crash Recovery Drill**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 651.89 Tm (* Jika server mati mendadak, pada saat startup berikutnya mesin WidyaBase akan membaca log WAL dan melakukan *redo/undo logging* dalam waktu < 1.5 detik.) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 1077 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (4. Konfigurasi Systemd Service \(Linux Server\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Simpan berkas `/etc/systemd/system/widya-kdmp.service`:) Tj ET
+0.94 0.97 1 rg 50 681.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 681.89 m 50 717.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 695.89 Tm (KODE \(INI\): [Unit] Description=Widya Koperasi Desa Merah Putih Service After=network.target  [Service] Type=simple User=devops WorkingDirectory=/home/devops/widya-lang/proyek/01_koperasi_kdmp ExecStart=/home/devops/widya-lang/target/release/widya web dev ./web -p 8001 Restart=always RestartSec=5  [Install] WantedBy=multi-user.target) Tj ET
+endstream
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000181 00000 n 
+0000000278 00000 n 
+0000000380 00000 n 
+0000001343 00000 n 
+0000001445 00000 n 
+0000002388 00000 n 
+0000002490 00000 n 
+0000003707 00000 n 
+0000003811 00000 n 
+0000005050 00000 n 
+0000005154 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R /Info << /Title (SOP DEVOPS, DEPLOYMENT, & SITE RELIABILITY ENGINEERING \(SRE\)) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-01-KOPERASI\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261001221606Z) >> >>
+startxref
+6283
+%%EOF

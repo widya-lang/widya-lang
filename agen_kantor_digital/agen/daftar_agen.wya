@@ -1,0 +1,266 @@
+// ==============================================================================
+// agen/daftar_agen.wya - Registri & Definisi Matriks Skills 10 AI Agent Kantor Digital
+// Standar Industri: Actor Model, Kepatuhan UU PDP, ITIL SRE & TOGAF Enterprise
+// ==============================================================================
+
+fungsi inisialisasi_agen_kantor() {
+    misal daftar = {};
+
+    // 1. Orkestrator (Chief Orchestrator & PM)
+    daftar["agen_orkestrator"] = {
+        "id": "agen_orkestrator",
+        "nama": "Mandor Utama (Chief Orchestrator & PM)",
+        "peran": "MODERATOR_DAN_PRIORITAS",
+        "sop": "SOP-01_Orkestrator_PM.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "PMI Agile Framework & CSP Actor Model",
+        "keahlian": [
+            "Agile / Scrum Sprint Leadership",
+            "Eisenhower Matrix Prioritization",
+            "Task State Machine Controller",
+            "Conflict & Deadlock Resolution",
+            "Cross-Agent Resource Balancing",
+            "Daily Standup Moderation"
+        ],
+        "peralatan": [
+            "Widya Task State Machine",
+            "Obsidian Kanban Engine",
+            "Eisenhower Priority Calculator",
+            "Actor Model Event Loop"
+        ],
+        "kewenangan": "Menetapkan prioritas P1-P3, hard deadline, dan merilis state agen."
+    };
+
+    // 2. Analis Bisnis & Produk (Product Analyst)
+    daftar["agen_analis"] = {
+        "id": "agen_analis",
+        "nama": "Analis Bisnis & Produk (Product Analyst)",
+        "peran": "DEKOMPOSISI_KEBUTUHAN",
+        "sop": "SOP-02_Analis_Bisnis.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "BABOK (Business Analysis Body of Knowledge)",
+        "keahlian": [
+            "BRD / PRD Decompilation",
+            "User Story & Acceptance Criteria Formulation",
+            "MoSCoW Feature Categorization",
+            "Business Feasibility & Risk Assessment",
+            "Workflow & BPMN Modeling"
+        ],
+        "peralatan": [
+            "Gherkin BDD Syntax",
+            "Value vs Effort Matrix",
+            "BPMN Flow Modeler",
+            "Impact Assessment Engine"
+        ],
+        "kewenangan": "Memvalidasi kelayakan fitur dan merumuskan kriteria penerimaan produk."
+    };
+
+    // 3. Arsitek Sistem & Basis Data (Tech Lead)
+    daftar["agen_arsitek"] = {
+        "id": "agen_arsitek",
+        "nama": "Arsitek Sistem & Basis Data (Tech Lead)",
+        "peran": "DESAIN_SKEMA_DAN_ARSITEKTUR",
+        "sop": "SOP-03_Arsitek_Sistem.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "TOGAF Architecture & ACID Storage Principles",
+        "keahlian": [
+            "Domain-Driven Design (DDD)",
+            "Relational Schema Modeling (SQL DDL)",
+            "B+Tree & Secondary Index Optimization",
+            "WAL & MVCC Transaction Design",
+            "REST / SSE / WebSocket API Contract Design"
+        ],
+        "peralatan": [
+            "WidyaBase Engine",
+            "SQLite / PostgreSQL Dialects",
+            "OpenAPI 3.1 Spec",
+            "Async Event Broker"
+        ],
+        "kewenangan": "Menyetujui skema basis data, migrasi tabel, dan kontrak antarmuka API."
+    };
+
+    // 4. Pengembang Inti (Lead Developer)
+    daftar["agen_coder"] = {
+        "id": "agen_coder",
+        "nama": "Pengembang Inti (Lead Coder)",
+        "peran": "SINTESIS_KODE_WIDYA",
+        "sop": "SOP-04_Lead_Developer.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "Clean Architecture & SOLID Principles",
+        "keahlian": [
+            "Widya-Lang & Rust Native Programming",
+            "Cryptographic Integration (Argon2id, SHA256, HMAC)",
+            "Concurrency & Memory Management",
+            "Modular Clean Architecture Implementation",
+            "Data Structure & Algorithm Optimization"
+        ],
+        "peralatan": [
+            "Widya Compiler & Toolchain",
+            "Cargo Build Engine",
+            "SSE Streaming Runtime",
+            "Native Bytecode Assembler"
+        ],
+        "kewenangan": "Mengompilasi dan mengimplementasikan seluruh modul kode sumber."
+    };
+
+    // 5. Pengawas Mutu (QA & Automation Tester)
+    daftar["agen_qa"] = {
+        "id": "agen_qa",
+        "nama": "Pengawas Mutu (QA & Automation Tester)",
+        "peran": "VERIFIKASI_DAN_PENGUJIAN",
+        "sop": "SOP-05_QA_Tester.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "ISTQB Software Testing Standards",
+        "keahlian": [
+            "Automated Test Suite Design",
+            "Regression & Smoke Testing",
+            "Stress & Load Testing (Throughput & Latency)",
+            "Edge Case & Boundary Value Fuzzing",
+            "Release Certification & Gatekeeping"
+        ],
+        "peralatan": [
+            "Widya Test Runner",
+            "Benchmark Harness",
+            "Assertion & Mocking Engine",
+            "Network Chaos Simulator"
+        ],
+        "kewenangan": "Memberikan sertifikasi lolos uji mutu atau memblokir rilis jika cacat mutu."
+    };
+
+    // 6. Insinyur Keandalan Sistem (DevOps SRE)
+    daftar["agen_devops"] = {
+        "id": "agen_devops",
+        "nama": "Insinyur Keandalan Sistem (DevOps SRE)",
+        "peran": "INFRASTRUKTUR_DAN_BACKUP",
+        "sop": "SOP-06_DevOps_SRE.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "Google SRE Principles & ITIL v4",
+        "keahlian": [
+            "Continuous Integration & Deployment (CI/CD)",
+            "Automated Snapshot & Backup Management",
+            "WAL Checkpoint Verification & Disaster Recovery",
+            "Server Telemetry & Health Monitoring",
+            "Systemd & Process Daemonization"
+        ],
+        "peralatan": [
+            "Widya Observability Platform",
+            "PowerShell Automation",
+            "Task Scheduler / Cron Engine",
+            "Health Check Daemon"
+        ],
+        "kewenangan": "Mengelola infrastruktur, eksekusi cadangan data harian, dan pemulihan darurat."
+    };
+
+    // 7. Auditor Keamanan Siber & Privasi (Security Officer)
+    daftar["agen_keamanan"] = {
+        "id": "agen_keamanan",
+        "nama": "Auditor Keamanan Siber & Privasi (UU PDP)",
+        "peran": "AUDIT_KEAMANAN_DAN_PRIVASI",
+        "sop": "SOP-07_Auditor_Keamanan.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "ISO 27001:2022 & UU No. 27/2022 PDP",
+        "keahlian": [
+            "OWASP Top 10 Vulnerability Audit",
+            "Static Application Security Testing (SAST)",
+            "UU PDP Compliance & Data Protection Mapping",
+            "Secret & Credential Leakage Scanning",
+            "Cryptographic Vault (AES-256-GCM) Audit"
+        ],
+        "peralatan": [
+            "Widya Security Scanner",
+            "Argon2id Hash Verifier",
+            "PCI-DSS / ISO 27001 Linter",
+            "Forensic Audit Logger"
+        ],
+        "kewenangan": "Memveto kode yang mengandung celah keamanan atau melanggar UU PDP."
+    };
+
+    // 8. Pustakawan & Notulis (Obsidian Scribe & Document Generator)
+    daftar["agen_notulis"] = {
+        "id": "agen_notulis",
+        "nama": "Pustakawan & Notulis (Obsidian Scribe & Document Generator)",
+        "peran": "DOKUMENTASI_DAN_GENERASI_LAPORAN_PDF_PPTX",
+        "sop": "SOP-08_Notulis_Obsidian.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "ISO 32000-1 PDF & ECMA-376 OpenXML PPTX Standards",
+        "keahlian": [
+            "Structured Markdown Documentation",
+            "YAML Frontmatter Taxonomy",
+            "ISO 32000-1 PDF Report Synthesis",
+            "ECMA-376 OpenXML PPTX Deck Formulation",
+            "Bi-directional Linking & Graph Organization",
+            "Automated Kanban Board Sync",
+            "Documentation Version Control"
+        ],
+        "peralatan": [
+            "WidyaOffice PDF & PPTX Generator",
+            "Obsidian Vault Bridge",
+            "GFM Markdown Transpiler",
+            "Kanban Plugin Formatter",
+            "Write-then-Verify Engine"
+        ],
+        "kewenangan": "Memelihara struktur berkas knowledge base, menerbitkan laporan progres berkas biner PDF & PPTX, dan memperbarui papan Kanban."
+    };
+
+    // 9. Humas & Kurir (Telegram Bot & Document Dispatcher)
+    daftar["agen_humas"] = {
+        "id": "agen_humas",
+        "nama": "Humas & Kurir (Telegram Bot & Document Dispatcher)",
+        "peran": "KOMUNIKASI_EKSEKUTIF_WHATSAPP",
+        "sop": "SOP-09_Humas_WhatsApp.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "Event-Driven Notification & Executive Reporting",
+        "keahlian": [
+            "Executive Briefing Synthesis",
+            "Visual Markdown Formatting for Messaging Apps",
+            "Dual-Format Document (PDF/PPTX) Attachment Dispatching",
+            "Webhook & Bot Gateway Integration",
+            "Rate Limiting & Retry Backoff Handling",
+            "Multi-Channel Broadcast Management"
+        ],
+        "peralatan": [
+            "Telegram Bot API Gateway (sendDocument)",
+            "WhatsApp Baileys / Fonnte Bridge",
+            "Fallback Local Logger",
+            "Message Queue Dispatcher"
+        ],
+        "kewenangan": "Menyusun dan menyiarkan ringkasan eksekutif beserta lampiran dokumen resmi PDF & PPTX ke kanal komunikasi pimpinan."
+    };
+
+    // 10. Kepala Intelijen Data & KPI Bisnis (Data Analytics Lead)
+    daftar["agen_analis_data"] = {
+        "id": "agen_analis_data",
+        "nama": "Kepala Intelijen Data & KPI Bisnis (Data Analytics Lead)",
+        "peran": "ANALITIKA_DATA_DAN_PELAPORAN_KPI",
+        "sop": "SOP-10_Analis_Data.md",
+        "status": "SIAGA",
+        "beban": 0,
+        "standar_industri": "Balanced Scorecard & DAMA-DMBOK Data Management",
+        "keahlian": [
+            "Project Portfolio Health Analytics",
+            "Team Productivity Scoring Algorithm",
+            "Workload Distribution Anomaly Detection",
+            "Predictive Trend Analysis & Blocker Identification",
+            "Executive KPI PDF & PPTX Deck Generation"
+        ],
+        "peralatan": [
+            "Widya Analytics Bridge",
+            "WidyaOffice KPI Exporter",
+            "SQL Aggregation & Window Functions",
+            "Rolling Average & StdDev Evaluator",
+            "Obsidian Daily Dashboard Exporter"
+        ],
+        "kewenangan": "Menganalisis anomali performa tim, kapasitas beban, dan menerbitkan paket laporan KPI dalam format PDF & PPTX."
+    };
+
+    kembalikan daftar;
+}

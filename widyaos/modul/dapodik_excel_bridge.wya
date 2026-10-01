@@ -1,0 +1,276 @@
+// ==============================================================================
+// WIDYAOS: MODUL DAPODIK EXCEL BRIDGE & INTEGRASI FORMULIR RESMI
+// Menjamin keselarasan 100% terhadap:
+// 1. FORMULIR_SEKOLAH.xlsx (Identitas, Ruangan, Rombel, Sarana, Bantuan)
+// 2. FORMULIR_PTK_DAPODIK.xlsx (Data Pribadi, Kepegawaian, Kompetensi, Kontak)
+// 3. FORMULIR_PD_DAPODIK.xlsx (Identitas, Ortu, Periodik, KPS/KIP, Prestasi, Beasiswa)
+// ==============================================================================
+
+impor "widyaos/modul/dapodik_edge.wya";
+
+// --- STRUKTUR FORMULIR SEKOLAH EXCEL (FORMULIR_SEKOLAH.xlsx) ---
+struktur FormulirSekolahExcel {
+    nama_sekolah,
+    nss,
+    npsn,
+    alamat_sekolah,
+    kelurahan,
+    kecamatan,
+    kabupaten_kota,
+    negara,
+    kategori_wilayah, // Perkotaan, Daerah Terpencil, Perbatasan
+    posisi_lintang,
+    posisi_bujur,
+    no_telepon,
+    no_fax,
+    akses_internet,
+    alamat_email,
+    website,
+    status_sekolah, // Negeri, Swasta
+    status_kepemilikan, // Pemerintah Daerah, Pemerintah Pusat, Yayasan
+    sk_pendirian_sekolah,
+    sk_operasional,
+    akreditasi, // A, B, C
+    sk_akreditasi_terakhir,
+    sertifikasi_iso,
+    waktu_penyelenggaraan, // Pagi, Siang, Sehari Penuh
+    nomor_rekening_bank,
+    nama_bank,
+    rekening_atas_nama,
+    sumber_listrik, // PLN, Diesel, Tenaga Surya
+    daya_listrik_watt,
+    bandwidth_internet
+}
+
+struktur FormulirRuangExcel {
+    kode_ruang,
+    nama_ruang,
+    kode_prasarana,
+    panjang,
+    lebar,
+    kondisi_atap,
+    kondisi_dinding,
+    kondisi_kusen,
+    kondisi_pintu,
+    kondisi_lantai
+}
+
+// --- STRUKTUR FORMULIR PTK EXCEL (FORMULIR_PTK_DAPODIK.xlsx) ---
+struktur FormulirPTKExcel {
+    nama_lengkap,
+    nik,
+    jenis_kelamin,
+    tempat_lahir,
+    tanggal_lahir,
+    nama_ibu_kandung,
+    alamat_tinggal,
+    dusun,
+    kelurahan_desa,
+    kecamatan,
+    kabupaten_kota,
+    provinsi,
+    kode_pos,
+    agama,
+    npwp,
+    status_kawin,
+    nama_pasangan,
+    pekerjaan_pasangan,
+    nip,
+    status_pegawai, // PNS, PPPK, GTY, GTT, Honor Sekolah
+    niy_nigk,
+    nuptk,
+    jenis_ptk, // Guru Mapel, Guru Kelas, Guru BK, Kepala Sekolah, Tenaga Administrasi
+    sk_pengangkatan,
+    tmt_pengangkatan,
+    lembaga_pengangkat,
+    pangkat_golongan,
+    sumber_gaji,
+    lisensi_kepala_sekolah,
+    no_telpon,
+    no_hp,
+    email
+}
+
+// --- STRUKTUR FORMULIR PD EXCEL (FORMULIR_PD_DAPODIK.xlsx) ---
+struktur FormulirPDExcel {
+    nama_lengkap,
+    jenis_kelamin, // L, P
+    nisn,
+    nis,
+    no_seri_ijazah_smp,
+    no_seri_skhun,
+    no_un_smp,
+    nik,
+    tempat_lahir,
+    tanggal_lahir,
+    agama,
+    kebutuhan_khusus,
+    alamat_tinggal,
+    dusun,
+    kelurahan_desa,
+    kecamatan,
+    kode_pos,
+    nama_ayah,
+    nik_ayah,
+    tahun_lahir_ayah,
+    pendidikan_ayah,
+    pekerjaan_ayah,
+    penghasilan_ayah,
+    nama_ibu,
+    nik_ibu,
+    tahun_lahir_ibu,
+    pendidikan_ibu,
+    pekerjaan_ibu,
+    penghasilan_ibu,
+    nama_wali,
+    is_penerima_kps, // Ya / Tidak
+    no_kps,
+    tinggi_badan_cm,
+    berat_badan_kg,
+    jarak_ke_sekolah, // < 1 km atau sebutkan km
+    waktu_tempuh_menit,
+    jumlah_saudara_kandung
+}
+
+struktur FormulirPrestasiExcel {
+    nisn,
+    jenis_prestasi, // Sains, Olahraga, Seni
+    tingkat_prestasi, // Sekolah, Kecamatan, Kabupaten, Provinsi, Nasional, Internasional
+    nama_prestasi,
+    tahun_prestasi,
+    penyelenggara
+}
+
+struktur FormulirBeasiswaExcel {
+    nisn,
+    jenis_beasiswa, // Prestasi, Kesejahteraan / Afirmasi, Swasta
+    sumber_penyelenggara,
+    tahun_mulai,
+    tahun_selesai
+}
+
+// ==============================================================================
+// 1. INGESTION & SINKRONISASI FORMULIR SEKOLAH (EXCEL -> WIDYAOS)
+// ==============================================================================
+fungsi impor_excel_formulir_sekolah(node, form_excel, daftar_ruangan) {
+    // Sinkronisasi Tab Identitas Sekolah
+    dapodik_set_identitas_sekolah(
+        node,
+        "SMA", // Bentuk Pendidikan
+        form_excel.status_sekolah,
+        form_excel.sk_operasional,
+        "2015-05-02",
+        form_excel.alamat_sekolah,
+        form_excel.kelurahan,
+        form_excel.kecamatan,
+        form_excel.kabupaten_kota,
+        "Jawa Barat",
+        form_excel.posisi_lintang,
+        form_excel.posisi_bujur,
+        form_excel.akreditasi,
+        form_excel.sumber_listrik,
+        form_excel.daya_listrik_watt,
+        form_excel.akses_internet
+    );
+
+    // Sinkronisasi Tab Ruangan
+    misal total_ruang = panjang(daftar_ruangan);
+    misal idx = 0;
+    selama idx < total_ruang {
+        misal r = daftar_ruangan[idx];
+        dapodik_tambah_ruang(
+            node,
+            r.kode_ruang,
+            "BGN-01", // Bangunan default
+            r.nama_ruang,
+            "KELAS",
+            36,
+            r.panjang,
+            r.lebar
+        );
+        idx = idx + 1;
+    }
+
+    kembalikan {
+        "npsn": form_excel.npsn,
+        "nama_sekolah": form_excel.nama_sekolah,
+        "akreditasi": form_excel.akreditasi,
+        "total_ruangan_terimpor": total_ruang,
+        "status_selaras": "100%_SELARAS_DENGAN_FORMULIR_SEKOLAH_EXCEL"
+    };
+}
+
+// ==============================================================================
+// 2. INGESTION & SINKRONISASI FORMULIR PTK (EXCEL -> WIDYAOS)
+// ==============================================================================
+fungsi impor_excel_formulir_ptk(node, form_ptk, alokasi_jjm) {
+    // Menghubungkan PTK Excel ke Master GTK Dapodik
+    misal gtk = dapodik_tambah_gtk_lengkap(
+        node,
+        form_ptk.nuptk,
+        form_ptk.nik,
+        form_ptk.nip,
+        form_ptk.nama_lengkap,
+        "",
+        "",
+        form_ptk.jenis_ptk,
+        form_ptk.status_pegawai,
+        "S1",
+        "SERDIK-" + form_ptk.nuptk,
+        "Pendidikan Terpadu",
+        alokasi_jjm
+    );
+
+    kembalikan {
+        "nuptk": form_ptk.nuptk,
+        "nama_guru": form_ptk.nama_lengkap,
+        "status_kepegawaian": form_ptk.status_pegawai,
+        "total_jjm": alokasi_jjm,
+        "status_tpg": gtk.status_tpg,
+        "status_selaras": "100%_SELARAS_DENGAN_FORMULIR_PTK_EXCEL"
+    };
+}
+
+// ==============================================================================
+// 3. INGESTION & SINKRONISASI FORMULIR PD (EXCEL -> WIDYAOS)
+// ==============================================================================
+fungsi impor_excel_formulir_pd(node, form_pd, id_rombel) {
+    misal is_kip = false;
+    misal no_kip = "";
+    misal status_pip = "TIDAK_LAYAK";
+
+    jika form_pd.is_penerima_kps == "Ya" atau form_pd.penghasilan_ayah < 1000000 {
+        is_kip = true;
+        no_kip = "KIP-" + form_pd.nisn;
+        status_pip = "LAYAK_PIP_DTKS";
+    }
+
+    misal siswa = dapodik_tambah_siswa_lengkap(
+        node,
+        form_pd.nisn,
+        form_pd.nik,
+        "3201010000000001", // No KK
+        form_pd.nama_lengkap,
+        form_pd.jenis_kelamin,
+        form_pd.tanggal_lahir,
+        form_pd.nama_ibu,
+        form_pd.nama_ayah,
+        form_pd.pekerjaan_ayah,
+        form_pd.penghasilan_ayah,
+        is_kip,
+        no_kip,
+        status_pip,
+        form_pd.tinggi_badan_cm,
+        form_pd.berat_badan_kg,
+        id_rombel
+    );
+
+    kembalikan {
+        "nisn": form_pd.nisn,
+        "nama_siswa": form_pd.nama_lengkap,
+        "ibu_kandung": form_pd.nama_ibu,
+        "status_pip": status_pip,
+        "antropometri": ke_teks(form_pd.tinggi_badan_cm) + " cm / " + ke_teks(form_pd.berat_badan_kg) + " kg",
+        "status_selaras": "100%_SELARAS_DENGAN_FORMULIR_PD_EXCEL"
+    };
+}

@@ -1,0 +1,218 @@
+// =================================================================
+// SIMULASI TERPADU: DAPODIK EDGE & WIDYA SINAU LMS
+// Menguji Sinkronisasi Otomatis Rombel, Local CDN Cache, IFP Notes,
+// CBT Anti-Cheat Kiosk, dan Ekspor Otomatis ke e-Rapor
+// =================================================================
+
+impor "widyaos/modul/dapodik_edge.wya";
+impor "widyaos/modul/lms_sinau.wya";
+
+cetak("");
+cetak("╔══════════════════════════════════════════════════════════════════╗");
+cetak("║   === SIMULASI WIDYA SINAU LMS & DAPODIK EDGE v1.0 ===           ║");
+cetak("║   Pilar Pembelajaran & Kedaulatan Data Kemendikdasmen RI         ║");
+cetak("╚══════════════════════════════════════════════════════════════════╝");
+cetak("");
+
+misal TOTAL_TEST = 0;
+misal LULUS_TEST = 0;
+
+misal npsn = "20109999";
+misal nama_sekolah = "SMK Negeri 1 Nusantara";
+
+// -------------------------------------------------------------
+// [TEST 1] Inisialisasi Dapodik Edge & Master Data Pokok
+// -------------------------------------------------------------
+cetak("================================================================");
+cetak("[1] Inisialisasi Dapodik Edge (Offline-First Local Master)");
+cetak("================================================================");
+misal dapodik = inisialisasi_dapodik_edge(npsn, nama_sekolah);
+
+// Tambah Rombel
+dapodik_tambah_rombel(dapodik, "ROMBEL-10-RPL-1", "X RPL 1", "Kelas 10", "Kurikulum Merdeka");
+
+// Tambah Guru & Validasi TPG 24 Jam
+misal g1 = dapodik_tambah_guru(dapodik, "19850101001", "Budi Santoso, S.Kom", "Informatika & Rekayasa Perangkat Lunak", 28);
+misal g2 = dapodik_tambah_guru(dapodik, "19890202002", "Siti Aminah, M.Pd", "Matematika Terapan", 20);
+
+cetak("👨‍🏫 Guru 1:", g1.nama, "| Mapel:", g1.mata_pelajaran);
+cetak("   Beban Mengajar :", g1.jjm_beban_mengajar, "JJM/minggu -> Status TPG:", g1.status_sertifikasi);
+cetak("👩‍🏫 Guru 2:", g2.nama, "| Mapel:", g2.mata_pelajaran);
+cetak("   Beban Mengajar :", g2.jjm_beban_mengajar, "JJM/minggu -> Status TPG:", g2.status_sertifikasi);
+
+// Tambah Siswa
+dapodik_tambah_siswa(dapodik, "0081234567", "3201012345670001", "Ahmad Fauzi", "ROMBEL-10-RPL-1");
+dapodik_tambah_siswa(dapodik, "0087654321", "3201017654320002", "Dewi Lestari", "ROMBEL-10-RPL-1");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika g1.status_sertifikasi == "MEMENUHI_SYARAT_TPG_24_JAM" dan g2.status_sertifikasi == "BELUM_MEMENUHI" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 1] Validasi Beban Mengajar Guru & Sertifikasi Dapodik: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 2] Delta Sync Dapodik Edge ke Pusdatin Pusat
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[2] Background Delta Sync Dapodik Edge -> Pusdatin");
+cetak("================================================================");
+misal hasil_sync = dapodik_proses_delta_sync(dapodik);
+cetak("📡 Status Sync Pusdatin :", hasil_sync.status_pusdatin);
+cetak("📦 Jumlah Delta Mutasi  :", hasil_sync.jumlah_perubahan, "perubahan (Rombel, Guru, Siswa)");
+cetak("🔒 Kriptografi Delta    :", hasil_sync.hash_delta);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_sync.jumlah_perubahan == 5 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 2] Sinkronisasi Delta Offline-First Dapodik: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 3] Zero-Setup Sinkronisasi Dapodik ke Widya Sinau LMS
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[3] Auto-Provisioning Dapodik Edge -> Widya Sinau LMS");
+cetak("================================================================");
+misal sinau_lms = inisialisasi_lms_sinau(npsn);
+misal status_lms = lms_sinkron_dapodik(sinau_lms, dapodik);
+
+cetak("🎓 Rombel Terpetakan Otomatis ke LMS :", status_lms.rombel_tersinkron);
+misal kelas_rpl = sinau_lms.daftar_kelas["ROMBEL-10-RPL-1"];
+cetak("   Kelas LMS Aktif   :", kelas_rpl.nama_rombel, "(Tingkat:", kelas_rpl.tingkat + ")");
+cetak("   Total Siswa Masuk :", panjang(kelas_rpl.siswa), "siswa terdaftar otomatis (Zero CSV Import!)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika panjang(kelas_rpl.siswa) == 2 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 3] Provisioning Siswa & Rombel Otomatis di LMS: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 4] Modul Ajar Local Edge CDN (0 KB Kuota Internet)
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[4] Distribusi Materi Pelajaran dengan Local LAN CDN Cache");
+cetak("================================================================");
+misal materi_video = lms_terbitkan_materi(
+    sinau_lms,
+    "MOD-RPL-01",
+    "ROMBEL-10-RPL-1",
+    "Informatika & Rekayasa Perangkat Lunak",
+    "Struktur Data & Algoritma Tingkat Lanjut (Video 1080p + Modul PDF)",
+    "TP-01: Memahami dan Mengimplementasikan Struktur Pohon Biner",
+    "VIDEO_MP4_HD",
+    250.0 // 250 MB
+);
+
+cetak("📚 Judul Materi       :", materi_video.judul);
+cetak("📍 Lokasi Cache Lokal :", materi_video.lokasi_cache_lan);
+cetak("⚡ Kuota Internet Hemat:", ke_teks(materi_video.hemat_kuota_kb / 1024), "MB (Disedot 36 siswa via LAN tanpa kuota luar)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika materi_video.ukuran_mb == 250.0 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 4] Penerbitan Konten Local LAN Edge CDN: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 5] Sinkronisasi Otomatis Papan Tulis IFP ke LMS
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[5] Integrasi Otomatis Whiteboard IFP Ruang Kelas -> LMS");
+cetak("================================================================");
+misal catatan_ifp = lms_sinkron_catatan_ifp(
+    sinau_lms,
+    "ROMBEL-10-RPL-1",
+    "Informatika & Rekayasa Perangkat Lunak",
+    "Budi Santoso, S.Kom",
+    4, // 4 halaman catatan IFP
+    "VEKTOR_STROKE_CORETRAN_PAPAN_TULIS_HAL_1_SD_4"
+);
+
+cetak("🖊️ Sesi IFP Disinkron :", catatan_ifp.id_sesi);
+cetak("👨‍🏫 Pengampu Kelas     :", catatan_ifp.guru_pengampu);
+cetak("📑 Halaman Papan Tulis :", catatan_ifp.jumlah_halaman, "halaman rumus & arsitektur");
+cetak("📲 Status di Siswa    :", catatan_ifp.status_publikasi_lms, "(Tersedia di gawai siswa untuk review)");
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika panjang(sinau_lms.arsip_papan_tulis) == 1 {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 5] Sinkronisasi Papan Tulis Interaktif IFP ke LMS: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 6] Asesmen CBT LAN & Anti-Cheat Kiosk Lock
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[6] Asesmen CBT Jaringan Lokal (Anti-Crash & Kiosk Lockdown)");
+cetak("================================================================");
+misal cbt_uas = AsesmenCBTLMS(
+    "UAS-INF-2026",
+    "ROMBEL-10-RPL-1",
+    "Informatika & Rekayasa Perangkat Lunak",
+    "Penilaian Akhir Semester (Sumatif)",
+    "SUMATIF",
+    90,
+    75.0, // KKM
+    benar // Kiosk mode aktif
+);
+
+// Siswa 1: Mengerjakan jujur dengan skor tinggi
+misal hasil_ahmad = lms_evaluasi_ujian_cbt(cbt_uas, "0081234567", "Ahmad Fauzi", 92.5, 0);
+
+// Siswa 2: Terdeteksi switch tab (pelanggaran kiosk)
+misal hasil_dewi = lms_evaluasi_ujian_cbt(cbt_uas, "0087654321", "Dewi Lestari", 84.0, 3);
+
+cetak("📝 Siswa 1 (Ahmad) : Skor", hasil_ahmad.skor_mentah, "| Status:", hasil_ahmad.status_kelulusan);
+cetak("   AI Rekomendasi  :", hasil_ahmad.rekomendasi_ai);
+cetak("📝 Siswa 2 (Dewi)  : Skor", hasil_dewi.skor_mentah, "| Status:", hasil_dewi.status_kelulusan);
+cetak("   Catatan Kiosk   :", hasil_dewi.rekomendasi_ai);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika hasil_ahmad.status_kelulusan == "TUNTAS" dan hasil_dewi.status_kelulusan == "TERINDIKASI_CURANG_DISQUALIFIKASI" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 6] Evaluasi CBT Jaringan Lokal & Kiosk Integrity: LULUS");
+}
+
+// -------------------------------------------------------------
+// [TEST 7] Otomatisasi Nilai Akhir ke e-Rapor Kemendikdasmen
+// -------------------------------------------------------------
+cetak("");
+cetak("================================================================");
+cetak("[7] Agregasi Otomatis Nilai Formatif & Sumatif ke e-Rapor");
+cetak("================================================================");
+misal erapor_ahmad = lms_posting_erapor(
+    sinau_lms,
+    "0081234567",
+    "Ahmad Fauzi",
+    "Informatika & Rekayasa Perangkat Lunak",
+    hasil_ahmad.skor_mentah, // 92.5 (Sumatif CBT)
+    95.0                     // Skor Praktik Formatif
+);
+
+cetak("📄 Nilai Akhir e-Rapor Siswa :", erapor_ahmad.nama_siswa);
+cetak("   Mata Pelajaran            :", erapor_ahmad.mapel);
+cetak("   Nilai Angka               :", erapor_ahmad.nilai_angka);
+cetak("   Predikat Capaian          :", erapor_ahmad.predikat);
+cetak("   Deskripsi Rapor Resmi     :", erapor_ahmad.deskripsi_capaian_kompetensi);
+
+TOTAL_TEST = TOTAL_TEST + 1;
+jika erapor_ahmad.predikat == "A" {
+    LULUS_TEST = LULUS_TEST + 1;
+    cetak("✅ [TEST 7] Pipeline Agregasi Otomatis ke e-Rapor: LULUS");
+}
+
+cetak("");
+cetak("================================================================");
+cetak("HASIL EVALUASI INTEGRASI LMS & DAPODIK EDGE");
+cetak("Total Skenario Diuji :", TOTAL_TEST);
+cetak("Lulus Verifikasi     :", LULUS_TEST);
+cetak("================================================================");
+jika TOTAL_TEST == LULUS_TEST {
+    cetak("🎉 SEMUA PENGUJIAN DAPODIK EDGE & WIDYA SINAU LMS BERHASIL 100%!");
+}

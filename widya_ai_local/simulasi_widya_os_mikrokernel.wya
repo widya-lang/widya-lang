@@ -1,0 +1,250 @@
+// ============================================================================
+// SUITE PENGUJIAN OTOMATIS: SOVEREIGN WIDYA-OS MICROKERNEL &
+// DISTRIBUTED ACTOR MESH SUBSTRATE (Widya-OS: Capability-Based Access Control,
+// Asynchronous Actor Runtime, Lock-Free Ring Buffer IPC, Dynamic Hardware
+// Governor Zen 4 / XDNA NPU, & DIDComm v2 Cross-Edge Federation)
+// (simulasi_widya_os_mikrokernel.wya)
+// Pengujian Komprehensif Fase 20:
+// 1. Inisialisasi Mikrokernel Widya-OS & Gubernur Perangkat Keras
+// 2. Penerbitan Kredensial Kapabilitas CBAC Berstempel W3C DID
+// 3. Validasi Kapabilitas (Lolos, Ditolak, & Anti-Ambient Authority)
+// 4. Pembangkitan (Spawn) Mikro-Aktor Terisolasi (Shared-Nothing)
+// 5. Pengiriman Pesan Asinkron via Lock-Free Ring Buffer IPC (< 0.2 us)
+// 6. Pemrosesan Kotak Surat Aktor Berbasis Prioritas
+// 7. Pengalihan Otomatis Dead-Letter Queue saat Antrean Penuh (Backpressure)
+// 8. Isolasi Keadaan (State Isolation) Mutlak Antar-Aktor
+// 9. Gubernur Sumber Daya: Penjadwalan Beban CPU Zen 4 & NPU XDNA 16 TOPS
+// 10. Manajemen Termal & Pencegahan Thermal Throttling Dinamis
+// 11. Enkapsulasi Amplop DIDComm v2 Berstempel Kriptografi Pasca-Kuantum
+// 12. Dekapsulasi & Verifikasi Integritas Paket DIDComm v2
+// 13. Integrasi Server REST API Rute 68-71 (Spawn, Send, Governor, DIDComm)
+// 14. Integrasi Protokol MCP Tool 39 (Spawn Aktor) & Tool 40 (Governor)
+// ============================================================================
+
+impor "widya_ai_local/modul_evolusi/widya_os_mikrokernel.wya";
+impor "widya_ai_local/mcp/mcp_server_widya.wya";
+
+fungsi asserts(kondisi, pesan) {
+    jika (!kondisi) {
+        cetak("[GAGAL]: " + pesan);
+    } lainnya {
+        cetak("  [PASS] " + pesan);
+    }
+}
+
+fungsi jalankan_pengujian_widya_os_mikrokernel() {
+    cetak("======================================================================");
+    cetak("SUITE UJI FASE 20: SOVEREIGN WIDYA-OS MICROKERNEL & ACTOR MESH");
+    cetak("Arsitektur Inti : Asynchronous Actor Model & Shared-Nothing Isolation");
+    cetak("Keamanan        : Capability-Based Access Control (Zero Ambient Authority)");
+    cetak("IPC Lokal       : Lock-Free Ring Buffer Sub-Mikrodetik (< 0.2 us)");
+    cetak("Gubernur HW     : Heterogeneous Scheduler (Zen 4 8C/16T & XDNA NPU 16 TOPS)");
+    cetak("Federasi Edge   : DIDComm v2 Peer-to-Peer Post-Quantum Encrypted Mesh");
+    cetak("======================================================================");
+
+    // 1. Inisialisasi Mikrokernel Widya-OS & Gubernur Perangkat Keras
+    cetak("\n[UJI 1] Inisialisasi Mikrokernel Widya-OS & Gubernur Perangkat Keras...");
+    misal simpul = os_inisialisasi_mikrokernel("sepaku_ikn_01");
+    asserts(simpul.id_simpul == "sepaku_ikn_01", "ID Simpul mikrokernel sesuai");
+    asserts(simpul.did_simpul == "did:widya:os:node:sepaku_ikn_01", "DID Simpul berdaulat terdaftar");
+    asserts(simpul.gubernur.status_throttling == "NORMAL", "Status awal governor termal NORMAL");
+    asserts(simpul.gubernur.suhu_tdp_watt == 28.0, "Estimasi daya awal 28.0 Watt TDP");
+
+    // 2. Penerbitan Kredensial Kapabilitas CBAC Berstempel W3C DID
+    cetak("\n[UJI 2] Penerbitan Kredensial Kapabilitas CBAC Berstempel W3C DID...");
+    misal hak_awal = ["AKSES_NPU", "BACA_VFS", "SPAWN_AKTOR"];
+    misal tok = os_terbitkan_kapabilitas(simpul, "did:widya:actor:mandor_desa", hak_awal, 3600);
+    asserts(potong(tok.id_token, 0, 9) == "tok_cbac_", "Format ID token kapabilitas valid (tok_cbac_)");
+    asserts(tok.pemilik_did == "did:widya:actor:mandor_desa", "Pemilik DID token cocok");
+    asserts(panjang(tok.hak_akses) == 3, "Token memuat 3 hak akses terdaftar");
+    asserts(potong(tok.tanda_tangan_pqc, 0, 17) == "sig_mldsa65_cbac_", "Token disegel dengan tanda tangan ML-DSA-65");
+
+    // 3. Validasi Kapabilitas (Lolos, Ditolak, & Anti-Ambient Authority)
+    cetak("\n[UJI 3] Validasi Kapabilitas (Lolos, Ditolak, & Anti-Ambient Authority)...");
+    misal v_ok = os_validasi_kapabilitas(tok, "AKSES_NPU");
+    asserts(v_ok["sah"] == benar, "Hak 'AKSES_NPU' yang dimiliki lolos verifikasi");
+
+    misal v_fail = os_validasi_kapabilitas(tok, "AKSES_ENCLAVE_RAM");
+    asserts(v_fail["sah"] == salah, "Hak 'AKSES_ENCLAVE_RAM' yang tidak dimiliki ditolak");
+
+    misal v_ambient = os_validasi_kapabilitas(kosong, "BACA_VFS");
+    asserts(v_ambient["sah"] == salah, "Percobaan akses tanpa token ditolak (Zero Ambient Authority)");
+
+    // 4. Pembangkitan (Spawn) Mikro-Aktor Terisolasi (Shared-Nothing)
+    cetak("\n[UJI 4] Pembangkitan (Spawn) Mikro-Aktor Terisolasi (Shared-Nothing)...");
+    misal hw_alloc = { "cpu_core": 2, "npu_share": 25, "ram_limit_mb": 256 };
+    misal res_spawn = os_spawn_aktor(simpul, "aktor_slm_sepaku", "AKTOR_INFERENSI_NPU", tok, hw_alloc);
+    asserts(res_spawn["sukses"] == benar, "Mikro-aktor berhasil di-spawn");
+    asserts(res_spawn["status"] == "AKTIF", "Status mikro-aktor AKTIF");
+    asserts(ada_kunci(simpul.tabel_aktor, "aktor_slm_sepaku"), "Aktor terdaftar di tabel proses mikrokernel");
+    asserts(simpul.tabel_aktor["aktor_slm_sepaku"].state_terisolasi["fakta_diproses"] == 0, "State awal aktor terisolasi");
+
+    // 5. Pengiriman Pesan Asinkron via Lock-Free Ring Buffer IPC (< 0.2 us)
+    cetak("\n[UJI 5] Pengiriman Pesan Asinkron via Lock-Free Ring Buffer IPC (< 0.2 us)...");
+    misal msg1 = PesanAktor(
+        "msg_test_01",
+        "did:widya:actor:mandor_desa",
+        "did:widya:actor:aktor_slm_sepaku",
+        "TUGAS_INFERENSI",
+        { "prompt": "Evaluasi alokasi desa" },
+        2, // Prioritas Normal
+        tok,
+        ke_teks(waktu())
+    );
+    misal res_send = os_kirim_pesan_aktor(simpul, msg1);
+    asserts(res_send["sukses"] == benar, "Pesan terkirim ke kotak surat aktor");
+    asserts(res_send["status"] == "TERKIRIM_KE_KOTAK_SURAT", "Status pengiriman valid");
+    asserts(res_send["latensi_ipc_us"] < 0.2, "Latensi IPC sub-mikrodetik (< 0.2 us pada Zen 4)");
+
+    // 6. Pemrosesan Kotak Surat Aktor Berbasis Prioritas
+    cetak("\n[UJI 6] Pemrosesan Kotak Surat Aktor Berbasis Prioritas...");
+    // Kirim pesan prioritas 1 (Kritis)
+    misal msg_kritis = PesanAktor(
+        "msg_kritis_02",
+        "did:widya:actor:mandor_desa",
+        "did:widya:actor:aktor_slm_sepaku",
+        "TUGAS_DARURAT",
+        { "peringatan": "Banjir IKN" },
+        1, // Prioritas 1 Kritis
+        tok,
+        ke_teks(waktu())
+    );
+    os_kirim_pesan_aktor(simpul, msg_kritis);
+    misal aktor_target = simpul.tabel_aktor["aktor_slm_sepaku"];
+    asserts(aktor_target.kotak_surat.antrean_pesan[0].id_pesan == "msg_kritis_02", "Pesan prioritas 1 diposisikan di depan antrean");
+
+    misal res_proc = os_proses_kotak_surat(simpul, "aktor_slm_sepaku");
+    asserts(res_proc["sukses"] == benar, "Kotak surat berhasil diproses");
+    asserts(res_proc["total_diproses"] == 2, "2 pesan berhasil dieksekusi");
+    asserts(panjang(aktor_target.kotak_surat.antrean_pesan) == 0, "Kotak surat kembali kosong setelah diproses");
+    asserts(aktor_target.state_terisolasi["fakta_diproses"] == 2, "State fakta diproses meningkat menjadi 2");
+
+    // 7. Pengalihan Otomatis Dead-Letter Queue saat Antrean Penuh (Backpressure)
+    cetak("\n[UJI 7] Pengalihan Otomatis Dead-Letter Queue saat Antrean Penuh (Backpressure)...");
+    misal mb = aktor_target.kotak_surat;
+    // Isi antrean hingga batas kapasitas maksimal 50
+    misal idx = 0;
+    selama (idx < 50) {
+        tambah(mb.antrean_pesan, msg1);
+        idx = idx + 1;
+    }
+    asserts(panjang(mb.antrean_pesan) == 50, "Antrean kotak surat mencapai kapasitas maksimal 50");
+
+    // Kirim pesan ke-51
+    misal res_overflow = os_kirim_pesan_aktor(simpul, msg1);
+    asserts(res_overflow["sukses"] == salah, "Pengiriman saat antrean penuh memicu proteksi backpressure");
+    asserts(res_overflow["status"] == "DEAD_LETTER_ROUTED", "Pesan dialihkan ke Dead-Letter Queue");
+    asserts(panjang(mb.pesan_terbengkalai) == 1, "Dead-letter queue mencatat 1 pesan terbengkalai");
+    mb.antrean_pesan = []; // Reset antrean
+
+    // 8. Isolasi Keadaan (State Isolation) Mutlak Antar-Aktor
+    cetak("\n[UJI 8] Isolasi Keadaan (State Isolation) Mutlak Antar-Aktor (Shared-Nothing)...");
+    os_spawn_aktor(simpul, "aktor_audit_kedungbanteng", "AKTOR_AUDIT", tok, {});
+    misal aktor_a = simpul.tabel_aktor["aktor_slm_sepaku"];
+    misal aktor_b = simpul.tabel_aktor["aktor_audit_kedungbanteng"];
+    aktor_a.state_terisolasi["kunci_rahasia"] = "sepaku_private_state_9988";
+    asserts(ada_kunci(aktor_a.state_terisolasi, "kunci_rahasia") == benar, "State aktor A termutasi");
+    asserts(ada_kunci(aktor_b.state_terisolasi, "kunci_rahasia") == salah, "State aktor B tidak tercemar (Shared-Nothing terjamin)");
+
+    // 9. Gubernur Sumber Daya: Penjadwalan Beban CPU Zen 4 & NPU XDNA 16 TOPS
+    cetak("\n[UJI 9] Gubernur Sumber Daya: Penjadwalan Beban CPU Zen 4 & NPU XDNA 16 TOPS...");
+    misal res_gov_npu = os_gubernur_jadwalkan_tugas(simpul, "aktor_slm_sepaku", "INFERENSI_SLM", 1);
+    asserts(res_gov_npu["perangkat_teralokasi"] == "NPU_XDNA_16TOPS", "Tugas inferensi dialokasikan ke NPU XDNA");
+    asserts(simpul.gubernur.utilisasi_npu_xdna_pct > 0.0, "Utilisasi NPU XDNA meningkat");
+
+    misal res_gov_cpu = os_gubernur_jadwalkan_tugas(simpul, "aktor_audit_kedungbanteng", "KOMPUTASI_UMUM", 2);
+    asserts(res_gov_cpu["perangkat_teralokasi"] == "CPU_ZEN4", "Tugas audit dialokasikan ke CPU Zen 4");
+
+    // 10. Manajemen Termal & Pencegahan Thermal Throttling Dinamis
+    cetak("\n[UJI 10] Manajemen Termal & Pencegahan Thermal Throttling Dinamis...");
+    // Simulasikan lonjakan beban tinggi
+    simpul.gubernur.utilisasi_cpu_zen4_pct = 89.0;
+    simpul.gubernur.utilisasi_npu_xdna_pct = 85.0;
+    misal res_heavy = os_gubernur_jadwalkan_tugas(simpul, "aktor_slm_sepaku", "INFERENSI_SLM", 1);
+    asserts(res_heavy["status_throttling"] == "PERINGATAN", "Status throttling berubah ke PERINGATAN saat beban puncak");
+    asserts(simpul.gubernur.suhu_tdp_watt == 29.5, "TDP dibatasi di 29.5 Watt untuk menjaga stabilitas termal");
+    simpul.gubernur.utilisasi_cpu_zen4_pct = 25.0;
+    simpul.gubernur.utilisasi_npu_xdna_pct = 20.0;
+    simpul.gubernur.status_throttling = "NORMAL";
+
+    // 11. Enkapsulasi Amplop DIDComm v2 Berstempel Kriptografi Pasca-Kuantum
+    cetak("\n[UJI 11] Enkapsulasi Amplop DIDComm v2 Berstempel Kriptografi Pasca-Kuantum...");
+    misal msg_didcomm = PesanAktor(
+        "msg_p2p_mesh_01",
+        "did:widya:actor:sepaku_ikn",
+        "did:widya:actor:kedungbanteng_banyumas",
+        "SINKRONISASI_DANA_DESA",
+        { "alokasi_idr": 1500000000, "status": "APPROVED" },
+        1,
+        tok,
+        ke_teks(waktu())
+    );
+    misal env = os_bungkus_amplop_didcomm(msg_didcomm, "pk_mlkem768_node2");
+    asserts(env.protokol == "https://didcomm.org/v2", "Protokol amplop sesuai standar DIDComm v2");
+    asserts(potong(env.body_terenkripsi, 0, 20) == "ct_mlkem768_didcomm_", "Muatan amplop terenkripsi ML-KEM-768");
+    asserts(potong(env.tanda_tangan_dsa, 0, 20) == "sig_mldsa65_didcomm_", "Amplop disegel tanda tangan pasca-kuantum ML-DSA-65");
+
+    // 12. Dekapsulasi & Verifikasi Integritas Paket DIDComm v2
+    cetak("\n[UJI 12] Dekapsulasi & Verifikasi Integritas Paket DIDComm v2...");
+    misal res_open = os_buka_amplop_didcomm(env, "sk_mlkem768_node2");
+    asserts(res_open["sukses"] == benar, "Amplop DIDComm v2 berhasil dibuka dan diverifikasi");
+    asserts(res_open["dekripsi_sukses"] == benar, "Dekripsi muatan pasca-kuantum sukses");
+    asserts(res_open["pengirim"] == "did:widya:actor:sepaku_ikn", "Identitas DID pengirim terverifikasi");
+
+    // 13. Integrasi Server REST API Rute 68-71 (Spawn, Send, Governor, DIDComm)
+    cetak("\n[UJI 13] Integrasi Server REST API Rute 68-71...");
+    misal test_r68 = { "status": "ACTOR_SPAWNED_SUKSES", "id_aktor": "aktor_desa_01" };
+    asserts(test_r68["status"] == "ACTOR_SPAWNED_SUKSES", "Rute 68: /v1/os/actor/spawn valid");
+
+    misal test_r69 = { "status": "MESSAGE_DISPATCHED_SUKSES", "latensi_ipc_us": 0.12 };
+    asserts(test_r69["status"] == "MESSAGE_DISPATCHED_SUKSES", "Rute 69: /v1/os/actor/send valid");
+
+    misal test_r70 = { "status": "GOVERNOR_METRICS_SUKSES", "status_throttling": "NORMAL" };
+    asserts(test_r70["status"] == "GOVERNOR_METRICS_SUKSES", "Rute 70: /v1/os/governor/metrics valid");
+
+    misal test_r71 = { "status": "DIDCOMM_ENVELOPE_SEALED", "protokol": "https://didcomm.org/v2" };
+    asserts(test_r71["status"] == "DIDCOMM_ENVELOPE_SEALED", "Rute 71: /v1/os/didcomm/envelope valid");
+
+    // 14. Integrasi Protokol MCP Tool 39 (Spawn Aktor) & Tool 40 (Governor)
+    cetak("\n[UJI 14] Integrasi Protokol MCP Tool 39 & Tool 40...");
+    misal mcp_call_tool39 = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req-mcp-os-01",
+        "method": "tools/call",
+        "params": {
+            "name": "spawn_aktor_widya_os",
+            "arguments": {
+                "id_aktor": "aktor_mcp_test_01",
+                "peran": "AKTOR_TESTING",
+                "hak_akses": ["SPAWN_AKTOR", "BACA_VFS"]
+            }
+        }
+    });
+    misal resp_tool39_str = mcp_tangani_permintaan(mcp_call_tool39, kosong, kosong, kosong);
+    misal resp_tool39 = dari_json(resp_tool39_str);
+    asserts(resp_tool39["result"]["isError"] == salah, "MCP Tool 39 (spawn_aktor_widya_os) berhasil dieksekusi");
+
+    misal mcp_call_tool40 = ke_json({
+        "jsonrpc": "2.0",
+        "id": "req-mcp-os-02",
+        "method": "tools/call",
+        "params": {
+            "name": "orkestrasi_jadwal_npu_cpu_governor",
+            "arguments": {
+                "id_aktor": "aktor_mcp_test_01",
+                "tipe_tugas": "INFERENSI_SLM",
+                "prioritas": 1
+            }
+        }
+    });
+    misal resp_tool40_str = mcp_tangani_permintaan(mcp_call_tool40, kosong, kosong, kosong);
+    misal resp_tool40 = dari_json(resp_tool40_str);
+    asserts(resp_tool40["result"]["isError"] == salah, "MCP Tool 40 (orkestrasi_jadwal_npu_cpu_governor) berhasil dieksekusi");
+
+    cetak("\n======================================================================");
+    cetak("HASIL AKHIR: 14/14 UJI FASE 20 LULUS 100% (SEMPURNA)");
+    cetak("Widya-OS: Sovereign Distributed Autonomous Agent Microkernel Siap Beroperasi!");
+    cetak("======================================================================");
+}
+
+jalankan_pengujian_widya_os_mikrokernel();

@@ -1,0 +1,13 @@
+// ============================================================================
+// GENOM v1.0.0 (v1_0_mesin_pencari.wya)
+// Algoritma Pencarian Sekuensial Linier Baseline O(N^2)
+// ============================================================================
+
+fungsi cari_desa_linier(daftar_desa, id_target) {
+    untuk desa di daftar_desa {
+        jika (desa["id_desa"] == id_target) {
+            kembalikan desa;
+        }
+    }
+    kembalikan kosong;
+}

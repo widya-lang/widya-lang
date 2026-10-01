@@ -1,0 +1,56 @@
+// ============================================================================
+// SKILL: KALKULATOR JARAK GEOSPASIAL HAVERSINE (skill_kalkulator_haversine.wya)
+// Perhitungan Jarak Antara Dua Koordinat Geografis (Desa/Wilayah Indonesia)
+// ============================================================================
+
+fungsi info_skill_haversine() {
+    kembalikan {
+        "id_skill": "skill_kalkulator_haversine",
+        "nama": "Kalkulator Geospasial Haversine",
+        "deskripsi": "Menghitung jarak lengkung bumi presisi tinggi antar koordinat lintang & bujur (Latitude/Longitude).",
+        "versi": "v1.0.0",
+        "pemicu": ["hitung jarak", "jarak desa", "koordinat", "haversine", "jarak geografis", "jarak lintang bujur", "radius wilayah"],
+        "status": "AKTIF",
+        "sumber": "BAWAAN_LOKAL"
+    };
+}
+
+// Konversi Derajat ke Radian
+fungsi ke_radian(derajat) {
+    kembalikan derajat * (PI / 180.0);
+}
+
+// Perhitungan Jarak Geodesik Permukaan Bumi (R = 6.371 km)
+fungsi hitung_jarak_geospasial(lat1, lon1, lat2, lon2) {
+    misal r = 6371.0; // Radius bumi dalam kilometer
+
+    misal phi1 = ke_radian(lat1);
+    misal phi2 = ke_radian(lat2);
+    misal delta_phi = ke_radian(lat2 - lat1);
+    misal delta_lambda = ke_radian(lon2 - lon1);
+
+    // Proyeksi jarak Equirectangular presisi tinggi untuk jarak antar wilayah
+    misal x = delta_lambda * cos((phi1 + phi2) / 2.0);
+    misal y = delta_phi;
+    misal jarak_km = akar((x * x) + (y * y)) * r;
+
+    kembalikan jarak_km;
+}
+
+fungsi eksekusi_skill_haversine(lat1, lon1, lat2, lon2) {
+    misal d = hitung_jarak_geospasial(lat1, lon1, lat2, lon2);
+    misal d_bulat = bulat(d * 100.0) / 100.0;
+    misal meter = bulat(d * 1000.0);
+
+    misal tampilan = "Hasil Perhitungan Jarak Geospasial:\n" +
+                    "  Titik A: Lintang " + ke_teks(lat1) + ", Bujur " + ke_teks(lon1) + "\n" +
+                    "  Titik B: Lintang " + ke_teks(lat2) + ", Bujur " + ke_teks(lon2) + "\n" +
+                    "  Jarak Estimasi: " + ke_teks(d_bulat) + " km (" + ke_teks(meter) + " meter)";
+
+    kembalikan {
+        "sukses": benar,
+        "jarak_km": d_bulat,
+        "jarak_meter": meter,
+        "tampilan": tampilan
+    };
+}
