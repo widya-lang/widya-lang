@@ -1,0 +1,19 @@
+# Maintainer: Tim Pengembang Widya-Lang <dev@widya-lang.org>
+pkgname=widya-lang-bin
+pkgver=2.5.0
+pkgrel=1
+pkgdesc="Bahasa Pemrograman Asli Indonesia Berperforma Tinggi (Compiler, WidyaBase, Package Manager)"
+arch=('x86_64')
+url="https://widya-lang.org"
+license=('MIT')
+depends=('gcc-libs' 'glibc')
+provides=('widya')
+conflicts=('widya')
+source=("https://github.com/Bakulcoding/widya-lang/releases/download/v${pkgver}/widya-v${pkgver}-x86_64-linux.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+    install -Dm755 "${srcdir}/widya" "${pkgdir}/usr/bin/widya"
+    install -Dm644 "${srcdir}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+    install -Dm644 "${srcdir}/CHANGELOG.md" "${pkgdir}/usr/share/doc/${pkgname}/CHANGELOG.md"
+}

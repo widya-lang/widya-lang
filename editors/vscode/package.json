@@ -2,7 +2,7 @@
   "name": "widya-lang",
   "displayName": "Widya-Lang Official Support",
   "description": "Dukungan resmi sintaksis, LSP Language Server, DAP Debugger, dan Snippet untuk bahasa pemrograman Widya-Lang",
-  "version": "1.0.0",
+  "version": "2.5.0",
   "publisher": "widya-lang-foundation",
   "icon": "icon.png",
   "repository": {
