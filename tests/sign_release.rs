@@ -15,9 +15,17 @@ fn generate_documentation_pdfs_and_sign_official_release() {
         fs::write("dist/releases/v2.6.0/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_PILAR_KEMANDIRIAN.pdf ({:.1} KB)", bytes.len() as f32 / 1024.0);
+
+        // Render juga ke EPUB 3.2 buku digital berdaulat
+        let epub = DocumentConverter::markdown_to_epub(&md, Some("Pilar Kemandirian Widya-Lang"), Some("Komite Kedaulatan Widya"));
+        let epub_bytes = epub.export_to_epub_bytes();
+        fs::write("DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
+        fs::write("dist/releases/v2.6.0/DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
+        fs::write("www/downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
+        println!("✅ Sukses menghasilkan DOKUMENTASI_PILAR_KEMANDIRIAN.epub ({:.1} KB)", epub_bytes.len() as f32 / 1024.0);
     }
 
-    // 2. Render DOKUMENTASI_WPM.md ke PDF dengan mesin baru
+    // 2. Render DOKUMENTASI_WPM.md ke PDF & EPUB dengan mesin baru
     if Path::new("DOKUMENTASI_WPM.md").exists() {
         let md_str = fs::read_to_string("DOKUMENTASI_WPM.md").expect("Baca wpm md");
         let md = MarkdownDocument::parse(&md_str);
@@ -27,6 +35,13 @@ fn generate_documentation_pdfs_and_sign_official_release() {
         fs::write("dist/releases/v2.6.0/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_WPM.pdf ({:.1} KB)", bytes.len() as f32 / 1024.0);
+
+        let epub = DocumentConverter::markdown_to_epub(&md, Some("Panduan Widya Package Manager (WPM)"), Some("Tim Pengembang Widya"));
+        let epub_bytes = epub.export_to_epub_bytes();
+        fs::write("DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
+        fs::write("dist/releases/v2.6.0/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
+        fs::write("www/downloads/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
+        println!("✅ Sukses menghasilkan DOKUMENTASI_WPM.epub ({:.1} KB)", epub_bytes.len() as f32 / 1024.0);
     }
 
     // 3. Tanda tangani Ed25519

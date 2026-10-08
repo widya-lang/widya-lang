@@ -501,4 +501,123 @@ sequenceDiagram
     assert!(pdf_str.contains("200 Health OK"), "PDF harus memuat pesan urutan response");
 }
 
+#[test]
+fn test_mermaid_state_and_class_diagram_in_markdown_to_pdf() {
+    let md_content = r#"# Desain Sistem & Siklus Hidup
 
+## Diagram Status
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Running : RunCommand
+    Running --> Terminated : ExitSuccess
+    Running --> Error : Panic
+    Error --> [*]
+```
+
+## Diagram Kelas
+```mermaid
+classDiagram
+    class CompilerEngine {
+        +String arch
+        +emit_binary() Vec~u8~
+    }
+    class ElfLinker {
+        +link_symbols() bool
+    }
+    CompilerEngine <|-- ElfLinker
+```
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let bytes = pdf.generate_pdf_bytes();
+
+    assert!(!bytes.is_empty(), "PDF harus ter-generate tanpa error");
+    let pdf_str = String::from_utf8_lossy(&bytes);
+
+    // Verifikasi elemen State Diagram
+    assert!(pdf_str.contains("DIAGRAM STATUS"), "PDF harus memuat header diagram status");
+    assert!(pdf_str.contains("Idle"), "PDF harus memuat state Idle");
+    assert!(pdf_str.contains("Running"), "PDF harus memuat state Running");
+    assert!(pdf_str.contains("RunCommand"), "PDF harus memuat transisi RunCommand");
+
+    // Verifikasi elemen Class Diagram
+    assert!(pdf_str.contains("DIAGRAM KELAS"), "PDF harus memuat header diagram kelas");
+    assert!(pdf_str.contains("CompilerEngine"), "PDF harus memuat kelas CompilerEngine");
+    assert!(pdf_str.contains("ElfLinker"), "PDF harus memuat kelas ElfLinker");
+    assert!(pdf_str.contains("emit_binary"), "PDF harus memuat method emit_binary");
+}
+
+#[test]
+fn test_epub_sovereign_generator_and_converter() {
+    let md_content = r#"# Bab 1: Visi Kedaulatan Digital
+Indonesia Berdaulat 2045 membutuhkan kemandirian teknologi mendalam.
+
+* Bebas dari dependensi toolchain asing
+* Kompiler mandiri tanpa LLVM/GCC
+
+# Bab 2: Ekosistem Dokumen Cerdas
+Format EPUB 3.2 memungkinkan pembacaan optimal di semua perangkat baca digital.
+
+| Fitur | Status | Standar |
+| :--- | :---: | ---: |
+| Open Packaging | Aktif | OCF 3.2 |
+| XHTML5 Semantic | Aktif | W3C / IDPF |
+| Offline Reader | Mandiri | 100% Rust |
+
+```rust
+fn verifikasi() -> bool {
+    true
+}
+```
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let epub = DocumentConverter::markdown_to_epub(&md, Some("Kedaulatan Digital Nusantara"), Some("Tim Pengembang Widya"));
+
+    assert_eq!(epub.title, "Kedaulatan Digital Nusantara");
+    assert_eq!(epub.author, "Tim Pengembang Widya");
+    assert_eq!(epub.chapters.len(), 2);
+
+    let bytes = epub.export_to_epub_bytes();
+    assert!(!bytes.is_empty());
+    assert_eq!(&bytes[0..4], b"PK\x03\x04");
+
+    let text = String::from_utf8_lossy(&bytes);
+    assert!(text.contains("mimetypeapplication/epub+zip"));
+    assert!(text.contains("META-INF/container.xml"));
+    assert!(text.contains("OEBPS/content.opf"));
+    assert!(text.contains("OEBPS/toc.xhtml"));
+    assert!(text.contains("OEBPS/style.css"));
+    assert!(text.contains("Bab 1: Visi Kedaulatan Digital"));
+    assert!(text.contains("Bab 2: Ekosistem Dokumen Cerdas"));
+    assert!(text.contains("Kompiler mandiri tanpa LLVM/GCC"));
+    assert!(text.contains("OCF 3.2"));
+}
+
+#[test]
+fn test_code_block_syntax_highlighting_in_pdf() {
+    let md_content = r#"# Contoh Kode Widya
+
+```rust
+pub fn hitung_luas(panjang: i64, lebar: i64) -> i64 {
+    // Menghitung luas persegi panjang
+    let hasil = panjang * lebar;
+    hasil
+}
+```
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let bytes = pdf.generate_pdf_bytes();
+
+    assert!(!bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&bytes);
+    // Verifikasi keyword dan komentar termuat dalam biner PDF
+    assert!(pdf_str.contains("hitung_luas"));
+    assert!(pdf_str.contains("Menghitung luas"));
+}

@@ -56,9 +56,11 @@ Sebagian besar bahasa pemrograman bergantung pada kompiler C eksternal (GCC/Clan
   - `Elf64Phdr`: Dua segmen `PT_LOAD`:
     1. Segmen Kode `.text` (`PF_R | PF_X`) selaras dengan halaman 4096 byte.
     2. Segmen Data Konstan `.rodata` (`PF_R | PF_W`).
-* **Pembangkit Kode Mesin x86_64**:
-  - Menghasilkan urutan opcode langsung: `mov rax, imm32` (`0xB8`), `mov rdi, imm32` (`0xBF`), `mov rsi, imm64` (`0x48 0xBE`), `mov rdx, imm32` (`0xBA`), `syscall` (`0x0F 0x05`), dan `sys_exit` (`60`).
-  - Menghasilkan biner mandiri yang dapat langsung dieksekusi sistem Linux tanpa bantuan compiler eksternal.
+* **Pembangkit Kode Mesin Multi-Arsitektur Mandiri (Zero LLVM / GCC / Clang / ld)**:
+  - **x86_64**: Menghasilkan urutan opcode langsung: `mov rax, imm32` (`0xB8`), `mov rdi, imm32` (`0xBF`), `mov rsi, imm64` (`0x48 0xBE`), `mov rdx, imm32` (`0xBA`), `syscall` (`0x0F 0x05`), dan `sys_exit` (`60`).
+  - **AArch64 (ARM64)**: Pembangkit instruksi 32-bit: `MOVZ` (`0xd2800000`), `MOVK` (`0xf2800000`), syscall `svc #0` (`0xd4000001`), register ABI x0-x2, dan syscall nr 93 (`sys_exit`) / 64 (`sys_write`).
+  - **RISC-V 64 (RV64GC)**: Pembangkit instruksi RISC-V: `addi` (I-type 0x13), `lui` (U-type 0x37), `slli`, `ori`, `ecall` (`0x00000073`), register ABI a0-a2, dan syscall Linux nr 93 (`sys_exit`) / 64 (`sys_write`) pada register a7 (x17).
+  - Menghasilkan biner mandiri yang dapat langsung dieksekusi sistem Linux tanpa bantuan compiler maupun linker eksternal.
 
 ---
 

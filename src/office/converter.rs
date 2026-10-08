@@ -1,5 +1,6 @@
 use crate::office::diagram::WidyaDiagramEngine;
 use crate::office::docx::{parse_markdown_runs, DocxDocument, DocxElement, TextStyle, TextRun};
+use crate::office::epub::{markdown_to_epub_doc, EpubDocument};
 use crate::office::latex::{LatexDocument, LatexElement};
 use crate::office::markdown::{MarkdownBlock, MarkdownDocument};
 use crate::office::pdf::{styled_string_width, wrap_runs_to_styled_lines, wrap_text, PdfDocument, StyledFragment};
@@ -322,17 +323,16 @@ impl DocumentConverter {
                     let default_color = (0.15, 0.2, 0.25);
 
                     let lines: Vec<Vec<StyledFragment>> = if is_code {
-                        let lines_raw = wrap_text(text, inner_w, font_size, false);
-                        lines_raw.into_iter().map(|l| vec![StyledFragment {
-                            text: l,
-                            bold: false,
-                            italic: false,
-                            monospace: true,
-                            underline: false,
-                            color_rgb: (0.1, 0.2, 0.3),
-                            font_size,
-                            link_url: None,
-                        }]).collect()
+                        let mut all_code_lines = Vec::new();
+                        for raw_line in text.lines() {
+                            let highlighted = highlight_code_line(raw_line, font_size);
+                            let wrapped_sublines = wrap_code_fragments(highlighted, inner_w);
+                            all_code_lines.extend(wrapped_sublines);
+                        }
+                        if all_code_lines.is_empty() {
+                            all_code_lines.push(Vec::new());
+                        }
+                        all_code_lines
                     } else {
                         let runs = parse_markdown_runs(text);
                         wrap_runs_to_styled_lines(&runs, inner_w, font_size, default_color)
@@ -585,6 +585,15 @@ impl DocumentConverter {
     pub fn markdown_to_pdf(md: &MarkdownDocument) -> PdfDocument {
         let docx = Self::markdown_to_docx(md);
         Self::docx_to_pdf(&docx)
+    }
+
+    /// Konversi Dokumen Markdown ke Buku Digital EPUB 3.2 Mandiri
+    pub fn markdown_to_epub(
+        md: &MarkdownDocument,
+        title: Option<&str>,
+        author: Option<&str>,
+    ) -> EpubDocument {
+        markdown_to_epub_doc(md, title, author)
     }
 
     /// Konversi Dokumen LaTeX Ilmiah ke Dokumen Word (.docx)
@@ -862,6 +871,206 @@ pub fn clean_markdown_inline(s: &str) -> String {
     result
 }
 
+/// Tokenizer Pewarnaan Sintaks Kode Mandiri (Zero Dependency) untuk Blok Kode PDF
+pub fn highlight_code_line(line: &str, font_size: f32) -> Vec<StyledFragment> {
+    let mut frags = Vec::new();
+    let chars: Vec<char> = line.chars().collect();
+    let len = chars.len();
+    let mut i = 0;
+
+    let keywords = [
+        "fn", "fungsi", "let", "mut", "pub", "struct", "enum", "impl", "trait", "match",
+        "pilih", "if", "jika", "else", "lain", "return", "kembalikan", "def", "class",
+        "import", "from", "as", "const", "type", "use", "for", "untuk", "while", "selama",
+        "loop", "break", "continue", "async", "await", "select", "where", "insert", "into",
+        "values", "update", "set", "delete", "join", "create", "table", "drop", "alter",
+        "view", "index", "primary", "key", "foreign", "not", "null", "true", "benar",
+        "false", "salah", "and", "or", "in", "is", "echo", "printf", "println", "cargo",
+        "widya", "git", "bash", "sudo", "docker", "podman",
+    ];
+
+    let types = [
+        "i8", "i16", "i32", "i64", "i128", "isize",
+        "u8", "u16", "u32", "u64", "u128", "usize",
+        "f32", "f64", "bool", "char", "str", "String",
+        "Vec", "Option", "Result", "Some", "None", "Ok", "Err",
+        "Teks", "Angka", "Daftar", "Pilihan", "Hasil",
+    ];
+
+    while i < len {
+        // 1. Whitespace
+        if chars[i].is_whitespace() {
+            let start = i;
+            while i < len && chars[i].is_whitespace() {
+                i += 1;
+            }
+            let text: String = chars[start..i].iter().collect();
+            frags.push(StyledFragment {
+                text,
+                bold: false,
+                italic: false,
+                monospace: true,
+                underline: false,
+                color_rgb: (0.15, 0.20, 0.25),
+                font_size,
+                link_url: None,
+            });
+            continue;
+        }
+
+        // 2. Line Comment (// atau # atau --)
+        if (chars[i] == '/' && i + 1 < len && chars[i + 1] == '/')
+            || chars[i] == '#'
+            || (chars[i] == '-' && i + 1 < len && chars[i + 1] == '-')
+        {
+            let text: String = chars[i..len].iter().collect();
+            frags.push(StyledFragment {
+                text,
+                bold: false,
+                italic: true,
+                monospace: true,
+                underline: false,
+                color_rgb: (0.45, 0.52, 0.60), // Abu-abu miring komentar
+                font_size,
+                link_url: None,
+            });
+            break;
+        }
+
+        // 3. String Literal ("..." atau '...')
+        if chars[i] == '"' || chars[i] == '\'' {
+            let quote = chars[i];
+            let start = i;
+            i += 1;
+            while i < len {
+                if chars[i] == '\\' && i + 1 < len {
+                    i += 2;
+                } else if chars[i] == quote {
+                    i += 1;
+                    break;
+                } else {
+                    i += 1;
+                }
+            }
+            let text: String = chars[start..i].iter().collect();
+            frags.push(StyledFragment {
+                text,
+                bold: false,
+                italic: false,
+                monospace: true,
+                underline: false,
+                color_rgb: (0.12, 0.55, 0.25), // Hijau daun string
+                font_size,
+                link_url: None,
+            });
+            continue;
+        }
+
+        // 4. Number Literal
+        if chars[i].is_ascii_digit() || (chars[i] == '-' && i + 1 < len && chars[i + 1].is_ascii_digit()) {
+            let start = i;
+            if chars[i] == '-' {
+                i += 1;
+            }
+            if i + 1 < len && chars[i] == '0' && (chars[i + 1] == 'x' || chars[i + 1] == 'X') {
+                i += 2;
+                while i < len && (chars[i].is_ascii_hexdigit() || chars[i] == '_') {
+                    i += 1;
+                }
+            } else {
+                while i < len && (chars[i].is_ascii_digit() || chars[i] == '.' || chars[i] == '_') {
+                    i += 1;
+                }
+            }
+            let text: String = chars[start..i].iter().collect();
+            frags.push(StyledFragment {
+                text,
+                bold: false,
+                italic: false,
+                monospace: true,
+                underline: false,
+                color_rgb: (0.78, 0.38, 0.08), // Oranye angka
+                font_size,
+                link_url: None,
+            });
+            continue;
+        }
+
+        // 5. Identifiers / Keywords
+        if chars[i].is_alphabetic() || chars[i] == '_' {
+            let start = i;
+            while i < len && (chars[i].is_alphanumeric() || chars[i] == '_') {
+                i += 1;
+            }
+            let word: String = chars[start..i].iter().collect();
+            let (color_rgb, bold) = if keywords.contains(&word.to_lowercase().as_str()) {
+                ((0.10, 0.35, 0.85), true) // Biru tua tebal kata kunci
+            } else if types.contains(&word.as_str()) {
+                ((0.05, 0.55, 0.55), true) // Teal tebal tipe data
+            } else {
+                ((0.15, 0.20, 0.25), false) // Default identifier
+            };
+
+            frags.push(StyledFragment {
+                text: word,
+                bold,
+                italic: false,
+                monospace: true,
+                underline: false,
+                color_rgb,
+                font_size,
+                link_url: None,
+            });
+            continue;
+        }
+
+        // 6. Symbols / Operators
+        let start = i;
+        i += 1;
+        let text: String = chars[start..i].iter().collect();
+        frags.push(StyledFragment {
+            text,
+            bold: false,
+            italic: false,
+            monospace: true,
+            underline: false,
+            color_rgb: (0.35, 0.40, 0.50), // Biru baja operator
+            font_size,
+            link_url: None,
+        });
+    }
+
+    frags
+}
+
+/// Membungkus daftar fragmen kode berformat warna agar rapi sesuai lebar batas kontainer
+pub fn wrap_code_fragments(frags: Vec<StyledFragment>, max_w: f32) -> Vec<Vec<StyledFragment>> {
+    let mut lines: Vec<Vec<StyledFragment>> = Vec::new();
+    let mut current_line: Vec<StyledFragment> = Vec::new();
+    let mut current_w = 0.0;
+
+    for frag in frags {
+        let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+        if current_w + frag_w > max_w && !current_line.is_empty() {
+            lines.push(current_line);
+            current_line = Vec::new();
+            current_w = 0.0;
+        }
+        current_w += frag_w;
+        current_line.push(frag);
+    }
+
+    if !current_line.is_empty() {
+        lines.push(current_line);
+    }
+
+    if lines.is_empty() {
+        lines.push(Vec::new());
+    }
+
+    lines
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -892,5 +1101,19 @@ mod tests {
             clean_markdown_inline("Teks dengan **tebal** dan `kode` serta [tautan](https://widya-lang.org)"),
             "Teks dengan tebal dan kode serta tautan"
         );
+    }
+
+    #[test]
+    fn test_highlight_code_line() {
+        let line = "pub fn proses_data(nilai: i32) -> String { // komentar penting";
+        let frags = highlight_code_line(line, 9.0);
+
+        // 'pub' dan 'fn' harus bold dan berwarna biru keyword
+        assert!(frags.iter().any(|f| f.text == "pub" && f.bold && f.color_rgb == (0.10, 0.35, 0.85)));
+        assert!(frags.iter().any(|f| f.text == "fn" && f.bold && f.color_rgb == (0.10, 0.35, 0.85)));
+        // 'i32' dan 'String' harus tipe
+        assert!(frags.iter().any(|f| f.text == "i32" && f.bold && f.color_rgb == (0.05, 0.55, 0.55)));
+        // Komentar harus italic abu-abu
+        assert!(frags.iter().any(|f| f.text.contains("komentar penting") && f.italic));
     }
 }

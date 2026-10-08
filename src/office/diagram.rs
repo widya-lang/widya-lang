@@ -399,6 +399,278 @@ impl WidyaSequenceDiagram {
     }
 }
 
+/// Transisi Status Mesin (State Machine Transition)
+#[derive(Debug, Clone)]
+pub struct StateTransition {
+    pub from: String,
+    pub to: String,
+    pub label: Option<String>,
+}
+
+/// Struktur Data Diagram Mesin Status (Mermaid stateDiagram-v2)
+#[derive(Debug, Clone)]
+pub struct WidyaStateDiagram {
+    pub title: Option<String>,
+    pub states: Vec<String>,
+    pub transitions: Vec<StateTransition>,
+}
+
+impl WidyaStateDiagram {
+    pub fn parse(source: &str) -> Option<Self> {
+        let mut is_state = false;
+        let mut title = None;
+        let mut states: Vec<String> = Vec::new();
+        let mut transitions: Vec<StateTransition> = Vec::new();
+
+        for raw_line in source.lines() {
+            let line = raw_line.trim();
+            if line.is_empty() || line.starts_with("%%") {
+                continue;
+            }
+
+            if line.starts_with("stateDiagram") {
+                is_state = true;
+                continue;
+            }
+
+            if !is_state {
+                continue;
+            }
+
+            if line.starts_with("title:") || line.starts_with("title ") {
+                let t = line.trim_start_matches("title:").trim_start_matches("title").trim();
+                title = Some(clean_markdown_inline(t));
+                continue;
+            }
+
+            // Transisi: A --> B atau A --> B: label
+            if line.contains("-->") {
+                let (conn_part, label_part) = if let Some(colon_pos) = line.find(':') {
+                    (&line[..colon_pos], Some(line[colon_pos + 1..].trim()))
+                } else {
+                    (line, None)
+                };
+
+                let parts: Vec<&str> = conn_part.split("-->").collect();
+                if parts.len() >= 2 {
+                    let from = parts[0].trim().to_string();
+                    let to = parts[1].trim().to_string();
+
+                    for s in [&from, &to] {
+                        if s != "[*]" && !states.contains(s) {
+                            states.push(s.clone());
+                        }
+                    }
+
+                    transitions.push(StateTransition {
+                        from,
+                        to,
+                        label: label_part.map(|l| clean_markdown_inline(l)),
+                    });
+                }
+            } else if line.starts_with("state ") {
+                let rest = line.trim_start_matches("state").trim();
+                let name = rest.split_whitespace().next().unwrap_or("").trim_matches('"');
+                if !name.is_empty() && name != "[*]" && !states.contains(&name.to_string()) {
+                    states.push(name.to_string());
+                }
+            }
+        }
+
+        if is_state {
+            Some(Self {
+                title,
+                states,
+                transitions,
+            })
+        } else {
+            None
+        }
+    }
+}
+
+/// Anggota Kelas (Atribut / Field atau Metode / Fungsi)
+#[derive(Debug, Clone)]
+pub struct ClassMember {
+    pub is_method: bool,
+    pub text: String,
+}
+
+/// Entitas Kelas UML
+#[derive(Debug, Clone)]
+pub struct ClassEntity {
+    pub name: String,
+    pub members: Vec<ClassMember>,
+}
+
+/// Relasi Antar Kelas UML
+#[derive(Debug, Clone)]
+pub struct ClassRelation {
+    pub from: String,
+    pub to: String,
+    pub rel_type: String, // "<|--", "*--", "o--", "-->", "--"
+    pub label: Option<String>,
+}
+
+/// Struktur Data Diagram Kelas (Mermaid classDiagram)
+#[derive(Debug, Clone)]
+pub struct WidyaClassDiagram {
+    pub title: Option<String>,
+    pub classes: Vec<ClassEntity>,
+    pub relations: Vec<ClassRelation>,
+}
+
+impl WidyaClassDiagram {
+    pub fn parse(source: &str) -> Option<Self> {
+        let mut is_class = false;
+        let mut title = None;
+        let mut classes_map: HashMap<String, ClassEntity> = HashMap::new();
+        let mut classes_order: Vec<String> = Vec::new();
+        let mut relations: Vec<ClassRelation> = Vec::new();
+
+        let mut inside_class: Option<String> = None;
+
+        for raw_line in source.lines() {
+            let line = raw_line.trim();
+            if line.is_empty() || line.starts_with("%%") {
+                continue;
+            }
+
+            if line.starts_with("classDiagram") {
+                is_class = true;
+                continue;
+            }
+
+            if !is_class {
+                continue;
+            }
+
+            if line.starts_with("title:") || line.starts_with("title ") {
+                let t = line.trim_start_matches("title:").trim_start_matches("title").trim();
+                title = Some(clean_markdown_inline(t));
+                continue;
+            }
+
+            // Blok penutup kelas
+            if line == "}" {
+                inside_class = None;
+                continue;
+            }
+
+            // Di dalam blok kelas: field atau method
+            if let Some(ref cls_name) = inside_class {
+                let is_method = line.contains('(') && line.contains(')');
+                if let Some(cls) = classes_map.get_mut(cls_name) {
+                    cls.members.push(ClassMember {
+                        is_method,
+                        text: clean_markdown_inline(line),
+                    });
+                }
+                continue;
+            }
+
+            // Definisi blok kelas: class Nama {
+            if line.starts_with("class ") && line.ends_with('{') {
+                let name = line.trim_start_matches("class")
+                    .trim_end_matches('{')
+                    .trim()
+                    .to_string();
+                if !classes_map.contains_key(&name) {
+                    classes_order.push(name.clone());
+                    classes_map.insert(name.clone(), ClassEntity {
+                        name: name.clone(),
+                        members: Vec::new(),
+                    });
+                }
+                inside_class = Some(name);
+                continue;
+            }
+
+            // Definisi single class: class Nama
+            if line.starts_with("class ") {
+                let name = line.trim_start_matches("class").trim().to_string();
+                if !classes_map.contains_key(&name) {
+                    classes_order.push(name.clone());
+                    classes_map.insert(name.clone(), ClassEntity {
+                        name,
+                        members: Vec::new(),
+                    });
+                }
+                continue;
+            }
+
+            // Relasi kelas: ClassA <|-- ClassB atau ClassA *-- ClassB dsb.
+            let rel_patterns = ["<|--", "*--", "o--", "-->", "--", "--|>"];
+            let mut found_rel = None;
+            for &p in &rel_patterns {
+                if line.contains(p) {
+                    found_rel = Some(p);
+                    break;
+                }
+            }
+
+            if let Some(pat) = found_rel {
+                let parts: Vec<&str> = line.split(pat).collect();
+                if parts.len() >= 2 {
+                    let from = parts[0].trim().to_string();
+                    let to = parts[1].trim().to_string();
+
+                    for c in [&from, &to] {
+                        if !classes_map.contains_key(c) {
+                            classes_order.push(c.clone());
+                            classes_map.insert(c.clone(), ClassEntity {
+                                name: c.clone(),
+                                members: Vec::new(),
+                            });
+                        }
+                    }
+
+                    relations.push(ClassRelation {
+                        from,
+                        to,
+                        rel_type: pat.to_string(),
+                        label: None,
+                    });
+                }
+                continue;
+            }
+
+            // Format shorthand anggota: ClassName : +method()
+            if let Some(colon_pos) = line.find(':') {
+                let cls_name = line[..colon_pos].trim();
+                let member_text = line[colon_pos + 1..].trim();
+                if !cls_name.is_empty() && !member_text.is_empty() {
+                    let is_method = member_text.contains('(') && member_text.contains(')');
+                    if !classes_map.contains_key(cls_name) {
+                        classes_order.push(cls_name.to_string());
+                        classes_map.insert(cls_name.to_string(), ClassEntity {
+                            name: cls_name.to_string(),
+                            members: Vec::new(),
+                        });
+                    }
+                    if let Some(cls) = classes_map.get_mut(cls_name) {
+                        cls.members.push(ClassMember {
+                            is_method,
+                            text: clean_markdown_inline(member_text),
+                        });
+                    }
+                }
+            }
+        }
+
+        if is_class {
+            let classes = classes_order.into_iter().filter_map(|n| classes_map.remove(&n)).collect();
+            Some(Self {
+                title,
+                classes,
+                relations,
+            })
+        } else {
+            None
+        }
+    }
+}
+
 /// Mesin Pembangkit Diagram Vektor Mandiri Widya-Lang (Zero Dependency)
 pub struct WidyaDiagramEngine;
 
@@ -425,9 +697,33 @@ impl WidyaDiagramEngine {
             );
         }
 
+        // 2. Cek apakah ini Mermaid State Machine Diagram
+        if let Some(state_diag) = WidyaStateDiagram::parse(source) {
+            return Self::render_state_diagram(
+                pdf,
+                &state_diag,
+                margin_x,
+                current_y,
+                content_width,
+                page_height,
+            );
+        }
+
+        // 3. Cek apakah ini Mermaid Class Diagram
+        if let Some(class_diag) = WidyaClassDiagram::parse(source) {
+            return Self::render_class_diagram(
+                pdf,
+                &class_diag,
+                margin_x,
+                current_y,
+                content_width,
+                page_height,
+            );
+        }
+
         let diagram = WidyaDiagram::parse(source);
 
-        // 2. Jika diagram memiliki Subgraph (Diagram Arsitektur Sistem)
+        // 4. Jika diagram memiliki Subgraph (Diagram Arsitektur Sistem)
         if !diagram.subgraphs.is_empty() {
             return Self::render_subgraph_architecture(
                 pdf,
@@ -896,6 +1192,216 @@ impl WidyaDiagramEngine {
             page.add_styled_line(x, cur, x, next, width, color);
             cur -= dash_len + gap_len;
         }
+    }
+
+    /// Render Diagram Mesin Status (Mermaid stateDiagram-v2) ke Elemen Vektor PDF
+    fn render_state_diagram(
+        pdf: &mut PdfDocument,
+        diag: &WidyaStateDiagram,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+        page_height: f32,
+    ) -> f32 {
+        if diag.states.is_empty() {
+            return current_y;
+        }
+
+        let banner_h = 22.0;
+        let layer_h = 44.0;
+        let total_diag_h = banner_h + 12.0 + (diag.states.len() as f32 + 2.0) * layer_h;
+
+        if current_y - total_diag_h < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        // Banner Judul
+        let page = pdf.current_page_mut();
+        let title_text = diag.title.as_deref().unwrap_or("DIAGRAM STATUS SISTEM (STATE MACHINE DIAGRAM)");
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
+        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
+        page.add_styled_text(title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
+        current_y -= banner_h + 16.0;
+
+        // Hitung posisi vertikal untuk tiap state
+        let mid_x = margin_x + content_width / 2.0;
+        let state_w = 140.0;
+        let state_h = 24.0;
+
+        let mut state_positions: HashMap<String, (f32, f32)> = HashMap::new();
+
+        // 1. Initial State [*]
+        let initial_y = current_y - 10.0;
+        let page = pdf.current_page_mut();
+        // Lingkaran awal hitam terisi kecil (diameter 12.0)
+        page.add_rect(mid_x - 6.0, initial_y - 6.0, 12.0, 12.0, true, (0.15, 0.2, 0.3));
+        state_positions.insert("[*]".to_string(), (mid_x, initial_y));
+        current_y -= 36.0;
+
+        // 2. States reguler
+        for state_name in &diag.states {
+            let sy = current_y - state_h / 2.0;
+            let sx = mid_x - state_w / 2.0;
+            let page = pdf.current_page_mut();
+
+            // Kapsul state rounded/rect
+            page.add_rect(sx, current_y - state_h, state_w, state_h, true, (0.94, 0.97, 1.0));
+            page.add_rect(sx, current_y - state_h, state_w, state_h, false, (0.18, 0.45, 0.78));
+
+            let tw = crate::office::pdf::styled_string_width(state_name, 9.0, true, false);
+            let tx = mid_x - tw / 2.0;
+            page.add_styled_text(state_name, tx, current_y - 16.0, 9.0, true, (0.10, 0.25, 0.50));
+
+            state_positions.insert(state_name.clone(), (mid_x, sy));
+            current_y -= layer_h;
+        }
+
+        // 3. Final State [*]_end
+        let final_y = current_y - 10.0;
+        let page = pdf.current_page_mut();
+        // Lingkaran akhir: lingkaran luar border dan dalam terisi
+        page.add_rect(mid_x - 8.0, final_y - 8.0, 16.0, 16.0, false, (0.15, 0.2, 0.3));
+        page.add_rect(mid_x - 4.5, final_y - 4.5, 9.0, 9.0, true, (0.15, 0.2, 0.3));
+        current_y -= 24.0;
+
+        // 4. Gambar panah transisi
+        let page = pdf.current_page_mut();
+        for tr in &diag.transitions {
+            let from_pos = state_positions.get(&tr.from);
+            let to_pos = if tr.to == "[*]" {
+                Some(&(mid_x, final_y))
+            } else {
+                state_positions.get(&tr.to)
+            };
+
+            if let (Some(&(x1, y1)), Some(&(x2, y2))) = (from_pos, to_pos) {
+                if y1 > y2 {
+                    // Panah ke bawah
+                    let start_pt = (x1, y1 - state_h / 2.0);
+                    let end_pt = (x2, y2 + state_h / 2.0);
+                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.2, (0.2, 0.45, 0.75));
+
+                    if let Some(ref lbl) = tr.label {
+                        page.add_styled_text(lbl, (x1 + x2) / 2.0 + 8.0, (start_pt.1 + end_pt.1) / 2.0 - 3.0, 7.5, false, (0.35, 0.42, 0.52));
+                    }
+                } else {
+                    // Transisi balik / menyamping
+                    let start_pt = (x1 + state_w / 2.0, y1);
+                    let end_pt = (x2 + state_w / 2.0, y2);
+                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.0, (0.25, 0.45, 0.75));
+                    if let Some(ref lbl) = tr.label {
+                        page.add_styled_text(lbl, start_pt.0 + 6.0, (y1 + y2) / 2.0, 7.5, false, (0.35, 0.42, 0.52));
+                    }
+                }
+            }
+        }
+
+        current_y -= 10.0;
+        current_y
+    }
+
+    /// Render Diagram Kelas UML (Mermaid classDiagram) ke Elemen Vektor PDF
+    fn render_class_diagram(
+        pdf: &mut PdfDocument,
+        diag: &WidyaClassDiagram,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+        page_height: f32,
+    ) -> f32 {
+        if diag.classes.is_empty() {
+            return current_y;
+        }
+
+        let banner_h = 22.0;
+        let mut total_diag_h = banner_h + 20.0;
+        for c in &diag.classes {
+            total_diag_h += 24.0 + (c.members.len() as f32 * 12.0) + 16.0;
+        }
+
+        if current_y - total_diag_h.min(300.0) < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        // Banner Judul
+        let page = pdf.current_page_mut();
+        let title_text = diag.title.as_deref().unwrap_or("DIAGRAM KELAS & MODEL DATA (CLASS DIAGRAM)");
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
+        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
+        page.add_styled_text(title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
+        current_y -= banner_h + 14.0;
+
+        let num_classes = diag.classes.len();
+        let col_count = if num_classes >= 2 { 2 } else { 1 };
+        let col_w = (content_width - (col_count as f32 - 1.0) * 16.0) / col_count as f32;
+
+        let mut class_positions: HashMap<String, (f32, f32, f32, f32)> = HashMap::new(); // (x, y, w, h)
+
+        let mut row_start_y = current_y;
+        let mut max_row_h = 0.0f32;
+
+        for (idx, cls) in diag.classes.iter().enumerate() {
+            let col_idx = idx % col_count;
+            if col_idx == 0 && idx > 0 {
+                row_start_y -= max_row_h + 16.0;
+                max_row_h = 0.0;
+            }
+
+            let bx = margin_x + (col_idx as f32 * (col_w + 16.0));
+            let header_h = 20.0;
+            let body_h = 6.0 + (cls.members.len() as f32 * 12.0).max(12.0);
+            let total_box_h = header_h + body_h;
+
+            if total_box_h > max_row_h {
+                max_row_h = total_box_h;
+            }
+
+            if row_start_y - total_box_h < 75.0 {
+                pdf.add_page();
+                row_start_y = page_height - 70.0;
+            }
+
+            let page = pdf.current_page_mut();
+
+            // 1. Header Kotak Kelas (Nama Kelas)
+            page.add_rect(bx, row_start_y - header_h, col_w, header_h, true, (0.12, 0.28, 0.52));
+            page.add_rect(bx, row_start_y - total_box_h, col_w, total_box_h, false, (0.2, 0.45, 0.75));
+
+            let name_w = crate::office::pdf::styled_string_width(&cls.name, 9.0, true, false);
+            let name_x = bx + (col_w - name_w) / 2.0;
+            page.add_styled_text(&cls.name, name_x, row_start_y - 14.0, 9.0, true, (1.0, 1.0, 1.0));
+
+            // 2. Body Kompartemen Anggota (Fields & Methods)
+            page.add_rect(bx, row_start_y - total_box_h, col_w, body_h, true, (0.975, 0.985, 1.0));
+            page.add_styled_line(bx, row_start_y - header_h, bx + col_w, row_start_y - header_h, 1.0, (0.2, 0.45, 0.75));
+
+            let mut member_y = row_start_y - header_h - 11.0;
+            for m in &cls.members {
+                let color = if m.is_method { (0.05, 0.35, 0.55) } else { (0.15, 0.20, 0.25) };
+                page.add_formatted_text(&m.text, bx + 8.0, member_y, 8.0, false, false, true, color);
+                member_y -= 12.0;
+            }
+
+            class_positions.insert(cls.name.clone(), (bx, row_start_y, col_w, total_box_h));
+        }
+
+        current_y = row_start_y - max_row_h - 14.0;
+
+        // 3. Gambar relasi antar kelas jika ada
+        let page = pdf.current_page_mut();
+        for rel in &diag.relations {
+            if let (Some(&(x1, y1, w1, h1)), Some(&(x2, y2, w2, h2))) = (class_positions.get(&rel.from), class_positions.get(&rel.to)) {
+                let p1 = (x1 + w1 / 2.0, y1 - h1);
+                let p2 = (x2 + w2 / 2.0, y2);
+                page.add_arrow(p1.0, p1.1, p2.0, p2.1, 1.2, (0.2, 0.45, 0.75));
+            }
+        }
+
+        current_y
     }
 }
 

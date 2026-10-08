@@ -3,6 +3,7 @@ pub mod converter;
 pub mod crdt;
 pub mod diagram;
 pub mod docx;
+pub mod epub;
 pub mod latex;
 pub mod markdown;
 pub mod pdf;
@@ -21,6 +22,7 @@ pub use crdt::{
     FractionalIndex, LogicalClock, LwwRegister, TextCrdt, ThreadedComment, TrackChange,
 };
 pub use docx::{DocxDocument, DocxElement, TextStyle, TextRun, parse_markdown_runs};
+pub use epub::{EpubChapter, EpubDocument, markdown_to_epub_doc};
 pub use latex::{LatexDocument, LatexElement};
 pub use markdown::{ColumnAlignment, MarkdownBlock, MarkdownDocument};
 pub use pdf::{PageSize, PdfBookmark, PdfDocument, PdfElement, PdfLinkAnnotation, PdfPage, sanitize_pdf_text};

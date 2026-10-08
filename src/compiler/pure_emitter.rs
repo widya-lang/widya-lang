@@ -123,7 +123,7 @@ impl PureElfBuilder {
                 self.emit_arm64_exit(exit_code as u16);
             }
             MachineArch::RiscV64 => {
-                // Future RISC-V implementation
+                self.emit_riscv_exit(exit_code);
             }
         }
     }
@@ -199,6 +199,130 @@ impl PureElfBuilder {
         self.emit_arm64_movz(2, len, 0);
         // svc #0
         self.emit_arm64_svc_zero();
+    }
+
+    // ========================================================================
+    // PEMBANGKIT INSTRUKSI RISC-V 64 (RV64GC/RV64I) MANDIRI (ZERO TOOLCHAIN)
+    // ========================================================================
+
+    /// Emit instruksi ADDI Rd, Rs1, imm12
+    /// Opcode: 0x13, funct3 = 0x0
+    pub fn emit_riscv_addi(&mut self, rd: u8, rs1: u8, imm12: i16) {
+        let imm_u = (imm12 as u32) & 0xFFF;
+        let instr: u32 = (imm_u << 20)
+            | (((rs1 as u32) & 0x1F) << 15)
+            | (0 << 12)
+            | (((rd as u32) & 0x1F) << 7)
+            | 0x13;
+        self.code_bytes.extend_from_slice(&instr.to_le_bytes());
+    }
+
+    /// Emit instruksi LUI Rd, imm20
+    /// Opcode: 0x37
+    pub fn emit_riscv_lui(&mut self, rd: u8, imm20: u32) {
+        let instr: u32 = (((imm20 as u32) & 0xFFFFF) << 12)
+            | (((rd as u32) & 0x1F) << 7)
+            | 0x37;
+        self.code_bytes.extend_from_slice(&instr.to_le_bytes());
+    }
+
+    /// Emit instruksi SLLI Rd, Rs1, shamt (Shift Left Logical Immediate 64-bit)
+    /// Opcode: 0x13, funct3 = 0x1, shamt = 6 bit [25:20]
+    pub fn emit_riscv_slli(&mut self, rd: u8, rs1: u8, shamt: u8) {
+        let instr: u32 = (((shamt as u32) & 0x3F) << 20)
+            | (((rs1 as u32) & 0x1F) << 15)
+            | (1 << 12)
+            | (((rd as u32) & 0x1F) << 7)
+            | 0x13;
+        self.code_bytes.extend_from_slice(&instr.to_le_bytes());
+    }
+
+    /// Emit instruksi ORI Rd, Rs1, imm12
+    /// Opcode: 0x13, funct3 = 0x6
+    pub fn emit_riscv_ori(&mut self, rd: u8, rs1: u8, imm12: i16) {
+        let imm_u = (imm12 as u32) & 0xFFF;
+        let instr: u32 = (imm_u << 20)
+            | (((rs1 as u32) & 0x1F) << 15)
+            | (6 << 12)
+            | (((rd as u32) & 0x1F) << 7)
+            | 0x13;
+        self.code_bytes.extend_from_slice(&instr.to_le_bytes());
+    }
+
+    /// Emit instruksi syscall RISC-V: `ecall`
+    /// Opcode: 0x00000073 (Little Endian: 73 00 00 00)
+    pub fn emit_riscv_ecall(&mut self) {
+        self.code_bytes.extend_from_slice(&0x00000073u32.to_le_bytes());
+    }
+
+    /// Memuat immediate 64-bit ke register RISC-V
+    pub fn emit_riscv_li64(&mut self, rd: u8, val: u64) {
+        if val <= 0x7FF {
+            // Nilai fit dalam 11 bit positif (signed 12-bit)
+            self.emit_riscv_addi(rd, 0, val as i16);
+        } else if val <= 0xFFFFFFFF {
+            // Nilai 32-bit: lui + addi
+            let imm32 = val as u32;
+            let mut hi = imm32 >> 12;
+            let lo = (imm32 & 0xFFF) as i32;
+            let lo_signed = if lo >= 0x800 { lo - 0x1000 } else { lo };
+            if lo >= 0x800 {
+                hi = hi.wrapping_add(1);
+            }
+            self.emit_riscv_lui(rd, hi & 0xFFFFF);
+            if lo_signed != 0 {
+                self.emit_riscv_addi(rd, rd, lo_signed as i16);
+            }
+        } else {
+            // 64-bit umum: muat bagian atas 32-bit lalu geser dan gabungkan
+            let hi32 = (val >> 32) as u32;
+            let lo32 = (val & 0xFFFFFFFF) as u32;
+            self.emit_riscv_li64(rd, hi32 as u64);
+            self.emit_riscv_slli(rd, rd, 32);
+
+            let t0 = 5u8;
+            let mut hi = lo32 >> 12;
+            let lo = (lo32 & 0xFFF) as i32;
+            let lo_signed = if lo >= 0x800 { lo - 0x1000 } else { lo };
+            if lo >= 0x800 {
+                hi = hi.wrapping_add(1);
+            }
+            self.emit_riscv_lui(t0, hi & 0xFFFFF);
+            if lo_signed != 0 {
+                self.emit_riscv_addi(t0, t0, lo_signed as i16);
+            }
+            // or rd, rd, t0 -> opcode 0x33, funct3 = 6, funct7 = 0
+            let or_instr: u32 = (((t0 as u32) & 0x1F) << 20)
+                | (((rd as u32) & 0x1F) << 15)
+                | (6 << 12)
+                | (((rd as u32) & 0x1F) << 7)
+                | 0x33;
+            self.code_bytes.extend_from_slice(&or_instr.to_le_bytes());
+        }
+    }
+
+    /// sys_exit untuk Linux RISC-V 64 (Syscall nr 93 di register a7 (x17), kode keluar di a0 (x10))
+    pub fn emit_riscv_exit(&mut self, exit_code: u32) {
+        // li a7, 93 (sys_exit Linux RISC-V)
+        self.emit_riscv_addi(17, 0, 93);
+        // li a0, exit_code
+        self.emit_riscv_li64(10, exit_code as u64);
+        // ecall
+        self.emit_riscv_ecall();
+    }
+
+    /// sys_write untuk Linux RISC-V 64 (Syscall nr 64 di a7 (x17): write(a0=fd, a1=buf, a2=len))
+    pub fn emit_riscv_write(&mut self, fd: u32, buf_addr: u64, len: u32) {
+        // li a7, 64 (sys_write Linux RISC-V)
+        self.emit_riscv_addi(17, 0, 64);
+        // li a0, fd (stdout = 1)
+        self.emit_riscv_li64(10, fd as u64);
+        // li a1, buf_addr
+        self.emit_riscv_li64(11, buf_addr);
+        // li a2, len
+        self.emit_riscv_li64(12, len as u64);
+        // ecall
+        self.emit_riscv_ecall();
     }
 
     /// Rakit dan hasilkan citra biner berkas ELF-64 mandiri
@@ -372,4 +496,38 @@ mod tests {
         // Periksa bahwa segmen data memuat string pesan
         assert!(binary.windows(pesan.len()).any(|w| w == pesan), "Segmen data harus memuat teks pesan");
     }
+
+    #[test]
+    fn test_riscv64_emitter_structure() {
+        let mut builder = PureElfBuilder::new(MachineArch::RiscV64);
+
+        let pesan = b"Widya Sovereign RISC-V 64 Linux Native 2026\n";
+        let pesan_addr = builder.add_rodata(pesan);
+
+        // sys_write(stdout, pesan_addr, len)
+        builder.emit_riscv_write(1, pesan_addr, pesan.len() as u32);
+
+        // sys_exit(0)
+        builder.emit_exit(0);
+
+        let binary = builder.build_elf_binary();
+
+        // Validasi header ELF RISC-V 64
+        assert!(binary.len() >= 64);
+        assert_eq!(&binary[0..4], b"\x7fELF");
+        assert_eq!(binary[4], 2, "Harus format 64-bit");
+        assert_eq!(binary[5], 1, "Harus Little-Endian");
+        let e_machine = u16::from_le_bytes([binary[18], binary[19]]);
+        assert_eq!(e_machine, 243, "e_machine harus EM_RISCV (243)");
+
+        // Periksa bahwa segmen kode memuat opcode ecall (0x73, 0x00, 0x00, 0x00)
+        assert!(
+            binary.windows(4).any(|w| w == [0x73, 0x00, 0x00, 0x00]),
+            "Harus mengandung instruksi ecall RISC-V"
+        );
+
+        // Periksa bahwa segmen data memuat string pesan
+        assert!(binary.windows(pesan.len()).any(|w| w == pesan), "Segmen data harus memuat teks pesan");
+    }
 }
+
