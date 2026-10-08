@@ -4,6 +4,54 @@ Semua perubahan penting di Widya-Lang akan didokumentasikan dalam file ini.
 
 Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), dan proyek ini menggunakan [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-10-08
+
+### 🛡️ Lima Pilar Kemandirian dari Pustaka Luar (Zero-Dependency Sovereign Stack) & Penguatan WPM
+
+#### ✨ Kedaulatan Sistem Penuh (*Zero External Crates & Zero Libc*)
+- **Pilar I: Kompiler & Linker Mandiri (`src/compiler/pure_emitter.rs`)**:
+  - Pembangkit berkas biner eksekusi Linux ELF-64 langsung dan generator kode mesin x86_64 murni tanpa membutuhkan GCC, Clang, GNU `ld`, maupun LLVM-sys.
+  - Integrasi modul `PembangkitElf64Mandiri` pada kompiler self-hosted (`compiler_self_hosted/codegen.widya`).
+- **Pilar II: Pustaka Standar Murni (*In-House Sovereign Stdlib*)**:
+  - **Kriptografi Murni (`src/kripto/pure_crypto.rs`)**: FIPS 180-4 (SHA-256 & SHA-512), RFC 2104 (HMAC-SHA256), RFC 4648 (Hex & Base64), RFC 8439 (ChaCha20-Poly1305 AEAD), dan RFC 8032 (Ed25519) tanpa crates eksternal.
+  - **Format Serialisasi Murni (`src/stdlib/pure_format.rs`)**: RFC 8259 JSON parser & pretty serializer, RFC 4180 CSV, dan INI parser tanpa `serde`, `serde_json`, `toml`, atau `csv`.
+  - **Engine Argumen CLI Mandiri (`src/cli/pure_args.rs`)**: Parser CLI murni dengan dukungan subcommand, opsi nilai, flags, dan bantuan dwibahasa tanpa `clap`.
+  - **HTTP/1.1 Engine Murni (`src/web/pure_http.rs`)**: Klien dan server HTTP/1.1 berbasis raw socket `std::net::TcpStream` & `TcpListener` tanpa `ureq`, `hyper`, atau `tokio`.
+- **Pilar III: Direct Kernel Syscalls & Sovereign Allocator (`src/sys/`)**:
+  - Direct syscall assembly x86_64 (`sys_write`, `sys_read`, `sys_mmap`, `sys_munmap`, `sys_getpid`) tanpa melalui C runtime glibc/musl.
+  - Alokator memori heap mandiri berbasis Slab Block Pools (32B–2048B) di atas halaman memori virtual anonim mmap, bebas libc malloc.
+- **Pilar IV: Basis Data Berdaulat Murni (`src/widyabase/wire.rs`)**:
+  - Implementasi protokol wire biner PGWire v3.0 mandiri untuk klien TCP WidyaBase tanpa ketergantungan driver FFI luar (`postgres`, `rusqlite`, `mysql`, `duckdb`).
+- **Pilar V: Target Bare-Metal & Unikernel OS (`src/compiler/unikernel.rs`)**:
+  - Pembangkit citra unikernel mandiri dengan protokol Linux 64-bit Direct Kernel Boot (HdrS `0x53726448`), Multiboot2, dan PVH untuk boot sub-5ms di atas AWS Firecracker dan QEMU.
+- **Dogfooding Penuh pada WPM**:
+  - Klien WPM migrasi penuh ke `PureHttpClient`, `PureSha256`, dan `PureEd25519`.
+- **Program Contoh & Dokumentasi Resmi**:
+  - Contoh program: `contoh/220_lima_pilar_kemandirian_pustaka_luar.wya`.
+  - Suite pengujian integrasi terpadu: `tests/pilar_kemandirian_test.rs` (5/5 lulus 100%).
+  - Buku Putih Arsitektur: `DOKUMENTASI_PILAR_KEMANDIRIAN.md` dan biner PDF `www/downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf`.
+
+#### 📦 Penguatan Repositori Paket Ekosistem Publik WPM
+- **Ekspansi Katalog Resmi WPM (21 Paket Mega Frontier)**:
+  - Menyediakan 21 paket resmi berdaulat: `widya-math`, `widya-http`, `widya-crypto`, `widya-ui`, `widya-ai`, `widya-sql`, `widya-office`, `widya-pqc`, `widya-bifast`, `widya-arkas`, `widya-siplah`, `widya-wasi`, `widya-canbus`, `widya-scada`, `widya-fhir`, `widya-quantum`, `widya-i18n`, `widya-test`, `widya-json`, `widya-grpc`, dan `widya-log`.
+  - Seluruh rilis paket resmi ditandatangani secara kriptografis menggunakan kurva **Ed25519** dan hash SHA-256.
+- **Mesin Audit Keamanan Rantai Pasok (`WpmSecurityAuditor`)**:
+  - Perintah `widya wpm audit` / `widya wpm periksa-keamanan`.
+  - Terintegrasi basis data kerentanan bawaan **Widya Security Advisories (WSA)** dengan klasifikasi keparahan (*Low*, *Medium*, *High*, *Critical*).
+  - Validasi ketat integritas checksum biner SHA-256 dan tanda tangan digital Ed25519.
+- **Pemeriksa Versi Usang (`WpmOutdatedChecker`)**:
+  - Perintah `widya wpm outdated` / `widya wpm usang`.
+  - Deteksi dan klasifikasi otomatis pembaruan SemVer (*Major*, *Minor*, *Patch*).
+- **Inspeksi Metadata Rinci Paket**:
+  - Perintah `widya wpm info <paket>` / `widya wpm informasi <paket>`.
+  - Menampilkan ringkasan author, lisensi, tag, unduhan, riwayat versi, dan tanda tangan digital.
+- **Arsitektur Zero-Python 100% Native Rust/Widya**:
+  - Generator PDF kompilasi dokumen `widya office kompilasi-docs` 100% native Rust (menggantikan Python ReportLab).
+  - Seluruh 108 berkas PDF dokumentasi resmi dikompilasi secara mandiri.
+- **REST API & Web Hub Registry Portal**:
+  - Endpoint baru: `GET /api/v1/security/advisories` dan `GET /api/v1/security/advisories/:package`.
+  - Peningkatan antarmuka portal web `http://localhost:8090/hub`.
+
 ## [2.5.0] - 2026-10-02
 
 ### ⚡ Bare-Metal Firmware Emitter, WDoc Live Server, AI LSP & Terminal Academy

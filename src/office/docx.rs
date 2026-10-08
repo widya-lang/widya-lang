@@ -16,6 +16,7 @@ pub struct TextStyle {
     pub font_size_pt: f32,
     pub color_hex: Option<String>,
     pub font_family: String,
+    pub is_rtl: bool,
 }
 
 impl TextStyle {
@@ -28,12 +29,20 @@ impl TextStyle {
             font_size_pt: 11.0,
             color_hex: None,
             font_family: "Calibri".to_string(),
+            is_rtl: false,
         }
     }
 
     pub fn bold() -> Self {
         let mut s = Self::new();
         s.bold = true;
+        s
+    }
+
+    pub fn rtl() -> Self {
+        let mut s = Self::new();
+        s.is_rtl = true;
+        s.font_family = "Amiri".to_string();
         s
     }
 }
@@ -49,7 +58,7 @@ pub struct TextRun {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum DocxElement {
     Heading { level: u8, text: String },
-    Paragraph { runs: Vec<TextRun>, align: String },
+    Paragraph { runs: Vec<TextRun>, align: String, is_rtl: bool },
     Table { rows: Vec<Vec<String>>, has_header: bool },
     PageBreak,
     BulletItem { text: String, indent_level: u8 },
@@ -104,6 +113,7 @@ impl DocxDocument {
                 style: TextStyle::new(),
             }],
             align: "left".to_string(),
+            is_rtl: false,
         });
     }
 
@@ -119,9 +129,53 @@ impl DocxDocument {
                     font_size_pt,
                     color_hex: color_hex.map(|s| s.to_string()),
                     font_family: "Calibri".to_string(),
+                    is_rtl: false,
                 },
             }],
             align: "left".to_string(),
+            is_rtl: false,
+        });
+    }
+
+    /// Menambahkan paragraf Kanan-ke-Kiri (RTL) seperti Bahasa Arab / Jawi / Ibrani
+    pub fn add_rtl_paragraph(&mut self, text: &str) {
+        self.elements.push(DocxElement::Paragraph {
+            runs: vec![TextRun {
+                text: text.to_string(),
+                style: TextStyle {
+                    bold: false,
+                    italic: false,
+                    underline: false,
+                    strikethrough: false,
+                    font_size_pt: 13.0,
+                    color_hex: None,
+                    font_family: "Amiri".to_string(),
+                    is_rtl: true,
+                },
+            }],
+            align: "right".to_string(),
+            is_rtl: true,
+        });
+    }
+
+    /// Menambahkan paragraf RTL dengan format khusus (ukuran, warna, tebal)
+    pub fn add_styled_rtl_paragraph(&mut self, text: &str, bold: bool, italic: bool, font_size_pt: f32, font_family: Option<&str>, color_hex: Option<&str>) {
+        self.elements.push(DocxElement::Paragraph {
+            runs: vec![TextRun {
+                text: text.to_string(),
+                style: TextStyle {
+                    bold,
+                    italic,
+                    underline: false,
+                    strikethrough: false,
+                    font_size_pt,
+                    color_hex: color_hex.map(|s| s.to_string()),
+                    font_family: font_family.unwrap_or("Amiri").to_string(),
+                    is_rtl: true,
+                },
+            }],
+            align: "right".to_string(),
+            is_rtl: true,
         });
     }
 
@@ -275,14 +329,23 @@ impl DocxDocument {
                         level, html_escape(text)
                     ));
                 }
-                DocxElement::Paragraph { runs, align } => {
+                DocxElement::Paragraph { runs, align, is_rtl } => {
                     xml.push_str("<w:p>");
-                    if align != "left" {
-                        xml.push_str(&format!(r#"<w:pPr><w:jc w:val="{}"/></w:pPr>"#, align));
+                    let mut ppr = String::new();
+                    if *is_rtl {
+                        ppr.push_str("<w:bidi/>");
+                    }
+                    if align != "left" || *is_rtl {
+                        let jc_val = if *is_rtl && align == "left" { "right" } else { align.as_str() };
+                        ppr.push_str(&format!(r#"<w:jc w:val="{}"/>"#, jc_val));
+                    }
+                    if !ppr.is_empty() {
+                        xml.push_str(&format!("<w:pPr>{}</w:pPr>", ppr));
                     }
                     for r in runs {
                         xml.push_str("<w:r>");
                         let mut rpr = String::new();
+                        if r.style.is_rtl || *is_rtl { rpr.push_str("<w:rtl/>"); }
                         if r.style.bold { rpr.push_str("<w:b/>"); }
                         if r.style.italic { rpr.push_str("<w:i/>"); }
                         if r.style.underline { rpr.push_str(r#"<w:u w:val="single"/>"#); }
@@ -291,6 +354,9 @@ impl DocxDocument {
                         }
                         if let Some(ref c) = r.style.color_hex {
                             rpr.push_str(&format!(r#"<w:color w:val="{}"/>"#, c.trim_start_matches('#')));
+                        }
+                        if !r.style.font_family.is_empty() {
+                            rpr.push_str(&format!(r#"<w:rFonts w:ascii="{0}" w:hAnsi="{0}" w:cs="{0}"/>"#, r.style.font_family));
                         }
                         if !rpr.is_empty() {
                             xml.push_str(&format!("<w:rPr>{}</w:rPr>", rpr));
@@ -415,6 +481,7 @@ impl DocxDocument {
     /// Render ke Pratinjau HTML Interaktif Siap Cetak & Ekspor PDF
     pub fn render_html_preview(&self) -> String {
         let mut html = String::from("<!DOCTYPE html><html><head><meta charset='utf-8'>");
+        html.push_str("<link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&display=swap' rel='stylesheet'>");
         html.push_str(&format!("<title>{}</title>", self.title));
         html.push_str(r#"<style>
             @media print {
@@ -429,6 +496,7 @@ impl DocxDocument {
             h2 { color: #1e293b; font-size: 16pt; margin-top: 24px; }
             h3 { color: #334155; font-size: 13pt; }
             p { line-height: 1.7; color: #334155; font-size: 11pt; }
+            p.rtl-paragraph { direction: rtl; text-align: right; font-family: 'Amiri', 'Scheherazade New', 'Traditional Arabic', 'Segoe UI', sans-serif; font-size: 13pt; line-height: 1.9; }
             table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 10pt; }
             th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
             th { background: #f8fafc; font-weight: 700; color: #0f172a; }
@@ -451,12 +519,24 @@ impl DocxDocument {
                 DocxElement::Heading { level, text } => {
                     html.push_str(&format!("<h{}>{}</h{}>", level, text, level));
                 }
-                DocxElement::Paragraph { runs, .. } => {
-                    html.push_str("<p>");
+                DocxElement::Paragraph { runs, align, is_rtl } => {
+                    let mut p_style = String::new();
+                    if *is_rtl {
+                        p_style.push_str("direction:rtl;text-align:right;font-family:'Amiri', 'Scheherazade New', serif;font-size:13pt;line-height:1.9;");
+                    } else if align != "left" {
+                        p_style.push_str(&format!("text-align:{};", align));
+                    }
+                    if p_style.is_empty() {
+                        html.push_str("<p>");
+                    } else {
+                        html.push_str(&format!("<p style='{}'>", p_style));
+                    }
                     for r in runs {
                         let mut style = String::new();
                         if r.style.bold { style.push_str("font-weight:bold;"); }
                         if r.style.italic { style.push_str("font-style:italic;"); }
+                        if r.style.font_size_pt > 0.0 { style.push_str(&format!("font-size:{}pt;", r.style.font_size_pt)); }
+                        if !r.style.font_family.is_empty() { style.push_str(&format!("font-family:'{}', serif;", r.style.font_family)); }
                         if let Some(ref c) = r.style.color_hex { style.push_str(&format!("color:{};", c)); }
                         html.push_str(&format!("<span style='{}'>{}</span>", style, r.text));
                     }

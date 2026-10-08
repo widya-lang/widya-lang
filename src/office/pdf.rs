@@ -83,6 +83,22 @@ impl PdfPage {
         });
     }
 
+    /// Menambahkan teks dengan arah Kanan-ke-Kiri (RTL / Bahasa Arab)
+    pub fn add_rtl_text(&mut self, text: &str, right_x: f32, y: f32, font_size: f32, bold: bool) {
+        // Pada dokumen PDF, perataan kanan teks dihitung mundur dari right_x berdasarkan perkiraan lebar karakter
+        let char_count = text.chars().count() as f32;
+        let est_char_width = font_size * 0.45;
+        let calculated_x = (right_x - (char_count * est_char_width)).max(20.0);
+        self.elements.push(PdfElement::Text {
+            text: text.to_string(),
+            font_size,
+            x: calculated_x,
+            y,
+            bold,
+            color_rgb: (0.1, 0.1, 0.1),
+        });
+    }
+
     pub fn add_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, width: f32) {
         self.elements.push(PdfElement::Line {
             x1, y1, x2, y2, width,

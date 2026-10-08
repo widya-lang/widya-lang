@@ -1,0 +1,501 @@
+// ==============================================================================
+// WidyaWeb: Sistem Siaran Multi-Kamera Kejuaraan Pencak Silat (3 Gelanggang)
+// Arsitektur Ingest Kamera HP, Master Control Room (MCR), & Scoreboard Overlay
+// ==============================================================================
+
+cetak("=================================================================");
+cetak("🥋 SISTEM SIARAN LIVE STREAMING MULTI-KAMERA PENCAK SILAT");
+cetak("   (3 Gelanggang x 2 Kamera HP + Papan Skor Digital + MCR Switcher)");
+cetak("=================================================================");
+
+// 1. Inisialisasi Studio Siaran Kejuaraan Pencak Silat
+misal studio = web_studio_siaran_buat("Kejuaraan Nasional Pencak Silat 2026");
+cetak("\n[1] STUDIO MASTER PENYIARAN RESMI DIBUAT");
+cetak("    ID Studio    : " + studio["studio_id"]);
+cetak("    Resolusi     : " + studio["resolusi"]);
+cetak("    Mode Switcher: " + studio["mode"]);
+
+// 2. Registrasi 6 Kamera HP (2 Kamera per Gelanggang)
+cetak("\n[2] MENGHUBUNGKAN KAMERA HP VIA WEBRTC / WHIP INGEST:");
+
+// Gelanggang A
+misal cam_a1 = web_studio_tambah_sumber(studio, "cam_a_wide", {
+    "tipe": "remote",
+    "label": "Gelanggang A - HP 1 (Matras Wide View 1080p60)"
+});
+misal cam_a2 = web_studio_tambah_sumber(studio, "cam_a_close", {
+    "tipe": "remote",
+    "label": "Gelanggang A - HP 2 (Aksi Sudut Merah/Biru Close-Up)"
+});
+cetak("  ✓ Gelanggang A: " + cam_a1["label"] + " & " + cam_a2["label"]);
+
+// Gelanggang B
+misal cam_b1 = web_studio_tambah_sumber(studio, "cam_b_wide", {
+    "tipe": "remote",
+    "label": "Gelanggang B - HP 1 (Matras Wide View 1080p60)"
+});
+misal cam_b2 = web_studio_tambah_sumber(studio, "cam_b_close", {
+    "tipe": "remote",
+    "label": "Gelanggang B - HP 2 (Aksi Sudut Dekat Wasit)"
+});
+cetak("  ✓ Gelanggang B: " + cam_b1["label"] + " & " + cam_b2["label"]);
+
+// Gelanggang C
+misal cam_c1 = web_studio_tambah_sumber(studio, "cam_c_wide", {
+    "tipe": "remote",
+    "label": "Gelanggang C - HP 1 (Matras Wide View 1080p60)"
+});
+misal cam_c2 = web_studio_tambah_sumber(studio, "cam_c_close", {
+    "tipe": "remote",
+    "label": "Gelanggang C - HP 2 (Aksi Sudut Juri Sudut)"
+});
+cetak("  ✓ Gelanggang C: " + cam_c1["label"] + " & " + cam_c2["label"]);
+
+// 3. Perakitan Tata Letak Adegan (Scenes) untuk Operator
+cetak("\n[3] MENGONFIGURASI ADEGAN SIARAN (SCENES) UNTUK OPERATOR:");
+
+// Adegan Gelanggang A (Fokus Utama Pertandingan Final)
+misal sc_a_wide = web_studio_adegan_buat(studio, "arena_a_wide", {
+    "nama": "Gelanggang A - Tampilan Luas Matras",
+    "layout": "SOLO",
+    "sumber": ["cam_a_wide"]
+});
+misal sc_a_close = web_studio_adegan_buat(studio, "arena_a_close", {
+    "nama": "Gelanggang A - Aksi Dekat Bantingan/Kuncian",
+    "layout": "SOLO",
+    "sumber": ["cam_a_close"]
+});
+misal sc_a_split = web_studio_adegan_buat(studio, "arena_a_split", {
+    "nama": "Gelanggang A - Split 50:50 Dua Kamera HP",
+    "layout": "SPLIT_50_50",
+    "sumber": ["cam_a_wide", "cam_a_close"]
+});
+
+// Adegan Gelanggang B & C
+misal sc_b = web_studio_adegan_buat(studio, "arena_b_wide", {
+    "nama": "Gelanggang B - Matras Penuh",
+    "layout": "SOLO",
+    "sumber": ["cam_b_wide"]
+});
+misal sc_c = web_studio_adegan_buat(studio, "arena_c_wide", {
+    "nama": "Gelanggang C - Matras Penuh",
+    "layout": "SOLO",
+    "sumber": ["cam_c_wide"]
+});
+
+// Adegan Multi-Arena Quad Grid (Overview Seluruh 3 Gelanggang Sekaligus)
+misal sc_quad = web_studio_adegan_buat(studio, "multiview_3_arena", {
+    "nama": "Multiview 3 Gelanggang Sekaligus (Overview)",
+    "layout": "QUAD_GRID",
+    "sumber": ["cam_a_wide", "cam_b_wide", "cam_c_wide", "cam_a_close"]
+});
+cetak("  ✓ Adegan Tersedia: arena_a_wide, arena_a_close, arena_a_split, arena_b_wide, arena_c_wide, multiview_3_arena");
+
+// 4. Sematkan Mesin Papan Skor Resmi (Scoreboard Engine & Round Timer)
+cetak("\n[4] MESIN PAPAN SKOR DIGITAL RESMI & TIMER BABAK:");
+misal papan_skor = web_studio_papan_skor_atur(studio, "gelanggang_a", {
+    "kategori": "FINAL KELAS C PUTRA - 60KG",
+    "babak": 2,
+    "waktu_detik": 120,
+    "nama_merah": "Bayu Pratama",
+    "kontingen_merah": "JAWA TIMUR",
+    "poin_merah": 28,
+    "nama_biru": "Asep Sunandar",
+    "kontingen_biru": "JAWA BARAT",
+    "poin_biru": 24
+});
+cetak("  ✓ Papan Skor Aktif : " + papan_skor["kategori"] + " (Babak " + papan_skor["babak"] + ")");
+cetak("    " + papan_skor["sudut_merah"] + " vs " + papan_skor["sudut_biru"]);
+
+misal waktu = web_studio_papan_skor_kontrol_waktu(studio, "gelanggang_a", "START");
+cetak("  ✓ Jam Tanding      : Sisa Waktu " + waktu["waktu_sisa_detik"] + " Detik [Timer Aktif: " + waktu["timer_berjalan"] + "]");
+
+// 5. Pengaturan Audio Fader, Lip-Sync Delay Buffer & Audio-Follows-Video (AFV)
+cetak("\n[5] TATA SUARA, LIP-SYNC AUDIO DELAY & AUDIO-FOLLOWS-VIDEO (AFV):");
+web_studio_audio_atur(studio, "cam_a_wide", 0.90, salah); // Mic Gelanggang A aktif 90%
+web_studio_audio_atur(studio, "cam_b_wide", 0.30, salah); // Mic Gelanggang B latar 30%
+web_studio_audio_atur(studio, "cam_c_wide", 0.00, benar); // Mic Gelanggang C mute (agar tidak bentrok)
+
+// Buffer kompensasi keterlambatan audio HP nirkabel (Lip-Sync 80ms) + AFV
+misal afv_res = web_studio_audio_delay_afv(studio, "ch_cam_a_wide", 80, benar);
+cetak("  ✓ Lip-Sync Delay   : " + afv_res["delay_ms"] + " ms kompensasi transmisi nirkabel");
+cetak("  ✓ Fitur AFV        : Audio-Follows-Video aktif (" + afv_res["audio_follows_video"] + ")");
+
+// 6. Alur Kerja Switching Operator (Preview vs Program + Tally Lampu Kamera HP)
+cetak("\n[6] ALUR KERJA OPERATOR (SWITCHING SIARAN):");
+cetak("  1. Operator memilih 'arena_a_wide' di monitor PREVIEW...");
+web_studio_pilih_preview(studio, "arena_a_wide");
+
+cetak("  2. Saat ada bantingan krusial, Operator memicu TRANSISI CUT/FADE ke Program...");
+misal cut_res = web_studio_transisi_ke_program(studio, "CUT", 0);
+cetak("     ✓ " + cut_res["pesan"]);
+
+cetak("  3. Operator lalu menyiapkan 'arena_a_close' di monitor PREVIEW untuk aksi dekat...");
+web_studio_pilih_preview(studio, "arena_a_close");
+
+// Cek status Tally Lampu HP Kamera
+misal telem = web_studio_telemetri(studio);
+misal tally = telem["tally_kamera"];
+cetak("\n[7] STATUS TALLY LAMPU DI LAYAR HP JURU KAMERA:");
+cetak("  🔴 HP 1 Gelanggang A (cam_a_wide) : " + tally["cam_a_wide"] + " -> LAYAR HP BORDER MERAH (LIVE ON-AIR)");
+cetak("  🟢 HP 2 Gelanggang A (cam_a_close): " + tally["cam_a_close"] + " -> LAYAR HP BORDER HIJAU (STANDBY PREVIEW)");
+cetak("  ⚪ HP Gelanggang B & C           : " + tally["cam_b_wide"] + " -> STANDBY (TIDAK AKTIF)");
+
+// 7. Mulai Siaran Multi-Tujuan (YouTube / CDN Kemenpora / Rekaman DVR Panitia)
+cetak("\n[8] MEMULAI STREAMING SIARAN LANGSUNG:");
+misal live = web_studio_mulai_streaming(studio, {
+    "rtmp_url": "rtmp://live.youtube.com/live2/stream_key_kejuaraan_silat",
+    "edge_webtransport": benar,
+    "rekam_ke_disk": "/rekaman/final_pencak_silat_2026.mp4"
+});
+cetak("  ✓ Status Transmisi : " + live["status"]);
+cetak("  ✓ Kualitas         : 1080p @ " + live["fps"] + " FPS (" + live["bitrate_kbps"] + " kbps)");
+cetak("  ✓ Penonton Online  : " + live["penonton_edge"] + " pemirsa");
+
+// 8. Integrasi VAR (Video Assistant Referee) / Video Replay Review
+cetak("\n[9] FITUR VAR (VIDEO ASSISTANT REFEREE) - PROTES KARTU TANTANGAN:");
+cetak("  🚩 Pelatih Sudut Merah mengangkat Kartu Protes (Challenge Card)!");
+misal var_sesi = web_studio_var_sesi_buat(studio, "gelanggang_a", "SUDUT_MERAH", "Bantingan Sah Masuk +3 Poin", ["cam_a_wide", "cam_a_close"]);
+cetak("  ✓ Sesi VAR Aktif   : ID " + var_sesi["session_id"] + " (" + var_sesi["pemohon"] + ")");
+cetak("  ✓ Alasan Review    : " + var_sesi["alasan"]);
+cetak("  ✓ Kamera Sinkron   : " + var_sesi["kamera_sumber"]);
+
+cetak("  🔍 Operator VAR melakukan Scrubbing Frame Mundur (-15 frame @ 0.25x Slow-Motion)...");
+misal var_scrub = web_studio_var_scrub_frame(studio, var_sesi["session_id"], -15, 0.25);
+cetak("  ✓ Frame Offset     : " + var_scrub["current_frame_offset"] + " frames | Kecepatan: " + var_scrub["mode"]);
+
+cetak("  ⚖️ Dewan Hakim memeriksa tayangan lambat dan mengambil keputusan...");
+misal var_putusan = web_studio_var_putuskan(studio, var_sesi["session_id"], benar, 3, "Bantingan Sah Menjatuhkan Lawan Sesuai Aturan PERSILAT");
+cetak("  ✓ Status Putusan   : " + var_putusan["status"] + " (" + var_putusan["overlay_bug"] + ")");
+cetak("  ✓ Poin Diberikan   : +" + var_putusan["poin_diberikan"] + " Poin untuk Sudut Merah");
+cetak("  ✓ Catatan Dewan    : " + var_putusan["keputusan"]);
+
+// Update otomatis skor pertandingan setelah putusan VAR
+misal update_skor = web_studio_papan_skor_tambah_poin(studio, "gelanggang_a", "SUDUT_MERAH", 3);
+cetak("  ✓ Skor Papan Resmi : " + update_skor["skor_terkini"]);
+
+// 9. Interaktivitas Penonton: Menampilkan Komentar Terpilih ke Layar On-Air
+cetak("\n[10] PENAYANGAN KOMENTAR PENONTON ON-AIR (LIVE CHAT OVERLAY):");
+misal komentar_bug = web_studio_tampilkan_komentar_penonton(
+    studio, 
+    "Siti Rahma (Surabaya)", 
+    "YouTube Live", 
+    "Luar biasa bantingan sudut merah di babak 2 ini! Pertahankan Jatim!"
+);
+cetak("  ✓ Komentar Terpilih: [" + komentar_bug["platform"] + "] " + komentar_bug["pengirim"] + ": \"" + komentar_bug["komentar"] + "\"");
+cetak("  ✓ Status On-Air    : " + komentar_bug["overlay_status"]);
+
+// 10. Standar Industri Penyiaran Tier-1 Internasional (SMPTE, EBU R128, EVS, PTZ, SCTE-35)
+cetak("\n[11] STANDAR INDUSTRI PENYIARAN OLYMPIC / TIER-1 BROADCAST:");
+
+// SMPTE Genlock Timecode
+misal smpte = web_studio_smpte_timecode_ambil(studio);
+cetak("  ⏱️ SMPTE ST 2059-2 : Timecode Master " + smpte["timecode"] + " @ " + smpte["framerate"] + " FPS (PTP IEEE 1588 Genlock Sync)");
+
+// EBU R128 Audio Loudness Normalization
+misal ebu = web_studio_audio_ebu_r128_audit(studio);
+cetak("  🔊 EBU R128 Audio  : " + ebu["integrated_lufs"] + " LUFS (True Peak: " + ebu["true_peak_dbtp"] + " dBTP, Status: " + ebu["status_kepatuhan"] + ")");
+
+// EVS LSM-VIA Highlight Clips & Reel
+misal klip1 = web_studio_highlight_klip_buat(studio, "hl_01", "Bantingan Telak Babak 2", "cam_a_close", "14:02:15:00", "14:02:22:00");
+misal klip2 = web_studio_highlight_klip_buat(studio, "hl_02", "Tendangan Taji Sudut Merah", "cam_a_wide", "14:04:10:00", "14:04:17:00");
+misal reel = web_studio_highlight_playlist_rangkum(studio, "reel_final_b2", "Kompilasi Momen Terbaik Babak 2", ["hl_01", "hl_02"]);
+cetak("  🎞️ EVS Highlight   : Reel '" + reel["judul"] + "' (" + reel["jumlah_klip"] + " klip, " + reel["total_durasi_detik"] + " detik) - " + reel["status"]);
+
+// SMPTE 2022-7 Hitless Redundancy
+misal dual = web_studio_dual_egress_konfigurasi(studio, "srt://isp-indihome.broadcast.tv:9000", "srt://isp-starlink.broadcast.tv:9000");
+cetak("  🛡️ SMPTE 2022-7    : Jalur Utama " + dual["primary_url"] + " & Cadangan " + dual["secondary_backup_url"] + " [Status: " + dual["status"] + "]");
+misal failover = web_studio_dual_egress_simulasi_failover(studio, "SECONDARY");
+cetak("  ⚡ Hitless Failover: Beralih ke " + failover["jalur_aktif_baru"] + " (Frame Drop: " + failover["frame_drop"] + ", Status: " + failover["status"] + ")");
+
+// IP PTZ VISCA Camera Control
+misal ptz = web_studio_ptz_kontrol(studio, "cam_ptz_matras_a", 45.0, -10.0, 3.5, 1);
+cetak("  📹 IP PTZ Control  : Kamera " + ptz["camera_id"] + " Pan " + ptz["pan_derajat"] + "°, Tilt " + ptz["tilt_derajat"] + "°, Zoom " + ptz["zoom_x"] + "x (Preset: " + ptz["preset_aktif"] + ")");
+
+// SCTE-35 Ad Insertion Cue
+misal scte = web_studio_scte35_iklan_injeksi(studio, 30.0, "SPLICE_INSERT_BREAK");
+cetak("  📺 SCTE-35 Digital : Splice Cue Event " + scte["event_id"] + " (" + scte["durasi_detik"] + " detik) disisipkan ke MPEG-TS");
+
+// 11. Computer Vision & AI Pose Estimation (Auto-Fall / Auto-Takedown Detector & AR Overlay)
+cetak("\n[12] COMPUTER VISION & AI POSE ESTIMATION (AUTO-TAKEDOWN DETECTOR):");
+misal topo = web_studio_ai_mediapipe_33_topologi_ambil();
+cetak("  🤖 Mengaktifkan Pipeline AI Vision Inferensi Multi-Kamera Gelanggang A...");
+cetak("     - Model Topologi   : " + topo["standar"] + " (TOTAL " + topo["total_landmarks"] + " KEYPOINTS ANATOMI)");
+cetak("     - Poin 0-10        : Kepala & Wajah (Deteksi Sasaran Terlarang & Orientasi Pandangan)");
+cetak("     - Poin 11-22       : Bahu, Siku, Pergelangan, Pinky, Index, Thumb (Deteksi Kuncian/Tangkapan Sah)");
+cetak("     - Poin 23-26       : Pinggul & Lutut (Deteksi Titik Berat Tubuh CoM & Kemiringan Torso)");
+cetak("     - Poin 27-32       : Ankle, Heel (Tumit), Foot Index (Ujung Jari Kaki) -> Deteksi Sapuan & Garis Batas!");
+
+misal ai_event = web_studio_ai_deteksi_bantingan(studio, "gelanggang_a", {
+    "penyerang": "SUDUT_MERAH",
+    "terjatuh": "SUDUT_BIRU",
+    "aksi": "BANTINGAN_SAH",
+    "confidence": 0.948
+});
+
+cetak("  💥 AI ALERT: " + ai_event["tipe_aksi"] + " TERDETEKSI! (" + ai_event["topologi_model"] + ")");
+cetak("     ✓ Penyerang      : " + ai_event["penyerang"] + " (Eksekusi Tangkapan Poin 15-22 Sempurna)");
+cetak("     ✓ Terjatuh       : " + ai_event["terjatuh"] + " (Torso Menempel Matras, Tumit Terangkat)");
+cetak("     ✓ Skor Keyakinan : " + ai_event["confidence_pct"] + "% Keyakinan AI");
+cetak("     ✓ Aturan PERSILAT: Sah (" + ai_event["sah_persilat"] + ") -> Rekomendasi +" + ai_event["poin_rekomendasi"] + " Poin");
+cetak("     ✓ Timecode Klip  : In " + ai_event["mark_in_tc"] + " s/d Out " + ai_event["mark_out_tc"] + " (Auto-Buffered)");
+
+// Auto-Picu Sesi VAR Tanpa Perlu Kartu Protes Manual
+misal auto_var = web_studio_ai_auto_var_picu(studio, ai_event["event_id"]);
+cetak("  ⚡ Auto-VAR Alert  : Sesi Replay " + auto_var["var_session_id"] + " siap diputar di monitor Dewan Wasit!");
+
+// Render Grafis AR Skeleton untuk Layar Siaran Program
+misal ar_skeleton = web_studio_ai_render_skeleton_overlay(studio, ai_event["event_id"]);
+cetak("  🧬 AR Visualizer   : " + ar_skeleton["visualizer"] + " (33 Titik Sendi + Garis Tulang & Heatmap Kontak)");
+
+// 12. Enam Pilar Frontier Broadcasting Tier-1 Modern
+cetak("\n[13] 6 PILAR FRONTIER BROADCASTING (AI DIRECTOR, BIOMECHANICS, VERTICAL, H2H, INTERCOM & REEL):");
+
+// Pilar 1: AI Virtual Director
+misal auto_switch = web_studio_ai_virtual_director_evaluasi(studio, 1.15); // Jarak 1.15 meter (kontak dekat)
+cetak("  🎬 1. AI Director  : Jarak " + auto_switch["jarak_pesilat_meter"] + "m -> Otomatis CUT ke '" + auto_switch["adegan_aktif"] + "' (" + auto_switch["status"] + ")");
+
+// Pilar 2: Biomechanical Strike Velocity Telemetry
+misal strike = web_studio_ai_kecepatan_serangan_hitung(studio, "SUDUT_MERAH", "TENDANGAN_SABIT", 64.8, 140, 18.5);
+cetak("  ⚡ 2. Kecepatan     : " + strike["teknik"] + " " + strike["pesilat"] + " -> " + strike["kecepatan_kmh"] + " km/jam (Reaksi: " + strike["waktu_reaksi_ms"] + " ms, Benturan: " + strike["daya_benturan_g"] + " G)");
+
+// Pilar 3: Hawk-Eye Virtual Arena Boundary
+misal batas = web_studio_ai_garis_batas_matras_evaluasi(studio, 3.4, "SUDUT_BIRU");
+cetak("  🛡️ 3. Garis Matras : Jarak pusat " + batas["jarak_dari_pusat_m"] + "m -> Status: " + batas["status"] + " (Sensor Tumit/Ujung Jari Poin 29-32)");
+
+// Pilar 4: Smart Vertical 9:16 Reframe (TikTok Live)
+misal vertical = web_studio_vertical_reframe_konfigurasi(studio, "rtmp://live.tiktok.com/app/live_pencaksilat_vertical", 0.52);
+cetak("  📱 4. 9:16 Vertical: " + vertical["resolusi_vertikal"] + " -> Siaran Simultan TikTok Live (" + vertical["status"] + ")");
+
+// Pilar 5: 3D Head-to-Head Athlete Graphic
+misal h2h = web_studio_grafis_h2h_tampilkan(studio, {
+    "nama_merah": "Bayu Pratama", "kontingen_merah": "JATIM",
+    "nama_biru": "Asep Sunandar", "kontingen_biru": "JABAR"
+});
+cetak("  📊 5. Grafis H2H   : " + h2h["sudut_merah"] + " vs " + h2h["sudut_biru"] + " [" + h2h["render_engine"] + "]");
+
+// Pilar 6: Production Intercom & Auto-Publish Social Reel
+misal ic = web_studio_intercom_kirim_pesan(studio, "Pengarah_Acara", "ALL_CREW", "Pertandingan selesai, jalankan bumper sponsor penutup!");
+cetak("  🎧 6. Intercom     : [" + ic["saluran"] + "] " + ic["pengirim"] + ": \"" + ic["pesan"] + "\"");
+
+misal reel_viral = web_studio_social_reel_auto_publish(studio, "Momen Bantingan Emas Final Pencak Silat 2026", 45, ["TikTok", "YouTube Shorts"]);
+cetak("  🚀 7. Auto-Publish : Video Viral (" + reel_viral["durasi_detik"] + "s) berhasil diterbitkan ke: " + reel_viral["publikasi_url"]);
+
+// 13. Level 4 Next-Gen Broadcast Frontiers
+cetak("\n[14] LEVEL 4 NEXT-GEN BROADCAST FRONTIERS (3D SPATIAL, BIOMETRICS, VOICE CLONE, ANTI-PIRACY, POLLING, P2P):");
+
+// Frontier 1: Volumetric 3D Spatial Video (3D Gaussian Splatting / 6DoF Free-Viewpoint)
+misal vol = web_studio_spatial_3d_volumetric_proses(studio, "14:02:18:12", 500000);
+cetak("  🌌 1. 3D Spatial Video  : " + vol["point_count"] + " titik Gaussian Splatting (" + vol["format"] + ") [TC: " + vol["timecode"] + "]");
+cetak("     ✓ Free-View Orbit   : Radius 4.5m, 6DoF Matrix Render (" + vol["status"] + ")");
+
+// Frontier 2: Real-Time Athlete Biometrics
+misal bio_m = web_studio_biometrik_atlet_rekam(studio, "SUDUT_MERAH", 182, 38, 91);
+cetak("  💓 2. Live Biometrik    : " + bio_m["sudut"] + " -> HR: " + bio_m["bpm"] + " BPM, HRV: " + bio_m["hrv_ms"] + " ms, Stress: " + bio_m["stress_level"] + "% (" + bio_m["status"] + ")");
+
+// Frontier 3: AI Multilingual Voice Cloning Commentary
+misal voice_en = web_studio_ai_voice_clone_komentator_proses(studio, "Bantingan indah dan sah sudut merah!", "EN");
+cetak("  🎙️ 3. AI Voice Clone    : Bahasa [" + voice_en["bahasa"] + "] Latensi: " + voice_en["latensi_ms"] + "ms");
+cetak("     ✓ Audio On-Air      : \"" + voice_en["terjemahan"] + "\" (" + voice_en["status"] + ")");
+
+// Frontier 4: Forensic Dynamic Watermarking & Anti-Piracy Kill-Switch
+misal wm_user = web_studio_forensik_watermark_buat(studio, "sub_vip_984712", "103.111.45.89");
+cetak("  🔒 4. Forensic Watermark: Subscriber ID " + wm_user["subscriber_id"] + " [Hash: " + wm_user["embedded_hash"] + "] Embedded Imperceptible");
+
+misal kill = web_studio_forensik_kill_switch_picu(studio, "sub_vip_984712");
+cetak("  🛑    Anti-Piracy Kill  : Stream Pembajak Diputus! Status: " + kill["status"] + " (" + kill["tindakan"] + ")");
+
+// Frontier 5: Interactive Audience Polling & Gamification
+misal poll = web_studio_interaktif_polling_buka(studio, "Apakah bantingan sudut merah sah?", "Sah (+3 Poin)", "Batal / Pelanggaran");
+cetak("  📊 5. Polling Interaktif: \"" + poll["pertanyaan"] + "\" dibuka!");
+
+misal poll_res = web_studio_interaktif_polling_vote(studio, poll["poll_id"], "A", 12400);
+misal poll_res2 = web_studio_interaktif_polling_vote(studio, poll["poll_id"], "B", 1850);
+cetak("     ✓ Hasil Tally Live  : " + poll_res2["total_votes"] + " suara | Sah: " + poll_res2["persentase_a"] + "% vs Batal: " + poll_res2["persentase_b"] + "% (" + poll_res2["status"] + ")");
+
+// Frontier 6: P2P Edge Mesh CDN Distribution
+misal mesh = web_studio_p2p_mesh_telemetri_ambil(studio);
+cetak("  🌐 6. P2P Edge Mesh CDN : " + mesh["active_peers"] + " peers aktif di " + mesh["local_swarm_id"]);
+cetak("     ✓ Efisiensi Egress  : " + mesh["mesh_efficiency_pct"] + "% data via P2P (Menghemat Egress CDN: " + mesh["cloud_bandwidth_saved_mbps"] + " Mbps)");
+
+// 14. Sistem Periklanan Siaran Olahraga Digital & Monetisasi (Sports Ad Tech Engine)
+cetak("\n[15] DIGITAL SPORTS AD TECH & MONETIZATION (SSAI, L-BAR, VIRTUAL MAT AR, BRANDED MOMENTS, POP AUDIT):");
+
+// Pilar 1: Injeksi Iklan SSAI (Server-Side Ad Insertion) Bebas Buffering & Anti-AdBlock
+misal ssai_ad = web_studio_iklan_ssai_injeksi(studio, "ad_isotonik_15s", 15.0, "MID_ROLL_ROUND_BREAK");
+cetak("  📺 1. SSAI Dynamic Ads  : Spot '" + ssai_ad["ad_id"] + "' (" + ssai_ad["durasi_detik"] + "s) dijahit ke manifest HLS/DASH");
+cetak("     ✓ Protokol Egress   : " + ssai_ad["protokol"] + " [SCTE-35 Splice ID: " + ssai_ad["scte35_splice_id"] + ", Status: " + ssai_ad["status"] + "]");
+
+// Pilar 2: Format Grafis L-Bar / Squeeze-Back (Double-Box Animatif)
+misal lbar = web_studio_iklan_lbar_tampilkan(studio, {
+    "sponsor": "Bank BJB Syariah",
+    "banner_kanan_url": "https://assets.widya.live/ads/bjb_vertical.png",
+    "banner_bawah_teks": "Buka Tabungan Juara dan Dapatkan Hadiah Pembinaan Atlet Pencak Silat!",
+    "qr_target_url": "https://bankbjb.co.id/promo-silat",
+    "durasi_detik": 25
+});
+cetak("  🎛️ 2. L-Bar Squeeze-Back: Video disusutkan ke " + (lbar["squeeze_ratio"] * 100) + "% layar | Sponsor: " + lbar["sponsor"]);
+cetak("     ✓ Teks Banner Bawah : \"" + lbar["banner_bawah"] + "\" (QR Target: " + lbar["qr_url"] + ") [" + lbar["status"] + "]");
+
+// Penutupan L-Bar setelah durasi selesai
+misal tutup_lbar = web_studio_iklan_lbar_tutup(studio);
+cetak("     ✓ Restorasi Layar   : " + tutup_lbar["status"] + " (Layar Program kembali 100% Fullscreen)");
+
+// Pilar 3: Sablon Logo Sponsor Virtual di Matras Gelanggang (AR Virtual Placement)
+misal mat_ar = web_studio_iklan_ar_matras_pasang(studio, "gelanggang_a", {
+    "sponsor_id": "Telkomsel 5G HyperNet",
+    "logo_url": "https://assets.widya.live/sponsor/tsel_5g.png",
+    "skala_meter": 2.5
+});
+cetak("  🎨 3. Virtual AR Matras : Logo '" + mat_ar["sponsor"] + "' diproyeksikan di " + mat_ar["arena_id"] + " (Skala: " + mat_ar["skala_meter"] + "m)");
+cetak("     ✓ AI Occlusion Mask : " + mat_ar["teknologi"] + " (Pesilat melintas di depan logo tanpa tertutup)");
+
+// Pilar 4: Contextual Event-Driven Branded Moments (Sponsor VAR & Replay)
+misal sp_var = web_studio_iklan_sponsor_momen_atur(studio, "VAR_REVIEW", "Telkomsel 5G", "Official Ultra-Low Latency VAR Partner");
+cetak("  ⚡ 4. Branded Moments   : Segmen " + sp_var["tipe_momen"] + " dipersembahkan oleh: " + sp_var["sponsor"] + " (\"" + sp_var["tagline"] + "\")");
+
+// Pilar 5: Proof-of-Performance (PoP) Audit & Laporan Sponsor
+misal pop_rep = web_studio_iklan_audit_laporan_buat(studio, "Bank BJB Syariah");
+cetak("  📑 5. Audit Kinerja PoP : Laporan Sertifikasi IAB untuk " + pop_rep["sponsor"] + " [ID: " + pop_rep["report_id"] + "]");
+cetak("     ✓ Total Impresi TV  : " + pop_rep["total_tayang"] + " pasang mata | Durasi On-Air: " + pop_rep["durasi_on_air_detik"] + " detik");
+cetak("     ✓ Interaksi QR Scan : " + pop_rep["scan_qr_total"] + " pemirsa | Estimasi Nilai CPM: Rp " + pop_rep["estimasi_pendapatan_cpm_idr"]);
+cetak("     ✓ Verifikasi Hash   : " + pop_rep["verifikasi"] + " (" + pop_rep["status"] + ")");
+
+// 15. Level 5 Ultimate Deep-Tech & Federation SaaS (Safety Dump, Acoustic Climax, 960 FPS, Ghost Heatmap, Multi-Tenant, Spatial VR)
+cetak("\n[16] LEVEL 5 ULTIMATE DEEP-TECH & FEDERATION SAAS (SAFETY DUMP, ACOUSTIC CLIMAX, 960 FPS, GHOST HEATMAP, MULTI-TENANT, SPATIAL VR):");
+
+// Pilar 1: 7-Second Safety Dump Delay Buffer (Sensor Darurat Medis & KPI/FCC)
+misal dump = web_studio_sensor_dump_picu(studio, "bumper_sponsor_darurat");
+cetak("  🛡️ 1. Safety Dump Delay : " + dump["buffer_durasi_detik"] + "s buffer darurat aktif | Fallback: '" + dump["adegan_fallback"] + "'");
+cetak("     ✓ Insiden Dibuang   : " + dump["total_insiden_dibuang"] + " segmen cedera/umpatan disensor (" + dump["kepatuhan_regulasi"] + ") [" + dump["status"] + "]");
+
+// Pilar 2: AI Crowd Acoustic Climax & Generative Press Release Storyteller
+misal climax = web_studio_akustik_climax_dan_recap_buat(studio, 91.2, "Bayu Pratama (JATIM)", "31 - 24");
+cetak("  📢 2. Akustik & Rilis Pers: Kebisingan " + climax["sound_level_dba"] + " dBA [" + climax["tipe_climax"] + "]");
+cetak("     ✓ Artikel Pers AI   : Otomatis menyusun naskah berita kemenangan untuk " + climax["pemenang"] + " (" + climax["status"] + ")");
+
+// Pilar 3: Neural Optical Flow 960 FPS Ultra Super Slow-Motion
+misal slowmo = web_studio_neural_slowmo_960fps_proses(studio, "clip_bantingan_final", 3.0);
+cetak("  🏎️ 3. Neural 960 FPS    : " + slowmo["fps_sumber"] + " FPS -> " + slowmo["fps_sintesis"] + " FPS (" + slowmo["faktor_interpolasi"] + "x AI Optical Flow)");
+cetak("     ✓ Durasi Slow-Mo    : 3.0s direntangkan menjadi " + slowmo["durasi_slowmo_detik"] + "s ultra-smooth (" + slowmo["status"] + ")");
+
+// Pilar 4: Tactical Ghost Motion Trails & 10x10m Matras Heatmap
+misal ghost = web_studio_taktikal_ghost_heatmap_analisis(studio, "SUDUT_MERAH", 72.4, 5.2);
+cetak("  👻 4. Tactical Digital  : Jejak Ghost " + ghost["titik_jejak_ghost"] + " titik | Kontrol Tengah: " + ghost["kontrol_lingkaran_tengah_pct"] + "% vs Luar: " + ghost["zona_luar_pct"] + "%");
+cetak("     ✓ Analisis Gaya     : " + ghost["taktik_dominan"] + " (Kecepatan: " + ghost["kecepatan_gerak_mps"] + " m/s) [" + ghost["status"] + "]");
+
+// Pilar 5: Multi-Tenant Tournament SaaS Engine & RBAC Hierarchy
+misal tenant = web_studio_saas_tenant_rbac_daftarkan(studio, "tenant_kejurnas_2026", "kejurnas.widya.live", "EVENT_ORGANIZER");
+cetak("  🏢 5. SaaS Multi-Tenant : " + tenant["tenant_id"] + " (" + tenant["subdomain"] + ") - Peran: " + tenant["peran_akses"]);
+cetak("     ✓ Alokasi Resource  : " + tenant["jumlah_arena_aktif"] + " Arena | Kuota GPU: " + tenant["kuota_gpu_jam"] + " jam, Egress: " + tenant["kuota_egress_gb"] + " GB [" + tenant["status"] + "]");
+
+// Pilar 6: Apple Vision Pro & Meta Quest 8K 180° Stereoscopic VR Ringside Feed
+misal vr = web_studio_spatial_vr_ringside_aktifkan(studio, "APPLE_VISION_PRO_META_QUEST", 180);
+cetak("  🥽 6. 8K 180° Spatial VR: " + vr["resolusi_vr"] + " @ " + vr["bitrate_mbps"] + " Mbps (" + vr["perspektif"] + ")");
+cetak("     ✓ Imersi Penonton   : Streaming Live 3D Stereoscopic " + vr["fov_derajat"] + "° aktif (" + vr["status"] + ")");
+
+// 16. Level 6 Olympic & Planetary Broadcast Frontiers (Titan Level 6)
+cetak("\n[17] LEVEL 6 OLYMPIC & PLANETARY BROADCAST FRONTIERS (TITAN LEVEL 6):");
+
+// Pilar 1: SkyCam / WireCam 3D Positioning & Drone FPV Tracking with Geofence Safeguard
+misal drone_cam = web_studio_drone_wirecam_posisi_atur(studio, "skycam_arena_a", "WIECAM_3D", 1.8, 0.5, 4.2, -35.0, 30.0, "SUDUT_MERAH");
+cetak("  🛸 1. SkyCam / Wirecam : Perangkat '" + drone_cam["perangkat_id"] + "' (" + drone_cam["tipe_perangkat"] + ") Posisi (" + drone_cam["posisi_x"] + "m, " + drone_cam["posisi_y"] + "m, " + drone_cam["posisi_z"] + "m)");
+cetak("     ✓ Gimbal & Target   : Pitch " + drone_cam["gimbal_pitch"] + "°, Yaw " + drone_cam["gimbal_yaw"] + "° -> Kunci: " + drone_cam["target_terkunci"] + " (Baterai: " + drone_cam["baterai_pct"] + "%, " + drone_cam["status_geofence"] + ")");
+
+// Pilar 2: Athlete BCI Brainwave Cognitive State Telemetry (EEG Real-Time Overlay)
+misal bci_merah = web_studio_bci_gelombang_otak_rekam(studio, "SUDUT_MERAH", 26.5, 38.2, 11.4);
+misal bci_biru = web_studio_bci_gelombang_otak_rekam(studio, "SUDUT_BIRU", 12.0, 58.5, 16.0);
+cetak("  🧠 2. BCI Gelombang Otak: " + bci_merah["sudut"] + " -> Fokus " + bci_merah["indeks_fokus_mental_pct"] + "%, Stres " + bci_merah["indeks_stres_panik_pct"] + "% [" + bci_merah["label_kondisi_mental"] + "]");
+cetak("     ✓ Sudut Lawan       : " + bci_biru["sudut"] + " -> Fokus " + bci_biru["indeks_fokus_mental_pct"] + "%, Stres " + bci_biru["indeks_stres_panik_pct"] + "% [" + bci_biru["label_kondisi_mental"] + "]");
+
+// Pilar 3: Multi-Dialect AI Nusantara Commentator Voice Cloning (Jawa Krama, Sunda, Minang)
+misal com_jawa = web_studio_komentator_dialek_nusantara_sintesis(studio, "Bantingan sah sudut merah!", "JAWA_KRAMA");
+misal com_sunda = web_studio_komentator_dialek_nusantara_sintesis(studio, "Bantingan sah sudut merah!", "SUNDA");
+cetak("  🗣️ 3. Komentator Dialek : [" + com_jawa["kode_dialek"] + "] \"" + com_jawa["audio_sintesis_dialek"] + "\" (" + com_jawa["profil_suara_klon"] + ")");
+cetak("     ✓ Dialek Sunda      : [" + com_sunda["kode_dialek"] + "] \"" + com_sunda["audio_sintesis_dialek"] + "\" (" + com_sunda["profil_suara_klon"] + ")");
+
+// Pilar 4: Sovereign On-Chain Tip & Live Saweria Leaderboard Overlay
+misal tip1 = web_studio_saweria_onchain_tip_terima(studio, "Sultan_Silat_Surabaya", "SUDUT_MERAH", 500000, "Semangat Mas Bayu, raih emas Jawa Timur!");
+misal tip2 = web_studio_saweria_onchain_tip_terima(studio, "Pendekar_Pasundan", "SUDUT_BIRU", 350000, "Asep bangkit di babak berikutnya, bawa juara!");
+misal board = web_studio_saweria_leaderboard_ambil(studio);
+cetak("  💰 4. Saweria On-Chain  : Tip Masuk Rp " + tip1["jumlah_idr"] + " dari " + tip1["pengirim"] + " untuk " + tip1["sudut_didukung"] + " [Tx: " + tip1["tx_hash"] + "]");
+cetak("     ✓ Klasemen Donasi   : Total Merah: Rp " + board["total_donasi_merah_idr"] + " vs Biru: Rp " + board["total_donasi_biru_idr"] + " (" + board["sudut_terpopuler"] + ")");
+
+// Pilar 5: In-Camera VFX (ICVFX) Virtual LED Wall with Sub-Microsecond PTP Genlock
+misal icvfx = web_studio_icvfx_led_wall_sinkronisasi(studio, "stage_pundit_01", "Candi_Prambanan_NeRF_Sunset", 35.0, 1.2, -0.4, 2.8);
+cetak("  🏛️ 5. ICVFX Virtual Wall: Studio Pundit berlatar NeRF '" + icvfx["lingkungan_nerf"] + "' (FOV: " + icvfx["fov_lensa_derajat"] + "°)");
+cetak("     ✓ Sinkronisasi PTP  : " + icvfx["protokol_tracking"] + " -> " + icvfx["genlock_sync"] + " (Latensi: " + icvfx["latensi_render_ms"] + " ms)");
+
+// Pilar 6: AI Match Symphony Package Multi-Format Generation (16:9, 9:16, 1:1)
+misal sym = web_studio_symphony_paket_rekap_buat(studio, "Final Kejurnas Pencak Silat 2026", "Bayu Pratama (JATIM)");
+cetak("  🎼 6. Match Symphony    : Paket '" + sym["paket_id"] + "' (" + sym["durasi_total_detik"] + "s, " + sym["jumlah_segmen"] + " arc cerita, " + sym["bpm_musik"] + " BPM)");
+cetak("     ✓ Distribusi Multi  : " + sym["url_unduh"] + " [" + sym["status"] + "]");
+
+// Pilar 7: Bonded Cellular (4-Modem Multi-SIM) Network Aggregator & Zero-Loss Failover
+misal bonded = web_studio_bonded_cellular_status(studio);
+cetak("  📡 7. Bonded Cellular   : " + bonded["jumlah_modem"] + " Modem Agregat -> Total Bandwidth: " + bonded["total_bandwidth_mbps"] + " Mbps (Loss: " + bonded["packet_loss_efektif_pct"] + "%)");
+misal sim_fail = web_studio_bonded_simulasi_failover_modem(studio, "Telkomsel");
+cetak("     ✓ Simulasi Failover : " + sim_fail["modem_mati"] + " MATI -> Bandwidth Sisa: " + sim_fail["total_bandwidth_tersisa_mbps"] + " Mbps (" + sim_fail["status"] + ")");
+
+// 17. Level 7 Omni-Studio Planetary & Deep-Edge Broadcast Frontiers
+cetak("\n[18] LEVEL 7 OMNI-STUDIO PLANETARY & DEEP-EDGE BROADCAST FRONTIERS (OMNI LEVEL 7):");
+
+// Pilar 1: WebGPU Real-Time WGSL Shader & Virtual Chroma Key Studio
+misal gpu = web_studio_webgpu_chromakey_proses(studio, "stage_virtual_arena", 0.0, 1.0, 0.0, 0.42, 0.08, 0.85, "ARRI_Alexa_Rec709_Cinematic");
+cetak("  🎨 1. WebGPU Chroma Key : Pipeline '" + gpu["pipeline_shader"] + "' @ " + gpu["render_fps"] + " FPS");
+cetak("     ✓ LUT 3D Color Grade: Profil '" + gpu["profil_lut_3d"] + "' (Ambang: " + gpu["ambang_kemiripan"] + ", Spill: " + gpu["supresi_spill"] + ") [" + gpu["status"] + "]");
+
+// Pilar 2: Neural Binaural 3D Spatial Audio Engine (HRTF 3D Surround Sound)
+misal hrtf = web_studio_audio_spatial_hrtf_hitung(studio, "benturan_bantingan_matras_a", 1.8, -0.6, 0.3, "KEMAR_BINAURAL_3D_SURROUND");
+cetak("  🎧 2. 3D Spatial Binaural: Sumber '" + hrtf["sumber_suara"] + "' di Posisi (" + hrtf["posisi_x"] + "m, " + hrtf["posisi_y"] + "m, " + hrtf["posisi_z"] + "m)");
+cetak("     ✓ HRTF Surround Sound: " + hrtf["profil_hrtf"] + " (Atenuasi: " + hrtf["atenuasi_jarak_db"] + " dB, Reverb: " + hrtf["decay_reverb_detik"] + "s) [" + hrtf["status"] + "]");
+
+// Pilar 3: LEO Satellite Direct-to-Cell Uplink Simulator & Dynamic QAM-256 ABR
+misal sat = web_studio_leo_satelit_uplink_konfigurasi(studio, "STARLINK_DIRECT_TO_CELL_LEO", 135.5, 54.2, 14.25, "QAM_256_ADAPTIVE_RATE");
+cetak("  🛰️ 3. LEO Satellite Uplink: Konstelasi '" + sat["konstelasi_satelit"] + "' Az/El: " + sat["azimuth_derajat"] + "°/" + sat["elevasi_derajat"] + "°");
+cetak("     ✓ Transmisi ABR     : " + sat["frekuensi_ghz"] + " GHz @ " + sat["throughput_uplink_mbps"] + " Mbps (" + sat["skema_modulasi"] + ", CNR: " + sat["cnr_db"] + " dB) [" + sat["status"] + "]");
+
+// Pilar 4: Autonomous Multi-Agent AI Director Mesh (Raft Sub-Agent Consensus)
+misal mesh = web_studio_ai_director_mesh_orkestrasi(studio, "director_mesh_kejurnas_01", "TAKEDOWN_CLIMAX_CLOSEUP");
+cetak("  🤖 4. AI Director Mesh  : Jaringan " + mesh["mesh_id"] + " (" + mesh["daftar_agen"] + ")");
+cetak("     ✓ Konsensus Otonom   : " + mesh["protokol_konsensus"] + " -> " + mesh["agen_pemimpin_aktif"] + " (" + mesh["skor_keyakinan_pct"] + "% Keyakinan AI, Total Cut: " + mesh["total_keputusan_cut"] + ")");
+
+// Pilar 5: Real-Time Multilingual Dubbing Speech-to-Speech (English, Japanese, Arabic)
+misal dub_en = web_studio_dubbing_multibahasa_sintesis(studio, "ID", "EN", "Bantingan indah dan sah sudut merah!", "HIGH_EXCITEMENT");
+misal dub_ja = web_studio_dubbing_multibahasa_sintesis(studio, "ID", "JA", "Bantingan indah dan sah sudut merah!", "HIGH_EXCITEMENT");
+cetak("  🌍 5. Global AI Dubbing : [" + dub_en["bahasa_target"] + "] \"" + dub_en["teks_audio_dubbing"] + "\" (Latensi: " + dub_en["latensi_ms"] + "ms, Emosi: " + dub_en["emosi_tanding"] + ")");
+cetak("     ✓ Bahasa Jepang      : [" + dub_ja["bahasa_target"] + "] \"" + dub_ja["teks_audio_dubbing"] + "\" (" + dub_ja["id_suara_klon"] + ") [" + dub_ja["status"] + "]");
+
+// 18. Real-Time WebSocket Signaling & Smartphone Field Camera Tally Hub
+cetak("\n[19] REAL-TIME WEBSOCKET SIGNALING & FIELD CAMERA TALLY HUB (P2P SMARTPHONE SYNC):");
+
+// Hub Activation
+misal hub = web_studio_signaling_hub_aktifkan(studio, "mcr_hub_silat_lan");
+cetak("  📡 1. Signaling Hub     : Hub ID '" + hub["id_hub"] + "' Aktif di " + hub["ws_endpoint"]);
+cetak("     ✓ Status Jaringan    : " + hub["status"] + " (WebRTC Sesi: " + hub["sesi_webrtc"] + ")");
+
+// Register Smartphone Field Camera Peer
+misal peer_cam1 = web_studio_signaling_peer_daftarkan(studio, "hp_jurukamera_01", "CAMERA_OPERATOR", "cam_a_wide", "192.168.1.101");
+misal peer_var1 = web_studio_signaling_peer_daftarkan(studio, "tablet_dewan_juri", "VAR_TABLET", "var_review", "192.168.1.105");
+cetak("  📱 2. Peer PWA Klien    : HP Operator '" + peer_cam1["id_peer"] + "' Terdaftar (" + peer_cam1["peran"] + " -> " + peer_cam1["kamera_ditugaskan"] + ")");
+cetak("     ✓ Status Baterai     : " + peer_cam1["baterai_pct"] + "% | IP: " + peer_cam1["alamat_ip"] + " (Ping: " + peer_cam1["latensi_ping_ms"] + " ms)");
+
+// Send Gyroscope & Battery Telemetry
+misal gyro_update = web_studio_signaling_telemetri_kamera_kirim(studio, "hp_jurukamera_01", 92, 0.85, -0.32);
+cetak("  🧭 3. Telemetri Kamera  : Baterai " + gyro_update["baterai_pct"] + "% | Gyro Pitch: " + gyro_update["gyro_pitch"] + "° | Roll: " + gyro_update["gyro_roll"] + "° (Level Gimbal Stabil)");
+
+// Live Tally Dispatch (Broadcast CUT from MCR Console)
+misal tally_ev = web_studio_signaling_tally_siarkan(studio, "cam_a_wide", "cam_a_close");
+cetak("  🔴 4. Tally Live Route  : Program = [" + tally_ev["program_aktif"] + "] (RED ON-AIR) | Preview = [" + tally_ev["preview_aktif"] + "] (GREEN STANDBY)");
+cetak("     ✓ Disiarkan ke Klien : " + tally_ev["status"] + " (Total Event Tally: " + tally_ev["total_event_tally"] + ")");
+
+// WebRTC Signaling SDP Relay
+misal sdp = web_studio_signaling_pesan_relay(studio, "WEBRTC_SDP_OFFER", "hp_jurukamera_01", "mcr_console", "{\"codec\":\"H265_AV1\",\"bitrate_kbps\":12000,\"fps\":60}");
+cetak("  ⚡ 5. WebRTC SDP Relay  : Paket " + sdp["id_pesan"] + " dari " + sdp["pengirim"] + " -> " + sdp["target_peer"] + " (" + sdp["tipe_pesan"] + ")");
+
+misal daftar_peer = web_studio_signaling_daftar_peer_ambil(studio);
+cetak("     ✓ Total Peer Aktif   : " + panjang(daftar_peer) + " Klien Smartphone & Tablet Terhubung secara Real-Time!");
+
+cetak("\n=================================================================");
+cetak("🏆 SELURUH EKOSISTEM PENYIARAN OLYMPIC & MODERN 100% PARIPURNA!");
+cetak("=================================================================");

@@ -121,14 +121,36 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml'
 };
 
+function parseWidyaTable(text) {
+  if (!text || typeof text !== 'string') return null;
+  const lines = text.trim().split("\n");
+  const dataLines = lines.filter(l => l.includes("│"));
+  if (dataLines.length < 2) return null;
+  const headers = dataLines[0].split("|").map(s => s.replace(/[│\r\n]/g, "").trim());
+  const results = [];
+  for (let i = 1; i < dataLines.length; i++) {
+    const cols = dataLines[i].split("|").map(s => s.replace(/[│\r\n]/g, "").trim());
+    if (cols.length === headers.length) {
+      const obj = {};
+      headers.forEach((h, idx) => obj[h] = cols[idx]);
+      results.push(obj);
+    }
+  }
+  return results;
+}
+
 function runWidyaBaseSql(sql, format = 'json') {
   try {
-    const cmd = `"${WIDYABASE_EXE}" kueri "${sql.replace(/"/g, '\\"')}" --data "${WIDYABASE_DB}" --format ${format}`;
+    const isWidya = WIDYABASE_EXE.toLowerCase().includes('widya') && !WIDYABASE_EXE.toLowerCase().includes('widyabase.exe');
+    const basePrefix = isWidya ? 'base ' : '';
+    const cmd = `"${WIDYABASE_EXE}" ${basePrefix}kueri "${sql.replace(/"/g, '\\"')}" --data "${WIDYABASE_DB}"`;
     const raw = execSync(cmd, { encoding: 'utf8', timeout: 5000 });
     if (format === 'json') {
       try {
         return JSON.parse(raw);
       } catch (e) {
+        const parsed = parseWidyaTable(raw);
+        if (parsed) return parsed;
         return { raw: raw.trim() };
       }
     }
@@ -306,27 +328,44 @@ function savePersistentTasks(tasks) {
 
 function getPersistentProjects() {
   const p = path.resolve(DIR, '../proyek_state.json');
+  let currentProjects = [];
   if (fs.existsSync(p)) {
     try {
       const arr = JSON.parse(fs.readFileSync(p, 'utf8'));
-      if (Array.isArray(arr) && arr.length > 0) return arr;
+      if (Array.isArray(arr) && arr.length > 0) currentProjects = arr;
     } catch (e) {}
   }
-  const dbData = runWidyaBaseSql('PILIH * DARI proyek;', 'json');
-  const fallback = Array.isArray(dbData) && dbData.length > 0 ? dbData : [
-    { kode_proyek: 'PRJ-01-KOPERASI', nama_proyek: 'Koperasi Merah Putih & Simpan Pinjam Syariah', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-02-SMARTCITY', nama_proyek: 'Platform Telemetri ISPU & GIS Smart City', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-03-COLLAB-DOC', nama_proyek: 'Kolaborasi Dokumen Realtime CRDT & Markdown', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-04-DAPODIK-AUTO', nama_proyek: 'Otomasi Integrasi Data Pokok Pendidikan', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-05-LATEX-JOURNAL', nama_proyek: 'Generator Jurnal Ilmiah & Kompilator LaTeX', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-06-WIDYAPAY', nama_proyek: 'WidyaPay Switcher QRIS & Core Banking', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-07-WIDYAMEDIKA', nama_proyek: 'WidyaMedika SIMRS & SATUSEHAT HL7 FHIR', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-08-WIDYAOS', nama_proyek: 'WidyaOS Bare-Metal Rust Kernel & OEM', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-09-WIDYAAI-BOX', nama_proyek: 'WidyaAI Box Offline & Cyber Shield PQC', status: 'AKTIF' },
-    { kode_proyek: 'PRJ-10-WIDYALEDGER', nama_proyek: 'WidyaLedger Sovereign Blockchain & RWA', status: 'AKTIF' }
-  ];
-  savePersistentProjects(fallback);
-  return fallback;
+  
+  try {
+    const dbData = runWidyaBaseSql('PILIH * DARI proyek;', 'json');
+    if (Array.isArray(dbData) && dbData.length > 0) {
+      dbData.forEach(dp => {
+        const idx = currentProjects.findIndex(x => x.kode_proyek === dp.kode_proyek);
+        if (idx >= 0) {
+          currentProjects[idx] = { ...dp, ...currentProjects[idx] };
+        } else {
+          currentProjects.push(dp);
+        }
+      });
+    }
+  } catch (e) {}
+
+  if (currentProjects.length === 0) {
+    currentProjects = [
+      { kode_proyek: 'PRJ-01-KOPERASI', nama_proyek: 'Koperasi Merah Putih & Simpan Pinjam Syariah', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-02-SMARTCITY', nama_proyek: 'Platform Telemetri ISPU & GIS Smart City', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-03-COLLAB-DOC', nama_proyek: 'Kolaborasi Dokumen Realtime CRDT & Markdown', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-04-DAPODIK-AUTO', nama_proyek: 'Otomasi Integrasi Data Pokok Pendidikan', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-05-LATEX-JOURNAL', nama_proyek: 'Generator Jurnal Ilmiah & Kompilator LaTeX', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-06-WIDYAPAY', nama_proyek: 'WidyaPay Switcher QRIS & Core Banking', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-07-WIDYAMEDIKA', nama_proyek: 'WidyaMedika SIMRS & SATUSEHAT HL7 FHIR', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-08-WIDYAOS', nama_proyek: 'WidyaOS Bare-Metal Rust Kernel & OEM', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-09-WIDYAAI-BOX', nama_proyek: 'WidyaAI Box Offline & Cyber Shield PQC', status: 'AKTIF' },
+      { kode_proyek: 'PRJ-10-WIDYALEDGER', nama_proyek: 'WidyaLedger Sovereign Blockchain & RWA', status: 'AKTIF' }
+    ];
+  }
+  savePersistentProjects(currentProjects);
+  return currentProjects;
 }
 
 function savePersistentProjects(projects) {
@@ -970,7 +1009,9 @@ const server = http.createServer((req, res) => {
   // 4. API: WidyaBase Engine Health Check
   if (req.url === '/api/widyabase/status' && req.method === 'GET') {
     try {
-      const report = execSync(`"${WIDYABASE_EXE}" periksa --data "${WIDYABASE_DB}"`, { encoding: 'utf8' });
+      const isWidya = WIDYABASE_EXE.toLowerCase().includes('widya') && !WIDYABASE_EXE.toLowerCase().includes('widyabase.exe');
+      const cmd = isWidya ? `"${WIDYABASE_EXE}" base periksa "${WIDYABASE_DB}"` : `"${WIDYABASE_EXE}" periksa --data "${WIDYABASE_DB}"`;
+      const report = execSync(cmd, { encoding: 'utf8' });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({
         sukses: true,

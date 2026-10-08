@@ -3,6 +3,7 @@ use crate::lexer::Lexer;
 use crate::parser::Parser;
 use crate::interpreter::Interpreter;
 use crate::value::Value;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::collections::HashMap;
 
@@ -10,25 +11,25 @@ pub struct WidyaLsp {
     interpreter: Interpreter,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Position {
     pub line: usize,
     pub character: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Range {
     pub start: Position,
     pub end: Position,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Location {
     pub uri: String,
     pub range: Range,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Diagnostic {
     pub range: Range,
     pub message: String,
@@ -37,12 +38,30 @@ pub struct Diagnostic {
     pub source: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DiagnosticSeverity {
     Error = 1,
     Warning = 2,
     Information = 3,
     Hint = 4,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TextEdit {
+    pub range: Range,
+    pub new_text: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct WorkspaceEdit {
+    pub changes: HashMap<String, Vec<TextEdit>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CodeAction {
+    pub title: String,
+    pub kind: String,
+    pub edit: Option<WorkspaceEdit>,
 }
 
 #[derive(Debug, Clone)]
@@ -367,13 +386,51 @@ impl WidyaLsp {
                 }
             }
             
-            if trimmed.starts_with("var ") {
-                if let Some(rest) = trimmed.strip_prefix("var ") {
+            if trimmed.starts_with("var ") || trimmed.starts_with("misal ") {
+                let prefix = if trimmed.starts_with("var ") { "var " } else { "misal " };
+                if let Some(rest) = trimmed.strip_prefix(prefix) {
                     let name = rest.split('=').next().unwrap_or("").trim();
+                    let name = name.strip_prefix("mutabel ").unwrap_or(name).trim();
                     if !name.is_empty() {
                         symbols.push(Symbol {
                             name: name.to_string(),
                             kind: SymbolKind::Variable,
+                            range: Range {
+                                start: Position { line: idx + 1, character: 1 },
+                                end: Position { line: idx + 1, character: line.len() },
+                            },
+                            signature: None,
+                            documentation: None,
+                        });
+                    }
+                }
+            }
+
+            if trimmed.starts_with("struktur ") {
+                if let Some(rest) = trimmed.strip_prefix("struktur ") {
+                    let name = rest.split('{').next().unwrap_or("").trim();
+                    if !name.is_empty() {
+                        symbols.push(Symbol {
+                            name: name.to_string(),
+                            kind: SymbolKind::Class,
+                            range: Range {
+                                start: Position { line: idx + 1, character: 1 },
+                                end: Position { line: idx + 1, character: line.len() },
+                            },
+                            signature: Some(format!("struktur {}", name)),
+                            documentation: None,
+                        });
+                    }
+                }
+            }
+
+            if trimmed.starts_with("tetap ") {
+                if let Some(rest) = trimmed.strip_prefix("tetap ") {
+                    let name = rest.split('=').next().unwrap_or("").trim();
+                    if !name.is_empty() {
+                        symbols.push(Symbol {
+                            name: name.to_string(),
+                            kind: SymbolKind::Constant,
                             range: Range {
                                 start: Position { line: idx + 1, character: 1 },
                                 end: Position { line: idx + 1, character: line.len() },
@@ -397,6 +454,132 @@ impl WidyaLsp {
         }
     }
     
+    /// Menghasilkan Code Actions (Quick Fixes / Lightbulb Suggestions) untuk IDE
+    pub fn get_code_actions(&self, uri: &str, range: Range, diagnostics: &[Diagnostic], source: &str) -> Vec<CodeAction> {
+        let mut actions = Vec::new();
+        let lines: Vec<&str> = source.lines().collect();
+
+        if range.start.line > 0 && range.start.line <= lines.len() {
+            let line_content = lines[range.start.line - 1];
+
+            // 1. Perbaikan kata kunci usang 'var' -> 'misal'
+            if line_content.trim_start().starts_with("var ") {
+                let leading_ws = line_content.len() - line_content.trim_start().len();
+                let mut changes = HashMap::new();
+                changes.insert(uri.to_string(), vec![TextEdit {
+                    range: Range {
+                        start: Position { line: range.start.line, character: leading_ws },
+                        end: Position { line: range.start.line, character: leading_ws + 3 },
+                    },
+                    new_text: "misal".to_string(),
+                }]);
+
+                actions.push(CodeAction {
+                    title: "Perbarui sintaks 'var' menjadi 'misal'".to_string(),
+                    kind: "quickfix".to_string(),
+                    edit: Some(WorkspaceEdit { changes }),
+                });
+            }
+
+            // 2. Koreksi salah ketik kata kunci bahasa Widya
+            let typos = [
+                ("fungi ", "fungsi "),
+                ("jikalau ", "jika "),
+                ("kembali ", "kembalikan "),
+                ("cetakln", "cetak"),
+            ];
+
+            for (typo, fix) in typos {
+                if let Some(col) = line_content.find(typo) {
+                    let mut changes = HashMap::new();
+                    changes.insert(uri.to_string(), vec![TextEdit {
+                        range: Range {
+                            start: Position { line: range.start.line, character: col },
+                            end: Position { line: range.start.line, character: col + typo.len() },
+                        },
+                        new_text: fix.to_string(),
+                    }]);
+
+                    actions.push(CodeAction {
+                        title: format!("Perbaiki ejaan '{}' menjadi '{}'", typo.trim(), fix.trim()),
+                        kind: "quickfix".to_string(),
+                        edit: Some(WorkspaceEdit { changes }),
+                    });
+                }
+            }
+
+            // 3. Rekomendasi Borrow Checker: Tambahkan 'mutabel'
+            for diag in diagnostics {
+                if diag.message.contains("imutabel") || diag.message.contains("tidak dapat memutasi") {
+                    let mut changes = HashMap::new();
+                    if let Some(col) = line_content.find("misal ") {
+                        changes.insert(uri.to_string(), vec![TextEdit {
+                            range: Range {
+                                start: Position { line: range.start.line, character: col + 6 },
+                                end: Position { line: range.start.line, character: col + 6 },
+                            },
+                            new_text: "mutabel ".to_string(),
+                        }]);
+
+                        actions.push(CodeAction {
+                            title: "Tambahkan kata kunci 'mutabel' pada deklarasi variabel".to_string(),
+                            kind: "quickfix".to_string(),
+                            edit: Some(WorkspaceEdit { changes }),
+                        });
+                    }
+                }
+            }
+        }
+
+        actions
+    }
+
+    /// Melakukan auto-formatting kode sumber Widya-Lang (Format Document / textDocument/formatting)
+    pub fn format_document(&self, _uri: &str, source: &str) -> Vec<TextEdit> {
+        let mut formatted_lines = Vec::new();
+        let mut indent_level: usize = 0;
+
+        for line in source.lines() {
+            let trimmed = line.trim();
+            if trimmed.is_empty() {
+                formatted_lines.push(String::new());
+                continue;
+            }
+
+            // Kurangi indentasi jika baris dimulai dengan kurung kurawal/siku penutup
+            if trimmed.starts_with('}') || trimmed.starts_with(']') || trimmed.starts_with(')') {
+                if indent_level > 0 {
+                    indent_level -= 1;
+                }
+            }
+
+            let indent = "    ".repeat(indent_level);
+            formatted_lines.push(format!("{}{}", indent, trimmed));
+
+            // Tambah indentasi jika ada kurung buka lebih banyak daripada kurung tutup
+            let opens = trimmed.chars().filter(|c| *c == '{' || *c == '[').count();
+            let closes = trimmed.chars().filter(|c| *c == '}' || *c == ']').count();
+            if opens > closes {
+                indent_level += opens - closes;
+            }
+        }
+
+        let new_text = formatted_lines.join("\n");
+        if new_text != source {
+            let total_lines = source.lines().count().max(1);
+            let last_line_len = source.lines().last().unwrap_or("").len();
+            vec![TextEdit {
+                range: Range {
+                    start: Position { line: 1, character: 0 },
+                    end: Position { line: total_lines, character: last_line_len },
+                },
+                new_text,
+            }]
+        } else {
+            Vec::new()
+        }
+    }
+
     pub fn to_json(&self) -> serde_json::Value {
         json!({
             "name": "widya-language-server",

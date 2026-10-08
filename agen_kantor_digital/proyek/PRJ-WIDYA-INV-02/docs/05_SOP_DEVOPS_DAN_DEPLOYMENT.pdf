@@ -1,0 +1,133 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R ] /Count 6 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1160 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SISTEM MANAJEMEN INVENTARIS UMKM NUSANTARA \(PRJ-WIDYA-INV-02\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Kode Proyek**: `PRJ-WIDYA-INV-02`) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 673.89 Tm (**Disusun Oleh**: `agen_devops` \(SOP-06: Manajemen Infrastruktur, CI/CD & Reliabilitas SRE\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 653.89 Tm (**Disetujui Oleh**: `agen_orkestrator` & `agen_qa`) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 633.89 Tm (**Status**: DISETUJUI *  OPERASIONAL STANDAR GUDANG) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 984 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Pre-flight Check & Alokasi Port Dinamis) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Sistem Manajemen Inventaris dialokasikan pada port `8011` guna menjaga isolasi penuh terhadap proyek lainnya \(Port 8001 s/d 8010\).) Tj ET
+0.94 0.97 1 rg 50 681.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 681.89 m 50 717.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 695.89 Tm (KODE \(BASH\): # Verifikasi ketersediaan port 8011 netstat -tuln | grep 8011 || ss -tulpn | grep 8011 # Pastikan tidak ada benturan port sebelum menjalankan server) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 947 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Inisialisasi Basis Data WidyaBase Mandiri) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Sebelum server web dijalankan, pastikan direktori `database/` siap dan basis data `data.wdb` diinisialisasi:) Tj ET
+0.94 0.97 1 rg 50 681.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 681.89 m 50 717.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 695.89 Tm (KODE \(BASH\): cd /home/devops/widya-lang/agen_kantor_digital/proyek/PRJ-WIDYA-INV-02 ../../target/release/widya base inisialisasi database/data.wdb) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 1222 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (3. Eksekusi Server Mandiri \(Runtime Mode\)) Tj ET
+BT /F1 11 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 730.89 Tm (Opsi A: Eksekusi Langsung via `server.wya`) Tj ET
+0.94 0.97 1 rg 50 676.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 676.89 m 50 712.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 690.89 Tm (KODE \(BASH\): cd /home/devops/widya-lang/agen_kantor_digital/proyek/PRJ-WIDYA-INV-02 ../../target/release/widya server.wya) Tj ET
+BT /F1 11 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 655.89 Tm (Opsi B: Eksekusi Background Daemon \(Production\)) Tj ET
+0.94 0.97 1 rg 50 601.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 601.89 m 50 637.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 615.89 Tm (KODE \(BASH\): nohup ../../target/release/widya web dev ./web -p 8011 > server.log 2>&1 & echo $! > server.pid) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 997 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (4. Prosedur Verifikasi Healthcheck & Pemantauan) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Setelah peluncuran daemon, verifikasi integritas endpoint dilakukan secara otomatis:) Tj ET
+0.94 0.97 1 rg 50 681.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 681.89 m 50 717.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 695.89 Tm (KODE \(BASH\): curl -I -s http://localhost:8011 | head -n 5) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 661.89 Tm (Respon yang diharapkan:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 641.89 Tm (`HTTP/1.1 200 OK`) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 1058 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (5. Prosedur Pemberhentian Graceful & Recovery) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Untuk mematikan daemon secara aman tanpa merusak berkas WAL:) Tj ET
+0.94 0.97 1 rg 50 681.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 681.89 m 50 717.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 695.89 Tm (KODE \(BASH\): if [ -f server.pid ]; then   kill -15 $\(cat server.pid\)   rm -f server.pid fi) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 661.89 Tm (Jika terjadi crash tak terduga, runtime WidyaBase akan memulihkan data konsisten secara otomatis melalui mekanisme ARIES crash-recovery pada `data.wal`.) Tj ET
+endstream
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000188 00000 n 
+0000000285 00000 n 
+0000000387 00000 n 
+0000001598 00000 n 
+0000001700 00000 n 
+0000002734 00000 n 
+0000002836 00000 n 
+0000003833 00000 n 
+0000003937 00000 n 
+0000005211 00000 n 
+0000005315 00000 n 
+0000006363 00000 n 
+0000006467 00000 n 
+trailer
+<< /Size 16 /Root 1 0 R /Info << /Title (SOP DEVOPS, DEPLOYMENT & PEMELIHARAAN \(05_SOP_DEVOPS_DAN_DEPLOYMENT\)) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-WIDYA-INV-02\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
+startxref
+7577
+%%EOF

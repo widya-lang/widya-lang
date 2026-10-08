@@ -7,7 +7,31 @@
       "\tkembalikan ${3:hasil};",
       "}"
     ],
-    "description": "Mendefinisikan fungsi baru dalam Widya-Lang"
+    "description": "Mendefinisikan fungsi baru dalam bahasa Widya"
+  },
+  "English Function Definition": {
+    "prefix": "fn",
+    "body": [
+      "fn ${1:function_name}(${2:params}) {",
+      "\t${0:// logic}",
+      "\treturn ${3:result};",
+      "}"
+    ],
+    "description": "Define a new function (ANSI / English)"
+  },
+  "Variable Let / Misal": {
+    "prefix": "misal",
+    "body": [
+      "misal ${1:nama_variabel} = ${2:nilai};"
+    ],
+    "description": "Deklarasi variabel baru (misal)"
+  },
+  "Variable Mutabel": {
+    "prefix": "mutabel",
+    "body": [
+      "misal mutabel ${1:nama_variabel} = ${2:nilai};"
+    ],
+    "description": "Deklarasi variabel yang dapat dimutasi (mutabel)"
   },
   "If Condition": {
     "prefix": "jika",
@@ -38,12 +62,124 @@
     ],
     "description": "Perulangan untuk...dalam"
   },
+  "While Loop": {
+    "prefix": "selama",
+    "body": [
+      "selama (${1:kondisi}) {",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Perulangan selama (while)"
+  },
   "Print Output": {
     "prefix": "cetak",
     "body": [
       "cetak(${1:\"Teks output\"});"
     ],
     "description": "Mencetak keluaran ke konsol terminal"
+  },
+  "WPM Gunakan Paket": {
+    "prefix": "gunakan",
+    "body": [
+      "gunakan \"${1:nama_paket}\";",
+      "${0}"
+    ],
+    "description": "Impor paket dependensi ekosistem WPM"
+  },
+  "WPM Import": {
+    "prefix": "impor",
+    "body": [
+      "impor \"${1:./modul.wya}\";",
+      "${0}"
+    ],
+    "description": "Impor berkas sumber Widya lokal"
+  },
+  "Modul Ekspor": {
+    "prefix": "modul",
+    "body": [
+      "modul ${1:NamaModul} {",
+      "\tekspor fungsi ${2:operasi}() {",
+      "\t\t${0}",
+      "\t}",
+      "}"
+    ],
+    "description": "Deklarasi namespace modul dengan fungsi ekspor"
+  },
+  "Struktur Data": {
+    "prefix": "struktur",
+    "body": [
+      "struktur ${1:NamaStruktur} {",
+      "\t${2:bidang}: ${3:Teks},",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Definisi tipe data struktur baru"
+  },
+  "Pilihan Enum": {
+    "prefix": "pilihan",
+    "body": [
+      "pilihan ${1:Status} {",
+      "\t${2:Aktif},",
+      "\t${3:Nonaktif},",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Definisi tipe data enum / pilihan"
+  },
+  "Pencocokan Pola (Match)": {
+    "prefix": "cocokkan",
+    "body": [
+      "cocokkan (${1:nilai}) {",
+      "\t${2:kasus_1} => ${3:hasil_1},",
+      "\tlainnya => ${0:default_hasil},",
+      "}"
+    ],
+    "description": "Ekspresi pencocokan pola (pattern matching)"
+  },
+  "Coba Tangkap Galat": {
+    "prefix": "coba",
+    "body": [
+      "coba {",
+      "\t${1:// operasi berisiko}",
+      "} tangkap (${2:galat}) {",
+      "\tcetak(\"Terjadi kesalahan: \" + ${2:galat});",
+      "\t${0}",
+      "}"
+    ],
+    "description": "Blok penanganan eksepsi coba...tangkap (try...catch)"
+  },
+  "Fungsi Asinkron": {
+    "prefix": "asinkron",
+    "body": [
+      "asinkron fungsi ${1:ambil_data}(${2:url}) {",
+      "\tmisal respon = tunggu_hasil ${3:klien.ambil(url)};",
+      "\tkembalikan respon;",
+      "}"
+    ],
+    "description": "Fungsi asinkron dengan kata kunci tunggu_hasil (async/await)"
+  },
+  "WidyaBase Query Database": {
+    "prefix": "widyabase",
+    "body": [
+      "misal db = buka_basis_data(\"${1:widya_app.db}\");",
+      "db.eksekusi_kueri(\"CREATE TABLE IF NOT EXISTS ${2:pengguna} (id INT, nama TEKS, email TEKS);\");",
+      "db.eksekusi_kueri(\"INSERT INTO ${2:pengguna} VALUES (1, 'Budi Santoso', 'budi@widya.id');\");",
+      "misal hasil = db.kueri(\"SELECT * FROM ${2:pengguna};\");",
+      "cetak(hasil);",
+      "${0}"
+    ],
+    "description": "Template koneksi dan kueri basis data WidyaBase"
+  },
+  "Unit Test Bertanda Uji": {
+    "prefix": "uji",
+    "body": [
+      "#[uji]",
+      "fungsi uji_${1:fitur}() {",
+      "\tmisal hasil = ${2:operasi()};",
+      "\tpastikan(hasil == ${3:ekspektasi}, \"${4:Gagal memvalidasi fitur}\");",
+      "}"
+    ],
+    "description": "Scaffold unit test dengan anotasi #[uji]"
   },
   "WidyaDesktop App": {
     "prefix": "desktopapp",

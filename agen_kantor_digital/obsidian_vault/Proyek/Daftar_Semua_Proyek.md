@@ -2,7 +2,7 @@
 tags:
   - #proyek-widya
   - #master-registry
-terakhir_sinkron: 2026-09-30T06:46:31.119Z
+terakhir_sinkron: 2026-10-02T06:10:43.463Z
 penanggung_jawab: Arya Wicaksana, PMP (Mandor Utama)
 basis_data: kantor_digital.wdb (Slotted-Page WAL)
 ---
@@ -26,6 +26,12 @@ Daftar seluruh portofolio proyek industri yang dikelola, dikembangkan, dan diaud
 | **PRJ-WIDYA-KOP-01** | Sistem Koperasi Digital Berdaulat Multi-Agent | 🟢 **AKTIF** | [[PRJ-WIDYA-KOP-01]] |
 | **PRJ-ARKAS-WEB-01** | Aplikasi ARKAS Web Terintegrasi | 🟢 **AKTIF** | [[PRJ-ARKAS-WEB-01]] |
 | **PRJ-WIDYA-INV-02** | Manajemen Inventaris UMKM Nusantara | 🟢 **AKTIF** | [[PRJ-WIDYA-INV-02]] |
+| **PRJ-01-KOPERASI** | Sistem Koperasi Digital Berdaulat | ⚪ SELESAI | [[PRJ-01-KOPERASI]] |
+| **PRJ-02-SMARTCITY** | Platform Telemetri ISPU & GIS Smart City | ⚪ SELESAI | [[PRJ-02-SMARTCITY]] |
+| **PRJ-03-COLLAB-DOC** | CRDT Real-Time Collaborative Document Engine | ⚪ SELESAI | [[PRJ-03-COLLAB-DOC]] |
+| **PRJ-04-DAPODIK-AUTO** | Engine Pelaporan Otomatis Dapodik & PDF Generator | ⚪ SELESAI | [[PRJ-04-DAPODIK-AUTO]] |
+| **PRJ-05-LATEX-JOURNAL** | LaTeX Scientific Journal & KaTeX Live Preview | ⚪ SELESAI | [[PRJ-05-LATEX-JOURNAL]] |
+| **PRJ-01-KOPERASI** | Sistem Koperasi Digital Berdaulat (KDMP 7 Pilar) | ⚪ SELESAI | [[PRJ-01-KOPERASI]] |
 
 ---
 

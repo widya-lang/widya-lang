@@ -1,5 +1,6 @@
 //! Zero-Copy Binary Serialization & Wire Protocol Engine (zerocopy.rs)
-//! Memungkinkan pembacaan dan penulisan struktur data langsung dari buffer memori (DMA/Ring-Buffer) tanpa alokasi heap atau parsing CPU berulang.
+//! Memungkinkan pembacaan dan penulisan struktur data langsung dari buffer memori (DMA/Ring-Buffer)
+//! tanpa alokasi heap atau parsing CPU berulang. Dilengkapi dengan format Arrow Columnar IPC Alignment dan CRC32.
 
 use std::mem;
 
@@ -16,6 +17,17 @@ pub struct ZeroCopyHeader {
 
 pub const ZEROCOPY_MAGIC: u32 = 0x57445941;
 
+/// Struktur Kolom Arrow Record Batch IPC Aligned
+#[repr(C, align(64))] // 64-byte cache-line / AVX-512 alignment
+#[derive(Debug, Clone)]
+pub struct ArrowColumnarBatch {
+    pub row_count: u32,
+    pub column_count: u16,
+    pub null_bitmap_offset: u32,
+    pub values_offset: u32,
+    pub buffer_length_bytes: u32,
+}
+
 impl ZeroCopyHeader {
     pub fn new(message_id: u16, sequence: u32, payload_len: u32) -> Self {
         Self {
@@ -25,6 +37,22 @@ impl ZeroCopyHeader {
             payload_len,
             checksum: 0,
         }
+    }
+
+    /// Menghitung CRC32 sederhana untuk integritas frame
+    pub fn compute_crc32(data: &[u8]) -> u32 {
+        let mut crc: u32 = 0xFFFFFFFF;
+        for &b in data {
+            crc ^= b as u32;
+            for _ in 0..8 {
+                if (crc & 1) != 0 {
+                    crc = (crc >> 1) ^ 0xEDB88320;
+                } else {
+                    crc >>= 1;
+                }
+            }
+        }
+        !crc
     }
 
     /// Validasi integritas header langsung dari slice byte mentah tanpa alokasi
@@ -45,16 +73,29 @@ impl ZeroCopyHeader {
         }
 
         let payload = &bytes[header_size..total_expected];
+
+        // Validasi checksum jika di-set
+        if header.checksum != 0 {
+            let actual_crc = Self::compute_crc32(payload);
+            if actual_crc != header.checksum {
+                return Err(format!("CRC32 checksum mismatch: expected 0x{:X}, got 0x{:X}", header.checksum, actual_crc));
+            }
+        }
+
         Ok((header, payload))
     }
 
-    /// Serialisasi langsung ke buffer biner
+    /// Serialisasi langsung ke buffer biner dengan CRC32 otomatis
     pub fn serialize_to_buffer(&self, payload: &[u8]) -> Vec<u8> {
+        let mut header = *self;
+        header.checksum = Self::compute_crc32(payload);
+        header.payload_len = payload.len() as u32;
+
         let header_size = mem::size_of::<Self>();
         let mut out = Vec::with_capacity(header_size + payload.len());
 
         let header_bytes = unsafe {
-            std::slice::from_raw_parts(self as *const Self as *const u8, header_size)
+            std::slice::from_raw_parts(&header as *const Self as *const u8, header_size)
         };
         out.extend_from_slice(header_bytes);
         out.extend_from_slice(payload);

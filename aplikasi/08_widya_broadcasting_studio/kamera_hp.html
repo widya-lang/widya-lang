@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WidyaWeb Field Camera - Klien Juru Kamera Smartphone</title>
+  <meta name="theme-color" content="#e11d48">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* TALLY BORDER BOX */
+    .tally-viewport {
+      flex: 1;
+      position: relative;
+      border: 14px solid #334155;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .tally-viewport.program {
+      border-color: #ef4444;
+      box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.9);
+      animation: pulse-red 1.2s infinite;
+    }
+
+    .tally-viewport.preview {
+      border-color: #10b981;
+      box-shadow: inset 0 0 40px rgba(16, 185, 129, 0.8), 0 0 30px rgba(16, 185, 129, 0.9);
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { border-color: #ef4444; }
+      50% { border-color: #ff8888; }
+    }
+
+    video, canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* TOP HUD */
+    .top-hud {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .badge-tally-status {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+
+    .badge-tally-status.program {
+      background: #ef4444;
+      color: white;
+      box-shadow: 0 0 16px rgba(239,68,68,0.8);
+    }
+
+    .badge-tally-status.preview {
+      background: #10b981;
+      color: #022c22;
+      box-shadow: 0 0 16px rgba(16,185,129,0.8);
+    }
+
+    .badge-tally-status.standby {
+      background: rgba(0,0,0,0.6);
+      color: #94a3b8;
+      border: 1px solid #475569;
+    }
+
+    .net-telemetry {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      gap: 12px;
+    }
+
+    /* BOTTOM CONTROLS */
+    .bottom-hud {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .cam-selector {
+      background: rgba(13, 18, 31, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* LEVEL HORIZON LINE */
+    .horizon-indicator {
+      position: absolute;
+      width: 140px;
+      height: 2px;
+      background: rgba(16, 185, 129, 0.8);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tally-viewport program" id="tally-frame">
+    <!-- VIDEO OR CANVAS VIEW -->
+    <video id="webcam-feed" autoplay playsinline muted style="display:none;"></video>
+    <canvas id="viewfinder-canvas" width="640" height="480"></canvas>
+
+    <!-- HORIZON LEVEL -->
+    <div class="horizon-indicator"></div>
+
+    <!-- TOP HUD -->
+    <div class="top-hud">
+      <div class="badge-tally-status program" id="tally-badge">● LIVE ON AIR</div>
+      
+      <div class="net-telemetry">
+        <span style="color:#38bdf8;">⚡ WHIP: 18ms</span>
+        <span style="color:#34d399;">📶 5G INDOOR</span>
+        <span id="bat-level">🔋 95%</span>
+        <span id="gyro-angle" style="color:#fbbf24;">🧭 +0.0°</span>
+      </div>
+    </div>
+
+    <!-- OFFLINE RESILIENT BANNER -->
+    <div id="offline-alert" style="display:none; position:absolute; top:54px; left:14px; right:14px; background:#f59e0b; color:#0f172a; font-weight:800; text-align:center; padding:7px; border-radius:6px; font-size:12px; z-index:20; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+      ⚠️ MODE OFFLINE • Wi-Fi Terputus, Telemetri Disimpan di Antrean Lokal
+    </div>
+
+    <!-- BOTTOM HUD -->
+    <div class="bottom-hud">
+      <select class="cam-selector" id="sel-cam" onchange="updateCamChannel(this.value)">
+        <option value="cam_a_wide">Gelanggang A - HP 1 (Wide)</option>
+        <option value="cam_a_close" selected>Gelanggang A - HP 2 (Close)</option>
+        <option value="cam_b_wide">Gelanggang B - HP 1 (Wide)</option>
+        <option value="cam_b_close">Gelanggang B - HP 2 (Wasit)</option>
+        <option value="cam_c_wide">Gelanggang C - HP 1 (Wide)</option>
+        <option value="cam_c_close">Gelanggang C - HP 2 (Juri)</option>
+        <option value="skycam_3d">SkyCam 3D Cable Suspended</option>
+      </select>
+
+      <button class="btn-action" onclick="toggleSimTally()">Simulasi Manual</button>
+      <button class="btn-action" id="btn-push" onclick="requestPushNotificationPermission()">🔔 Push Alert</button>
+      <a href="index.html" class="btn-action">← MCR Studio</a>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('viewfinder-canvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('webcam-feed');
+    let tallyStatus = 'preview'; // 'program', 'preview', 'standby'
+
+    // Parse URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCam = urlParams.get('cam') || 'cam_a_close';
+    document.getElementById('sel-cam').value = initialCam;
+
+    // Try camera stream
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+        .then(stream => {
+          video.srcObject = stream;
+          video.style.display = 'block';
+          canvas.style.display = 'none';
+        })
+        .catch(() => {
+          runSimulationRenderer();
+        });
+    } else {
+      runSimulationRenderer();
+    }
+
+    // Canvas fallback animation
+    function runSimulationRenderer() {
+      let t = 0;
+      function loop() {
+        t += 0.04;
+        ctx.fillStyle = '#064e3b';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Matras Silat simulation
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(canvas.width/2, canvas.height/2, 160, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(canvas.width/2 - 30 + Math.sin(t)*20, canvas.height/2, 14, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath();
+        ctx.arc(canvas.width/2 + 30 - Math.sin(t)*20, canvas.height/2, 14, 0, Math.PI * 2);
+        ctx.fill();
+
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    }
+
+    // ==============================================================================
+    // REAL-TIME SIGNALING & TALLY BROADCAST CHANNEL
+    // ==============================================================================
+    const mcrChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('widya_broadcast_mcr_hub') : null;
+
+    function applyTallyState(progCam, prevCam) {
+      const myCam = document.getElementById('sel-cam').value;
+      const frame = document.getElementById('tally-frame');
+      const badge = document.getElementById('tally-badge');
+
+      if (myCam === progCam) {
+        tallyStatus = 'program';
+        frame.className = 'tally-viewport program';
+        badge.className = 'badge-tally-status program';
+        badge.textContent = '● LIVE ON AIR (PROGRAM)';
+        if (navigator.vibrate) {
+          try { navigator.vibrate([150, 50, 150]); } catch(e){}
+        }
+      } else if (myCam === prevCam) {
+        tallyStatus = 'preview';
+        frame.className = 'tally-viewport preview';
+        badge.className = 'badge-tally-status preview';
+        badge.textContent = '● STANDBY PREVIEW';
+      } else {
+        tallyStatus = 'standby';
+        frame.className = 'tally-viewport';
+        badge.className = 'badge-tally-status standby';
+        badge.textContent = '⚪ STANDBY (OFF-AIR)';
+      }
+    }
+
+    // WebSocket Dual-Transport untuk Jaringan Nirkabel LAN
+    let wsCam = null;
+    function initCamWebSocket() {
+      if (typeof location !== 'undefined' && (location.protocol === 'http:' || location.protocol === 'https:')) {
+        try {
+          const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+          wsCam = new WebSocket(`${wsProto}//${location.host}/ws`);
+          wsCam.onopen = () => {
+            console.log('⚡ Terhubung ke Peladen WebSocket MCR Studio LAN');
+            sendCameraTelemetry();
+            if (wsCam && wsCam.readyState === WebSocket.OPEN) {
+              wsCam.send(JSON.stringify({ type: 'REQUEST_INITIAL_TALLY' }));
+            }
+          };
+          wsCam.onmessage = (event) => {
+            try {
+              const msg = JSON.parse(event.data);
+              if (msg.type === 'TALLY_UPDATE') {
+                applyTallyState(msg.program, msg.preview);
+              }
+            } catch (e) {}
+          };
+          wsCam.onclose = () => {
+            setTimeout(initCamWebSocket, 3000);
+          };
+        } catch (e) {
+          console.log('WS fallback to BroadcastChannel');
+        }
+      }
+    }
+    initCamWebSocket();
+
+    if (mcrChannel) {
+      mcrChannel.onmessage = (event) => {
+        const msg = event.data;
+        if (!msg) return;
+        if (msg.type === 'TALLY_UPDATE') {
+          applyTallyState(msg.program, msg.preview);
+        }
+      };
+      // Minta status Tally awal ke MCR Studio
+      setTimeout(() => {
+        mcrChannel.postMessage({ type: 'REQUEST_INITIAL_TALLY' });
+      }, 100);
+    }
+
+    // Telemetri Baterai & Giroskop Ponsel
+    let currentBattery = 95;
+    let currentPitch = 0.5;
+    let currentRoll = -0.2;
+
+    if (navigator.getBattery) {
+      navigator.getBattery().then(bat => {
+        currentBattery = Math.round(bat.level * 100);
+        const batEl = document.getElementById('bat-level');
+        if (batEl) batEl.textContent = `🔋 ${currentBattery}%`;
+        bat.addEventListener('levelchange', () => {
+          currentBattery = Math.round(bat.level * 100);
+          if (batEl) batEl.textContent = `🔋 ${currentBattery}%`;
+          sendCameraTelemetry();
+        });
+      }).catch(() => {});
+    }
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.beta !== null) currentPitch = parseFloat(e.beta.toFixed(1));
+        if (e.gamma !== null) currentRoll = parseFloat(e.gamma.toFixed(1));
+        const gyroEl = document.getElementById('gyro-angle');
+        if (gyroEl) gyroEl.textContent = `🧭 ${currentPitch > 0 ? '+' : ''}${currentPitch}°`;
+      });
+    }
+
+    // Antrean Telemetri Resilient saat Jaringan Offline
+    let offlineTelemetryQueue = [];
+
+    // PWA Service Worker Registration & Push Notification
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          console.log('[PWA SW] Terdaftar sukses dengan scope:', reg.scope);
+        }).catch((err) => {
+          console.warn('[PWA SW] Registrasi service worker gagal:', err);
+        });
+      });
+    }
+
+    // Pemantauan Status Koneksi Online / Offline Jaringan Wi-Fi Lapangan
+    function checkNetworkOnlineStatus() {
+      const banner = document.getElementById('offline-alert');
+      if (!navigator.onLine) {
+        if (banner) banner.style.display = 'block';
+      } else {
+        if (banner) banner.style.display = 'none';
+        flushOfflineQueue();
+      }
+    }
+    window.addEventListener('online', checkNetworkOnlineStatus);
+    window.addEventListener('offline', checkNetworkOnlineStatus);
+    checkNetworkOnlineStatus();
+
+    function flushOfflineQueue() {
+      if (offlineTelemetryQueue.length > 0) {
+        console.log(`[PWA Resilient Sync] Mengirim ${offlineTelemetryQueue.length} paket tertunda...`);
+        while (offlineTelemetryQueue.length > 0) {
+          const item = offlineTelemetryQueue.shift();
+          if (wsCam && wsCam.readyState === WebSocket.OPEN) {
+            wsCam.send(JSON.stringify(item));
+          }
+        }
+      }
+    }
+
+    // Permintaan Izin Push Notification Sutradara
+    function requestPushNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('Browser ini tidak mendukung Push Notification');
+        return;
+      }
+      Notification.requestPermission().then((permission) => {
+        const btn = document.getElementById('btn-push');
+        if (permission === 'granted') {
+          if (btn) btn.textContent = '🔔 Push Aktif';
+          new Notification('📡 Widya MCR Tally', {
+            body: 'Notifikasi Sutradara MCR telah aktif di perangkat ini!',
+            icon: '/manifest.json'
+          });
+        } else {
+          if (btn) btn.textContent = '🔕 Push Ditolak';
+        }
+      });
+    }
+
+    function sendCameraTelemetry() {
+      const payload = {
+        type: 'CAM_TELEMETRY',
+        camId: document.getElementById('sel-cam').value,
+        battery: currentBattery,
+        pitch: currentPitch,
+        roll: currentRoll,
+        timestamp: Date.now()
+      };
+      if (mcrChannel) {
+        mcrChannel.postMessage(payload);
+      }
+      if (wsCam && wsCam.readyState === WebSocket.OPEN) {
+        wsCam.send(JSON.stringify(payload));
+      } else {
+        // Simpan ke antrean lokal offline
+        offlineTelemetryQueue.push(payload);
+        if (offlineTelemetryQueue.length > 50) offlineTelemetryQueue.shift();
+      }
+    }
+
+    // Kirim telemetri periodik setiap 2.5 detik
+    setInterval(sendCameraTelemetry, 2500);
+
+    function updateCamChannel(camId) {
+      console.log('Channel switched to:', camId);
+      if (mcrChannel) {
+        mcrChannel.postMessage({ type: 'REQUEST_INITIAL_TALLY' });
+      }
+      if (wsCam && wsCam.readyState === WebSocket.OPEN) {
+        wsCam.send(JSON.stringify({ type: 'REQUEST_INITIAL_TALLY' }));
+      }
+      sendCameraTelemetry();
+    }
+
+    function toggleSimTally() {
+      const frame = document.getElementById('tally-frame');
+      const badge = document.getElementById('tally-badge');
+      
+      if (tallyStatus === 'program') {
+        tallyStatus = 'preview';
+        frame.className = 'tally-viewport preview';
+        badge.className = 'badge-tally-status preview';
+        badge.textContent = '● STANDBY PREVIEW';
+      } else if (tallyStatus === 'preview') {
+        tallyStatus = 'standby';
+        frame.className = 'tally-viewport';
+        badge.className = 'badge-tally-status standby';
+        badge.textContent = '⚪ STANDBY';
+      } else {
+        tallyStatus = 'program';
+        frame.className = 'tally-viewport program';
+        badge.className = 'badge-tally-status program';
+        badge.textContent = '● LIVE ON AIR';
+      }
+    }
+  </script>
+</body>
+</html>

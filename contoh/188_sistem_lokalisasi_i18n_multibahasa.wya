@@ -1,0 +1,118 @@
+// ==============================================================================
+// 🌐 CONTOH 188: SISTEM LOKALISASI & INTERNASIONALISASI (i18n / L10n) WIDYA-LANG
+// ==============================================================================
+// Fitur Komprehensif:
+// 1. Pengaturan dan penggantian kode lokal aktif (atur_lokal, ambil_lokal)
+// 2. Pendaftaran kamus terjemahan multibahasa (i18n_daftarkan)
+// 3. Penerjemahan teks dengan interpolasi variabel (i18n_terjemah / t)
+// 4. Format mata uang multibahasa (format_mata_uang)
+// 5. Format tanggal terstandardisasi lokal (format_tanggal)
+// 6. Aturan jamak / pluralisasi tingkat lanjut (format_plural)
+// ==============================================================================
+
+cetak("======================================================================");
+cetak("🌐 SISTEM LOKALISASI & INTERNASIONALISASI (i18n / L10n) WIDYA-LANG");
+cetak("======================================================================");
+
+// [1] Pemeriksaan Lokal Default
+cetak("\n[1] Memeriksa Lokal Default Sistem:");
+cetak(" • Lokal Aktif Saat Ini :", ambil_lokal()); // "id-ID"
+cetak(" • Terjemahan Standar   :", t("selamat_datang"));
+cetak(" • Sapaan dengan Nama   :", t("halo", {"nama": "Ahmad"}));
+
+// [2] Pendaftaran Kamus Tambahan (Custom Translation Dictionary)
+cetak("\n[2] Mendaftarkan Kamus Bahasa Tambahan (Jawa, Sunda, Jepang, Jerman):");
+
+// Bahasa Jawa (jv-ID)
+i18n_daftarkan("jv-ID", {
+    "pesan_selamat": "Sugeng rawuh wonten ing aplikasi Widya!",
+    "pesan_bayar": "Matur nuwun, panjenengan sampun mundhut {item} kanthi rega {harga}.",
+    "tombol_keluar": "Medal"
+});
+
+// Bahasa Sunda (su-ID)
+i18n_daftarkan("su-ID", {
+    "pesan_selamat": "Wilujeng sumping di aplikasi Widya!",
+    "pesan_bayar": "Hatur nuhun, anjeun parantos meser {item} kalayan pangaos {harga}.",
+    "tombol_keluar": "Kaluar"
+});
+
+// Bahasa Jepang (ja-JP)
+i18n_daftarkan("ja-JP", {
+    "selamat_datang": "ウィディヤ言語へようこそ！",
+    "halo": "こんにちは、{nama}様！",
+    "sukses": "処理が成功しました",
+    "gagal": "処理が失敗しました",
+    "pesan_bayar": "{nama}様、{item}のご購入ありがとうございます。金額：{harga}"
+});
+
+cetak(" ✅ Kamus multibahasa berhasil didaftarkan ke memori runtime.");
+
+// [3] Beralih Bahasa & Uji Terjemahan Multibahasa
+cetak("\n[3] Pengujian Terjemahan Dinamis Antar Bahasa:");
+
+misal daftar_bahasa = ["id-ID", "en-US", "ar-SA", "jv-ID", "su-ID", "ja-JP"];
+
+untuk lang dalam daftar_bahasa {
+    atur_lokal(lang);
+    cetak("\n • Kode Bahasa:", ambil_lokal());
+    cetak("   - Selamat Datang :", t("selamat_datang"));
+    cetak("   - Sapaan         :", t("halo", {"nama": "Budi"}));
+    cetak("   - Status Operasi :", t("sukses"));
+}
+
+// [4] Format Mata Uang Terlokalisasi
+cetak("\n======================================================================");
+cetak("[4] Format Mata Uang Terlokalisasi Sesuai Standar Negara:");
+misal nominal = 1750000.50;
+
+atur_lokal("id-ID");
+cetak(" • Indonesia (IDR) :", format_mata_uang(nominal, "id-ID", "IDR"));
+
+atur_lokal("en-US");
+cetak(" • Amerika (USD)   :", format_mata_uang(1750.50, "en-US", "USD"));
+
+atur_lokal("ar-SA");
+cetak(" • Arab Saudi (SAR):", format_mata_uang(1750.50, "ar-SA", "SAR"));
+
+atur_lokal("ja-JP");
+cetak(" • Jepang (JPY)    :", format_mata_uang(175000, "ja-JP", "JPY"));
+
+// [5] Format Tanggal Terlokalisasi
+cetak("\n======================================================================");
+cetak("[5] Format Tanggal Terlokalisasi Sesuai Bahasa:");
+
+atur_lokal("id-ID");
+cetak(" • Tanggal Indonesia :", format_tanggal("id-ID"));
+
+atur_lokal("en-US");
+cetak(" • Tanggal Inggris   :", format_tanggal("en-US"));
+
+atur_lokal("ar-SA");
+cetak(" • Tanggal Arab      :", format_tanggal("ar-SA"));
+
+// [6] Aturan Jamak / Pluralisasi CLDR Multibahasa (Arab Dual & Plural Rules)
+cetak("\n======================================================================");
+cetak("[6] Penanganan Aturan Jamak (CLDR Plural Rules):");
+
+misal aturan_jamak_arab = {
+    "zero": "لا توجد رسائل (0 pesan)",
+    "one": "رسالة واحدة (1 pesan)",
+    "two": "رسالتان (2 pesan - dual form)",
+    "few": "٣-١٠ رسائل (3-10 pesan - few)",
+    "many": "رسائل كثيرة (11+ pesan - many)",
+    "other": "رسائل (pesan lainnya)"
+};
+
+atur_lokal("ar-SA");
+cetak(" • Jumlah = 0 :", format_plural(0, aturan_jamak_arab));
+cetak(" • Jumlah = 1 :", format_plural(1, aturan_jamak_arab));
+cetak(" • Jumlah = 2 :", format_plural(2, aturan_jamak_arab));
+cetak(" • Jumlah = 5 :", format_plural(5, aturan_jamak_arab));
+cetak(" • Jumlah = 50:", format_plural(50, aturan_jamak_arab));
+
+// Kembalikan ke default Indonesia
+atur_lokal("id-ID");
+cetak("\n======================================================================");
+cetak("✅ Selesai! Modul i18n / Lokalisasi Widya-lang siap digunakan di produksi!");
+cetak("======================================================================");

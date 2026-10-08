@@ -1,0 +1,108 @@
+// ==============================================================================
+// MODUL BD-102: KOMPUTASI BAHASA SUNDA, AKSARA SUNDA & KALA SUNDA
+// Implementasi Kurikulum Pembelajaran Bahasa Daerah Berbasis Widya-Lang
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("📚 MODUL BD-102: PEMBELAJARAN BASA SUNDA & ETNOSAINS KOMPUTASI");
+cetak("==================================================================");
+
+// 1. TATAMAKRAMA BASA SUNDA (UNDAK-USUK BASA)
+cetak("\n--- [1] Tatamakrama Basa Sunda (Loma vs Lemes) ---");
+
+struktur EntriKamusSunda {
+    loma,
+    lemes_sorangan,
+    lemes_batur,
+    arti_indonesia
+}
+
+misal kamus_sunda = [
+    EntriKamusSunda("dahar", "neda", "tuang", "makan"),
+    EntriKamusSunda("sare", "mondok", "kulem", "tidur"),
+    EntriKamusSunda("imah", "rorompok", "bumi", "rumah"),
+    EntriKamusSunda("balik", "wangsul", "mulih", "pulang"),
+    EntriKamusSunda("indit", "mios", "angkat", "berangkat")
+];
+
+cetak("Katalog Tatamakrama Basa Sunda:");
+untuk item dalam kamus_sunda {
+    cetak("  • Hartos Bahasa : " + item.arti_indonesia);
+    cetak("    - Basa Loma              : " + item.loma);
+    cetak("    - Lemes (keur sorangan)  : " + item.lemes_sorangan);
+    cetak("    - Lemes (keur batur)     : " + item.lemes_batur);
+}
+
+// 2. TRANSLITERASI AKSARA SUNDA BAKU (NGALAGENA & RARANGKEN)
+cetak("\n--- [2] Transliterasi Latin ka Aksara Sunda Baku ---");
+
+var daptar_frasa = [
+    "wilujeng sumping",
+    "sampurasun",
+    "sunda sawawa",
+    "widya nusantara"
+];
+
+untuk frasa dalam daptar_frasa {
+    var aksara = latin_ke_aksara_sunda(frasa);
+    cetak("  • Latin  : " + frasa);
+    cetak("    Aksara : " + aksara);
+}
+
+// 3. KALENDER KALA SUNDA
+cetak("\n--- [3] Sistem Kalender Tradisional Kala Sunda ---");
+var sunda = hitung_kala_sunda(2026, 10, 3);
+cetak("Hasil Analisis Kala Sunda (3 Oktober 2026):");
+cetak("  - Poe (Hari) & Pancawara : " + sunda["weton_sunda"]);
+
+// 4. SISINDIRAN (PAPARIKAN & RARAKITAN)
+cetak("\n--- [4] Sastra Sisindiran & Purwakanti ---");
+
+struktur Sisindiran {
+    tipe,
+    cangkang_1,
+    cangkang_2,
+    eusi_1,
+    eusi_2
+}
+
+misal koleksi_sisindiran = [
+    Sisindiran(
+        "Paparikan",
+        "Ka kulah nyiar kapiting",
+        "Ngala kadu jeung sukun",
+        "Ulah sok liar ti peuting",
+        "Gawena ngan ukur nundutan"
+    ),
+    Sisindiran(
+        "Rarakitan",
+        "Mawa peti dina sundung",
+        "Dibawa ka Pasirhuni",
+        "Mawa ati anu gandrung",
+        "Hayang tepung jeung nu geulis"
+    )
+];
+
+untuk s dalam koleksi_sisindiran {
+    cetak("  🎭 Sisindiran [" + s.tipe + "]:");
+    cetak("     " + s.cangkang_1);
+    cetak("     " + s.cangkang_2);
+    cetak("     " + s.eusi_1);
+    cetak("     " + s.eusi_2);
+}
+
+// 5. BABASAN & PARIBASA SUNDA
+cetak("\n--- [5] Babasan jeung Paribasa Luhung Sunda ---");
+var paribasa = [
+    "Kudu nepi memeh indit (Harus merencanakan segalanya dengan matang sebelum melangkah)",
+    "Sacangreud pageuh sagolek pangkek (Konsisten memegang janji dan komitmen)",
+    "Hade gogog hade tagog (Menjaga tutur kata yang santun dan perilaku yang beretika)"
+];
+
+untuk p dalam paribasa {
+    cetak("  🌟 " + p);
+}
+
+cetak("\n==================================================================");
+cetak("✅ Modul BD-102 Basa Sunda parantos rengse kalayan sukses!");
+cetak("==================================================================");

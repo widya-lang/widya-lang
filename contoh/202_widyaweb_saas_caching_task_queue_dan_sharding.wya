@@ -1,0 +1,80 @@
+// ============================================================================
+// CONTOH 202: WIDYAWEB ENTERPRISE SAAS, CACHING, TASK QUEUE & SHARDING
+// Bahasa Pemrograman Widya (Widya-lang)
+//
+// 1. Zero-Trust Security & API Edge Isolation (Dynamic CSP Nonce, Token Bucket, WASM Sandbox)
+// 2. Distributed Caching & Tag Invalidation (Fine-Grained Tagging, Instant SWR)
+// 3. Background Job & Task Queue (Worker Pool, Exponential Backoff, Redlock Mutex Cron)
+// 4. Multi-Tenant Architecture & Database Sharding (Schema Isolation, Read/Write Splitting)
+// 5. Asset Pipeline & Media Optimization (AVIF/WebP Transcoding, Responsive Resize, Tree-Shaking)
+// ============================================================================
+
+cetak("============================================================================");
+cetak("🏢 WIDYAWEB ENTERPRISE SAAS, CACHING, TASK QUEUE & SHARDING");
+cetak("============================================================================");
+
+// ----------------------------------------------------------------------------
+// 1. ZERO-TRUST SECURITY & API EDGE ISOLATION
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 1] ZERO-TRUST SECURITY & API EDGE ISOLATION:");
+var nonce_res = web_csp_nonce_buat("req_sec_id_894102");
+cetak("    • Dynamic CSP Nonce Token      : " + nonce_res["csp_nonce"]);
+cetak("    • Header CSP Terproteksi       : " + nonce_res["header_csp_dinamis"]);
+
+var rl_res = web_rate_limiter_periksa("192.168.1.100", 120, 20);
+cetak("    • Token Bucket Rate Limiter    : Status Diizinkan: " + ke_teks(rl_res["request_diizinkan"]) + " | Sisa Kuota: " + ke_teks(rl_res["sisa_kuota_token"]) + " req (" + rl_res["algoritma"] + ")");
+
+var wasm_plugin = web_wasm_plugin_sandbox_eksekusi("payment_gateway_stripe_v2.wasm", ["network:https://api.stripe.com"]);
+cetak("    • WASM Sandboxed Plugin        : " + wasm_plugin["lingkungan_eksekusi"] + " -> " + wasm_plugin["akses_lingkungan_env"]);
+
+// ----------------------------------------------------------------------------
+// 2. DISTRIBUTED CACHING & TAG-BASED INVALIDATION (SWR)
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 2] DISTRIBUTED CACHING & TAG-BASED INVALIDATION (SWR):");
+var simpan_cache = web_cache_simpan_tag("produk_katalog_elektronik", {"total": 45}, ["tag_produk", "tag_tenant_108"], 3600);
+cetak("    • Fine-Grained Tagged Cache    : " + simpan_cache["cache_key"] + " (" + simpan_cache["status"] + ")");
+
+var purge_tag = web_cache_revalidasi_tag("tag_produk");
+cetak("    • Revalidasi Tag Terdistribusi : " + purge_tag["tag_yang_direvalidasi"] + " -> " + purge_tag["cakupan_invalidasi"]);
+
+var swr_data = web_cache_ambil_swr("artikel_berita_terkini", {});
+cetak("    • Native SWR Caching           : " + swr_data["data_instan_disajikan"] + " (" + swr_data["strategi"] + ")");
+
+// ----------------------------------------------------------------------------
+// 3. BACKGROUND JOB & TASK QUEUE INFRASTRUCTURE
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 3] BACKGROUND JOB & TASK QUEUE INFRASTRUCTURE:");
+var antre_job = web_antrean_tugas_dorong("email_transaksional", {"tujuan": "user@widya.id", "subjek": "Faktur Pembayaran"}, "HIGH_PRIORITY");
+cetak("    • Task Queue Background Worker : Antrean: " + antre_job["queue_name"] + " -> " + antre_job["status_worker"] + " (" + antre_job["retry_policy"] + ")");
+
+var cron_job = web_penjadwal_cron_terdistribusi("0 0 * * *", "rekapitulasi_pembukuan_harian", "handler_fn");
+cetak("    • Distributed Cron Scheduler   : " + cron_job["job_name"] + " [" + cron_job["cron_expression"] + "] -> " + cron_job["distributed_lock"]);
+
+// ----------------------------------------------------------------------------
+// 4. MULTI-TENANT ARCHITECTURE & DATABASE SHARDING
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 4] MULTI-TENANT ARCHITECTURE & DATABASE SHARDING:");
+var tenant_ctx = web_tenant_konteks_resolver("perusahaanA.widyaapp.com", "Schema-Per-Tenant");
+cetak("    • Multi-Tenant Isolation       : Domain: " + tenant_ctx["host_domain"] + " -> Tenant ID: " + tenant_ctx["tenant_id"]);
+cetak("    • Skema & Cache Terisolasi     : Skema DB: " + tenant_ctx["skema_database_terisolasi"] + " | Prefix Cache: " + tenant_ctx["cache_prefix_isolasi"] + " (" + tenant_ctx["status_isolasi_data"] + ")");
+
+var sql_read = web_db_rute_kueri("SELECT * FROM pelanggan WHERE aktif = 1", "perusahaanA");
+cetak("    • Smart Query Routing (Read)   : " + sql_read["tipe_operasi"] + " -> " + sql_read["target_database_node"] + " pada " + sql_read["database_shard_id"]);
+
+var sql_write = web_db_rute_kueri("INSERT INTO pelanggan (nama) VALUES ('PT Inovasi')", "perusahaanA");
+cetak("    • Smart Query Routing (Write)  : " + sql_write["tipe_operasi"] + " -> " + sql_write["target_database_node"] + " pada " + sql_write["database_shard_id"]);
+
+// ----------------------------------------------------------------------------
+// 5. ASSET PIPELINE & ASSET PERFORMANCE OPTIMIZATION
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 5] ASSET PIPELINE & MEDIA OPTIMIZATION:");
+var optimasi_img = web_optimasi_gambar_media("/assets/hero_banner.png", 1200, "AVIF");
+cetak("    • On-the-Fly Image Transcoding : " + optimasi_img["berkas_sumber"] + " -> Format " + optimasi_img["format_output"] + " (" + optimasi_img["kompresi_efisiensi"] + ")");
+cetak("    • Blur Placeholder Hash        : " + optimasi_img["blur_hash_placeholder"]);
+
+var tree_shaking = web_analisis_tree_shaking_bundle("src/app.js", ["react", "widya-ui", "lodash-es"]);
+cetak("    • Tree-Shaking & Code-Splitting: " + tree_shaking["dead_code_elimination"] + " -> Chunk: " + tree_shaking["bundle_splitting_chunks"]);
+
+cetak("\n============================================================================");
+cetak("✨ KELIMA PILAR SAAS, CACHING, TASK QUEUE & SHARDING 100% TERCOVER LENGKAP!");
+cetak("============================================================================");

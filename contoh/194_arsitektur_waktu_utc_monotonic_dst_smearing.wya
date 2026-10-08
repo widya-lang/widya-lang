@@ -1,0 +1,94 @@
+// ============================================================================
+// CONTOH 194: ARSITEKTUR WAKTU MODERN, UTC, MONOTONIC CLOCK, DST & LEAP SMEARING
+// Bahasa Pemrograman Widya (Widya-lang)
+// Mendemonstrasikan 3 Pilar Waktu di Runtime Modern:
+// 1. Standar Dasar: UTC vs Unix Epoch & ISO 8601 Parsing
+// 2. Monotonic Clock vs Wall Clock (Pengukuran Kinerja & Durasi Bebas Distorsi)
+// 3. Penanganan Daylight Saving Time (DST Gap & Overlap) dan Leap Smearing
+// ============================================================================
+
+cetak("============================================================================");
+cetak("⏳ ARSITEKTUR WAKTU KOMPUTASI MODERN DI RUNTIME WIDYA-LANG");
+cetak("============================================================================");
+
+// ----------------------------------------------------------------------------
+// 1. STANDAR DASAR: UNIX EPOCH & PURE UTC (COORDINATED UNIVERSAL TIME)
+// ----------------------------------------------------------------------------
+cetak("\n[1] STANDAR PENYIMPANAN DATA: UNIX EPOCH & UTC (UNIVERSAL TIME):");
+var epoch_sec = waktu_utc();
+var epoch_ms  = waktu_utc_ms();
+var iso_zulu  = format_iso8601_utc(epoch_sec);
+
+cetak("    • Unix Epoch (Detik)      : " + ke_teks(epoch_sec) + " detik sejak 1 Jan 1970 00:00:00 UTC");
+cetak("    • Unix Epoch (Milidetik)  : " + ke_teks(epoch_ms) + " ms");
+cetak("    • Format Standar ISO UTC  : " + iso_zulu + " (Format Zulu Time)");
+cetak("    -> Golden Rule: Penyimpanan DB selalu UTC/Epoch; Konversi ke WIB hanya saat render.");
+
+// ----------------------------------------------------------------------------
+// 2. PARSER FORMAT ISO 8601 / RFC 3339 (ZULU TIME VS TIMEZONE OFFSETS)
+// ----------------------------------------------------------------------------
+cetak("\n[2] PARSER ISO 8601 & RFC 3339 INTEROPERABILITAS GLOBAL:");
+var iso_sample_1 = "2026-10-03T09:10:46+07:00"; // Waktu Jakarta
+var iso_sample_2 = "2026-10-03T02:10:46.000Z"; // Waktu UTC Zulu yang setara
+
+var parsed_1 = urai_iso8601(iso_sample_1);
+var parsed_2 = urai_iso8601(iso_sample_2);
+
+cetak("    • String Sumber 1 (WIB)   : " + parsed_1["iso_asli"]);
+cetak("      - UTC Epoch (Detik)     : " + ke_teks(parsed_1["epoch_detik"]));
+cetak("      - Offset Jam            : +" + ke_teks(parsed_1["utc_offset_jam"]) + " jam");
+cetak("      - Ekuivalen UTC Zulu    : " + parsed_1["iso_utc_zulu"]);
+
+cetak("    • String Sumber 2 (Zulu)  : " + parsed_2["iso_asli"]);
+cetak("      - UTC Epoch (Detik)     : " + ke_teks(parsed_2["epoch_detik"]));
+cetak("      - Apakah Pure Zulu?     : " + ke_teks(parsed_2["adalah_zulu_utc"]));
+cetak("      -> Terbukti Identik     : " + ke_teks(parsed_1["epoch_detik"] == parsed_2["epoch_detik"]));
+
+// ----------------------------------------------------------------------------
+// 3. MONOTONIC CLOCK VS WALL CLOCK (PENGUKURAN DURASI PRESISI TINGGI)
+// ----------------------------------------------------------------------------
+cetak("\n[3] MONOTONIC CLOCK VS WALL CLOCK (PENGUKURAN KINERJA TANPA JUMP NTP):");
+var mono_awal = waktu_monotonik_ns();
+
+// Simulasi komputasi beban kerja
+var total = 0;
+untuk i dalam 1..50000 {
+    total = total + (i % 7);
+}
+
+var durasi = durasi_monotonik(mono_awal);
+cetak("    • Benchmark Durasi Proses : " + durasi["keterangan"]);
+cetak("    • Total Nanodetik         : " + ke_teks(durasi["durasi_ns"]) + " ns");
+cetak("    -> Monotonic Clock menjamin durasi tidak pernah negatif meskipun jam OS berubah mundur.");
+
+// ----------------------------------------------------------------------------
+// 4. ANALISIS DAYLIGHT SAVING TIME (DST GAP & OVERLAP PROTECTION)
+// ----------------------------------------------------------------------------
+cetak("\n[4] ANALISIS DAYLIGHT SAVING TIME (DST) & KOMPLEKSITAS TRANSISI JAM:");
+var dst_ny     = cek_status_dst("America/New_York");
+var dst_london = cek_status_dst("Europe/London");
+var dst_jkt    = cek_status_dst("Asia/Jakarta");
+
+cetak("    • New York (AS)           : " + dst_ny["nama_musim"] + " | DST Aktif: " + ke_teks(dst_ny["status_dst_aktif"]));
+cetak("      - Mitigasi Transisi     : " + dst_ny["mekanisme_gap_overlap"]);
+
+cetak("    • London (Inggris)        : " + dst_london["nama_musim"] + " | DST Aktif: " + ke_teks(dst_london["status_dst_aktif"]));
+cetak("      - Mitigasi Transisi     : " + dst_london["mekanisme_gap_overlap"]);
+
+cetak("    • Jakarta (Indonesia)     : " + dst_jkt["nama_musim"]);
+cetak("      - Keunggulan Tropis     : " + dst_jkt["mekanisme_gap_overlap"]);
+
+// ----------------------------------------------------------------------------
+// 5. DETIK KABISAT (LEAP SECOND) & SIMULASI LEAP SMEARING
+// ----------------------------------------------------------------------------
+cetak("\n[5] MITIGASI DETIK KABISAT (LEAP SECONDS) DENGAN LEAP SMEARING:");
+var smear = simulasi_leap_smearing(24.0);
+
+cetak("    • Metode Sinkronisasi     : " + smear["metode"]);
+cetak("    • Jendela Waktu Smear     : " + ke_teks(smear["jendela_smear_jam"]) + " jam (" + ke_teks(smear["total_detik_jendela"]) + " detik)");
+cetak("    • Penyesuaian Drift Clock : " + ke_teks(smear["penyesuaian_per_detik_ppm"]) + " ppm (parts per million)");
+cetak("    • Keamanan Sistem         : " + smear["keamanan_transaksi"]);
+
+cetak("\n============================================================================");
+cetak("✨ RUNTIME WIDYA-LANG 100% MEMENUHI STANDAR ARSITEKTUR WAKTU MODERN!");
+cetak("============================================================================");

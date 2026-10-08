@@ -118,6 +118,7 @@ fn test_formal_verification_engine() {
         function_name: "bagi_pajak".to_string(),
         divisor_interval: Some(NumericInterval::new(1, 100)), // 1 s/d 100 (Tidak ada 0)
         max_expected_output: 1000,
+        ..Default::default()
     };
     assert!(FormalVerifier::verify_division_safety(&safe_contract).is_ok());
 
@@ -125,6 +126,7 @@ fn test_formal_verification_engine() {
         function_name: "bagi_berbahaya".to_string(),
         divisor_interval: Some(NumericInterval::new(-5, 5)), // -5 s/d 5 (Memuat 0!)
         max_expected_output: 1000,
+        ..Default::default()
     };
     assert!(FormalVerifier::verify_division_safety(&unsafe_contract).is_err());
 

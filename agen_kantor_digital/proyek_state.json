@@ -1,25 +1,30 @@
 [
   {
+    "id_proyek": "PRJ-001",
     "kode_proyek": "PRJ-01-KOPERASI",
     "nama_proyek": "Koperasi Merah Putih & Simpan Pinjam Syariah",
     "status": "AKTIF"
   },
   {
+    "id_proyek": "PRJ-002",
     "kode_proyek": "PRJ-02-SMARTCITY",
     "nama_proyek": "Platform Telemetri ISPU & GIS Smart City",
     "status": "AKTIF"
   },
   {
+    "id_proyek": "PRJ-003",
     "kode_proyek": "PRJ-03-COLLAB-DOC",
     "nama_proyek": "Kolaborasi Dokumen Realtime CRDT & Markdown",
     "status": "AKTIF"
   },
   {
+    "id_proyek": "PRJ-004",
     "kode_proyek": "PRJ-04-DAPODIK-AUTO",
     "nama_proyek": "Otomasi Integrasi Data Pokok Pendidikan",
     "status": "AKTIF"
   },
   {
+    "id_proyek": "PRJ-005",
     "kode_proyek": "PRJ-05-LATEX-JOURNAL",
     "nama_proyek": "Generator Jurnal Ilmiah & Kompilator LaTeX",
     "status": "AKTIF"
@@ -48,5 +53,32 @@
     "kode_proyek": "PRJ-10-WIDYALEDGER",
     "nama_proyek": "WidyaLedger Sovereign Blockchain & RWA",
     "status": "AKTIF"
+  },
+  {
+    "id_proyek": "1",
+    "kode_proyek": "PRJ-01",
+    "nama_proyek": "Koperasi Digital",
+    "status": "AKTIF"
+  },
+  {
+    "id_proyek": "PRJ-001",
+    "kode_proyek": "PRJ-WIDYA-KOP-01",
+    "nama_proyek": "Sistem Koperasi Digital Berdaulat Multi-Agent",
+    "status": "AKTIF"
+  },
+  {
+    "id_proyek": "PRJ-8374",
+    "kode_proyek": "PRJ-WIDYA-INV-02",
+    "nama_proyek": "Sistem Manajemen Inventaris",
+    "status": "AKTIF"
+  },
+  {
+    "id_proyek": "PRJ-8747",
+    "kode_proyek": "PRJ-ARKAS-WEB-01",
+    "nama_proyek": "Aplikasi Rencana Kegiatan dan Anggaran Sekolah Online",
+    "port": 8012,
+    "url": "http://localhost:8012",
+    "status": "AKTIF",
+    "qa_status": "VERIFIED"
   }
 ]

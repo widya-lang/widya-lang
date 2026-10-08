@@ -51,15 +51,15 @@ fn base64_encode(data: &[u8]) -> String {
 
 /// WebSocket frame header (8 bytes minimum)
 #[derive(Debug, Clone)]
-struct FrameHeader {
-    fin: bool,
-    opcode: u8,
-    mask: bool,
-    payload_len: u64,
+pub struct FrameHeader {
+    pub fin: bool,
+    pub opcode: u8,
+    pub mask: bool,
+    pub payload_len: u64,
 }
 
 /// Parse WebSocket frame header
-fn parse_frame_header(data: &[u8]) -> Option<(FrameHeader, usize)> {
+pub fn parse_frame_header(data: &[u8]) -> Option<(FrameHeader, usize)> {
     if data.len() < 2 {
         return None;
     }
@@ -100,7 +100,7 @@ fn parse_frame_header(data: &[u8]) -> Option<(FrameHeader, usize)> {
 }
 
 /// Encode WebSocket frame
-fn encode_frame(opcode: u8, payload: &[u8], mask: bool) -> Vec<u8> {
+pub fn encode_frame(opcode: u8, payload: &[u8], mask: bool) -> Vec<u8> {
     let mut frame = Vec::new();
     
     // First byte: FIN + opcode

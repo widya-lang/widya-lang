@@ -1,193 +1,214 @@
-%PDF-1.4
-%“Œ‹ž ReportLab Generated PDF document (opensource)
+%PDF-1.7
+%âãÏÓ
 1 0 obj
-<<
-/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R /F6 7 0 R
->>
+<< /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<<
-/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
->>
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R ] /Count 12 /MediaBox [ 0 0 595.28 841.89 ] >>
 endobj
 3 0 obj
-<<
-/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
->>
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
 endobj
 4 0 obj
-<<
-/BaseFont /ZapfDingbats /Name /F3 /Subtype /Type1 /Type /Font
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
 endobj
 5 0 obj
-<<
-/BaseFont /Courier-Bold /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
->>
+<< /Length 757 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (BUKU DOKUMEN MASTER LENGKAP PROYEK 05_widya_workspace_crdt) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+0.94 0.97 1 rg 50 691.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 691.89 m 50 727.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 705.89 Tm (KUTIPAN: Standar Resmi Spesifikasi Industri ISO 32000-1 *  Kedaulatan Sistem On-Premise) Tj ET
+endstream
 endobj
 6 0 obj
-<<
-/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F5 /Subtype /Type1 /Type /Font
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
-<<
-/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F6 /Subtype /Type1 /Type /Font
->>
+<< /Length 749 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: WIDYA WORKSPACE COLLABORATIVE CRDT & LATEX JOURNAL) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_analis` \(SOP-02\) & `agen_coder` \(SOP-04\)) Tj ET
+endstream
 endobj
 8 0 obj
-<<
-/Contents 17 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
 endobj
 9 0 obj
-<<
-/Contents 18 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 976 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Problem Statement & Tujuan) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Sistem pengolah dokumen korporat sering menghadapi masalah *merge conflict* saat banyak anggota mengedit secara bersamaan, serta ketergantungan pada SaaS proprietary asing.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (**Tujuan**: Membangun editor dokumen kolaboratif real-time berbasis algoritma **CRDT \(Conflict-free Replicated Data Type\) LWW**, live compiler rumus matematika **LaTeX/KaTeX**, dan generator dokumen resmi terformat **ISO 32000-1 PDF**.) Tj ET
+endstream
 endobj
 10 0 obj
-<<
-/Contents 19 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
 endobj
 11 0 obj
-<<
-/Contents 20 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 725 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (ARSITEKTUR CRDT & ENTITY RELATIONSHIP DIAGRAM \(ERD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: WIDYA WORKSPACE COLLABORATIVE CRDT) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_arsitek` \(SOP-03\)) Tj ET
+endstream
 endobj
 12 0 obj
-<<
-/Contents 21 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
 endobj
 13 0 obj
-<<
-/Contents 22 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 1411 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Model State Machine CRDT \(Logoot / LWW\)) Tj ET
+0.94 0.97 1 rg 50 701.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 701.89 m 50 737.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 715.89 Tm (KODE \(MERMAID\): graph TD     ClientA[User A: Lead Coder] -->|Insert Op ID 1.2| CRDT_Core[CRDT State Matrix]     ClientB[User B: Arsitek] -->|Insert Op ID 1.5| CRDT_Core     ClientC[User C: Notulis] -->|Delete Op ID 2.0| CRDT_Core     CRDT_Core -->|Deterministic Merge| UnifiedState[Unified Document AST]     UnifiedState --> RenderPaper[IEEE Document View & PDF]) Tj ET
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 679.89 Tm (2. Skema Basis Data Workspace) Tj ET
+0.94 0.97 1 rg 50 625.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 625.89 m 50 661.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 639.89 Tm (KODE \(SQL\): BUAT_TABEL JIKA_TIDAK_ADA dokumen_workspace \(     id_dokumen TEKS KUNCI_UTAMA,     judul TEKS,     konten_markdown TEKS,     penulis_terakhir TEKS,     versi INT,     waktu_update TEKS \);) Tj ET
+endstream
 endobj
 14 0 obj
-<<
-/PageMode /UseNone /Pages 16 0 R /Type /Catalog
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
 endobj
 15 0 obj
-<<
-/Author (\(anonymous\)) /CreationDate (D:20261002014920+07'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261002014920+07'00') /Producer (ReportLab PDF Library - \(opensource\)) 
-  /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
->>
+<< /Length 714 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (SPESIFIKASI KEAMANAN & INTEGRITAS DOKUMEN) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: WIDYA WORKSPACE COLLABORATIVE CRDT) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_keamanan` \(SOP-07\)) Tj ET
+endstream
 endobj
 16 0 obj
-<<
-/Count 6 /Kids [ 8 0 R 9 0 R 10 0 R 11 0 R 12 0 R 13 0 R ] /Type /Pages
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
 endobj
 17 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1169
->>
+<< /Length 798 >>
 stream
-Gatm:?$"^\&:N_Cm*"eCcJV7!A]shm.8K/D$4\u]oM0!RC(Sku$oKB"rqij/3rot=kQD*kdDqi"<_"Z=+S_eqs*b,jRDHiW"j.sW!HfpuZ2oV]k?!Es1L1'bTU$/'^_NE0UES6;)Z&!hCa#1j!Q/$R_[6%'o+#6V-Wh=n'gf2AP&!<t1WuUSRm8lcmanE;/V"sqFS$k!LXGc+_I44?PAuhAmihQ7fa$^]/jdiBa5jbF:[X;Kdl]0.I*^tu"=>r?9oV0%RRK395paGse9Aa'Y2^*1'g_S7&l5/bMC5%6+f%\s7TWG,U_.-G4H*0_f<V3*>INoW_NJl.7R7Xq@1WpPiuiU_KC`?fc\^WAPSclt(s7LXChhQFW8">Ge>QfIE,5m&7XoB8..ph_eAS,2#g%>`/WB]eN/T(,Z7Z];pR"a+bIbf;\_(f\]t1g/Vj3Z_W;F;?qkQem2m$UFPpMC>6N39T$&L-C0ji!/#.m2S+A,.kI6pJc_E3S(7TR,CZ@L%"P(!JM[0=dd@"be_j=oJ3*-*MfS6OM:"?9ZQ>LE0^GC9%V+L]Vgdo[:^=Fdh:3.aL.T;@.mLCQ&dC:>,W`7U9e4:f5u#3)FENjd!fXm(OWc:i*\-<J`8$XZl$cgleFk,mVZ)Q@t9I4]U_E"CodGqZ>e,9B:[l,W^00H!P^#U]Ku_nEpnLc,e@-X"#gHZ,5hA##jD+##FrQ^'\&S\IXk8'!?3#e/V@Y:Y]F?KT4K=3T's"8/=Q&DXuaP7U4?-m>jab2!]::dCIf/%%F-NPC32c3>TU*uGa+Uf=CBX!#L,hR2-Te.aOnIoWZ1j)Vi&@P6_.cIFpj]MTjc<N,J8?Cc;X)p/,[.j'F5V92N3oag-X/_j7MK.LBo,([4&0NU[HQ`@-2kS7S,iU:F"npHd3Tu&;(R?+FC7C$?LNPgfo=^%61KT.:RVN3Q>jIh8j:T4R0emW6YH$BquGR"n')s_OJTho*U`G)X_)f9-?C&5']p//$X_a`HP7En+_)o.q4X/V]#ANGU\jYkZ\o]:-H.1K4WHO`P&mSM`dBMFIM7_q,]\VJS;n.RAKr3]T;$s-g8Gbdt-",i)U1Y!OcrLE'D%Y)cjq#Y:=ka.G)K.9kb046W+jnJXYh[AlY@M'beN)+IC<u@P2<jNe$"*6`j%u"OG]`~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 7 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Kriptografi & Proteksi Hak Cipta) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- Enkripsi dokumen end-to-end \(E2EE\) dengan kunci simetris AES-256 pada channel WebRTC / WebSocket.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- Timestamping kriptografis dengan hash SHA-256 tersimpan di WidyaBase untuk perlindungan Hak Kekayaan Intelektual \(HAKI\).) Tj ET
+endstream
 endobj
 18 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1509
->>
-stream
-Gat=*=`<:j&:Vs/W2C4F%8M-%m3?NpOBi&'#WA.i#q>.)j#HgAD)5%brUF*/Cr_3=-Q<b9qP`GTY7:mB5IC3W7fZU3>hi/K%(ml_6SlLs6I.ajqi$gg3S13IfjL4QZYdb&CUgFuQ>Ph"1l$&)Ap>s$cXM%5"N0BK`b-c0q=T[\EcAKc71*%2:QYt[<]2"p[@)7l.dd`82?R/heo]p(_uPd"#"KWZ.\]#'"'Scs/"i4o.#]NZJ913dT_6Y)!Ot&afc/j-Is_\@DrU:E8QXSKbiRkI?0&sZn#J50*^@fSn+cp'VHHLl6VU8;bX&EQP9;395B-M-niJ<`a-R@m@Z?UFA7pV/+5(Q"gq0aiQ`(J"pcJ$g[uB?O9Q.q/;TgmJd-*Ao)KQ<Zm4p<_E#T.%"Z.fmAjr(jLg,(LmD5TB5OD6m\%Oj6\teS*nM8#Lmd0iOGji(;X'lB'a:tqKDC[gM8Z+QQa-\>ACZ$b(n`=A>hO[Eid>thUEnX@!iu`CN5+*.XW*U$m3fJ*5:)R]Y77f56iljd)qm-A8UWL:lGHQ:34W4el=//@-li2[R-=%.r^p)klIT/kF^5o.T]?]m[18\J<9ViIZes9[3XltN/'L:oTJqn?apE0Z/N2`uM$3Wl4.MO@m.-2qlFNf-G5bT--RqrbU.$W&EKgR>VbDRr#=,^;s1KA>PPG0GgLp[CgM%[O]+%7`t+T!SNPQf,aG;O1N2EOF%5HSmr/7eU,oGOR+D'HC\,;^[$1[q0BK,IeG=9Y_TDRWCZ_O[HuJD8Z&/^lbH.XFAoUWsSM?T:sn`bFuXap?d-j>)m<NhQ#%0,kLq1gRSOk,Y>kDpn<fK'*=UlA)d+r?N*'YXhe61^@&Q\kZ.c6RL8)p&WeCB<`$6!$[O3FgU38YK7g,e<_jbiaitNo6p%>!p)S%pe@hT`4hl)U6$lA6/>CAR@K17^lqGJ&IB&!;\n<-Q-<+<M"=?"hloRS^_O_?FdfD\5is8="-K:Zg1^]3Ym;9Y3E?EiIt,0F1r@q!i=^$>KIHUt,a@I`g&O8M:C?c&M)0\ggNa?%"iV-9Q@T>?,Rs<8<7'6/[#1kECL*:Z\!O(Y0Tg/KJc&^$k]R+rl+O2FeqW/$_k(l*+:N^u(e3g6PUWDtBTllCOX"Pil@A#jnDoXgJbhPQD1SCtU*A!_L7bHhU&Zm=b9TNeqa12JW&@dkKTJ*P.G^IV"XcZSfPIJD'Ot-'(ce$fN`F^N[e#nnr*bXd+lsfG%6)'L7$4.MD/\(QH^!uqn+NuN?+DY!bed+>:n8Z_ER4%0oEQDG?VXKY&@f4JL:--%pVE5O7YB>31$i'q637l9?XPo`4N;>!dXYI:N%ihEIA//7DJBMGGH`&qF6!NWhGe.cX_V%d[^Y`p>rq>-VO(eE_(i"?R'<,bp-@/dWO4TKJik9u1#Kgb'ODq3eC+q97P,!cK.pEDK:53%dg%i-,uY]VfO^Dm?nQYCXV%ps7Vo]bnL#*S#j!ifAK$*06QJ/`(OS9mc2~>endstream
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
 endobj
 19 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1702
->>
+<< /Length 717 >>
 stream
-Gatm;D/\-!&H88.0qV4J]"#B<?,,HrP72V=Qe0rg;3Y&$$4_%VP8\MQPPX<XG&;jT5d%!h-$FHEB4dc]jol(p5?.Tp?NRSZGk[d2AIq!)jVioQ#@;NBrIS(56>0=W/MIX-=dEp`1#1;1e)EClbpL<5(s:sHMbG0GJ6N(-nX1conFhG^4h+^c,0CUH@E8G^e;]'%lR'b+eX7JMAmi`uRSI[WE6suo"o<aU&`#nqctYXZ?roT13'lau?8ic-i&Uu0!Z0c(7,O[1UO3'#K&M^@7;4K%:8e-1PNPq0?U)O(alGXX(.p-(/%tk>+6i#;r;Cf4RF3-D_b:lj7M'Bg+@O$NgjZD7==PH_AHAK.,LmF[>9Q(jEc^^)kH3tU,Qajq"laKZTACd!&\`[L%>cfL29*!+R8VMl-9fTYCWtoT[j9**Ccd1e_/J6@,!WYi_!="C59,=urD=#2bOqD:J^]Cd('`acbn4'e?5e!NA.6;=Qts8ZOTo?oAoiO>QV_TD2$FUY(_s2,Fdhq:-jJSh1pn29o#=[S7="Kf]0!ZI$'t]c=&_('E35R&f=lUl_"BDFL*NVV6"ej93UL7*\:!f\>\=)qUu;of!AI/uBpRg!U7h#&IgQ?o,E,.QcW,keR]$O#bL\'CUiDf?3`Z;f0u-N8S+S+\i?EQ[;AYM,>od`I[DKDQQm$McT+l3q(GSR]V5ed+A<Su[VaW@*e9&t>jAS#X>n[)N8l<15pq`9#c+WV=Z?6;QL6"34Xino2F,gOL5/fltSYW2<RX'5ua&<\KARSXM;@WK'BnH72iZ`r&I/fRG8X[G>Xkmg$=r$N:HIpd3+Vgn*O:]HN;Ki^jg<Jr^"@K,E:%1I^H>X@jmNj21HO2lc8M:[A@QH)dDH+kk$RM,B^^=R,_96^ObN#KjLg1+<Wb%_iRUh+n4'j9p3*4I"i[Js\eGLgriG\Zt[2D1rT`TsEi4D63p-Tudl)aI:<af<iTub]t^E2*BQT!Q!i0:eBWWCL$E2]m;C?o-@?r_"Yl2%572d%Ei:8s4ejLDXEl,`B=ad6_-Y)DonqFNkDI_[p9+4=]"/p^b#"7GH'ZUCG$$)>MJS$G-C&0r-f4,TYnr7:U)Dg2+PRQP*G)7f4NSo3)aEFChH+OG6'e*PLRXKpU?bA1C0/(3e4e`)]DbtiO(DO;f\`5rq6Fo.L?!iA7C:R3`Bj)qp;2_JRLY%OAJREp$SCjPFD:S]p-16p_kr$CTEOe5>9p=P3KOjj#MnB(,[PK7s=m_j)cR',S7A%R:'lf4#)l#]f0!)>g'FN9#o58csdht_[JokcM@/<iD0EPBR&e@U\2q/l;"*H"(fR7tm4VG]O+9_61#^CmUOi")R%g2fA02NuD7<9B1)heh2_q;Zs:#0*HL353%k)-`58AlO[Y1.0YhAqnV)1IL]*)Z"<qW-Ei6:AN_@Ea)J)'aNM1*!r;Ud4.XA*)XCW'_n@,308i5a-[2$YWM9"!shD'keBV#KRWU%!,'uhml01*89s,e_]gIo7_#i`l\@j?&L$4u@[S-qYu6Qh0[tW@mhfK7U&3&aLVnfS$!mj8*5NA[W],e&Il`<aU-+,_o$HoRBR2Q6nqn*T*40('WiL&KXY)C$&Z\DA,Djlc2NJ7=S>C0p9b[Bf,+ZWZr)s8a&)dkpS"qj1(`sgI]ctonclsC5XP1\7GS)T+^CJ^P:Vk]D10j_bZn,u>~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 8 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (RENCANA PENGUJIAN & VALIDASI CRDT \(QA TEST PLAN\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: WIDYA WORKSPACE COLLABORATIVE CRDT) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_qa` \(SOP-05\)) Tj ET
+endstream
 endobj
 20 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1341
->>
-stream
-Gat%b=`<:j&:i[6(%npX,LPbnm:5"Ci0eg]!e[&'+sBCgcljH_@?$[gV#Bgfh6mV8JXm*>]$j_\I<EAVieQ4%dj;du$Kkb50Fm=\0S_WL?:0s#ropZLUm-N=cNhd]`:j?UYMh,(4l6h[83j$?F$*OL4,(6'K&]MfiE0i>qUD54*SbL#;(IO='BFbDho::bV^A!>g,mo2RtGW3'0u_m3^C4<8CR[JU*;i?d(K]<5^Wbc+Gh`>`c:hTrU:R,d3q]WY&H;aNr[HJr=7Y5lN(BM*^2so]HnY,ZIr%Hpp)C@c!!j7j0Y=Vp/q15B_r6'7cQ`'pNq[?7P717\<&g<(kG<lebCY4^U,td('mYNOOuGE/CB(bqKeso4Lk-&-b=jt_3;&4H+W/Xhr8+kN<cC&K:;BI260k9k.-M-A*msH",Gj$JXqao,lSDe_B_UfiD"QTJH(/p2N>EpqCmL"E,^"7h0qWY<?^Ml.E%@<_+TH"TE5<C#ong$2H4nm4Gge=DM.H7Rr0@/g$cNLiWooOPK(2RPHqX&%bFc=_P"/1KT0<i5jGdtF!(,u6F\+t#K\C,N8S`$I2uW&a'fndL&[/0kpZV8bP*i&/HDu7-/tE@640$6palg_6]B&kblj02ZNE#>pU1ZO1/)*H$g[2/[b5Q,"Ul4Dq6Ms"UiUU^$dFR8H]#E^4`P"G#o_gRW6J7UY)C>*X/.:Fnb/q\3l%P\$qEJG:!QKX'k1hOgFX0\q#?__%s[L+fV7^*HG,N"0Qo8al-U?5rm;^nJ]O?eNjA[Pbm4a#CgF1*V0^9<4%JD4deP5B/!\!um\j%g8D!l$L9Q24-p:2$.g$S&H.e+S?h3?4GocrR7?/:\7^H+/?0VK51$_i?*Y.E&Le#kR$td)<Wrhj/1!O*i/Tk'*)[N47a"[\IC8PD8XGT=ti*QFH:+tS]9Tmp_f+i!oUdiN<m1dV._u_4qoAt1t92X;8V3^GKQp^l<MG7m7Ze@N/EYVbF.UAcgCL!HBE,V2mL"^4m(=b<u[4W7u1#(Dtke>WJmQft#Vo$E_W:WF>eQ+75h,QFj-YMM9Ig%pT'\fFQ2B*4:C!p*ql>A9A%p!7O[sXAddK,t<6`O?l`!@<uGVkGE#d>?s0]Cf&>6=.MO1LFi3(e)J4`-[,$u_B`PNYi8:rhIMNKYLk:+>QbN:a_Dg[/p7"Lr[$.Hc%rT;\sW>1:.3*6]Y/ZdN9*Ar>q.?,KXCDrJW>qUc9%Rbm'q-_R@2e:$a*<+3NDTp&-'Z'#thV\i+<WpD^k^kUQ;[`J##Ag!$U=oH^DcK865T:W?f530:"k[XVgIOjGN/PK$]e=NWp"8<p[T^s8/qc[D~>endstream
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
 endobj
 21 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1344
->>
+<< /Length 867 >>
 stream
-Gb!$EhfIL2&BE](/,&'cUbfND/GVfmSD^b,"<?bbm7h1J4qL["(huan]=C0*<jEl6JG*;e/t'X!YGC"QlrP]7+S\USs5=CE,)(5B'I\TU%$Xs9dOp2ej'./e,DEA#m<[\O_X]hH_eEel4P/UO"j8:1o,*K<-B28+E.E9:>50WoN8HOL=U2'E=2_UXY8fQ1=)6h]\d9%jc-2\1c=Z#!ad,YKO)V=jb6>n9;%_PQ+4.Y+/qBPr)@'^>1?\lQLV<Gk+/>J62Z^]3UlWn#]6XIqKDq4AKB'qgZPre14Zq&KVr]*Ab(jC[.a>3iXcDuWIs%h7naE_k\_88qf?>#S7h!+!&CTK"R\/1SAd/FQ9Hc.J8H"D3Hm(.1.c\geRuQ_P'*21IP[`OgO.-F2.c;pi7oO#99po%L.<Q[!ij5Yi`I(G.UcH2eqZ]4fh5D>>&R5h".GQkEG8_gm)IbMj#/0o?"&(Ws3rZS-(m<Ca/_eaA!QAdK>[ZqVk7(3gTFQWR6[cYF990[)pl;/Lc`#4Tf!Q5mg6Hbe@+h!6Tk#)g4.9>oXe`S-r?[!+rh,In_.<n=rGFR(kRW8%q@ji'-NS1l'bO^RE%?'6Se`8C0Ke]O7=k;knR1mtfjV<8f%'NflZW*3F1p=EC]q0qIp4L+b>f&NWVh'['%1!rT%J_m$f<MS*5,AB8MLlP`2ul%V6Ys%+22=`Mk'?ug.M3]Mhn"(M:,,DHR@^`4-`%mlN!od(t[-'X]Fae+N!`28PjY%eL@$UrH]IB0m1pEV4.Ia"Wt%HRR/Rsam)`73HXE4m#QFC?f?;g/QJi-<AHe,#'UPm#b1X]Ljl=^pXF<dembmk;9ehmZ*EKp_1W36Gs5IJL!32O,?:akEXok-@]g1#W>_'V;Vu&:)B2;59j<phR&O=B9/VBR>i:^FPTr^kI,(>s-hD!Mi<K/9kMO7Si+cTB<mqK:6@N#,)*1nM5G'/>nf+HlO(89L67s!R\BOM4#3/%m^CV"47]-ng8,nc>a6bA_Ik9^cf'Q^D.3E+)6qJJ:7L3^*5f4F)A0hrC6ClD[3'.Scgdp]lKl9!EN<K,lFg\L!%j!en26jX>":'u!%AR(6r32NBK6RqR+^i2`i1;Y>gAT=aFkD<l%[6*+lKH^%3[sQIP$CL]dFQpE]jS92EoL5THQ0HK&Dk4i/[C8-f=-:@mhfJLC[Dc?#_LY%'heiO$6CIE;tHk^O^FQ34fOm(07)(*4=n*.>e/cVd>)L[OM?B^RgWT0,E(n=p8/6[<Jlrf_YWQ\7"J4a[@4*C\C5X[#U2h%\B1S9i/'93X.e>1\fp8LMg4+4a+nK"c#A(3W$qnqNc^ra%mW"/"o~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 9 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Hasil Pengujian Kolaborasi Multi-Klien) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- [OK]  10 Klien concurrent editing: Zero conflict divergence \(Deterministic Replicated State\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- [OK]  Live Formula Preview KaTeX: 100% Render presisi tanpa freezing UI.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- [OK]  PDF Exporter: Standar ISO 32000-1 terformat rapi.) Tj ET
+endstream
 endobj
 22 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1320
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 710 >>
 stream
-Gatn%>Ar4f&BE]('_?E7/$[s3^#k:g[tb((e0^"r7>`WMi,HjoZr*WJpbTN?`":k&;FA<=]U,&bc$sBMJDu@;n'Md+C'`*d#)pH=!_a45_]Arug:oLGc;]ZTiG%dd7C;bG0#LP\4Y6g>i_u[2a*IKf[PA4qOBOpPgH:23k8Lc*i98H#[AN^\6S=1(Dk+oBDW8=*?.6^A*4/jB"SFX;5e&0VqLDmLiM-j\?a[%%21[65_Z@,sgMd]k]60+h5qfn>#M2=n:G@0JqQHUo(e!>2co$_&?aB3;o(]N9kF:XFPWk,un^^GSIQ#K#a,b68+8gJc&^Qj+BV,[OI:V<K'M1aNE;4!7@qg3rB*#8c7a"<oi!Fh$;@FVJqn>!pZD-9V[s/l'an%l)<2+V&=rPhZmmsbd2.N4.4`$$9'CJMJ6\]`;n6]20E=gq1&bK;Zm7u.kJa^i&k#K(Q#gKS"65uYL@O/Ze(i+bGO3UZ@GNG.ghX0S(inWKu[q^pWT/1&=<eaHd7kCJ4`^L^sQADcfFUb&@:,I0cp3d>:_PeCa>$h@+')$XRX"\8t41Fule/hoti4?S\&_d?U$6^!uFG1D[&+Nj<,X[ORj3.X']1Dgr>7ItpDJkfVM_AnFgY(`0k/RhG7655<".?2p0!%G97..PDY.:"R1->ja`%+ZRXcdD0H5rhIf?]rHN@oJV%n:IHl99U,#ZQWY\W;N5Ih;R"[SG2Lpp^E-D_r@K*F\<9%-^oK.UB`Zk:rQ,-nE`UFc[4!VlQ_+Of[]e$K<oBRHDjl<oYaW&EdGlDa@=%/e_6VGLG5O>u:(lX1^lVPPPua2L)&gh-G0]\u6+krfQK]$8JkRb&1?'p:-n)1+!ToUR,"NUG4a7oeLXs"ZeR#2\=BdH-Y$Fl.igK"Uq.e+V+KhPC/g:SNL2RaX/V5JW457?=&ie7Dn1_oS-g*lqb#q+I=;@A*<mW`I:Fe?Bbsre-dSK$;tmB_.<)0X4g3QP8,Q"RG4o^2M#l!r2h5!gMWXQNjDiKP/V7Nff"gb0<18cK6qOu<5(![`%C)(.C487.EN5R&9W)gPVh"/*5#TgG:[Jp1l+24!1;MNGi7A0G1aLEEX2+WLc\s*h,`;[h]s<OidS<'Q.eEBVIED#9rQQgZ^j&Y_'u2iL8FS*"pXGq>_`HlkA\RhAa^#7!\kWoiGjr1l2qc/HU],">)'jB<aj$"3dhJ^auV"F=f\9/^On$&]3N%=k/f1-A-o8GR'!7WA8BpK-7.f"d*EK\*:E0IC3:Y*j-<6C.2JPt,TES8>k\@Y,uj3$NP@46/TH7V`X*tRpHUc9q[_B5GY.~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 10 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (SOP DEVOPS & DEPLOYMENT SERVER MANDIRI) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: WIDYA WORKSPACE COLLABORATIVE CRDT) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_devops` \(SOP-06\)) Tj ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 828 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 11 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Menjalankan Server Mandiri \(Port 8005\)) Tj ET
+0.94 0.97 1 rg 50 701.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 701.89 m 50 737.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 715.89 Tm (KODE \(BASH\): cd /home/devops/widya-lang/proyek/05_widya_workspace_crdt ../../target/release/widya server.wya) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 681.89 Tm (Layanan akan aktif di: **`http://localhost:8005`**) Tj ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 358 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 12 dari 12) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+endstream
 endobj
 xref
-0 23
+0 28
 0000000000 65535 f 
-0000000061 00000 n 
-0000000142 00000 n 
-0000000249 00000 n 
-0000000361 00000 n 
-0000000444 00000 n 
-0000000554 00000 n 
-0000000669 00000 n 
-0000000774 00000 n 
-0000000979 00000 n 
-0000001184 00000 n 
-0000001390 00000 n 
-0000001596 00000 n 
-0000001802 00000 n 
-0000002008 00000 n 
-0000002078 00000 n 
-0000002359 00000 n 
-0000002453 00000 n 
-0000003714 00000 n 
-0000005315 00000 n 
-0000007109 00000 n 
-0000008542 00000 n 
-0000009978 00000 n 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000231 00000 n 
+0000000328 00000 n 
+0000000430 00000 n 
+0000001237 00000 n 
+0000001339 00000 n 
+0000002138 00000 n 
+0000002240 00000 n 
+0000003266 00000 n 
+0000003370 00000 n 
+0000004146 00000 n 
+0000004250 00000 n 
+0000005713 00000 n 
+0000005817 00000 n 
+0000006582 00000 n 
+0000006686 00000 n 
+0000007535 00000 n 
+0000007639 00000 n 
+0000008407 00000 n 
+0000008511 00000 n 
+0000009429 00000 n 
+0000009533 00000 n 
+0000010294 00000 n 
+0000010398 00000 n 
+0000011277 00000 n 
+0000011381 00000 n 
 trailer
-<<
-/ID 
-[<3d11c5eba602ded6cb0234e47405632d><3d11c5eba602ded6cb0234e47405632d>]
-% ReportLab generated PDF document -- digest (opensource)
-
-/Info 15 0 R
-/Root 14 0 R
-/Size 23
->>
+<< /Size 28 /Root 1 0 R /Info << /Title (BUKU DOKUMEN LENGKAP - 05_widya_workspace_crdt) /Author (Widya-Lang Sovereign OS \(Proyek: 05_widya_workspace_crdt\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
 startxref
-11390
+11790
 %%EOF

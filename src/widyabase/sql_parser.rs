@@ -120,6 +120,8 @@ pub enum Token {
     DropViewIfExists,   // DROP VIEW IF EXISTS
     DropIndexIfExists,  // DROP INDEX IF EXISTS
     InsertIntoSelect,   // INSERT INTO ... SELECT marker
+    Materialized,       // MATERIALIZED / MATERIALISASI
+    Refresh,            // REFRESH / SEGAR / SEGAR_VIEW
 
     // Literals & Identifiers
     Ident(String),
@@ -359,8 +361,12 @@ impl<'a> SqlLexer<'a> {
             "ROLLBACK_TO" | "BATALKAN_KE" | "GUGURKAN_KE" => Token::RollbackTo,
             "FOREIGN" | "FOREIGN_KEY" | "KUNCI_ASING" => Token::Foreign,
             "KEY" | "KUNCI" => Token::Key,
-            "REFERENCES" | "REFERENSI" | "MERUJUK_PADA" => Token::References,
-            "CASCADE" | "KASKADE" => Token::Cascade,
+            "REFERENCES" | "REFERENSI" | "MERUJUK" | "MERUJUK_PADA" => Token::References,
+            "CASCADE" | "KASKADE" | "AIR_TERJUN" => Token::Cascade,
+            "MATERIALIZED" | "MATERIALISASI" => Token::Materialized,
+            "REFRESH" | "SEGAR" | "SEGAR_VIEW" | "REFRESH_VIEW" | "SEGAR_VIEW_MATERIALISASI" | "REFRESH_MATERIALIZED_VIEW" => Token::Refresh,
+            "BUAT_VIEW_MATERIALISASI" | "CREATE_MATERIALIZED_VIEW" | "BUAT_TAMPILAN_MATERIALISASI" => Token::Ident(upper),
+            "BUANG_VIEW_MATERIALISASI" | "DROP_MATERIALIZED_VIEW" => Token::Ident(upper),
 
             // Standar Industri Baru
             "SERIAL" | "AUTO_INCREMENT" | "OTOMATIS" | "SERIAL_PK" => Token::Serial,
@@ -379,7 +385,7 @@ impl<'a> SqlLexer<'a> {
             "TABLES" | "TABEL_SEMUA" | "DAFTAR_TABEL" => Token::Tables,
             "COLUMNS" | "KOLOM_SEMUA" | "DAFTAR_KOLOM" => Token::Columns,
             "EXPLAIN" | "JELASKAN" | "RENCANA_KUERI" => Token::Explain,
-            "ANALYZE" | "ANALISIS" => Token::Analyze,
+            "ANALYZE" | "ANALISIS" | "ANALYZE_TABLE" | "ANALISIS_TABEL" => Token::Analyze,
             "UNIQUE_INDEX" | "INDEKS_UNIK" | "BUAT_INDEKS_UNIK" => Token::Unique,
 
             _ => Token::Ident(s),
@@ -460,11 +466,23 @@ pub enum SqlExpr {
     Wildcard,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum CascadeAction {
+    NoAction,
+    Restrict,
+    Cascade,
+    SetNull,
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct ForeignKeyConstraint {
     pub column: String,
     pub foreign_table: String,
     pub foreign_column: String,
+    #[serde(default)]
+    pub on_delete: Option<CascadeAction>,
+    #[serde(default)]
+    pub on_update: Option<CascadeAction>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -526,16 +544,21 @@ pub struct JoinClause {
     pub on_expr: Option<Box<SqlExpr>>, // ekspresi ON yang lebih kompleks
 }
 
-/// Definisi kolom lengkap dengan constraint standar industri
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ColumnDef {
     pub name: String,
     pub col_type: String,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub not_null: bool,           // NOT NULL / TIDAK_NIHIL
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_value: Option<String>, // DEFAULT <value> / BAWAAN <value>
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_unique: bool,          // UNIQUE constraint / KOLOM_UNIK
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_serial: bool,          // SERIAL / AUTO_INCREMENT
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_primary_key: bool,     // PRIMARY KEY inline
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub references: Option<(String, String)>, // REFERENCES tabel(kolom)
 }
 
@@ -682,6 +705,9 @@ pub enum SqlStatement {
         stmt: Box<SqlStatement>,
         analyze: bool,
     },
+    AnalyzeTable {
+        table: Option<String>,
+    },
     Savepoint {
         name: String,
     },
@@ -690,6 +716,18 @@ pub enum SqlStatement {
     },
     ReleaseSavepoint {
         name: String,
+    },
+    CreateMaterializedView {
+        name: String,
+        query: Box<SqlStatement>,
+        if_not_exists: bool,
+    },
+    RefreshMaterializedView {
+        name: String,
+    },
+    DropMaterializedView {
+        name: String,
+        if_exists: bool,
     },
 
     // ========================================================================
@@ -869,8 +907,14 @@ impl SqlParser {
             Token::Vacuum => self.parse_vacuum(),
             Token::Show => self.parse_show(),
             Token::Explain => self.parse_explain(),
+            Token::Analyze => self.parse_analyze(),
             Token::Create => {
-                if self.pos + 1 < self.tokens.len() && self.tokens[self.pos + 1] == Token::View {
+                if self.pos + 1 < self.tokens.len()
+                    && (self.tokens[self.pos + 1] == Token::Materialized
+                        || matches!(&self.tokens[self.pos + 1], Token::Ident(w) if w.eq_ignore_ascii_case("MATERIALIZED") || w.eq_ignore_ascii_case("MATERIALISASI")))
+                {
+                    self.parse_create_materialized_view()
+                } else if self.pos + 1 < self.tokens.len() && self.tokens[self.pos + 1] == Token::View {
                     self.pos += 1; // lewati CREATE
                     self.parse_create_view()
                 } else if self.pos + 1 < self.tokens.len() && (self.tokens[self.pos + 1] == Token::Index || self.tokens[self.pos + 1] == Token::Unique) {
@@ -882,8 +926,15 @@ impl SqlParser {
             }
             Token::View => self.parse_create_view(),
             Token::Index => self.parse_create_index(),
+            Token::Materialized => self.parse_create_materialized_view(),
+            Token::Refresh => self.parse_refresh_materialized_view(),
             Token::Drop => {
-                if self.pos + 1 < self.tokens.len() && self.tokens[self.pos + 1] == Token::View {
+                if self.pos + 1 < self.tokens.len()
+                    && (self.tokens[self.pos + 1] == Token::Materialized
+                        || matches!(&self.tokens[self.pos + 1], Token::Ident(w) if w.eq_ignore_ascii_case("MATERIALIZED") || w.eq_ignore_ascii_case("MATERIALISASI")))
+                {
+                    self.parse_drop_materialized_view()
+                } else if self.pos + 1 < self.tokens.len() && self.tokens[self.pos + 1] == Token::View {
                     self.pos += 1; // lewati DROP
                     self.parse_drop_view()
                 } else if self.pos + 1 < self.tokens.len() && self.tokens[self.pos + 1] == Token::Index {
@@ -931,6 +982,10 @@ impl SqlParser {
             Token::Ident(cmd) => {
                 let upper = cmd.to_uppercase();
                 match upper.as_str() {
+                    "ANALYZE" | "ANALISIS" | "ANALYZE_TABLE" | "ANALISIS_TABEL" => self.parse_analyze(),
+                    "BUAT_VIEW_MATERIALISASI" | "CREATE_MATERIALIZED_VIEW" | "BUAT_TAMPILAN_MATERIALISASI" => self.parse_create_materialized_view(),
+                    "REFRESH" | "SEGAR" | "SEGAR_VIEW" | "SEGAR_TAMPILAN" | "REFRESH_MATERIALIZED_VIEW" | "SEGAR_VIEW_MATERIALISASI" => self.parse_refresh_materialized_view(),
+                    "BUANG_VIEW_MATERIALISASI" | "DROP_MATERIALIZED_VIEW" => self.parse_drop_materialized_view(),
                     "SET" | "ATUR_CACHE" | "SET_CACHE" => self.parse_cache_set(),
                     "GET" | "AMBIL_CACHE" | "GET_CACHE" => self.parse_cache_get(),
                     "DEL" | "DELETE_CACHE" | "HAPUS_CACHE" => self.parse_cache_del(),
@@ -1166,6 +1221,26 @@ impl SqlParser {
             Some(Token::Column) => {
                 self.pos += 1;
                 "kolom".to_string()
+            }
+            Some(Token::Sum) => {
+                self.pos += 1;
+                "jumlah".to_string()
+            }
+            Some(Token::Count) => {
+                self.pos += 1;
+                "total".to_string()
+            }
+            Some(Token::Avg) => {
+                self.pos += 1;
+                "rata".to_string()
+            }
+            Some(Token::Min) => {
+                self.pos += 1;
+                "min".to_string()
+            }
+            Some(Token::Max) => {
+                self.pos += 1;
+                "max".to_string()
             }
             _ => return Err("Diharapkan nama kolom".to_string()),
         };
@@ -1523,12 +1598,10 @@ impl SqlParser {
         if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::LeftParen {
             self.pos += 1;
             while self.pos < self.tokens.len() {
-                if let Token::Ident(c) = &self.tokens[self.pos] {
-                    columns.push(c.clone());
-                    self.pos += 1;
-                } else if self.tokens[self.pos] == Token::Values {
-                    columns.push("nilai".to_string());
-                    self.pos += 1;
+                if let Ok(col) = self.parse_column_name() {
+                    columns.push(col);
+                } else {
+                    break;
                 }
                 if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Comma {
                     self.pos += 1;
@@ -1611,17 +1684,9 @@ impl SqlParser {
 
         let mut assignments = Vec::new();
         loop {
-            let col = match self.tokens.get(self.pos) {
-                Some(Token::Ident(c)) => {
-                    let col_name = c.clone();
-                    self.pos += 1;
-                    col_name
-                }
-                Some(Token::Values) => {
-                    self.pos += 1;
-                    "nilai".to_string()
-                }
-                _ => break,
+            let col = match self.parse_column_name() {
+                Ok(c) => c,
+                Err(_) => break,
             };
 
             if self.pos >= self.tokens.len() || self.tokens[self.pos] != Token::Equal {
@@ -1722,6 +1787,82 @@ impl SqlParser {
         Ok(SqlStatement::InsertOrIgnore { table, columns, values })
     }
 
+    fn parse_cascade_action(&mut self) -> Result<CascadeAction, String> {
+        if self.pos < self.tokens.len() {
+            if self.tokens[self.pos] == Token::Cascade {
+                self.pos += 1;
+                return Ok(CascadeAction::Cascade);
+            }
+            if self.tokens[self.pos] == Token::Set {
+                self.pos += 1;
+                if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Null || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("NIHIL") || w.eq_ignore_ascii_case("NULL"))) {
+                    self.pos += 1;
+                    return Ok(CascadeAction::SetNull);
+                }
+            }
+            if let Token::Ident(w) = &self.tokens[self.pos] {
+                let up = w.to_uppercase();
+                if up == "CASCADE" || up == "AIR_TERJUN" || up == "KASKADE" {
+                    self.pos += 1;
+                    return Ok(CascadeAction::Cascade);
+                } else if up == "RESTRICT" || up == "BATASI" {
+                    self.pos += 1;
+                    return Ok(CascadeAction::Restrict);
+                } else if up == "SET" {
+                    self.pos += 1;
+                    if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Null || matches!(&self.tokens[self.pos], Token::Ident(n) if n.eq_ignore_ascii_case("NIHIL") || n.eq_ignore_ascii_case("NULL"))) {
+                        self.pos += 1;
+                        return Ok(CascadeAction::SetNull);
+                    }
+                } else if up == "SET_NULL" || up == "ATUR_NIHIL" {
+                    self.pos += 1;
+                    return Ok(CascadeAction::SetNull);
+                } else if up == "NO" || up == "TANPA" {
+                    self.pos += 1;
+                    if self.pos < self.tokens.len() && matches!(&self.tokens[self.pos], Token::Ident(a) if a.eq_ignore_ascii_case("ACTION") || a.eq_ignore_ascii_case("AKSI")) {
+                        self.pos += 1;
+                        return Ok(CascadeAction::NoAction);
+                    }
+                } else if up == "NO_ACTION" || up == "TANPA_AKSI" {
+                    self.pos += 1;
+                    return Ok(CascadeAction::NoAction);
+                }
+            }
+        }
+        Err("Diharapkan aksi CASCADE / SET NULL / RESTRICT / NO ACTION".to_string())
+    }
+
+    fn parse_optional_cascade_clauses(&mut self) -> Result<(Option<CascadeAction>, Option<CascadeAction>), String> {
+        let mut on_delete = None;
+        let mut on_update = None;
+
+        while self.pos < self.tokens.len() {
+            let is_on = self.tokens[self.pos] == Token::On
+                || self.tokens[self.pos] == Token::When
+                || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("ON") || w.eq_ignore_ascii_case("KETIKA") || w.eq_ignore_ascii_case("SAAT") || w.eq_ignore_ascii_case("PADA"));
+
+            if !is_on {
+                break;
+            }
+            self.pos += 1;
+
+            if self.pos < self.tokens.len() {
+                if self.tokens[self.pos] == Token::Delete || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("DELETE") || w.eq_ignore_ascii_case("HAPUS")) {
+                    self.pos += 1;
+                    on_delete = Some(self.parse_cascade_action()?);
+                } else if self.tokens[self.pos] == Token::Update || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("UPDATE") || w.eq_ignore_ascii_case("PERBARUI") || w.eq_ignore_ascii_case("UBAH")) {
+                    self.pos += 1;
+                    on_update = Some(self.parse_cascade_action()?);
+                } else {
+                    self.pos -= 1;
+                    break;
+                }
+            }
+        }
+
+        Ok((on_delete, on_update))
+    }
+
     fn parse_create_table(&mut self) -> Result<SqlStatement, String> {
         self.pos += 1; // lewati CREATE / BUAT
         if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Table {
@@ -1805,11 +1946,14 @@ impl SqlParser {
                     return Err("Diharapkan ')' setelah nama kolom rujukan".to_string());
                 }
                 self.pos += 1;
+                let (on_delete, on_update) = self.parse_optional_cascade_clauses()?;
 
                 foreign_keys.push(ForeignKeyConstraint {
                     column: fk_col,
                     foreign_table: ref_tbl,
                     foreign_column: ref_col,
+                    on_delete,
+                    on_update,
                 });
 
                 if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Comma {
@@ -1851,18 +1995,7 @@ impl SqlParser {
                 continue;
             }
 
-            let col_name = match self.tokens.get(self.pos) {
-                Some(Token::Ident(c)) => {
-                    let cn = c.clone();
-                    self.pos += 1;
-                    cn
-                }
-                Some(Token::Values) => {
-                    self.pos += 1;
-                    "nilai".to_string()
-                }
-                _ => return Err("Diharapkan nama kolom pada definisi tabel".to_string()),
-            };
+            let col_name = self.parse_column_name().map_err(|_| "Diharapkan nama kolom pada definisi tabel".to_string())?;
 
             let mut col_type = "TEXT".to_string();
             let mut is_serial = false;
@@ -1942,12 +2075,15 @@ impl SqlParser {
                         return Err("Diharapkan ')' setelah nama kolom rujukan".to_string());
                     }
                     self.pos += 1;
+                    let (on_delete, on_update) = self.parse_optional_cascade_clauses()?;
 
                     references = Some((ref_tbl.clone(), ref_col.clone()));
                     foreign_keys.push(ForeignKeyConstraint {
                         column: col_name.clone(),
                         foreign_table: ref_tbl,
                         foreign_column: ref_col,
+                        on_delete,
+                        on_update,
                     });
                 } else if let Token::Ident(w) = &self.tokens[self.pos] {
                     let w_up = w.to_uppercase();
@@ -2160,6 +2296,103 @@ impl SqlParser {
             _ => return Err("Diharapkan nama tampilan setelah DROP VIEW / HAPUS_TAMPILAN".to_string()),
         };
         Ok(SqlStatement::DropView { name, if_exists })
+    }
+
+    fn parse_create_materialized_view(&mut self) -> Result<SqlStatement, String> {
+        self.pos += 1; // lewati token pemicu (CREATE / BUAT_VIEW_MATERIALISASI / etc)
+        // Lewati kata kunci opsional: MATERIALIZED / MATERIALISASI
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Materialized || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("MATERIALIZED") || w.eq_ignore_ascii_case("MATERIALISASI"))) {
+            self.pos += 1;
+        }
+        // Lewati kata kunci opsional: VIEW / TAMPILAN
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::View || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("VIEW") || w.eq_ignore_ascii_case("TAMPILAN"))) {
+            self.pos += 1;
+        }
+
+        let mut if_not_exists = false;
+        if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::If {
+            self.pos += 1;
+            if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Not {
+                self.pos += 1;
+            }
+            if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Exists {
+                self.pos += 1;
+            }
+            if_not_exists = true;
+        }
+
+        let name = match self.tokens.get(self.pos) {
+            Some(Token::Ident(v)) => { let res = v.clone(); self.pos += 1; res }
+            _ => return Err("Diharapkan nama view materialisasi setelah CREATE MATERIALIZED VIEW / BUAT_VIEW_MATERIALISASI".to_string()),
+        };
+
+        if self.pos < self.tokens.len() {
+            if let Token::Ident(w) = &self.tokens[self.pos] {
+                if w.eq_ignore_ascii_case("AS") || w.eq_ignore_ascii_case("SEBAGAI") {
+                    self.pos += 1;
+                }
+            }
+        }
+
+        let query = if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::LeftParen {
+            self.pos += 1;
+            let q = self.parse_single_statement()?;
+            if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::RightParen {
+                self.pos += 1;
+            }
+            q
+        } else {
+            self.parse_single_statement()?
+        };
+
+        Ok(SqlStatement::CreateMaterializedView {
+            name,
+            query: Box::new(query),
+            if_not_exists,
+        })
+    }
+
+    fn parse_refresh_materialized_view(&mut self) -> Result<SqlStatement, String> {
+        self.pos += 1; // lewati REFRESH / SEGAR_VIEW
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Materialized || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("MATERIALIZED") || w.eq_ignore_ascii_case("MATERIALISASI"))) {
+            self.pos += 1;
+        }
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::View || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("VIEW") || w.eq_ignore_ascii_case("TAMPILAN"))) {
+            self.pos += 1;
+        }
+
+        let name = match self.tokens.get(self.pos) {
+            Some(Token::Ident(v)) => { let res = v.clone(); self.pos += 1; res }
+            _ => return Err("Diharapkan nama view materialisasi setelah REFRESH MATERIALIZED VIEW / SEGAR_VIEW".to_string()),
+        };
+
+        Ok(SqlStatement::RefreshMaterializedView { name })
+    }
+
+    fn parse_drop_materialized_view(&mut self) -> Result<SqlStatement, String> {
+        self.pos += 1; // lewati DROP / BUANG_VIEW_MATERIALISASI
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Materialized || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("MATERIALIZED") || w.eq_ignore_ascii_case("MATERIALISASI"))) {
+            self.pos += 1;
+        }
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::View || matches!(&self.tokens[self.pos], Token::Ident(w) if w.eq_ignore_ascii_case("VIEW") || w.eq_ignore_ascii_case("TAMPILAN"))) {
+            self.pos += 1;
+        }
+
+        let mut if_exists = false;
+        if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::If {
+            self.pos += 1;
+            if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Exists {
+                self.pos += 1;
+            }
+            if_exists = true;
+        }
+
+        let name = match self.tokens.get(self.pos) {
+            Some(Token::Ident(v)) => { let res = v.clone(); self.pos += 1; res }
+            _ => return Err("Diharapkan nama view materialisasi setelah DROP MATERIALIZED VIEW".to_string()),
+        };
+
+        Ok(SqlStatement::DropMaterializedView { name, if_exists })
     }
 
     fn parse_create_index(&mut self) -> Result<SqlStatement, String> {
@@ -2381,7 +2614,7 @@ impl SqlParser {
     fn parse_explain(&mut self) -> Result<SqlStatement, String> {
         self.pos += 1; // lewati EXPLAIN / JELASKAN
         let mut analyze = false;
-        if self.pos < self.tokens.len() && self.tokens[self.pos] == Token::Analyze {
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Analyze || matches!(&self.tokens[self.pos], Token::Ident(a) if a.eq_ignore_ascii_case("ANALYZE") || a.eq_ignore_ascii_case("ANALISIS") || a.eq_ignore_ascii_case("ANALISIS_TABEL"))) {
             analyze = true;
             self.pos += 1;
         }
@@ -2390,6 +2623,22 @@ impl SqlParser {
             stmt: Box::new(stmt),
             analyze,
         })
+    }
+
+    fn parse_analyze(&mut self) -> Result<SqlStatement, String> {
+        self.pos += 1; // lewati ANALYZE / ANALISIS / ANALISIS_TABEL
+        if self.pos < self.tokens.len() && (self.tokens[self.pos] == Token::Table || matches!(&self.tokens[self.pos], Token::Ident(t) if t.eq_ignore_ascii_case("TABLE") || t.eq_ignore_ascii_case("TABEL"))) {
+            self.pos += 1;
+        }
+        let table = match self.tokens.get(self.pos) {
+            Some(Token::Ident(tbl)) => {
+                let t = tbl.clone();
+                self.pos += 1;
+                Some(t)
+            }
+            _ => None,
+        };
+        Ok(SqlStatement::AnalyzeTable { table })
     }
 
     fn parse_savepoint(&mut self) -> Result<SqlStatement, String> {

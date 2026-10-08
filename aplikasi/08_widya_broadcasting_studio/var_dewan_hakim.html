@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal VAR Dewan Hakim - Video Assistant Referee PERSILAT</title>
+  <meta name="theme-color" content="#e11d48">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --panel: #111827;
+      --border: rgba(255, 255, 255, 0.1);
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --gold: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge-var {
+      background: var(--gold);
+      color: #000;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      flex: 1;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .replay-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .dual-angles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .angle-card {
+      background: #000;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .angle-label {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0,0,0,0.7);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #050a14;
+    }
+
+    /* SCRUBBER CONTROLLER */
+    .scrub-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .scrub-info {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .slider-range {
+      width: 100%;
+      height: 10px;
+      -webkit-appearance: none;
+      background: #1e293b;
+      border-radius: 5px;
+      outline: none;
+    }
+    .slider-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+    }
+
+    .scrub-btns {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-scrub {
+      background: #1e293b;
+      color: white;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-scrub:hover { background: #334155; }
+
+    /* SIDEBAR RULING */
+    .ruling-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+    .rule-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green);
+    }
+
+    .btn-decision {
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-grant-red { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
+    .btn-grant-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+    .btn-reject { background: #334155; color: white; }
+
+    .stamp-box {
+      border: 2px dashed #475569;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .stamp-box.signed {
+      border-color: var(--green);
+      background: rgba(16, 185, 129, 0.05);
+      color: var(--green);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="badge-var">VAR PERSILAT</div>
+      <div>
+        <h2 style="font-size:16px; font-weight:800;">Konsol Sidang Video Assistant Referee</h2>
+        <p style="font-size:11px; color:var(--muted);">Kejuaraan Nasional Pencak Silat • Gelanggang A</p>
+      </div>
+    </div>
+    <div>
+      <a href="index.html" style="background:#1e293b; color:white; padding:6px 14px; border-radius:6px; font-size:12px; text-decoration:none; border:1px solid var(--border);">← Kembali ke MCR Studio</a>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <!-- REPLAY VIEWER -->
+    <div class="replay-stage">
+      <div class="dual-angles">
+        <div class="angle-card">
+          <div class="angle-label">SUDUT 1: KAMERA WIDE MATRAS (1080p60)</div>
+          <canvas id="can-angle1" width="480" height="320"></canvas>
+        </div>
+        <div class="angle-card">
+          <div class="angle-label">SUDUT 2: KAMERA CLOSE-UP WASIT (1080p60)</div>
+          <canvas id="can-angle2" width="480" height="320"></canvas>
+        </div>
+      </div>
+
+      <!-- SCRUBBER -->
+      <div class="scrub-panel">
+        <div class="scrub-info">
+          <span>TIMECODE INSIDEN: <b>14:02:18:12</b></span>
+          <span>OFFSET FRAME: <b id="val-frame-offset" style="color:var(--gold);">-15 Frames</b></span>
+          <span>KECEPATAN: <b style="color:var(--green);">0.25x Ultra Slow-Mo</b></span>
+        </div>
+        <input type="range" class="slider-range" id="var-slider" min="-30" max="30" value="-15" oninput="updateScrub(this.value)">
+        <div class="scrub-btns">
+          <button class="btn-scrub" onclick="stepFrame(-5)">⏮ -5 F</button>
+          <button class="btn-scrub" onclick="stepFrame(-1)">◀ -1 F</button>
+          <button class="btn-scrub" onclick="togglePlay()">⏯ PLAY / PAUSE</button>
+          <button class="btn-scrub" onclick="stepFrame(1)">+1 F ▶</button>
+          <button class="btn-scrub" onclick="stepFrame(5)">+5 F ⏭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RULING CHECKLIST -->
+    <div class="ruling-panel">
+      <h3 style="font-size:14px; font-weight:800; border-bottom:1px solid var(--border); padding-bottom:8px;">
+        📋 Kepatuhan Aturan PERSILAT
+      </h3>
+
+      <div class="rule-item">
+        <input type="checkbox" id="chk-1" checked>
+        <label for="chk-1">Tangkapan sah sebelum 5 detik (Pasal 29.2)</label>
+      </div>
+      <div class="rule-item">
+        <input type="checkbox" id="chk-2" checked>
+        <label for="chk-2">Jatuhan terjadi di dalam batas matras (Hawk-Eye)</label>
+      </div>
+      <div class="rule-item">
+        <input type="checkbox" id="chk-3" checked>
+        <label for="chk-3">Tidak ada tarikan leher atau gigitan terlarang</label>
+      </div>
+      <div class="rule-item">
+        <input type="checkbox" id="chk-4" checked>
+        <label for="chk-4">Penyerang tetap menjaga keseimbangan sah</label>
+      </div>
+
+      <div style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+        <button class="btn-decision btn-grant-red" onclick="putuskan('SUDUT MERAH (+3 POIN)')">
+          <span>✓ BANTINGAN SAH MERAH</span>
+          <span>+3 POIN</span>
+        </button>
+
+        <button class="btn-decision btn-grant-blue" onclick="putuskan('SUDUT BIRU (+3 POIN)')">
+          <span>✓ BANTINGAN SAH BIRU</span>
+          <span>+3 POIN</span>
+        </button>
+
+        <button class="btn-decision btn-reject" onclick="putuskan('TIDAK SAH / TANGKAPAN LEPAS')">
+          <span>✗ PROTES DITOLAK</span>
+          <span>0 POIN</span>
+        </button>
+      </div>
+
+      <div class="stamp-box" id="stamp-box">
+        Status: Menunggu putusan resmi Dewan Hakim
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const can1 = document.getElementById('can-angle1');
+    const ctx1 = can1.getContext('2d');
+    const can2 = document.getElementById('can-angle2');
+    const ctx2 = can2.getContext('2d');
+
+    let currentOffset = -15;
+    let isPlaying = false;
+
+    function renderVarFrames() {
+      // Angle 1: Wide
+      ctx1.fillStyle = '#064e3b';
+      ctx1.fillRect(0, 0, can1.width, can1.height);
+      ctx1.strokeStyle = '#ef4444';
+      ctx1.lineWidth = 3;
+      ctx1.beginPath();
+      ctx1.arc(can1.width/2, can1.height/2 + 20, 110, 0, Math.PI * 2);
+      ctx1.stroke();
+
+      const shift = currentOffset * 3;
+      ctx1.fillStyle = '#ef4444';
+      ctx1.beginPath();
+      ctx1.arc(can1.width/2 - 20 + shift, can1.height/2 + 10, 12, 0, Math.PI * 2);
+      ctx1.fill();
+
+      ctx1.fillStyle = '#3b82f6';
+      ctx1.beginPath();
+      ctx1.arc(can1.width/2 + 20 - shift, can1.height/2 + 30, 12, 0, Math.PI * 2);
+      ctx1.fill();
+
+      // Angle 2: Close-up Takedown action
+      ctx2.fillStyle = '#0f172a';
+      ctx2.fillRect(0, 0, can2.width, can2.height);
+      ctx2.fillStyle = '#ef4444';
+      ctx2.fillRect(can2.width/2 - 40, can2.height/2 - 30, 35, 60);
+      ctx2.fillStyle = '#3b82f6';
+      ctx2.fillRect(can2.width/2 + 5, can2.height/2 + (shift*0.8), 35, 50);
+
+      // Grid watermark
+      ctx1.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx1.font = '10px JetBrains Mono';
+      ctx1.fillText(`TC: 14:02:18:${Math.abs(currentOffset)} [SLOW-MO 0.25X]`, 10, 20);
+      ctx2.fillText(`TC: 14:02:18:${Math.abs(currentOffset)} [ZOOM 2.5X]`, 10, 20);
+    }
+
+    function updateScrub(val) {
+      currentOffset = parseInt(val);
+      document.getElementById('val-frame-offset').textContent = `${currentOffset} Frames`;
+      renderVarFrames();
+    }
+
+    function stepFrame(step) {
+      currentOffset = Math.max(-30, Math.min(30, currentOffset + step));
+      document.getElementById('var-slider').value = currentOffset;
+      updateScrub(currentOffset);
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        const interval = setInterval(() => {
+          if (!isPlaying || currentOffset >= 30) {
+            clearInterval(interval);
+            isPlaying = false;
+            return;
+          }
+          stepFrame(1);
+        }, 100);
+      }
+    }
+
+    function putuskan(hasil) {
+      const stamp = document.getElementById('stamp-box');
+      stamp.className = 'stamp-box signed';
+      stamp.innerHTML = `
+        <div style="font-size:14px; font-weight:900;">⚖️ PUTUSAN RESMI DISAHKAN</div>
+        <div style="font-size:12px; margin-top:4px;">HASIL: ${hasil}</div>
+        <div style="font-size:10px; color:#94a3b8; margin-top:4px;">ID Putusan: VAR-PERSILAT-2026-09A • Dewan Hakim Ketua</div>
+      `;
+    }
+
+    renderVarFrames();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+          console.log('[VAR PWA SW] Service worker aktif:', reg.scope);
+        }).catch((err) => {
+          console.warn('[VAR PWA SW] Service worker gagal didaftarkan:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

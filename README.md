@@ -29,7 +29,9 @@
 - 🏗️ **100% Full Self-Hosting**: Kompiler Widya ditulis seluruhnya dalam bahasa Widya (`compiler_self_hosted/`) dengan 3-Stage Bootstrap deterministik (`widya bootstrap`).
 - ⚡ **Multi-Target Native Compiler**: Menghasilkan biner Native OS executable, LLVM IR (`.ll`), WebAssembly (`.wasm`), WebGPU Compute Shader (`.wgsl`), dan Linux Kernel eBPF (`.bpf.c`).
 - 🔒 **Audit Keamanan Statis & Pertahanan Berlapis**: Detektor kebocoran Secret/API Key, pencegahan SQL Injection, Token IPC Anti-CSRF, dan berkas integritas SHA-256 (`widya_security.lock`).
-- 🛠️ **All-in-One Toolchain**: Language Server Protocol (LSP), Debug Adapter Protocol (DAP), Memory Profiler, dan WPM Package Manager dengan integritas kriptografis.
+- 📦 **WPM (Widya Package Manager)**: Ekosistem repositori paket publik berdaulat dengan 21 pustaka resmi bawaan (Mega Frontiers), verifikasi tanda tangan kriptografis Ed25519, audit keamanan rantai pasok (`widya wpm audit`), pengecekan versi usang (`widya wpm outdated`), dan server registry mandiri (`widya wpm serve-registry`).
+- 🛡️ **Kemandirian 100% dari Pustaka Luar (*Zero-Dependency Stack*)**: Lima pilar kedaulatan teknologi mandiri: Pembangkit ELF-64 murni (`src/compiler/pure_emitter.rs`), Kriptografi murni tanpa crates (`src/kripto/pure_crypto.rs`), Format serialisasi murni JSON/CSV/INI (`src/stdlib/pure_format.rs`), Direct Linux Syscall & Alokator Slab bebas libc (`src/sys/`), Protokol Wire basis data native (`src/widyabase/wire.rs`), dan Unikernel MicroVM bootable sub-5ms (`src/compiler/unikernel.rs`). Dokumentasi di [DOKUMENTASI_PILAR_KEMANDIRIAN.md](file:///c:/widya-lang/DOKUMENTASI_PILAR_KEMANDIRIAN.md).
+- 🛠️ **All-in-One Toolchain**: Language Server Protocol (LSP), Debug Adapter Protocol (DAP), Memory Profiler & Tarjan Cycle Detector, REPL dwibahasa, dan Interactive WASM Playground.
 - 🗄️ **Pustaka Standar C FFI Lengkap**: Binding resmi tingkat tinggi untuk **SQLite3**, **DuckDB**, **PostgreSQL**, **MySQL**, **Redb**, **SurrealDB**, dan **Kriptografi** (AES-256-GCM, Ed25519, SHA-256).
 
 ---
@@ -144,6 +146,13 @@ widya wasm app.wya --output app.wasm
 
 # Mengompilasi aplikasi mobile Android / iOS
 widya mobile bangun app.wya --target android
+
+# Manajemen Paket WPM & Keamanan Rantai Pasok
+widya wpm add widya-office --versi 2.5.0
+widya wpm audit          # Audit rantai pasok (CVE/WSA, SHA256 & Ed25519)
+widya wpm outdated       # Pengecekan versi usang (SemVer)
+widya wpm info widya-sql # Informasi metadata pustaka resmi
+widya wpm serve-registry # Jalankan registry lokal & Web Hub di port 8090
 ```
 
 ---

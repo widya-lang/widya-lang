@@ -17,12 +17,18 @@ pub mod voice_stream;
 pub mod lora;
 pub mod federated_rag;
 
-pub use gguf::{parse_gguf_header, GgufModelInfo};
+pub use gguf::{
+    parse_gguf_header, GgufModelInfo, GgufTensorInfo, GgufTensorType, GgufValue,
+    dequantize_q4_0, dequantize_q8_0, vec_dot_q4_0_f32, build_synthetic_gguf,
+};
 pub use rag::{RagDocument, RagIndex};
 pub use tensor::Tensor;
 pub use vector_db::{VectorDatabase, VectorItem, SearchResult, DistanceMetric};
 pub use agent::{AgentRuntime, AgentProfile, SovereignTool, ToolParameter, ToolCallRequest, ToolCallResponse};
-pub use inference::{SovereignInferenceEngine, ModelGenerationConfig};
+pub use inference::{
+    SovereignInferenceEngine, ModelGenerationConfig, KvCache, rms_norm, apply_rope, softmax,
+    TokenSampler,
+};
 pub use quantization::{QuantizedTensor, QuantType};
 pub use agent_runtime::{NativeAgent, ToolCall, ToolResult, ToolRegistry, AgentExecutor, MultiAgentBus};
 pub use agent_market::{AgentSkill, MicroSettlement, AgentSkillMarket};

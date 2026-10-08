@@ -639,11 +639,12 @@
     <div class="nav-container">
       <a href="#" class="nav-logo">
         <span>⚡ Widya-Lang</span>
-        <span class="badge-nav">v1.0.0</span>
+        <span class="badge-nav">v2.6.0 Stable</span>
       </a>
       <div class="nav-links">
         <a href="index.html" class="active">Overview</a>
         <a href="get-started.html">Get Started</a>
+        <a href="#wpm">Package Hub</a>
         <a href="playground.html">Playground</a>
         <a href="use-cases.html">Use Cases</a>
         <a href="apps.html">Apps</a>
@@ -653,7 +654,7 @@
           <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
           </svg>
-          GitHub (v1.0.0)
+          GitHub (v2.6.0)
         </a>
       </div>
     </div>
@@ -662,7 +663,7 @@
   <!-- Hero Section -->
   <header class="hero">
     <div class="badge-hero">
-      <span>🚀 Rilis Resmi v1.0.0 • Siap Produksi untuk Web, Desktop & Mobile</span>
+      <span>🚀 Rilis Resmi v2.6.0 • Ekosistem Berdaulat WPM & Zero-Python Native Architecture</span>
     </div>
     <h1>Bahasa Pemrograman Modern<br><span>Web, Desktop & Mobile Native</span></h1>
     <p>
@@ -756,6 +757,34 @@
           <li><span>✓</span> PWA Cache-First & Audit Enterprise Grade A+</li>
         </ul>
       </div>
+
+      <!-- Card 5: WPM -->
+      <div class="eco-card" id="wpm">
+        <span class="eco-badge badge-core">Ekosistem Paket Berdaulat</span>
+        <div class="eco-icon">📦</div>
+        <h3>Widya Package Manager (WPM)</h3>
+        <p>Manajer dependensi berdaulat dengan 21 pustaka resmi bawaan (Mega Frontiers), SAT PubGrub solver, audit keamanan WSA, dan verifikasi Ed25519.</p>
+        <ul class="eco-features">
+          <li><span>✓</span> 21 Pustaka Resmi Bawaan (Math, Office, PQC, BI-FAST, dll)</li>
+          <li><span>✓</span> Audit Rantai Pasok Otomatis (`widya wpm audit`)</li>
+          <li><span>✓</span> Pengecekan Versi Usang SemVer (`widya wpm outdated`)</li>
+          <li><span>✓</span> Self-Hosted Private Registry & Web Hub (`widya wpm serve-registry`)</li>
+        </ul>
+      </div>
+
+      <!-- Card 6: WidyaBase -->
+      <div class="eco-card">
+        <span class="eco-badge badge-web">Basis Data Terdistribusi</span>
+        <div class="eco-icon">🗄️</div>
+        <h3>WidyaBase Native Database</h3>
+        <p>Mesin basis data ACID berdaulat dengan WAL ARIES crash-recovery, MVCC, B+Tree indexing, pencarian vektor multimodal HNSW, dan wire protocol PostgreSQL.</p>
+        <ul class="eco-features">
+          <li><span>✓</span> Protokol Wire PGWire v3.0 (Port 5432)</li>
+          <li><span>✓</span> Kueri Dwibahasa (Nusantara PILIH... & ANSI SQL SELECT...)</li>
+          <li><span>✓</span> AI Vector Search HNSW Cosine Similarity & JSONB</li>
+          <li><span>✓</span> Transaksi ACID Terdistribusi Raft Consensus</li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -820,22 +849,22 @@
   <!-- Download Section -->
   <section class="download-section" id="unduh">
     <div class="section-title">
-      <h2>Unduh Rilis Biner Mandiri (v1.0.0)</h2>
-      <p>Tersedia untuk berbagai platform sistem operasi tanpa perlu kompilasi manual.</p>
+      <h2>Unduh Rilis Biner Mandiri (v2.6.0 Stable)</h2>
+      <p>Tersedia untuk berbagai platform sistem operasi dengan verifikasi kriptografis Ed25519.</p>
     </div>
 
     <div class="download-grid">
+      <div class="dl-card">
+        <div class="dl-os-icon">🐧</div>
+        <h4>Linux x86_64 (v2.6.0)</h4>
+        <p>Biner ELF native untuk Ubuntu, Debian, Arch, Fedora</p>
+        <a href="downloads/widya-v2.6.0-x86_64-linux.tar.gz" class="dl-btn">Unduh .tar.gz (11 MB)</a>
+      </div>
       <div class="dl-card">
         <div class="dl-os-icon">🪟</div>
         <h4>Windows 64-bit</h4>
         <p>Biner eksekusi mandiri (.exe) & PowerShell wrapper</p>
         <a href="https://github.com/Bakulcoding/widya-lang/releases" class="dl-btn">Unduh .ZIP (x64)</a>
-      </div>
-      <div class="dl-card">
-        <div class="dl-os-icon">🐧</div>
-        <h4>Linux x86_64</h4>
-        <p>Biner ELF native untuk Ubuntu, Debian, Arch, Fedora</p>
-        <a href="https://github.com/Bakulcoding/widya-lang/releases" class="dl-btn">Unduh .tar.gz</a>
       </div>
       <div class="dl-card">
         <div class="dl-os-icon">🍎</div>
@@ -844,16 +873,28 @@
         <a href="https://github.com/Bakulcoding/widya-lang/releases" class="dl-btn">Unduh macOS Binary</a>
       </div>
       <div class="dl-card">
-        <div class="dl-os-icon">📱</div>
-        <h4>Mobile (PWA / APK / IPA)</h4>
-        <p>Paket seluler offline-first & wrapper Android/iOS</p>
-        <a href="https://github.com/Bakulcoding/widya-lang/releases" class="dl-btn">Unduh Paket Mobile</a>
+        <div class="dl-os-icon">🧩</div>
+        <h4>VS Code Extension (v2.5.0)</h4>
+        <p>Paket ekstensi editor resmi (.vsix)</p>
+        <a href="downloads/widya-lang-2.5.0.vsix" class="dl-btn">Unduh .VSIX</a>
       </div>
       <div class="dl-card">
-        <div class="dl-os-icon">🧩</div>
-        <h4>VS Code Extension</h4>
-        <p>Paket ekstensi editor resmi (.vsix)</p>
-        <a href="https://github.com/Bakulcoding/widya-lang/raw/main/editors/vscode/widya-lang-1.0.0.vsix" class="dl-btn">Unduh .VSIX</a>
+        <div class="dl-os-icon">📦</div>
+        <h4>Buku Panduan WPM</h4>
+        <p>Dokumen ISO 32000-1 PDF Ekosistem Paket Berdaulat</p>
+        <a href="downloads/DOKUMENTASI_WPM.pdf" class="dl-btn">Unduh PDF Resmi</a>
+      </div>
+      <div class="dl-card">
+        <div class="dl-os-icon">🛡️</div>
+        <h4>Buku Putih Pilar Kemandirian</h4>
+        <p>Dokumen ISO 32000-1 PDF Arsitektur Kedaulatan Zero-Dependency</p>
+        <a href="downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf" class="dl-btn">Unduh PDF Resmi</a>
+      </div>
+      <div class="dl-card">
+        <div class="dl-os-icon">🔐</div>
+        <h4>Integritas & Checksums</h4>
+        <p>Daftar SHA-256 & Tanda Tangan Digital Ed25519</p>
+        <a href="downloads/SHA256SUMS.txt" class="dl-btn">Lihat SHA256SUMS</a>
       </div>
     </div>
   </section>
@@ -867,7 +908,7 @@
         </div>
         <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; max-width: 380px;">
           Bahasa pemrograman modern tipe aman dengan inferensi Hindley-Milner, Full Self-Hosting, 
-          dan ekosistem terpadu untuk Web, Desktop & Mobile Native.
+          dan ekosistem terpadu untuk Web, Desktop, Mobile Native & Repositori Paket Berdaulat WPM.
         </p>
       </div>
       <div class="footer-col">
@@ -877,16 +918,20 @@
           <li><a href="#ekosistem">WidyaWeb Framework</a></li>
           <li><a href="#ekosistem">WidyaDesktop Framework</a></li>
           <li><a href="#ekosistem">WidyaMobile Framework</a></li>
-          <li><a href="https://github.com/Bakulcoding/widya-lang/raw/main/editors/vscode/widya-lang-1.0.0.vsix">Ekstensi VS Code</a></li>
+          <li><a href="#wpm">Widya Package Manager (WPM)</a></li>
+          <li><a href="#wpm">WidyaBase Database Engine</a></li>
+          <li><a href="downloads/widya-lang-2.5.0.vsix">Ekstensi VS Code</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h5>Dokumentasi</h5>
         <ul>
-          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_KOMPREHENSIF.md" target="_blank">Buku Panduan 18 Bab</a></li>
-          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/scratch/widya_web_framework/DOKUMENTASI_LENGKAP.md" target="_blank">Dokumentasi Web Framework</a></li>
-          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/scratch/widya_desktop_framework/DOKUMENTASI_DESKTOP.md" target="_blank">Dokumentasi Desktop Framework</a></li>
-          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/scratch/widya_mobile_framework/DOKUMENTASI_MOBILE.md" target="_blank">Dokumentasi Mobile Framework</a></li>
+          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_KOMPREHENSIF.md" target="_blank">Buku Panduan Komprehensif</a></li>
+          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_PILAR_KEMANDIRIAN.md" target="_blank">Buku Putih Pilar Kemandirian</a></li>
+          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_WPM.md" target="_blank">Panduan Ekosistem WPM</a></li>
+          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_WIDYABASE.md" target="_blank">Dokumentasi WidyaBase</a></li>
+          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_OFFICE.md" target="_blank">Dokumentasi WidyaOffice</a></li>
+          <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/DOKUMENTASI_MEGA_FRONTIERS.md" target="_blank">Mega Frontier Innovations</a></li>
           <li><a href="https://github.com/Bakulcoding/widya-lang/blob/main/CONTRIBUTING.md" target="_blank">Panduan Kontribusi</a></li>
         </ul>
       </div>

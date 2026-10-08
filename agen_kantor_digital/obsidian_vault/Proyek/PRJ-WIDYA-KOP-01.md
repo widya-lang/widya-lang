@@ -5,7 +5,7 @@ tags:
 kode_proyek: PRJ-WIDYA-KOP-01
 nama_proyek: Sistem Koperasi Digital Berdaulat Multi-Agent
 status: AKTIF
-tanggal_didaftarkan: 2026-09-30
+tanggal_didaftarkan: 2026-10-02
 database: kantor_digital.wdb
 ---
 

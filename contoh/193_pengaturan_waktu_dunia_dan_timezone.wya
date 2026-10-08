@@ -1,0 +1,82 @@
+// ============================================================================
+// CONTOH 193: SISTEM PENGATURAN WAKTU DUNIA & ZONA WAKTU GLOBAL (TIMEZONE)
+// Bahasa Pemrograman Widya (Widya-lang)
+// Mendukung:
+// 1. Waktu Lokal Nusantara: WIB (Jakarta), WITA (Makassar), WIT (Jayapura)
+// 2. Waktu Kota-Kota Besar Dunia: Tokyo, Singapura, London, Mekkah, New York, dll.
+// 3. Konversi Waktu Antar Zona (Timestamp / ISO string)
+// 4. Perhitungan Selisih Waktu Antar Kota (Time Difference)
+// 5. Jam Dunia Multi-Kota (World Clock Dashboard)
+// ============================================================================
+
+cetak("==================================================================");
+cetak("⏰ SISTEM PENGATURAN WAKTU DUNIA & GLOBAL TIMEZONE DI WIDYA-LANG");
+cetak("==================================================================");
+
+// 1. TIGA ZONA WAKTU UTAMA NUSANTARA
+cetak("\n--- 1. Tiga Zona Waktu Utama Nusantara (Indonesia) ---");
+var wib  = waktu_dunia("WIB");
+var wita = waktu_dunia("WITA");
+var wit  = waktu_dunia("WIT");
+
+cetak("• " + wib["deskripsi"]  + " : " + wib["format_lengkap"]  + " [" + wib["utc_offset_teks"] + "]");
+cetak("• " + wita["deskripsi"] + " : " + wita["format_lengkap"] + " [" + wita["utc_offset_teks"] + "]");
+cetak("• " + wit["deskripsi"]  + " : " + wit["format_lengkap"]  + " [" + wit["utc_offset_teks"] + "]");
+
+// 2. WAKTU KOTA-KOTA METROPOLITAN DUNIA
+cetak("\n--- 2. Waktu Real-Time Kota-Kota Metropolitan Dunia ---");
+var tokyo    = waktu_dunia("Tokyo");
+var mekkah   = waktu_dunia("Mekkah");
+var london   = waktu_dunia("London");
+var paris    = waktu_dunia("Paris");
+var new_york = waktu_dunia("New_York");
+var la       = waktu_dunia("Los_Angeles");
+var sydney   = waktu_dunia("Sydney");
+
+cetak("• Tokyo (Jepang)         : " + tokyo["format_lengkap"]    + " (12h: " + tokyo["format_12jam"] + ")");
+cetak("• Mekkah (Arab Saudi)    : " + mekkah["format_lengkap"]   + " (12h: " + mekkah["format_12jam"] + ")");
+cetak("• London (Inggris / UTC) : " + london["format_lengkap"]   + " (12h: " + london["format_12jam"] + ")");
+cetak("• Paris (Prancis / CET)  : " + paris["format_lengkap"]    + " (12h: " + paris["format_12jam"] + ")");
+cetak("• New York (AS / EST)    : " + new_york["format_lengkap"] + " (12h: " + new_york["format_12jam"] + ")");
+cetak("• Los Angeles (AS / PST) : " + la["format_lengkap"]       + " (12h: " + la["format_12jam"] + ")");
+cetak("• Sydney (Australia)     : " + sydney["format_lengkap"]   + " (12h: " + sydney["format_12jam"] + ")");
+
+// 3. PERHITUNGAN SELISIH WAKTU (TIME DIFFERENCE)
+cetak("\n--- 3. Analisis Selisih Waktu Antar Kota Dunia ---");
+var selisih_1 = hitung_selisih_waktu_zona("Jakarta", "Tokyo");
+var selisih_2 = hitung_selisih_waktu_zona("Jakarta", "London");
+var selisih_3 = hitung_selisih_waktu_zona("Jakarta", "New_York");
+var selisih_4 = hitung_selisih_waktu_zona("Jakarta", "Mekkah");
+
+cetak("• Jakarta vs Tokyo    : " + selisih_1["keterangan"]);
+cetak("• Jakarta vs London   : " + selisih_2["keterangan"]);
+cetak("• Jakarta vs New York : " + selisih_3["keterangan"]);
+cetak("• Jakarta vs Mekkah   : " + selisih_4["keterangan"]);
+
+// 4. KONVERSI WAKTU FLIGHT / MEETING JADWAL INTERNASIONAL
+cetak("\n--- 4. Konversi Jadwal Penerbangan & Meeting Global ---");
+var waktu_meeting_jkt = "2026-10-03 14:00:00";
+cetak("Jadwal Meeting di Jakarta (WIB): " + waktu_meeting_jkt);
+
+var meeting_london = konversi_waktu_dunia(waktu_meeting_jkt, "Jakarta", "London");
+var meeting_tokyo  = konversi_waktu_dunia(waktu_meeting_jkt, "Jakarta", "Tokyo");
+var meeting_ny     = konversi_waktu_dunia(waktu_meeting_jkt, "Jakarta", "New_York");
+
+cetak("-> Waktu di London   : " + meeting_london["format_lengkap"]);
+cetak("-> Waktu di Tokyo    : " + meeting_tokyo["format_lengkap"]);
+cetak("-> Waktu di New York : " + meeting_ny["format_lengkap"]);
+
+// 5. MASTER REGISTRY ZONA WAKTU DUNIA
+cetak("\n--- 5. Master Data Zona Waktu Internasional ---");
+var daftar_zona = daftar_zona_waktu_dunia();
+cetak("Total Zona Standar Terdaftar: " + ke_teks(panjang(daftar_zona)) + " zona");
+
+var i = 1;
+untuk z dalam daftar_zona {
+    cetak(" [" + ke_teks(i) + "] " + z["id"] + " (" + z["singkatan"] + " " + z["utc_offset_teks"] + ") - " + z["wilayah"]);
+    i = i + 1;
+}
+
+cetak("\n==================================================================");
+cetak("✨ PENGATURAN WAKTU DUNIA BERJALAN DENGAN AKURAT DAN LENGKAP!");
+cetak("==================================================================");

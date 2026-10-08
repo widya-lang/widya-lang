@@ -1,0 +1,123 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R ] /Count 3 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 786 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (RENCANA PENGUJIAN JAMINAN MUTU \(QA TEST PLAN\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 3) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (RENCANA PENGUJIAN JAMINAN MUTU \(QA TEST PLAN\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (APLIKASI RENCANA KEGIATAN DAN ANGGARAN SEKOLAH \(ARKAS\) WEB TERINTEGRASI) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Kode Proyek:** `PRJ-ARKAS-WEB-01` | **Status:** 100% Pengujian Otomatis Lulus) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 4316 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (RENCANA PENGUJIAN JAMINAN MUTU \(QA TEST PLAN\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 3) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Lingkup & Matriks Pengujian) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Pengujian mencakup aspek kebenaran matematis akuntansi \(presisi keuangan sen tanpa floating-point round-off error\), integritas rantai audit, validasi batas juknis belanja honorarium BOSP, dan pengujian integrasi antarmuka web.) Tj ET
+0.92 0.95 0.98 rg 50 709.89 495 22 re f
+0.2 0.4 0.7 RG 0.75 w 50 709.89 495 22 re S
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 56 714.89 Tm (Kode Uji) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 179.75 714.89 Tm (Skenario Pengujian) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 303.5 714.89 Tm (Hasil yang Diharapkan) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 427.25 714.89 Tm (Status) Tj ET
+1 1 1 rg 50 687.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 687.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 692.89 Tm (**QA-ARKAS-01**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 692.89 Tm (Validasi Multi-Sum...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 692.89 Tm (Dana dicairkan per...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 692.89 Tm (`PASS`) Tj ET
+0.98 0.98 0.99 rg 50 665.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 665.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 670.89 Tm (**QA-ARKAS-02**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 670.89 Tm (Validasi Batas Hon...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 670.89 Tm (Sistem menolak pen...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 670.89 Tm (`PASS`) Tj ET
+1 1 1 rg 50 643.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 643.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 648.89 Tm (**QA-ARKAS-03**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 648.89 Tm (Pengesahan RKAS Mu...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 648.89 Tm (Pergeseran interna...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 648.89 Tm (`PASS`) Tj ET
+0.98 0.98 0.99 rg 50 621.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 621.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 626.89 Tm (**QA-ARKAS-04**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 626.89 Tm (Pengadaan SIPLah P...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 626.89 Tm (DPH, DNH, SP, BAST...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 626.89 Tm (`PASS`) Tj ET
+1 1 1 rg 50 599.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 599.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 604.89 Tm (**QA-ARKAS-05**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 604.89 Tm (Integritas Rantai ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 604.89 Tm (Deteksi modifikasi...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 604.89 Tm (`PASS`) Tj ET
+0.98 0.98 0.99 rg 50 577.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 577.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 582.89 Tm (**QA-ARKAS-06**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 582.89 Tm (Penarikan Tunai & ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 582.89 Tm (Saldo Bank berkura...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 582.89 Tm (`PASS`) Tj ET
+1 1 1 rg 50 555.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 555.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 560.89 Tm (**QA-ARKAS-07**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 560.89 Tm (Kalkulasi Otomatis...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 560.89 Tm (Tarif pajak sesuai...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 560.89 Tm (`PASS`) Tj ET
+0.98 0.98 0.99 rg 50 533.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 533.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 538.89 Tm (**QA-ARKAS-08**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 538.89 Tm (Ekstraksi Buku Pem...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 538.89 Tm (Rekonsiliasi tiga ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 538.89 Tm (`PASS`) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1001 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (RENCANA PENGUJIAN JAMINAN MUTU \(QA TEST PLAN\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 3) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Hasil Eksekusi Uji Integrasi Rust \(`cargo test`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Eksekusi pengujian dilakukan melalui dua suite pengujian utama:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (1. `tests/arkas_multi_sumber_dana_test.rs`: 4 pengujian lulus \(4 passed, 0 failed\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (2. `tests/arkas_bos_budget_test.rs`: 5 pengujian lulus \(5 passed, 0 failed\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (Total skor kelulusan: **100% \(9/9 pengujian lulus sempurna\)**.) Tj ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000167 00000 n 
+0000000264 00000 n 
+0000000366 00000 n 
+0000001202 00000 n 
+0000001304 00000 n 
+0000005671 00000 n 
+0000005773 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R /Info << /Title (RENCANA PENGUJIAN JAMINAN MUTU \(QA TEST PLAN\)) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-ARKAS-WEB-01\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
+startxref
+6825
+%%EOF

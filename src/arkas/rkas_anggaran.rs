@@ -341,4 +341,44 @@ impl DokumenRkasTahunan {
             Err(format!("Nomor revisi {} tidak ditemukan!", nomor_revisi))
         }
     }
+
+    /// Catat realisasi anggaran untuk item kegiatan tertentu dan verifikasi pagu batas
+    pub fn catat_realisasi_kegiatan(&mut self, id_kegiatan: &str, nominal: f64) -> Result<f64, String> {
+        if let Some(item) = self.daftar_kegiatan.iter_mut().find(|k| k.id_kegiatan == id_kegiatan) {
+            let sisa = item.total_anggaran_tahunan_rp - item.total_realisasi_rp;
+            if nominal > sisa + 0.01 {
+                return Err(format!(
+                    "Pengeluaran (Rp {:.2}) melebihi sisa pagu anggaran kegiatan '{}' (Sisa Pagu: Rp {:.2})!",
+                    nominal, item.uraian_kegiatan, sisa
+                ));
+            }
+            item.total_realisasi_rp += nominal;
+            Ok(item.total_realisasi_rp)
+        } else {
+            Err(format!("Item kegiatan dengan ID '{}' tidak ditemukan dalam RKAS!", id_kegiatan))
+        }
+    }
+
+    /// Ambil sisa pagu kegiatan tertentu
+    pub fn sisa_pagu_kegiatan(&self, id_kegiatan: &str) -> Option<f64> {
+        self.daftar_kegiatan
+            .iter()
+            .find(|k| k.id_kegiatan == id_kegiatan)
+            .map(|k| (k.total_anggaran_tahunan_rp - k.total_realisasi_rp).max(0.0))
+    }
+
+    /// Total seluruh realisasi anggaran tahunan yang telah dibukukan
+    pub fn total_realisasi_tahunan(&self) -> f64 {
+        self.daftar_kegiatan.iter().map(|k| k.total_realisasi_rp).sum()
+    }
+
+    /// Persentase serapan anggaran sekolah terhadap pagu (%)
+    pub fn persentase_serapan_anggaran(&self) -> f64 {
+        let pagu = self.total_pagu_tahunan();
+        if pagu <= 0.0 {
+            0.0
+        } else {
+            (self.total_realisasi_tahunan() / pagu) * 100.0
+        }
+    }
 }

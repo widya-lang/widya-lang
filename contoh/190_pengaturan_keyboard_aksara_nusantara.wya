@@ -1,0 +1,87 @@
+// ============================================================================
+// CONTOH 190: PENGATURAN TATA LETAK KEYBOARD & PAPAN KETIK AKSARA NUSANTARA
+// Bahasa Pemrograman Widya (Widya-lang)
+// Mendukung Pengaturan Keyboard Fonetik & Virtual Keypad untuk 11+ Aksara Nusantara:
+// Jawa (Hanacaraka), Sunda (Kaganga), Bali, Batak, Lontara Bugis, Kawi Kuno,
+// Makasar Kuno, Had Lampung, Rejang/Incung, Cia-Cia Buton, Arab Pegon/Jawi.
+// ============================================================================
+
+cetak("==================================================================");
+cetak("⌨️  PENGATURAN KEYBOARD & PAPAN KETIK AKSARA NUSANTARA DI WIDYA");
+cetak("==================================================================");
+
+// 1. DAFTAR TATA LETAK KEYBOARD BAWAAN (MASTER LAYOUT)
+cetak("\n--- 1. Daftar Tata Letak (Layout) Keyboard Aksara Nusantara ---");
+var daftar_kb = daftar_tata_letak_keyboard();
+cetak("Total Tata Letak Keyboard Terdaftar: " + ke_teks(panjang(daftar_kb)) + " layout");
+
+untuk layout dalam daftar_kb {
+    cetak("  • [" + layout["id"] + "] " + layout["nama"]);
+    cetak("    Jenis       : " + layout["jenis_layout"] + " (Arah: " + layout["arah_penulisan"] + ")");
+    cetak("    Contoh Tombol: " + layout["contoh_tombol"]);
+}
+
+// 2. PEMETAAN TOMBOL FISIK KE GLIF AKSARA (KEYMAP MAPPING)
+cetak("\n--- 2. Pengujian Pemetaan Tombol Fisik (Key Mapping) ---");
+
+var tombol_uji = ["a", "n", "c", "r", "k", "d", "t", "s", "w", "l", "p", "j", "y", "m", "g", "b"];
+
+cetak("Aksara Jawa (Normal):");
+var baris_jawa = "";
+untuk t in tombol_uji {
+    baris_jawa = baris_jawa + t + "->" + petakan_tombol_aksara("jawa", t, salah) + " ";
+}
+cetak("  " + baris_jawa);
+
+cetak("\nAksara Jawa (Dengan Shift / Aksara Murda & Pasangan):");
+var baris_jawa_shift = "";
+untuk t in ["a", "i", "u", "e", "o", "k", "g", "t", "s", "p"] {
+    baris_jawa_shift = baris_jawa_shift + "Shift+" + t + "->" + petakan_tombol_aksara("jawa", t, benar) + " ";
+}
+cetak("  " + baris_jawa_shift);
+
+cetak("\nAksara Sunda Kaganga (Normal):");
+var baris_sunda = "";
+untuk t in ["k", "g", "n", "c", "j", "t", "d", "p", "b", "m", "y", "r", "l", "w", "s", "h"] {
+    baris_sunda = baris_sunda + t + "->" + petakan_tombol_aksara("sunda", t, salah) + " ";
+}
+cetak("  " + baris_sunda);
+
+cetak("\nSurat Batak (Normal):");
+var baris_batak = "";
+untuk t in ["a", "b", "t", "k", "d", "n", "m", "l", "r", "s", "p", "j", "g", "h"] {
+    baris_batak = baris_batak + t + "->" + petakan_tombol_aksara("batak", t, salah) + " ";
+}
+cetak("  " + baris_batak);
+
+cetak("\nAksara Lontara Bugis (Normal):");
+var baris_lontara = "";
+untuk t in ["k", "g", "p", "b", "m", "t", "d", "n", "c", "j", "y", "r", "l", "w", "s"] {
+    baris_lontara = baris_lontara + t + "->" + petakan_tombol_aksara("lontara", t, salah) + " ";
+}
+cetak("  " + baris_lontara);
+
+cetak("\nArab Pegon & Jawi Nusantara (Normal):");
+var baris_pegon = "";
+untuk t in ["a", "b", "t", "c", "j", "d", "r", "z", "s", "g", "f", "p", "k", "l", "m", "n", "w", "h", "y"] {
+    baris_pegon = baris_pegon + t + "->" + petakan_tombol_aksara("pegon", t, salah) + " ";
+}
+cetak("  " + baris_pegon);
+
+// 3. GENERASI PAPAN KETIK VIRTUAL (VIRTUAL KEYPAD SPECIFICATION)
+cetak("\n--- 3. Struktur Papan Ketik Virtual Siap Pakai (UI / Web / Studio) ---");
+
+var daftar_aksara_uji = ["jawa", "sunda", "bali", "batak", "lontara", "kawi", "makasar", "lampung", "rejang", "pegon"];
+
+untuk aks in daftar_aksara_uji {
+    var vk = buat_papan_ketik_virtual(aks);
+    cetak("\n[" + vk["nama"] + "] (Arah: " + vk["arah"] + ")");
+    cetak("  Baris 1 (Konsonan Utama) : " + gabung(vk["baris_1"], " "));
+    cetak("  Baris 2 (Konsonan Lanjutan): " + gabung(vk["baris_2"], " "));
+    cetak("  Baris 3 (Vokal Mandiri)   : " + gabung(vk["baris_3"], " "));
+    cetak("  Sandhangan / Diakritik    : " + gabung(vk["sandhangan"], " "));
+}
+
+cetak("\n==================================================================");
+cetak("✨ PENGATURAN KEYBOARD & IME AKSARA NUSANTARA BERFUNGSI SEMPURNA!");
+cetak("==================================================================");

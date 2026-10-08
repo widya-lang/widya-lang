@@ -5,6 +5,10 @@
   "version": "2.5.0",
   "publisher": "widya-lang-foundation",
   "icon": "icon.png",
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:widya"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Bakulcoding/widya-lang"
@@ -25,6 +29,7 @@
     "hindley-milner",
     "lsp",
     "dap",
+    "wpm",
     "web",
     "desktop"
   ],
@@ -76,6 +81,75 @@
           }
         }
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "widya.runFile",
+        "title": "Widya: Jalankan Berkas",
+        "category": "Widya"
+      },
+      {
+        "command": "widya.testFile",
+        "title": "Widya: Jalankan Pengujian Unit (Test)",
+        "category": "Widya"
+      },
+      {
+        "command": "widya.formatFile",
+        "title": "Widya: Format Berkas",
+        "category": "Widya"
+      },
+      {
+        "command": "widya.vendorPackages",
+        "title": "Widya: Pasok Seluruh Dependensi (WPM Offline Vendor)",
+        "category": "Widya"
+      },
+      {
+        "command": "widya.showInfo",
+        "title": "Widya: Tampilkan Info Compiler",
+        "category": "Widya"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceExtname == .wya || resourceExtname == .widya",
+          "command": "widya.runFile",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "resourceExtname == .wya || resourceExtname == .widya",
+          "command": "widya.runFile",
+          "group": "1_run"
+        },
+        {
+          "when": "resourceExtname == .wya || resourceExtname == .widya",
+          "command": "widya.testFile",
+          "group": "1_run"
+        },
+        {
+          "when": "resourceExtname == .wya || resourceExtname == .widya",
+          "command": "widya.vendorPackages",
+          "group": "2_package"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Konfigurasi Widya-Lang",
+      "properties": {
+        "widya.executablePath": {
+          "type": "string",
+          "default": "widya",
+          "description": "Jalur (path) lengkap ke berkas eksekusi biner compiler widya."
+        },
+        "widya.lsp.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Aktifkan integrasi otomatis Language Server Protocol (LSP)."
+        }
+      }
+    }
   }
 }

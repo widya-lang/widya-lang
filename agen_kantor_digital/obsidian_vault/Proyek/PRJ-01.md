@@ -5,7 +5,7 @@ tags:
 kode_proyek: PRJ-01
 nama_proyek: Koperasi Digital
 status: AKTIF
-tanggal_didaftarkan: 2026-09-30
+tanggal_didaftarkan: 2026-10-02
 database: kantor_digital.wdb
 ---
 

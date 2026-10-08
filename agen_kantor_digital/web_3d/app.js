@@ -2092,6 +2092,12 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ kode_proyek: kode, nama_proyek: nama, status })
         });
+        
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          throw new Error('Server backend (port 8085) tidak merespons JSON. Pastikan Anda membuka melalui server backend Node.js (http://localhost:8085), bukan Live Server/file statis biasa.');
+        }
+
         const data = await res.json();
         if (data.sukses) {
           if (modalAddProject) modalAddProject.style.display = 'none';
@@ -2104,6 +2110,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           loadWidyaBaseTable('proyek');
           refreshProjectsAndKanban();
+        } else {
+          alert('Gagal menambahkan proyek: ' + (data.error || 'Terjadi kesalahan pada database.'));
         }
       } catch (err) {
         alert('Gagal menambahkan proyek: ' + err.message);
@@ -2145,6 +2153,12 @@ document.addEventListener('DOMContentLoaded', () => {
             deadline: deadline
           })
         });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          throw new Error('Server backend (port 8085) tidak merespons JSON. Pastikan Anda membuka melalui server backend Node.js (http://localhost:8085), bukan Live Server/file statis biasa.');
+        }
+
         const data = await res.json();
         if (data.sukses) {
           if (modalAddTask) modalAddTask.style.display = 'none';

@@ -26,12 +26,28 @@ pub mod columnar;
 pub mod object_store;
 pub mod docdb;
 pub mod consensus;
+pub mod cdc;
 pub mod parquet_arrow;
+pub mod hnsw;
+pub mod timeseries;
+pub mod fulltext;
+pub mod gis;
+pub mod graph;
+pub mod trigger;
+pub mod htap;
+pub mod wire;
+pub use wire::*;
 
 pub use parquet_arrow::{ParquetArrowConnector, ParquetCompression, ParquetFileMetadata, ArrowRecordBatchIpc};
-pub use hybrid_search::{HybridDocument, HybridSearchEngine, HybridSearchResult};
+pub use hybrid_search::{HybridDocument, HybridSearchEngine, HybridSearchResult, LocalEmbeddingEngine};
+pub use hnsw::{HnswVectorIndex, MetadataFilter};
 pub use checkpoint::CheckpointCoordinator;
-pub use consensus::{RaftNode, RaftRole, LogEntry};
+pub use cdc::{CdcFilter, CdcOp, CdcRecord, CdcStreamer, CdcSubscription};
+pub use consensus::{
+    AppendEntriesArgs, AppendEntriesReply, DistributedReplicationEngine, LogEntry, RaftCluster,
+    RaftNode, RaftRole, RequestVoteArgs, RequestVoteReply, TwoPhaseCoordinator,
+    TwoPhaseParticipant, TwoPhaseStatus,
+};
 
 pub use object_store::{
     BucketAccessPolicy, BucketInfo, ListObjectsV2Result, ObjectMetadata, ObjectStoreConfig,
@@ -41,12 +57,34 @@ pub use docdb::{
     ChangeEvent, Collection, CollectionOptions, DeleteResult, IndexSpec, OperationType,
     UpdateResult, WidyaDocDB,
 };
+pub use timeseries::{
+    GorillaCodec, Hypertable, OhlcvBar, TimeBucketAgg, TimeBucketResult, TimeChunk,
+    TimeSeriesEngine, TimeSeriesRecord,
+};
+pub use fulltext::{
+    damerau_levenshtein_distance, fuzzy_similarity_score, FullTextHit, FullTextIndex,
+    IndonesianStemmer,
+};
+pub use gis::{
+    st_centroid, st_contains, st_distance_sphere, st_dwithin, BoundingBox2D, Geometry, GisEngine,
+    LineString2D, Point2D, Polygon2D, SpatialFeature, SpatialRTree,
+};
+pub use graph::{
+    EdgeId, GraphEdge, GraphEngine, GraphNode, NodeId, ShortestPathResult,
+};
+pub use trigger::{
+    AuditRecord, RowData, TriggerAction, TriggerDefinition, TriggerEvent, TriggerLevel,
+    TriggerManager, TriggerTiming,
+};
+pub use htap::{
+    ColumnVector, HtapEngine, HtapRoutingPlan, HtapTable,
+};
 
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 use crate::widyabase::cache::CacheEngine;
 use crate::widyabase::columnar::ColumnarEngine;
-use crate::widyabase::planner::{ExecutionEngine, QueryResult};
+pub use crate::widyabase::planner::{ColumnStats, CostModel, ExecutionEngine, QueryResult, TableStats};
 use crate::widyabase::server::{PgwireServer, RespServer};
 use crate::widyabase::sql_parser::{SqlLexer, SqlParser};
 use crate::widyabase::storage::StorageEngine;
@@ -57,6 +95,12 @@ pub struct WidyaBase {
     pub storage: Arc<StorageEngine>,
     pub wal: Arc<WalManager>,
     pub engine: Arc<ExecutionEngine>,
+    pub timeseries: Arc<TimeSeriesEngine>,
+    pub fulltext: Arc<RwLock<FullTextIndex>>,
+    pub gis: Arc<GisEngine>,
+    pub graph: Arc<GraphEngine>,
+    pub triggers: Arc<TriggerManager>,
+    pub htap: Arc<HtapEngine>,
 }
 
 #[derive(Debug, Clone)]
@@ -81,12 +125,24 @@ impl WidyaBase {
                 .map_err(|e| format!("Gagal membuka WAL manager: {}", e))?
         );
         let engine = Arc::new(ExecutionEngine::new(Arc::clone(&storage), Arc::clone(&wal)));
+        let timeseries = Arc::new(TimeSeriesEngine::new());
+        let fulltext = Arc::new(RwLock::new(FullTextIndex::new()));
+        let gis = Arc::new(GisEngine::new());
+        let graph = Arc::new(GraphEngine::new());
+        let triggers = Arc::new(TriggerManager::new());
+        let htap = Arc::new(HtapEngine::new());
 
         Ok(WidyaBase {
             db_path,
             storage,
             wal,
             engine,
+            timeseries,
+            fulltext,
+            gis,
+            graph,
+            triggers,
+            htap,
         })
     }
 
@@ -137,6 +193,16 @@ impl WidyaBase {
         Arc::clone(&self.engine.columnar_engine)
     }
 
+    /// Membuat indeks vektor HNSW mandiri untuk pencarian kemiripan semantik
+    pub fn vector_index(&self, _dimension: usize) -> HnswVectorIndex {
+        HnswVectorIndex::new(16, 200)
+    }
+
+    /// Membuat instance mesin pencarian hibrida (BM25 Lexical + Dense Vector)
+    pub fn hybrid_search(&self) -> HybridSearchEngine {
+        HybridSearchEngine::new()
+    }
+
     /// Memeriksa kesehatan dan integritas basis data
     pub fn check_health(&self) -> HealthReport {
         let total_pages = *self.storage.total_pages.lock().unwrap();
@@ -152,4 +218,50 @@ impl WidyaBase {
             is_healthy: true,
         }
     }
+
+    /// Mengambil data statistik tabel yang telah dianalisis oleh CBO (Cost-Based Optimizer)
+    pub fn get_table_stats(&self, table: &str) -> Option<TableStats> {
+        self.engine.table_stats.read().unwrap().get(&table.to_uppercase()).cloned()
+    }
+
+    /// Mengakses pengelola aliran Change Data Capture (CDC)
+    pub fn cdc(&self) -> Arc<CdcStreamer> {
+        Arc::clone(&self.engine.cdc)
+    }
+
+    /// Berlangganan aliran event perubahan data real-time (CDC stream)
+    pub fn subscribe_cdc(&self, filter: Option<CdcFilter>, from_lsn: Option<u64>) -> CdcSubscription {
+        self.engine.cdc.subscribe(filter, from_lsn)
+    }
+
+    /// Mengakses mesin Time-Series Hypertable & Gorilla Compression
+    pub fn timeseries(&self) -> Arc<TimeSeriesEngine> {
+        Arc::clone(&self.timeseries)
+    }
+
+    /// Mengakses indeks Full-Text Search dengan Sastrawi/Nazief Morphological Stemmer
+    pub fn fulltext(&self) -> Arc<RwLock<FullTextIndex>> {
+        Arc::clone(&self.fulltext)
+    }
+
+    /// Mengakses mesin Spasial GIS & R-Tree Spatial Index (PostGIS compatible)
+    pub fn gis(&self) -> Arc<GisEngine> {
+        Arc::clone(&self.gis)
+    }
+
+    /// Mengakses mesin Property Graph Database & Cypher Traversal
+    pub fn graph(&self) -> Arc<GraphEngine> {
+        Arc::clone(&self.graph)
+    }
+
+    /// Mengakses pengelola Native Database Triggers & Audit Trail Log
+    pub fn triggers(&self) -> Arc<TriggerManager> {
+        Arc::clone(&self.triggers)
+    }
+
+    /// Mengakses mesin Autonomous Zero-ETL HTAP & SIMD Vectorized Aggregation
+    pub fn htap(&self) -> Arc<HtapEngine> {
+        Arc::clone(&self.htap)
+    }
 }
+

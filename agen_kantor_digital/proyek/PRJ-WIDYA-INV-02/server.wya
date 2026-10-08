@@ -1,0 +1,14 @@
+// ==============================================================================
+// server.wya - Server Mandiri Proyek Manajemen Inventaris UMKM Nusantara
+// Proyek: PRJ-WIDYA-INV-02
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("📦 MEMULAI SERVER MANDIRI: MANAJEMEN INVENTARIS UMKM NUSANTARA");
+cetak("Port Layanan: http://localhost:8011");
+cetak("Standar: EAN-13, GS1-128, EPC Gen2 UHF (SGTIN-96)");
+cetak("Basis Data: WidyaBase data.wdb (Slotted-Page B+Tree WAL)");
+cetak("==================================================================");
+
+misal port = 8011;
+eksekusi("../../target/release/widya web dev ./web -p " + ke_teks(port));

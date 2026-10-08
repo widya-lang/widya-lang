@@ -10,8 +10,13 @@ pub mod qris;
 pub mod quant_engine;
 pub mod snap;
 pub mod webhook;
+pub mod bifast;
 
 // Re-exports untuk kemudahan penggunaan
+pub use bifast::{
+    BiFastRouter, BiFastStatus, BiFastTransferReceipt, BiFastTransferRequest, ProxyAccount,
+    ProxyType,
+};
 pub use fix_engine::{FixMessage, FixOrderType, FixSide};
 pub use forex_matrix::{CarryTradeAnalysis, ForexMatrixEngine, FxQuote};
 pub use fraud::{evaluasi_risiko_transaksi, FdsAssessment, FdsDecision, TransactionRiskContext};

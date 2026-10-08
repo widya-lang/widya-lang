@@ -18,6 +18,9 @@ fungsi utama() {
 
     // 1. Inisialisasi Basis Data
     misal db_path = "target/pos_nusantara.wdb";
+    jika berkas_ada(db_path) {
+        hapus_berkas(db_path);
+    }
     misal db = BukaWidyaBase(db_path);
     cetak("✓ Basis data berhasil dibuka: " + db.path_db);
 
@@ -75,11 +78,11 @@ fungsi utama() {
     misal lap_agg = db.kueri(q_agg);
     jika (panjang(lap_agg) > 0) {
         misal row = lap_agg[0];
-        cetak("    • Total Transaksi Selesai : " + ke_teks(row["COUNT(Wildcard)"]));
-        cetak("    • Total Omzet Kasir Kotor : Rp " + ke_teks(row["SUM(Column(\"total_bayar\"))"]));
-        cetak("    • Rata-rata Nilai Belanja : Rp " + ke_teks(row["AVG(Column(\"total_bayar\"))"]));
-        cetak("    • Belanja Terkecil (Min)  : Rp " + ke_teks(row["MIN(Column(\"total_bayar\"))"]));
-        cetak("    • Belanja Terbesar (Maks) : Rp " + ke_teks(row["MAX(Column(\"total_bayar\"))"]));
+        cetak("    • Total Transaksi Selesai : " + ke_teks(row["jumlah_transaksi"]));
+        cetak("    • Total Omzet Kasir Kotor : Rp " + ke_teks(row["omzet_kotor"]));
+        cetak("    • Rata-rata Nilai Belanja : Rp " + ke_teks(row["rata_rata_omzet"]));
+        cetak("    • Belanja Terkecil (Min)  : Rp " + ke_teks(row["transaksi_terkecil"]));
+        cetak("    • Belanja Terbesar (Maks) : Rp " + ke_teks(row["transaksi_terbesar"]));
     }
 
     // 6. Sinkronisasi Checkpoint & Laporan Kesehatan

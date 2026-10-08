@@ -1,0 +1,17 @@
+[package]
+name = "widya-core"
+version = "2.6.0"
+edition = "2024"
+description = "Widya-Lang Core: Lexer, Parser, AST, Typesystem, Pattern Matching, and Borrow Checker"
+
+[dependencies]
+colored = "2.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+
+[lints.rust]
+dead_code = "allow"
+unused_variables = "allow"
+unused_imports = "allow"

@@ -6,8 +6,8 @@ pub mod spj_markas;
 pub mod sumber_dana;
 
 pub use bku_transaksi::{
-    BukuKasUmumSekolah, JenisTransaksiBku, MetodePembayaranBku, RincianPajakTransaksi,
-    TransaksiBkuEntry,
+    BukuKasUmumSekolah, BukuPembantuBank, BukuPembantuKas, BukuPembantuPajak, JenisTransaksiBku,
+    MetodePembayaranBku, RincianPajakTransaksi, TransaksiBkuEntry,
 };
 pub use pks_banper_apbn::{
     JenisBanperApbn, OtoritasPengesahanApbn, PerjanjianKerjaSamaBanper, PihakKeduaPenerima,

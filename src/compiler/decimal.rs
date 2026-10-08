@@ -4,7 +4,7 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div, Neg};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize, serde::Deserialize)]
 pub struct Desimal {
     pub nilai_mentah: i128, // Nilai integer yang dikalikan 10^skala
     pub skala: u8,          // Jumlah digit di belakang koma (default: 4 untuk perbankan, 8 untuk kripto)

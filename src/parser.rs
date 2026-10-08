@@ -595,7 +595,8 @@ impl Parser {
     fn statement(&mut self) -> Result<Stmt, Galat> {
         if self.match_token(&[TokenType::Jika]) {
             self.if_statement()
-        } else if self.match_token(&[TokenType::Cocokkan]) {
+        } else if self.check(&TokenType::Cocokkan) && self.is_match_construct_at_current() {
+            self.advance();
             let expr = self.match_expression_with_keyword_consumed(self.previous().span.clone())?;
             self.match_token(&[TokenType::Semicolon]);
             Ok(Stmt::Expression(expr))
@@ -1032,7 +1033,7 @@ impl Parser {
                 };
             } else if self.match_token(&[TokenType::Dot]) {
                 let span = self.previous().span.clone();
-                let prop_token = self.consume_identifier("Harapkan nama properti setelah '.'")?;
+                let prop_token = self.consume_property_name("Harapkan nama properti setelah '.'")?;
                 let index = Expr::String(prop_token.lexeme, span.clone());
                 expr = Expr::Index {
                     target: Box::new(expr),
@@ -1070,7 +1071,11 @@ impl Parser {
         let token = self.peek().clone();
 
         match &token.token_type {
-            TokenType::Cocokkan => self.match_expression(),
+            TokenType::Cocokkan if self.is_match_construct_at_current() => self.match_expression(),
+            TokenType::Cocokkan => {
+                let tok = self.advance();
+                Ok(Expr::Identifier(tok.lexeme.clone(), tok.span.clone()))
+            }
             TokenType::Number(n) => {
                 let val = *n;
                 let span = token.span.clone();
@@ -1491,8 +1496,60 @@ impl Parser {
 
     // --- Helpers ---
 
+    fn is_match_construct_at_current(&self) -> bool {
+        let mut idx = self.current + 1;
+        if idx >= self.tokens.len() {
+            return false;
+        }
+        if self.tokens[idx].token_type == TokenType::LeftParen {
+            let mut depth = 1;
+            idx += 1;
+            while idx < self.tokens.len() && depth > 0 {
+                match self.tokens[idx].token_type {
+                    TokenType::LeftParen => depth += 1,
+                    TokenType::RightParen => depth -= 1,
+                    _ => {}
+                }
+                idx += 1;
+            }
+            if depth != 0 || idx >= self.tokens.len() {
+                return false;
+            }
+        } else {
+            let mut depth = 0;
+            while idx < self.tokens.len() {
+                match &self.tokens[idx].token_type {
+                    TokenType::LeftBrace if depth == 0 => break,
+                    TokenType::LeftParen | TokenType::LeftBracket => depth += 1,
+                    TokenType::RightParen | TokenType::RightBracket => {
+                        if depth > 0 { depth -= 1; } else { return false; }
+                    }
+                    TokenType::Semicolon | TokenType::Comma | TokenType::Assign | TokenType::EqualEqual | TokenType::BangEqual => {
+                        if depth == 0 { return false; }
+                    }
+                    _ => {}
+                }
+                idx += 1;
+            }
+        }
+        if idx < self.tokens.len() && self.tokens[idx].token_type == TokenType::LeftBrace {
+            let mut b_depth = 1;
+            let mut scan = idx + 1;
+            while scan < self.tokens.len() && b_depth > 0 {
+                match &self.tokens[scan].token_type {
+                    TokenType::FatArrow if b_depth == 1 => return true,
+                    TokenType::LeftBrace => b_depth += 1,
+                    TokenType::RightBrace => b_depth -= 1,
+                    _ => {}
+                }
+                scan += 1;
+            }
+        }
+        false
+    }
+
     fn check_identifier(&self) -> bool {
-        matches!(self.peek().token_type, TokenType::Identifier(_))
+        matches!(self.peek().token_type, TokenType::Identifier(_) | TokenType::Cocokkan)
     }
 
     fn check_next_is_jika(&self) -> bool {
@@ -1508,6 +1565,21 @@ impl Parser {
             Ok(self.advance())
         } else {
             Err(Galat::sintaks(err_msg, &self.peek().span))
+        }
+    }
+
+    fn consume_property_name(&mut self, err_msg: &str) -> Result<Token, Galat> {
+        if self.is_at_end() {
+            return Err(Galat::sintaks(err_msg, &self.peek().span));
+        }
+        match self.peek().token_type {
+            TokenType::RightBracket
+            | TokenType::RightParen
+            | TokenType::RightBrace
+            | TokenType::Semicolon
+            | TokenType::Comma
+            | TokenType::Eof => Err(Galat::sintaks(err_msg, &self.peek().span)),
+            _ => Ok(self.advance()),
         }
     }
 

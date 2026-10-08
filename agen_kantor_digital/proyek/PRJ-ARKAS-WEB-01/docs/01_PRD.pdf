@@ -1,0 +1,142 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R ] /Count 5 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 792 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (APLIKASI RENCANA KEGIATAN DAN ANGGARAN SEKOLAH \(ARKAS\) WEB TERINTEGRASI) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Kode Proyek:** `PRJ-ARKAS-WEB-01` | **Versi:** `1.0.0` | **Klasifikasi:** Dokumen Resmi Sistem Kedaulatan Digital) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1760 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Latar Belakang & Urgensi) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Berdasarkan amanat Permendikbudristek No. 63 Tahun 2023 tentang Petunjuk Teknis Pengelolaan Dana Bantuan Operasional Satuan Pendidikan \(BOSP\) jo. Permendikdasmen No. 15 Tahun 2026 tentang Standar Pengadaan Barang dan Jasa Satuan Pendidikan \(SIPLah\), tata kelola keuangan satuan pendidikan memerlukan sistem terintegrasi yang menjamin:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (1. **Transparansi & Akuntabilitas**: Perencanaan anggaran berbasis Standar Nasional Pendidikan \(8 SNP\) dan Kode Rekening Akuntansi Permendagri 90/2019.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (2. **Kepatuhan Pajak Nasional**: Otomasi pemungutan dan penyetoran PPN 11%, PPh 21, PPh 22, dan PPh 23 dengan integrasi kode e-Billing & Nomor Transaksi Penerimaan Negara \(NTPN\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (3. **Audit Trail Anti-Fraud**: Rantai audit kriptografis berkecepatan tinggi berarsitektur blockchain lokal \(tamper-evident BKU ledger\) guna menjamin keaslian bukti audit bagi BPK, BPKP, dan Inspektorat.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 651.89 Tm (4. **Kedaulatan Data Lokal**: Sistem 100% mandiri on-premise berbasis mesin bahasa Widya-Lang dan basis data WidyaBase tanpa ketergantungan runtime asing.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1206 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Sasaran Pengguna) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- **Kepala Satuan Pendidikan \(KPA\)**: Pengesahan RKAS, verifikasi pengajuan belanja, dan monitoring serapan anggaran triwulan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- **Bendahara BOSP \(PPK/Bendahara Pengeluaran\)**: Pencatatan Buku Kas Umum \(BKU\), pembuatan SPJ, penarikan/penyetoran kas, dan pemotongan pajak.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- **Operator Sekolah \(Tim Manajemen ARKAS\)**: Input perencanaan RKAS, pengelolaan dokumen pesanan SIPLah, dan rekonsiliasi bulanan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (- **Dinas Pendidikan & Markas Kabupaten/Kota**: Sinkronisasi data realisasi, verifikasi pengesahan perubahan RKAS, dan konsolidasi BKU.) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3042 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (3. Ruang Lingkup Fitur Utama) Tj ET
+0.92 0.95 0.98 rg 50 729.89 495 22 re f
+0.2 0.4 0.7 RG 0.75 w 50 729.89 495 22 re S
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 56 734.89 Tm (ID Fitur) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 221 734.89 Tm (Nama Modul) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 386 734.89 Tm (Deskripsi Kebutuhan Teknis) Tj ET
+1 1 1 rg 50 707.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 707.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 712.89 Tm (**F-01**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 712.89 Tm (Penganggaran RKAS Multi-Su...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 712.89 Tm (Alokasi BOSP Reguler, BOS ...) Tj ET
+0.98 0.98 0.99 rg 50 685.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 685.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 690.89 Tm (**F-02**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 690.89 Tm (Buku Kas Umum \(BKU\) Digital) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 690.89 Tm (Pencatatan realtime mutasi...) Tj ET
+1 1 1 rg 50 663.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 663.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 668.89 Tm (**F-03**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 668.89 Tm (Buku Pembantu Otomatis) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 668.89 Tm (Pembentukan Buku Pembantu ...) Tj ET
+0.98 0.98 0.99 rg 50 641.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 641.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 646.89 Tm (**F-04**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 646.89 Tm (Engine Kalkulasi Pajak) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 646.89 Tm (Kalkulasi otomatis tarif P...) Tj ET
+1 1 1 rg 50 619.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 619.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 624.89 Tm (**F-05**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 624.89 Tm (Rantai Audit Kriptografis) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 624.89 Tm (Penyematan hash SHA-256 ra...) Tj ET
+0.98 0.98 0.99 rg 50 597.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 597.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 602.89 Tm (**F-06**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 602.89 Tm (Integrasi SIPLah Permen 15...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 602.89 Tm (Sinkronisasi Surat Pesanan...) Tj ET
+1 1 1 rg 50 575.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 575.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 580.89 Tm (**F-07**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 221 580.89 Tm (Dashboard Pemantauan Real-...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 386 580.89 Tm (Visualisasi serapan per SN...) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 904 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (4. Batasan & Syarat Non-Fungsional) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- **Kinerja**: Waktu muat dashboard < 200 ms, throughput transaksi BKU > 1.000 transaksi/detik pada runtime WidyaWeb.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- **Ketersediaan**: 99.9% uptime dengan fasilitas failover WAL WidyaBase.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- **Kedaulatan**: Zero telemetry eksternal, penyimpanan lokal terenkripsi di `database/data.wdb`.) Tj ET
+endstream
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000181 00000 n 
+0000000278 00000 n 
+0000000380 00000 n 
+0000001222 00000 n 
+0000001324 00000 n 
+0000003135 00000 n 
+0000003237 00000 n 
+0000004494 00000 n 
+0000004598 00000 n 
+0000007692 00000 n 
+0000007796 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R /Info << /Title (DOKUMEN KEBUTUHAN PRODUK \(PRD\)) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-ARKAS-WEB-01\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
+startxref
+8751
+%%EOF

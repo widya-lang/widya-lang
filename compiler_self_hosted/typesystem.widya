@@ -1,19 +1,153 @@
+// ============================================================================
 // compiler_self_hosted/typesystem.widya
-// Hindley-Milner Type Inference & Type Checker mandiri dalam Widya-Lang
+// Modul Hindley-Milner Type Inference & Pemeriksa Tipe Statis Mandiri
+// dalam Bahasa Widya-Lang
+// ============================================================================
 
-fungsi periksa_tipe_kesetaraan(tipe_a: String, tipe_b: String) -> Bool {
-    jika tipe_a == tipe_b {
-        kembalikan true;
+struktur PemeriksaTipeMandiri {
+    tabel_variabel,
+    tabel_fungsi,
+
+    fungsi daftar_variabel(nama, tipe_data) {
+        ini.tabel_variabel[nama] = tipe_data;
     }
-    jika tipe_a == "Any" || tipe_b == "Any" {
-        kembalikan true;
+
+    fungsi ambil_tipe_variabel(nama) {
+        jika ada_kunci(ini.tabel_variabel, nama) {
+            kembalikan ini.tabel_variabel[nama];
+        }
+        kembalikan "Any";
     }
-    kembalikan false;
+
+    fungsi daftar_fungsi(nama, tipe_kembalian) {
+        ini.tabel_fungsi[nama] = tipe_kembalian;
+    }
+
+    fungsi ambil_tipe_fungsi(nama) {
+        jika ada_kunci(ini.tabel_fungsi, nama) {
+            kembalikan ini.tabel_fungsi[nama];
+        }
+        kembalikan "Any";
+    }
+
+    fungsi apakah_setara(tipe_a, tipe_b) {
+        jika tipe_a == tipe_b {
+            kembalikan benar;
+        }
+        jika tipe_a == "Any" || tipe_b == "Any" {
+            kembalikan benar;
+        }
+        // Promosi numerik Int -> Float
+        jika (tipe_a == "Int" && tipe_b == "Float") || (tipe_a == "Float" && tipe_b == "Int") {
+            kembalikan benar;
+        }
+        kembalikan salah;
+    }
+
+    fungsi inferensi_literal(jenis_lit, nilai_lit) {
+        jika jenis_lit == "LITERAL_STRING" {
+            kembalikan "String";
+        }
+        jika jenis_lit == "LITERAL_BOOL" {
+            kembalikan "Bool";
+        }
+        jika jenis_lit == "LITERAL_ANGKA" {
+            misal i = 0;
+            selama i < panjang(nilai_lit) {
+                jika potong(nilai_lit, i, 1) == "." {
+                    kembalikan "Float";
+                }
+                i = i + 1;
+            }
+            kembalikan "Int";
+        }
+        kembalikan "Any";
+    }
+
+    fungsi inferensi_biner(op, tipe_kiri, tipe_kanan) {
+        // Operasi perbandingan menghasilkan Bool
+        jika op == "==" || op == "!=" || op == "<" || op == "<=" || op == ">" || op == ">=" {
+            kembalikan "Bool";
+        }
+        jika op == "&&" || op == "||" {
+            kembalikan "Bool";
+        }
+
+        // Operasi konkatenasi string
+        jika (tipe_kiri == "String" || tipe_kanan == "String") && op == "+" {
+            kembalikan "String";
+        }
+
+        // Operasi aritmatika
+        jika tipe_kiri == "Float" || tipe_kanan == "Float" {
+            kembalikan "Float";
+        }
+        jika tipe_kiri == "Desimal" || tipe_kanan == "Desimal" {
+            kembalikan "Desimal";
+        }
+        kembalikan "Int";
+    }
+
+    fungsi inferensi_node(node) {
+        misal j = node.jenis;
+        jika j == "LITERAL_ANGKA" || j == "LITERAL_STRING" || j == "LITERAL_BOOL" {
+            kembalikan ini.inferensi_literal(j, node.nilai);
+        }
+        jika j == "IDENTIFIER" {
+            kembalikan ini.ambil_tipe_variabel(node.nilai);
+        }
+        jika j == "PANGGILAN" {
+            kembalikan ini.ambil_tipe_fungsi(node.nilai);
+        }
+        jika j == "BINER" {
+            misal tkiri = "Any";
+            misal tkanan = "Any";
+            jika panjang(node.anak) >= 2 {
+                tkiri = ini.inferensi_node(node.anak[0]);
+                tkanan = ini.inferensi_node(node.anak[1]);
+            }
+            kembalikan ini.inferensi_biner(node.nilai, tkiri, tkanan);
+        }
+        kembalikan "Any";
+    }
+
+    fungsi periksa_program(program_node) {
+        misal total_kesalahan = 0;
+        misal i = 0;
+        selama i < panjang(program_node.anak) {
+            misal stmt = program_node.anak[i];
+            jika stmt.jenis == "DEKLARASI_VARIABEL" {
+                misal t_init = "Any";
+                jika panjang(stmt.anak) > 0 {
+                    t_init = ini.inferensi_node(stmt.anak[0]);
+                }
+                ini.daftar_variabel(stmt.nilai, t_init);
+            }
+            i = i + 1;
+        }
+        kembalikan total_kesalahan;
+    }
 }
 
-fungsi inferensi_tipe_literal(literal: String) -> String {
-    jika literal == "true" || literal == "false" {
-        kembalikan "Bool";
-    }
-    kembalikan "Int";
+fungsi buat_pemeriksa_tipe() {
+    kembalikan PemeriksaTipeMandiri({}, {});
 }
+
+fungsi uji_typesystem() {
+    misal tc = buat_pemeriksa_tipe();
+    tc.daftar_variabel("x", "Int");
+    tc.daftar_variabel("pesan", "String");
+
+    misal t_x = tc.ambil_tipe_variabel("x");
+    misal t_bin = tc.inferensi_biner("+", "Int", "Int");
+    misal t_cmp = tc.inferensi_biner("==", "Int", "Int");
+    misal valid = tc.apakah_setara("Int", "Int");
+
+    jika t_x == "Int" && t_bin == "Int" && t_cmp == "Bool" && valid {
+        kembalikan "TYPESYSTEM_OK";
+    }
+    kembalikan "TYPESYSTEM_GALAT";
+}
+
+// Jalankan self-test
+uji_typesystem();

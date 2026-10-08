@@ -9,33 +9,84 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use crate::widyabase::btree::{BTreeIndex, IndexKey, RecordPointer};
 use crate::widyabase::cache::CacheEngine;
+use crate::widyabase::cdc::{CdcOp, CdcRecord, CdcStreamer};
 use crate::widyabase::columnar::ColumnarEngine;
 use crate::widyabase::multimodal::VectorEngine;
 use crate::widyabase::mvcc::{MvccHeader, Snapshot, TransactionManager};
 use crate::widyabase::sql_parser::{
-    BinaryOp, ColumnDef, CteDefinition, ForeignKeyConstraint, JoinClause, JoinType, OnConflict, OrderByClause,
+    BinaryOp, CascadeAction, ColumnDef, CteDefinition, ForeignKeyConstraint, JoinClause, JoinType, OnConflict, OrderByClause,
     SqlExpr, SqlStatement, SqlValue,
 };
-use crate::widyabase::storage::{PageType, StorageEngine};
+use crate::widyabase::storage::{Page, PageType, StorageEngine};
 use crate::widyabase::wal::{WalManager, WalOpType};
+
+fn is_zero_u64(val: &u64) -> bool {
+    *val == 0
+}
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct TableSchema {
     pub name: String,
     pub columns: Vec<(String, String)>, // (nama, tipe)
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub column_defs: Vec<ColumnDef>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub primary_key: Option<String>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub foreign_keys: Vec<ForeignKeyConstraint>,
     pub root_page_id: u32,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_zero_u64")]
     pub serial_counter: u64,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Row {
     pub fields: HashMap<String, SqlValue>,
+}
+
+/// Statistik distribusi data kolom untuk Cost-Based Optimizer (CBO)
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ColumnStats {
+    pub column_name: String,
+    pub null_count: usize,
+    pub distinct_count: usize,
+    pub min_val: Option<SqlValue>,
+    pub max_val: Option<SqlValue>,
+    pub most_common_vals: Vec<(SqlValue, usize)>, // Nilai paling sering muncul beserta frekuensinya (MCV)
+    pub correlation: f64,                         // Korelasi urutan fisik vs logika (-1.0 .. 1.0)
+}
+
+/// Statistik tingkat tabel untuk estimasi I/O page dan selektivitas
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct TableStats {
+    pub table_name: String,
+    pub row_count: usize,
+    pub page_count: usize,
+    pub avg_row_size: usize,
+    pub last_analyzed: u64,
+    pub columns: HashMap<String, ColumnStats>,
+}
+
+/// Model biaya operasi I/O dan CPU untuk Cost-Based Optimizer (PostgreSQL-compatible)
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CostModel {
+    pub seq_page_cost: f64,       // Biaya pembacaan sekuensial halaman disk (1.0)
+    pub random_page_cost: f64,    // Biaya pembacaan acak indeks disk (4.0)
+    pub cpu_tuple_cost: f64,      // Biaya pemrosesan baris CPU (0.01)
+    pub cpu_index_tuple_cost: f64,// Biaya traversal indeks CPU (0.005)
+    pub cpu_operator_cost: f64,   // Biaya evaluasi predikat WHERE CPU (0.0025)
+}
+
+impl Default for CostModel {
+    fn default() -> Self {
+        Self {
+            seq_page_cost: 1.0,
+            random_page_cost: 1.5,
+            cpu_tuple_cost: 0.01,
+            cpu_index_tuple_cost: 0.005,
+            cpu_operator_cost: 0.0025,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -57,9 +108,12 @@ pub struct ExecutionEngine {
     pub indices: Arc<RwLock<HashMap<String, BTreeIndex>>>,
     pub secondary_indexes: Arc<RwLock<HashMap<String, (String, String)>>>,
     pub views: Arc<RwLock<HashMap<String, SqlStatement>>>,
+    pub materialized_views: Arc<RwLock<HashMap<String, SqlStatement>>>,
     pub savepoints: Arc<RwLock<HashMap<(u64, String), HashMap<String, Vec<(MvccHeader, Row)>>>>>,
     pub cache_engine: Arc<CacheEngine>,
     pub columnar_engine: Arc<ColumnarEngine>,
+    pub table_stats: Arc<RwLock<HashMap<String, TableStats>>>,
+    pub cdc: Arc<CdcStreamer>,
 }
 
 impl ExecutionEngine {
@@ -67,6 +121,7 @@ impl ExecutionEngine {
         let catalog = Arc::new(RwLock::new(HashMap::new()));
         let in_memory_tables = Arc::new(RwLock::new(HashMap::new()));
         let indices = Arc::new(RwLock::new(HashMap::new()));
+        let cdc = Arc::new(CdcStreamer::new(10_000));
 
         // Pulihkan skema tabel dan data dari halaman slotted-page
         if let Ok(page0) = storage.get_page(0) {
@@ -119,9 +174,12 @@ impl ExecutionEngine {
             indices,
             secondary_indexes: Arc::new(RwLock::new(HashMap::new())),
             views: Arc::new(RwLock::new(HashMap::new())),
+            materialized_views: Arc::new(RwLock::new(HashMap::new())),
             savepoints: Arc::new(RwLock::new(HashMap::new())),
             cache_engine: Arc::new(CacheEngine::new()),
             columnar_engine: Arc::new(ColumnarEngine::new()),
+            table_stats: Arc::new(RwLock::new(HashMap::new())),
+            cdc,
         }
     }
 
@@ -131,12 +189,14 @@ impl ExecutionEngine {
         match stmt {
             SqlStatement::BeginTransaction => {
                 let new_tx = self.tx_mgr.begin_transaction();
-                let _ = self.wal.append(new_tx, WalOpType::Begin, 0, 0, Vec::new());
+                let wal_lsn = self.wal.append(new_tx, WalOpType::Begin, 0, 0, Vec::new()).unwrap_or(0);
+                self.cdc.emit(CdcRecord::new(wal_lsn, new_tx, "", CdcOp::Begin, None, None));
                 Ok(QueryResult::Message(format!("Transaksi dimulai [TX ID: {}]", new_tx)))
             }
             SqlStatement::CommitTransaction => {
                 self.tx_mgr.commit(tx_id);
-                let _ = self.wal.append(tx_id, WalOpType::Commit, 0, 0, Vec::new());
+                let wal_lsn = self.wal.append(tx_id, WalOpType::Commit, 0, 0, Vec::new()).unwrap_or(0);
+                self.cdc.emit(CdcRecord::new(wal_lsn, tx_id, "", CdcOp::Commit, None, None));
                 let _ = self.storage.flush_all();
                 let mut sp_guard = self.savepoints.write().unwrap();
                 sp_guard.retain(|(t, _), _| *t != tx_id);
@@ -144,7 +204,8 @@ impl ExecutionEngine {
             }
             SqlStatement::RollbackTransaction => {
                 self.tx_mgr.rollback(tx_id);
-                let _ = self.wal.append(tx_id, WalOpType::Rollback, 0, 0, Vec::new());
+                let wal_lsn = self.wal.append(tx_id, WalOpType::Rollback, 0, 0, Vec::new()).unwrap_or(0);
+                self.cdc.emit(CdcRecord::new(wal_lsn, tx_id, "", CdcOp::Rollback, None, None));
                 let mut sp_guard = self.savepoints.write().unwrap();
                 sp_guard.retain(|(t, _), _| *t != tx_id);
                 Ok(QueryResult::Message(format!("Transaksi dibatalkan [TX ID: {} ROLLBACK]", tx_id)))
@@ -209,9 +270,26 @@ impl ExecutionEngine {
 
                 if let Ok(mut page0) = self.storage.get_page(0) {
                     if let Ok(schema_bytes) = serde_json::to_vec(&schema) {
-                        page0.insert_record(&schema_bytes);
-                        self.storage.update_page(page0);
-                        let _ = self.storage.flush_all();
+                        if page0.insert_record(&schema_bytes).is_none() {
+                            // Kompaksi Page 0 jika penuh dengan menuliskan seluruh skema aktif
+                            let mut fresh_p0 = Page::new(0, PageType::Header);
+                            let mut all_fit = true;
+                            for s in cat.values() {
+                                if let Ok(b) = serde_json::to_vec(s) {
+                                    if fresh_p0.insert_record(&b).is_none() {
+                                        all_fit = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if all_fit {
+                                let _ = self.storage.update_page(fresh_p0);
+                                let _ = self.storage.flush_all();
+                            }
+                        } else {
+                            let _ = self.storage.update_page(page0);
+                            let _ = self.storage.flush_all();
+                        }
                     }
                 }
 
@@ -225,6 +303,15 @@ impl ExecutionEngine {
                 if cat.remove(&upper_name).is_some() {
                     let mut tables = self.in_memory_tables.write().unwrap();
                     tables.remove(&upper_name);
+                    // Kompaksi Page 0 untuk membersihkan skema tabel yang dihapus
+                    let mut fresh_p0 = Page::new(0, PageType::Header);
+                    for s in cat.values() {
+                        if let Ok(b) = serde_json::to_vec(s) {
+                            fresh_p0.insert_record(&b);
+                        }
+                    }
+                    let _ = self.storage.update_page(fresh_p0);
+                    let _ = self.storage.flush_all();
                     let _ = self.wal.append(tx_id, WalOpType::Delete, 0, 0, name.as_bytes().to_vec());
                     Ok(QueryResult::Message(format!("Tabel '{}' berhasil dihapus", name)))
                 } else if if_exists {
@@ -398,7 +485,15 @@ impl ExecutionEngine {
                     }
                 }
 
-                let _ = self.wal.append(tx_id, WalOpType::Insert, schema_clone.root_page_id, 0, Vec::new());
+                let wal_lsn = self.wal.append(tx_id, WalOpType::Insert, schema_clone.root_page_id, 0, Vec::new()).unwrap_or(0);
+                self.cdc.emit(CdcRecord::new(
+                    wal_lsn,
+                    tx_id,
+                    upper_name.clone(),
+                    CdcOp::Insert,
+                    None,
+                    Some(row.fields.clone()),
+                ));
 
                 let mut tables = self.in_memory_tables.write().unwrap();
                 let list = tables.get_mut(&upper_name).unwrap();
@@ -1668,10 +1763,15 @@ impl ExecutionEngine {
                 })
             }
             SqlStatement::Update { table, assignments, where_clause, returning } => {
-                let cat = self.catalog.read().unwrap();
                 let upper_name = table.to_uppercase();
-                let _schema = cat.get(&upper_name)
-                    .ok_or_else(|| format!("Tabel '{}' tidak ditemukan", table))?;
+                let (_schema, all_schemas) = {
+                    let cat = self.catalog.read().unwrap();
+                    let s = cat.get(&upper_name)
+                        .cloned()
+                        .ok_or_else(|| format!("Tabel '{}' tidak ditemukan", table))?;
+                    let all: Vec<TableSchema> = cat.values().cloned().collect();
+                    (s, all)
+                };
 
                 // Validasi foreign keys pada assignments sebelum mengambil write lock
                 for (col, val_expr) in &assignments {
@@ -1700,6 +1800,7 @@ impl ExecutionEngine {
 
                 let mut affected = 0;
                 let mut new_versions = Vec::new();
+                let mut cdc_updates = Vec::new();
                 for (hdr, r) in rows_data.iter_mut() {
                     if self.tx_mgr.is_visible(hdr, &snapshot, tx_id) {
                         let matches_where = match &where_clause {
@@ -1713,6 +1814,7 @@ impl ExecutionEngine {
                                 new_r.fields.insert(col.to_uppercase(), new_val);
                             }
                             hdr.xmax = tx_id; // Tandai versi lama
+                            cdc_updates.push((r.fields.clone(), new_r.fields.clone()));
                             new_versions.push((MvccHeader { xmin: tx_id, xmax: 0 }, new_r));
                             affected += 1;
                         }
@@ -1758,9 +1860,87 @@ impl ExecutionEngine {
                     }
                     rows_data.extend(new_versions.clone());
                 }
+                drop(tables);
 
                 if affected > 0 {
-                    let _ = self.wal.append(tx_id, WalOpType::Update, _schema.root_page_id, 0, Vec::new());
+                    let wal_lsn = self.wal.append(tx_id, WalOpType::Update, _schema.root_page_id, 0, Vec::new()).unwrap_or(0);
+                    for (before_fields, after_fields) in &cdc_updates {
+                        self.cdc.emit(CdcRecord::new(
+                            wal_lsn,
+                            tx_id,
+                            upper_name.clone(),
+                            CdcOp::Update,
+                            Some(before_fields.clone()),
+                            Some(after_fields.clone()),
+                        ));
+                    }
+
+                    // Cascade Foreign Key Updates ke tabel-tabel anak
+                    let mut tables = self.in_memory_tables.write().unwrap();
+                    for child_schema in &all_schemas {
+                        let child_tbl = child_schema.name.clone();
+                        if child_tbl == upper_name { continue; }
+
+                        for fk in &child_schema.foreign_keys {
+                            if fk.foreign_table.eq_ignore_ascii_case(&upper_name) {
+                                let parent_col = fk.foreign_column.to_uppercase();
+                                let child_col = fk.column.to_uppercase();
+
+                                for (before_f, after_f) in &cdc_updates {
+                                    let old_val = before_f.get(&parent_col);
+                                    let new_val = after_f.get(&parent_col);
+
+                                    if let (Some(ov), Some(nv)) = (old_val, new_val) {
+                                        if ov != nv {
+                                            match fk.on_update {
+                                                Some(CascadeAction::Cascade) => {
+                                                    if let Some(child_rows) = tables.get_mut(&child_tbl) {
+                                                        for (c_hdr, c_r) in child_rows.iter_mut() {
+                                                            if self.tx_mgr.is_visible(c_hdr, &snapshot, tx_id) {
+                                                                if c_r.fields.get(&child_col) == Some(ov) {
+                                                                    let before = c_r.fields.clone();
+                                                                    c_r.fields.insert(child_col.clone(), nv.clone());
+                                                                    self.cdc.emit(CdcRecord::new(
+                                                                        0,
+                                                                        tx_id,
+                                                                        child_tbl.clone(),
+                                                                        CdcOp::Update,
+                                                                        Some(before),
+                                                                        Some(c_r.fields.clone()),
+                                                                    ));
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                Some(CascadeAction::SetNull) => {
+                                                    if let Some(child_rows) = tables.get_mut(&child_tbl) {
+                                                        for (c_hdr, c_r) in child_rows.iter_mut() {
+                                                            if self.tx_mgr.is_visible(c_hdr, &snapshot, tx_id) {
+                                                                if c_r.fields.get(&child_col) == Some(ov) {
+                                                                    let before = c_r.fields.clone();
+                                                                    c_r.fields.insert(child_col.clone(), SqlValue::Null);
+                                                                    self.cdc.emit(CdcRecord::new(
+                                                                        0,
+                                                                        tx_id,
+                                                                        child_tbl.clone(),
+                                                                        CdcOp::Update,
+                                                                        Some(before),
+                                                                        Some(c_r.fields.clone()),
+                                                                    ));
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                _ => {}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 if let Some(ret_cols) = returning {
@@ -1796,33 +1976,171 @@ impl ExecutionEngine {
                 }
             }
             SqlStatement::Delete { table, where_clause, returning } => {
-                let cat = self.catalog.read().unwrap();
                 let upper_name = table.to_uppercase();
-                let _schema = cat.get(&upper_name)
-                    .ok_or_else(|| format!("Tabel '{}' tidak ditemukan", table))?;
+                let (_schema, all_schemas) = {
+                    let cat = self.catalog.read().unwrap();
+                    let s = cat.get(&upper_name)
+                        .cloned()
+                        .ok_or_else(|| format!("Tabel '{}' tidak ditemukan", table))?;
+                    let all: Vec<TableSchema> = cat.values().cloned().collect();
+                    (s, all)
+                };
 
-                let mut tables = self.in_memory_tables.write().unwrap();
-                let rows_data = tables.get_mut(&upper_name)
-                    .ok_or_else(|| format!("Data tabel '{}' belum diinisialisasi", table))?;
+                // 1. Identifikasi baris-baris target yang cocok dengan klausa WHERE
+                let (matching_indices, deleted_rows) = {
+                    let tables = self.in_memory_tables.read().unwrap();
+                    let rows_data = tables.get(&upper_name)
+                        .ok_or_else(|| format!("Data tabel '{}' belum diinisialisasi", table))?;
 
-                let mut affected = 0;
-                let mut deleted_rows = Vec::new();
-                for (hdr, r) in rows_data.iter_mut() {
-                    if self.tx_mgr.is_visible(hdr, &snapshot, tx_id) {
-                        let matches_where = match &where_clause {
-                            Some(expr) => self.eval_predicate(expr, r)?,
-                            None => true,
-                        };
-                        if matches_where {
-                            hdr.xmax = tx_id; // Hapus secara logis via MVCC
-                            deleted_rows.push(r.clone());
-                            affected += 1;
+                    let mut indices = Vec::new();
+                    let mut del_rows = Vec::new();
+                    for (idx, (hdr, r)) in rows_data.iter().enumerate() {
+                        if self.tx_mgr.is_visible(hdr, &snapshot, tx_id) {
+                            let matches_where = match &where_clause {
+                                Some(expr) => self.eval_predicate(expr, r)?,
+                                None => true,
+                            };
+                            if matches_where {
+                                indices.push(idx);
+                                del_rows.push(r.clone());
+                            }
                         }
                     }
-                }
+                    (indices, del_rows)
+                };
+
+                let affected = matching_indices.len();
 
                 if affected > 0 {
-                    let _ = self.wal.append(tx_id, WalOpType::Delete, _schema.root_page_id, 0, Vec::new());
+                    // 2. Validasi RESTRICT / NO ACTION dahulu sebelum memutasi apa pun
+                    {
+                        let tables = self.in_memory_tables.read().unwrap();
+                        for child_schema in &all_schemas {
+                            let child_tbl = &child_schema.name;
+                            if child_tbl == &upper_name {
+                                continue;
+                            }
+
+                            for fk in &child_schema.foreign_keys {
+                                if fk.foreign_table.eq_ignore_ascii_case(&upper_name) {
+                                    let is_restrict = match fk.on_delete {
+                                        Some(CascadeAction::Restrict) | Some(CascadeAction::NoAction) | None => true,
+                                        _ => false,
+                                    };
+                                    if is_restrict {
+                                        let parent_col = fk.foreign_column.to_uppercase();
+                                        let child_col = fk.column.to_uppercase();
+
+                                        if let Some(child_rows) = tables.get(child_tbl) {
+                                            for dr in &deleted_rows {
+                                                if let Some(parent_val) = dr.fields.get(&parent_col) {
+                                                    if *parent_val != SqlValue::Null {
+                                                        let has_active_child = child_rows.iter().any(|(c_hdr, c_r)| {
+                                                            self.tx_mgr.is_visible(c_hdr, &snapshot, tx_id)
+                                                                && c_r.fields.get(&child_col) == Some(parent_val)
+                                                        });
+                                                        if has_active_child {
+                                                            return Err(format!(
+                                                                "Pelanggaran Kunci Asing (Foreign Key Violation): Baris pada '{}' tidak dapat dihapus karena masih dirujuk oleh tabel '{}'",
+                                                                table, child_schema.name
+                                                            ));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 3. Terapkan penghapusan pada parent dan cascade/set null pada anak
+                    {
+                        let mut tables = self.in_memory_tables.write().unwrap();
+                        if let Some(rows_data) = tables.get_mut(&upper_name) {
+                            for &idx in &matching_indices {
+                                if idx < rows_data.len() {
+                                    rows_data[idx].0.xmax = tx_id;
+                                }
+                            }
+                        }
+
+                        for child_schema in &all_schemas {
+                            let child_tbl = &child_schema.name;
+                            if child_tbl == &upper_name {
+                                continue;
+                            }
+
+                            for fk in &child_schema.foreign_keys {
+                                if fk.foreign_table.eq_ignore_ascii_case(&upper_name) {
+                                    let parent_col = fk.foreign_column.to_uppercase();
+                                    let child_col = fk.column.to_uppercase();
+
+                                    for dr in &deleted_rows {
+                                        if let Some(parent_val) = dr.fields.get(&parent_col) {
+                                            if *parent_val != SqlValue::Null {
+                                                match fk.on_delete {
+                                                    Some(CascadeAction::Cascade) => {
+                                                        if let Some(child_rows) = tables.get_mut(child_tbl) {
+                                                            for (c_hdr, c_r) in child_rows.iter_mut() {
+                                                                if self.tx_mgr.is_visible(c_hdr, &snapshot, tx_id) {
+                                                                    if c_r.fields.get(&child_col) == Some(parent_val) {
+                                                                        c_hdr.xmax = tx_id;
+                                                                        self.cdc.emit(CdcRecord::new(
+                                                                            0,
+                                                                            tx_id,
+                                                                            child_tbl.clone(),
+                                                                            CdcOp::Delete,
+                                                                            Some(c_r.fields.clone()),
+                                                                            None,
+                                                                        ));
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    Some(CascadeAction::SetNull) => {
+                                                        if let Some(child_rows) = tables.get_mut(child_tbl) {
+                                                            for (c_hdr, c_r) in child_rows.iter_mut() {
+                                                                if self.tx_mgr.is_visible(c_hdr, &snapshot, tx_id) {
+                                                                    if c_r.fields.get(&child_col) == Some(parent_val) {
+                                                                        let before = c_r.fields.clone();
+                                                                        c_r.fields.insert(child_col.clone(), SqlValue::Null);
+                                                                        self.cdc.emit(CdcRecord::new(
+                                                                            0,
+                                                                            tx_id,
+                                                                            child_tbl.clone(),
+                                                                            CdcOp::Update,
+                                                                            Some(before),
+                                                                            Some(c_r.fields.clone()),
+                                                                        ));
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    _ => {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    let wal_lsn = self.wal.append(tx_id, WalOpType::Delete, _schema.root_page_id, 0, Vec::new()).unwrap_or(0);
+                    for dr in &deleted_rows {
+                        self.cdc.emit(CdcRecord::new(
+                            wal_lsn,
+                            tx_id,
+                            upper_name.clone(),
+                            CdcOp::Delete,
+                            Some(dr.fields.clone()),
+                            None,
+                        ));
+                    }
                 }
 
                 if let Some(ret_cols) = returning {
@@ -1921,6 +2239,99 @@ impl ExecutionEngine {
                     Ok(QueryResult::Message(format!("Tampilan (View) '{}' tidak ada, dilewati", name)))
                 } else {
                     Err(format!("Tampilan (View) '{}' tidak ditemukan", name))
+                }
+            }
+            SqlStatement::CreateMaterializedView { name, query, if_not_exists } => {
+                let upper_name = name.to_uppercase();
+                {
+                    let mv_guard = self.materialized_views.read().unwrap();
+                    if mv_guard.contains_key(&upper_name) {
+                        if if_not_exists {
+                            return Ok(QueryResult::Message(format!("View materialisasi '{}' sudah ada, dilewati (IF NOT EXISTS)", name)));
+                        }
+                        return Err(format!("View materialisasi '{}' sudah ada!", name));
+                    }
+                }
+
+                // Eksekusi kueri dasarnya untuk materialisasi data awal
+                let query_res = self.execute(*query.clone(), tx_id)?;
+                let (cols, rows) = match query_res {
+                    QueryResult::Rows { columns, rows, .. } => (columns, rows),
+                    _ => return Err("Kueri pendefinisi view materialisasi tidak menghasilkan baris".to_string()),
+                };
+
+                let col_defs: Vec<(String, String)> = cols.iter().map(|c| (c.clone(), "TEXT".to_string())).collect();
+                let schema = TableSchema {
+                    name: upper_name.clone(),
+                    columns: col_defs,
+                    column_defs: Vec::new(),
+                    primary_key: None,
+                    foreign_keys: Vec::new(),
+                    root_page_id: 0,
+                    serial_counter: 0,
+                };
+
+                let synth_rows: Vec<(MvccHeader, Row)> = rows.into_iter().map(|row_vals| {
+                    let mut fields = HashMap::new();
+                    for (i, val) in row_vals.into_iter().enumerate() {
+                        if i < cols.len() {
+                            fields.insert(cols[i].to_uppercase(), val);
+                        }
+                    }
+                    (MvccHeader { xmin: tx_id, xmax: 0 }, Row { fields })
+                }).collect();
+
+                self.catalog.write().unwrap().insert(upper_name.clone(), schema);
+                self.in_memory_tables.write().unwrap().insert(upper_name.clone(), synth_rows);
+                self.materialized_views.write().unwrap().insert(upper_name, *query);
+
+                Ok(QueryResult::Message(format!("View materialisasi '{}' berhasil dibuat dan dimaterialisasikan", name)))
+            }
+            SqlStatement::RefreshMaterializedView { name } => {
+                let upper_name = name.to_uppercase();
+                let query = {
+                    let mv_guard = self.materialized_views.read().unwrap();
+                    mv_guard.get(&upper_name).cloned()
+                        .ok_or_else(|| format!("View materialisasi '{}' tidak ditemukan", name))?
+                };
+
+                // Evaluasi ulang kueri dengan data terkini
+                let query_res = self.execute(query, tx_id)?;
+                let (cols, rows) = match query_res {
+                    QueryResult::Rows { columns, rows, .. } => (columns, rows),
+                    _ => return Err(format!("Kueri penyegaran view materialisasi '{}' tidak menghasilkan baris", name)),
+                };
+
+                let synth_rows: Vec<(MvccHeader, Row)> = rows.into_iter().map(|row_vals| {
+                    let mut fields = HashMap::new();
+                    for (i, val) in row_vals.into_iter().enumerate() {
+                        if i < cols.len() {
+                            fields.insert(cols[i].to_uppercase(), val);
+                        }
+                    }
+                    (MvccHeader { xmin: tx_id, xmax: 0 }, Row { fields })
+                }).collect();
+
+                let mut tables = self.in_memory_tables.write().unwrap();
+                if let Some(existing_rows) = tables.get_mut(&upper_name) {
+                    *existing_rows = synth_rows;
+                } else {
+                    tables.insert(upper_name, synth_rows);
+                }
+
+                Ok(QueryResult::Message(format!("View materialisasi '{}' berhasil disegarkan (REFRESH)", name)))
+            }
+            SqlStatement::DropMaterializedView { name, if_exists } => {
+                let upper_name = name.to_uppercase();
+                let mut mv_guard = self.materialized_views.write().unwrap();
+                if mv_guard.remove(&upper_name).is_some() {
+                    self.catalog.write().unwrap().remove(&upper_name);
+                    self.in_memory_tables.write().unwrap().remove(&upper_name);
+                    Ok(QueryResult::Message(format!("View materialisasi '{}' berhasil dihapus", name)))
+                } else if if_exists {
+                    Ok(QueryResult::Message(format!("View materialisasi '{}' tidak ada, dilewati (IF EXISTS)", name)))
+                } else {
+                    Err(format!("View materialisasi '{}' tidak ditemukan", name))
                 }
             }
             SqlStatement::CreateIndex { name, table, column, is_unique, if_not_exists } => {
@@ -2145,6 +2556,16 @@ impl ExecutionEngine {
                     }
                 }
 
+                let wal_lsn = self.wal.append(tx_id, WalOpType::Checkpoint, 0, 0, Vec::new()).unwrap_or(0);
+                self.cdc.emit(CdcRecord::new(
+                    wal_lsn,
+                    tx_id,
+                    upper_name.clone(),
+                    CdcOp::Truncate,
+                    None,
+                    None,
+                ));
+
                 Ok(QueryResult::Message(format!("Tabel '{}' berhasil dikosongkan (TRUNCATE)", name)))
             }
             SqlStatement::VacuumDb { table } => {
@@ -2224,52 +2645,100 @@ impl ExecutionEngine {
                     affected: len,
                 })
             }
+            SqlStatement::AnalyzeTable { table } => {
+                self.execute_analyze(table, tx_id)
+            }
             SqlStatement::ExplainStatement { stmt, analyze } => {
-                let start_time = std::time::Instant::now();
+                let plan_start = std::time::Instant::now();
+                let cost_model = CostModel::default();
                 let mut plan_lines = Vec::new();
+                let mut root_scan_index: Option<usize> = None;
 
                 match &*stmt {
                     SqlStatement::Select { from_table, join, joins, where_clause, order_by, group_by, .. } => {
-                        let cat = self.catalog.read().unwrap();
                         let upper = from_table.to_uppercase();
-                        if let Some(schema) = cat.get(&upper) {
-                            if schema.primary_key.is_some() && where_clause.is_some() {
-                                plan_lines.push(format!("->  Index Scan using pk_{} on {} (cost=0.15..8.20)", upper, from_table));
+                        let cat = self.catalog.read().unwrap();
+                        let is_real_table = cat.contains_key(&upper);
+                        drop(cat);
+
+                        if is_real_table {
+                            // Hitung biaya Scan dengan Cost-Based Optimizer (CBO)
+                            let (_is_idx, scan_label, startup_cost, total_cost, est_rows, avg_width) =
+                                self.calculate_scan_cost(from_table, where_clause.as_ref(), &cost_model);
+
+                            root_scan_index = Some(plan_lines.len());
+                            plan_lines.push(format!("->  {}  (cost={:.2}..{:.2} rows={} width={})", scan_label, startup_cost, total_cost, est_rows, avg_width));
+
+                            let all_joins: Vec<&JoinClause> = if !joins.is_empty() {
+                                joins.iter().collect()
+                            } else if let Some(j) = join {
+                                vec![j]
                             } else {
-                                plan_lines.push(format!("->  Seq Scan on {} (cost=0.00..35.50)", from_table));
+                                Vec::new()
+                            };
+
+                            for j in all_joins {
+                                let (join_label, j_startup, j_total, j_rows, j_width) =
+                                    self.calculate_join_cost(from_table, &j.table, &cost_model);
+                                plan_lines.push(format!("->  {} on {}  (cost={:.2}..{:.2} rows={} width={})", join_label, j.table, j_startup, j_total, j_rows, j_width));
+                            }
+
+                            if !group_by.is_empty() {
+                                let agg_startup = total_cost;
+                                let agg_total = agg_startup + (est_rows as f64 * cost_model.cpu_operator_cost);
+                                plan_lines.push(format!("->  HashAggregate on ({})  (cost={:.2}..{:.2} rows={} width={})", group_by.join(", "), agg_startup, agg_total, (est_rows / 2).max(1), avg_width));
+                            }
+
+                            if let Some(ob) = order_by {
+                                let sort_startup = total_cost + 5.0;
+                                let sort_total = sort_startup + ((est_rows as f64) * ((est_rows as f64).log2().max(1.0)) * cost_model.cpu_operator_cost);
+                                plan_lines.push(format!("->  Sort by {} {}  (cost={:.2}..{:.2} rows={} width={})", ob.column, if ob.is_desc { "DESC" } else { "ASC" }, sort_startup, sort_total, est_rows, avg_width));
                             }
                         } else {
-                            plan_lines.push(format!("->  Scan on virtual / function table {}", from_table));
-                        }
-                        if join.is_some() || !joins.is_empty() {
-                            plan_lines.push("->  Hash Join / Nested Loop Join (cost=10.00..50.00)".to_string());
-                        }
-                        if !group_by.is_empty() {
-                            plan_lines.push(format!("->  HashAggregate on ({}) (cost=40.00..45.00)", group_by.join(", ")));
-                        }
-                        if let Some(ob) = order_by {
-                            plan_lines.push(format!("->  Sort by {} {} (cost=50.00..55.00)", ob.column, if ob.is_desc { "DESC" } else { "ASC" }));
+                            root_scan_index = Some(plan_lines.len());
+                            plan_lines.push(format!("->  Result / Virtual Scan on {}  (cost=0.00..0.01 rows=1 width=32)", from_table));
                         }
                     }
                     SqlStatement::Insert { table, .. } => {
-                        plan_lines.push(format!("->  Insert on {} (cost=0.00..0.05)", table));
+                        root_scan_index = Some(plan_lines.len());
+                        plan_lines.push(format!("->  Insert on {}  (cost=0.00..0.05 rows=1 width=64)", table));
                     }
                     SqlStatement::Update { table, .. } => {
-                        plan_lines.push(format!("->  Update on {} (cost=0.00..15.00)", table));
+                        root_scan_index = Some(plan_lines.len());
+                        plan_lines.push(format!("->  Update on {}  (cost=0.00..15.00 rows=1 width=64)", table));
                     }
                     SqlStatement::Delete { table, .. } => {
-                        plan_lines.push(format!("->  Delete on {} (cost=0.00..15.00)", table));
+                        root_scan_index = Some(plan_lines.len());
+                        plan_lines.push(format!("->  Delete on {}  (cost=0.00..15.00 rows=1 width=64)", table));
                     }
                     _ => {
                         plan_lines.push(format!("->  Execute statement: {:?}", stmt));
                     }
                 }
 
+                let plan_duration = plan_start.elapsed();
+
                 if analyze {
-                    let _ = self.execute(*stmt, tx_id)?;
-                    let elapsed = start_time.elapsed();
-                    plan_lines.push(format!("Planning Time: 0.045 ms"));
-                    plan_lines.push(format!("Execution Time: {:.3} ms", elapsed.as_secs_f64() * 1000.0));
+                    let exec_start = std::time::Instant::now();
+                    let exec_res = self.execute(*stmt, tx_id)?;
+                    let exec_duration = exec_start.elapsed();
+
+                    let actual_rows = match &exec_res {
+                        QueryResult::Rows { rows, .. } => rows.len(),
+                        QueryResult::Message(_) => 1,
+                    };
+
+                    let exec_ms = exec_duration.as_secs_f64() * 1000.0;
+                    if let Some(idx) = root_scan_index {
+                        if idx < plan_lines.len() {
+                            let actual_str = format!(" (actual time=0.010..{:.3} rows={} loops=1)", exec_ms.max(0.012), actual_rows);
+                            plan_lines[idx].push_str(&actual_str);
+                        }
+                    }
+
+                    let plan_ms = (plan_duration.as_secs_f64() * 1000.0).max(0.025);
+                    plan_lines.push(format!("Planning Time: {:.3} ms", plan_ms));
+                    plan_lines.push(format!("Execution Time: {:.3} ms", exec_ms));
                 }
 
                 let rows: Vec<Vec<SqlValue>> = plan_lines.into_iter().map(|l| vec![SqlValue::Text(l)]).collect();
@@ -2510,6 +2979,328 @@ impl ExecutionEngine {
                 let receivers = self.cache_engine.publish(&channel, &message);
                 Ok(QueryResult::Message(format!("(integer) {}", receivers)))
             }
+        }
+    }
+
+    /// Mengeksekusi ANALYZE / ANALISIS_TABEL untuk memperbarui statistik katalog tabel dan kolom
+    pub fn execute_analyze(&self, target_table: Option<String>, tx_id: u64) -> Result<QueryResult, String> {
+        let cat = self.catalog.read().unwrap();
+        let target_tables: Vec<String> = if let Some(ref t) = target_table {
+            let up = t.to_uppercase();
+            if !cat.contains_key(&up) {
+                return Err(format!("Tabel '{}' tidak ditemukan untuk dianalisis", t));
+            }
+            vec![up]
+        } else {
+            cat.keys().cloned().collect()
+        };
+
+        let mut analyzed_info = Vec::new();
+
+        for t_name in target_tables {
+            let schema = cat.get(&t_name).cloned().unwrap();
+            let tables = self.in_memory_tables.read().unwrap();
+            let all_rows = tables.get(&t_name).cloned().unwrap_or_default();
+            drop(tables);
+
+            // Filter baris yang aktif / terlihat pada transaksi saat ini
+            let visible_rows: Vec<Row> = all_rows.into_iter().filter_map(|(hdr, row)| {
+                if hdr.xmin <= tx_id && (hdr.xmax == 0 || hdr.xmax > tx_id) {
+                    Some(row)
+                } else {
+                    None
+                }
+            }).collect();
+
+            let row_count = visible_rows.len();
+            let avg_row_size = if row_count > 0 {
+                let sample_count = visible_rows.len().min(100);
+                let total_sample_bytes: usize = visible_rows.iter().take(sample_count).map(|r| {
+                    r.fields.iter().map(|(k, v)| k.len() + v.as_text().len() + 8).sum::<usize>()
+                }).sum();
+                (total_sample_bytes / sample_count).max(32)
+            } else {
+                32
+            };
+            let page_count = ((row_count * avg_row_size + 4095) / 4096).max(1);
+
+            let mut col_stats_map = HashMap::new();
+
+            for (col_name, _col_type) in &schema.columns {
+                let col_upper = col_name.to_uppercase();
+                let mut null_count = 0;
+                let mut distinct_map: HashMap<String, usize> = HashMap::new();
+                let mut val_list: Vec<SqlValue> = Vec::new();
+                let mut min_val: Option<SqlValue> = None;
+                let mut max_val: Option<SqlValue> = None;
+
+                for row in &visible_rows {
+                    match row.fields.get(&col_upper) {
+                        None | Some(SqlValue::Null) => {
+                            null_count += 1;
+                        }
+                        Some(val) => {
+                            let val_str = val.as_text();
+                            *distinct_map.entry(val_str).or_insert(0) += 1;
+                            val_list.push(val.clone());
+
+                            if let Some(ref current_min) = min_val {
+                                if compare_sql_values(val, current_min) == std::cmp::Ordering::Less {
+                                    min_val = Some(val.clone());
+                                }
+                            } else {
+                                min_val = Some(val.clone());
+                            }
+
+                            if let Some(ref current_max) = max_val {
+                                if compare_sql_values(val, current_max) == std::cmp::Ordering::Greater {
+                                    max_val = Some(val.clone());
+                                }
+                            } else {
+                                max_val = Some(val.clone());
+                            }
+                        }
+                    }
+                }
+
+                let mut mcv_vec: Vec<(SqlValue, usize)> = Vec::new();
+                for (val_str, count) in &distinct_map {
+                    if let Some(first_match) = val_list.iter().find(|v| v.as_text() == *val_str) {
+                        mcv_vec.push((first_match.clone(), *count));
+                    }
+                }
+                mcv_vec.sort_by(|a, b| b.1.cmp(&a.1));
+                mcv_vec.truncate(10); // Simpan top 10 Most Common Values
+
+                // Korelasi urutan fisik vs urutan nilai
+                let correlation = if val_list.len() > 1 {
+                    let mut sorted = val_list.clone();
+                    sorted.sort_by(|a, b| compare_sql_values(a, b));
+                    let mut concordant = 0;
+                    for (i, v) in val_list.iter().enumerate() {
+                        if v == &sorted[i] {
+                            concordant += 1;
+                        }
+                    }
+                    (concordant as f64) / (val_list.len() as f64)
+                } else {
+                    1.0
+                };
+
+                col_stats_map.insert(col_upper, ColumnStats {
+                    column_name: col_name.clone(),
+                    null_count,
+                    distinct_count: distinct_map.len(),
+                    min_val,
+                    max_val,
+                    most_common_vals: mcv_vec,
+                    correlation,
+                });
+            }
+
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs();
+
+            let t_stats = TableStats {
+                table_name: t_name.clone(),
+                row_count,
+                page_count,
+                avg_row_size,
+                last_analyzed: now,
+                columns: col_stats_map,
+            };
+
+            let col_len = schema.columns.len();
+            self.table_stats.write().unwrap().insert(t_name.clone(), t_stats);
+            analyzed_info.push(format!("Tabel '{}' ({} baris, {} halaman, {} kolom)", t_name, row_count, page_count, col_len));
+        }
+
+        Ok(QueryResult::Message(format!(
+            "Operasi ANALISIS_TABEL selesai: {}",
+            analyzed_info.join("; ")
+        )))
+    }
+
+    /// Menghitung estimasi selektivitas ekspresi filter WHERE
+    pub fn estimate_selectivity(&self, table: &str, expr: &SqlExpr) -> f64 {
+        let stats_guard = self.table_stats.read().unwrap();
+        let t_stats = stats_guard.get(&table.to_uppercase());
+
+        match expr {
+            SqlExpr::Binary { left, op, right } => {
+                let col_name = match (&**left, &**right) {
+                    (SqlExpr::Column(c), _) => Some(c.as_str()),
+                    (_, SqlExpr::Column(c)) => Some(c.as_str()),
+                    _ => None,
+                };
+
+                if let Some(raw_col) = col_name {
+                    let col_clean = if let Some(dot_pos) = raw_col.find('.') {
+                        &raw_col[dot_pos + 1..]
+                    } else {
+                        raw_col
+                    };
+                    let col_stats = t_stats.and_then(|ts| ts.columns.get(&col_clean.to_uppercase()));
+
+                    match op {
+                        BinaryOp::Eq => {
+                            if let Some(cs) = col_stats {
+                                if cs.distinct_count > 0 {
+                                    return (1.0 / cs.distinct_count as f64).min(1.0);
+                                }
+                            }
+                            0.05
+                        }
+                        BinaryOp::Neq => {
+                            if let Some(cs) = col_stats {
+                                if cs.distinct_count > 0 {
+                                    return (1.0 - (1.0 / cs.distinct_count as f64)).max(0.0);
+                                }
+                            }
+                            0.95
+                        }
+                        BinaryOp::Gt | BinaryOp::Lt | BinaryOp::Gte | BinaryOp::Lte => 0.33,
+                        BinaryOp::Like => 0.10,
+                        BinaryOp::NotLike => 0.90,
+                        _ => 0.50,
+                    }
+                } else {
+                    0.50
+                }
+            }
+            SqlExpr::Between { .. } => 0.20,
+            SqlExpr::InList { list, negated, .. } => {
+                let sel = (list.len() as f64 * 0.05).min(0.9);
+                if *negated { 1.0 - sel } else { sel }
+            }
+            SqlExpr::IsNull { negated, .. } => {
+                if *negated { 0.95 } else { 0.05 }
+            }
+            _ => 0.50,
+        }
+    }
+
+    /// Menghitung biaya Scan tabel (Index Scan vs Sequential Scan) menggunakan CostModel
+    pub fn calculate_scan_cost(
+        &self,
+        table: &str,
+        where_clause: Option<&SqlExpr>,
+        cost_model: &CostModel,
+    ) -> (bool, String, f64, f64, usize, usize) {
+        let upper_name = table.to_uppercase();
+        let cat = self.catalog.read().unwrap();
+        let schema = cat.get(&upper_name).cloned();
+        drop(cat);
+
+        let stats_guard = self.table_stats.read().unwrap();
+        let t_stats = stats_guard.get(&upper_name).cloned();
+        drop(stats_guard);
+
+        let (row_count, page_count, avg_width) = if let Some(ts) = t_stats {
+            (ts.row_count, ts.page_count, ts.avg_row_size)
+        } else {
+            let tables = self.in_memory_tables.read().unwrap();
+            let rc = tables.get(&upper_name).map(|r| r.len()).unwrap_or(10);
+            let pc = ((rc * 64 + 4095) / 4096).max(1);
+            (rc, pc, 64)
+        };
+
+        let selectivity = where_clause.map(|w| self.estimate_selectivity(table, w)).unwrap_or(1.0);
+        let est_rows = ((row_count as f64) * selectivity).ceil().max(1.0) as usize;
+
+        // Biaya Seq Scan
+        let seq_startup = 0.0;
+        let num_evals = if where_clause.is_some() { 1.0 } else { 0.0 };
+        let seq_total = (page_count as f64 * cost_model.seq_page_cost)
+            + (row_count as f64 * cost_model.cpu_tuple_cost)
+            + (row_count as f64 * num_evals * cost_model.cpu_operator_cost);
+
+        // Cek apakah ada indeks yang dapat digunakan oleh WHERE clause
+        let mut index_choice: Option<(String, String)> = None;
+
+        if let Some(SqlExpr::Binary { left, op: BinaryOp::Eq, right }) = where_clause {
+            let col_name_opt = match (&**left, &**right) {
+                (SqlExpr::Column(c), _) => Some(c.clone()),
+                (_, SqlExpr::Column(c)) => Some(c.clone()),
+                _ => None,
+            };
+
+            if let Some(col_raw) = col_name_opt {
+                let col = if let Some(dot_pos) = col_raw.find('.') {
+                    col_raw[dot_pos + 1..].to_string()
+                } else {
+                    col_raw
+                };
+
+                // Periksa Primary Key
+                if let Some(ref s) = schema {
+                    if let Some(ref pk) = s.primary_key {
+                        if pk.eq_ignore_ascii_case(&col) {
+                            index_choice = Some((format!("pk_{}", upper_name.to_lowercase()), pk.clone()));
+                        }
+                    }
+                }
+
+                // Periksa Secondary Indexes
+                if index_choice.is_none() {
+                    let sec_map = self.secondary_indexes.read().unwrap();
+                    for (idx_name, (tbl, c)) in sec_map.iter() {
+                        if tbl == &upper_name && c.eq_ignore_ascii_case(&col) {
+                            index_choice = Some((idx_name.clone(), c.clone()));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if let Some((idx_name, _col)) = index_choice {
+            // Hitung Biaya Index Scan
+            let idx_startup = 0.15;
+            let est_pages = ((page_count as f64) * selectivity).ceil().min(est_rows as f64).max(1.0);
+            let idx_total = idx_startup
+                + (est_pages * cost_model.random_page_cost)
+                + (est_rows as f64 * (cost_model.cpu_index_tuple_cost + cost_model.cpu_tuple_cost));
+
+            // Cost-Based Optimizer membandingkan Index Scan vs Seq Scan
+            if idx_total < seq_total {
+                let label = format!("Index Scan using {} on {}", idx_name, table);
+                return (true, label, idx_startup, idx_total, est_rows, avg_width);
+            }
+        }
+
+        let label = format!("Seq Scan on {}", table);
+        (false, label, seq_startup, seq_total, est_rows, avg_width)
+    }
+
+    /// Menghitung biaya JOIN (Nested Loop Join vs Hash Join)
+    pub fn calculate_join_cost(
+        &self,
+        outer_table: &str,
+        inner_table: &str,
+        cost_model: &CostModel,
+    ) -> (String, f64, f64, usize, usize) {
+        let stats_guard = self.table_stats.read().unwrap();
+        let outer_rows = stats_guard.get(&outer_table.to_uppercase()).map(|s| s.row_count).unwrap_or(10);
+        let inner_rows = stats_guard.get(&inner_table.to_uppercase()).map(|s| s.row_count).unwrap_or(10);
+        drop(stats_guard);
+
+        let est_rows = (outer_rows * inner_rows / 10).max(1);
+        let avg_width = 128;
+
+        let nested_startup = 0.0;
+        let nested_total = (outer_rows as f64 * cost_model.cpu_tuple_cost)
+            + (outer_rows as f64 * inner_rows as f64 * cost_model.cpu_operator_cost);
+
+        let hash_startup = (inner_rows as f64 * cost_model.cpu_operator_cost) + 5.0;
+        let hash_total = hash_startup + ((outer_rows + inner_rows) as f64 * cost_model.cpu_operator_cost);
+
+        if nested_total < hash_total {
+            ("Nested Loop Join".to_string(), nested_startup, nested_total, est_rows, avg_width)
+        } else {
+            ("Hash Join".to_string(), hash_startup, hash_total, est_rows, avg_width)
         }
     }
 
@@ -2915,6 +3706,45 @@ impl ExecutionEngine {
                                 SqlValue::Null => Ok(SqlValue::Null),
                                 other => Ok(other),
                             }
+                        } else {
+                            Ok(SqlValue::Null)
+                        }
+                    }
+                    "TEKS_KE_RTL" | "TO_RTL" => {
+                        if let Some(a) = args.get(0) {
+                            let text = self.eval_expr_value(a, row)?.as_text();
+                            // U+202B (RLE - Right-to-Left Embedding) ... U+202C (PDF - Pop Directional Formatting)
+                            Ok(SqlValue::Text(format!("\u{202B}{}\u{202C}", text)))
+                        } else {
+                            Ok(SqlValue::Null)
+                        }
+                    }
+                    "BALIK_TEKS_VISUAL" | "REVERSE_VISUAL" | "REVERSE" | "BALIK" => {
+                        if let Some(a) = args.get(0) {
+                            let text = self.eval_expr_value(a, row)?.as_text();
+                            let rev: String = text.chars().rev().collect();
+                            Ok(SqlValue::Text(rev))
+                        } else {
+                            Ok(SqlValue::Null)
+                        }
+                    }
+                    "HAPUS_HARAKAT" | "STRIP_HARAKAT" => {
+                        if let Some(a) = args.get(0) {
+                            let text = self.eval_expr_value(a, row)?.as_text();
+                            let filtered: String = text
+                                .chars()
+                                .filter(|&c| !matches!(c, '\u{064B}'..='\u{065F}' | '\u{0670}' | '\u{06D6}'..='\u{06ED}'))
+                                .collect();
+                            Ok(SqlValue::Text(filtered))
+                        } else {
+                            Ok(SqlValue::Null)
+                        }
+                    }
+                    "ARAH_TEKS" | "TEXT_DIRECTION" => {
+                        if let Some(a) = args.get(0) {
+                            let text = self.eval_expr_value(a, row)?.as_text();
+                            let is_arab = text.chars().any(|c| matches!(c, '\u{0600}'..='\u{06FF}' | '\u{0750}'..='\u{077F}' | '\u{08A0}'..='\u{08FF}'));
+                            Ok(SqlValue::Text(if is_arab { "rtl".to_string() } else { "ltr".to_string() }))
                         } else {
                             Ok(SqlValue::Null)
                         }

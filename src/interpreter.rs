@@ -46,6 +46,10 @@ impl Interpreter {
         bindings
     }
 
+    pub fn get_global_variables(&self) -> HashMap<String, Value> {
+        self.get_environment_bindings()
+    }
+
     pub fn interpret(&mut self, program: &Program) -> Result<Value, Galat> {
         let mut last_value = Value::Nil;
         for stmt in &program.statements {
@@ -468,6 +472,23 @@ impl Interpreter {
                         resolved_path = Some(p.with_extension("wya"));
                     } else if p.with_extension("widya").exists() {
                         resolved_path = Some(p.with_extension("widya"));
+                    }
+                }
+
+                if resolved_path.is_none() {
+                    // Cek direktori vendor lokal (Air-Gapped / Offline Vendor Cache)
+                    let vendor_candidates = [
+                        std::path::PathBuf::from("vendor").join(path).join("src").join("lib.wya"),
+                        std::path::PathBuf::from("vendor").join(path).join("src").join("main.wya"),
+                        std::path::PathBuf::from("vendor").join(path).join("lib.wya"),
+                        std::path::PathBuf::from("vendor").join(format!("{}.wya", path)),
+                        std::path::PathBuf::from(".widya").join("packages").join(path).join("src").join("lib.wya"),
+                    ];
+                    for vc in &vendor_candidates {
+                        if vc.exists() {
+                            resolved_path = Some(vc.clone());
+                            break;
+                        }
                     }
                 }
 

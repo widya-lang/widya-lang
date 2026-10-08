@@ -1,0 +1,106 @@
+// ============================================================================
+// CONTOH 191: AKSARA DUNIA (WORLD WRITING SYSTEMS) & TRANSLITERASI GLOBAL
+// Bahasa Pemrograman Widya (Widya-lang)
+// Mendukung Transliterasi, Unicode Rendering, Registry & Virtual Keypad untuk:
+// - Aksara Yunani (Greek Alphabet - α, β, γ, δ, Ω)
+// - Aksara Sirilik (Cyrillic / Slavia - а, б, в, г, д, я)
+// - Aksara Jepang (Hiragana & Katakana - あ/ア, か/カ, さ/サ)
+// - Aksara Korea (Hangul - 한글)
+// - Aksara Devanagari (Hindi, Sansekerta, Marathi - क, ख, ग, घ)
+// - Aksara Ibrani (Hebrew - א, ב, ג, ד, ש, ת)
+// - Aksara Thai (Thailand - ก, ข, ค, ง, จ)
+// - Aksara Rune (Elder Futhark Skandinavia - ᚠ, ᚢ, ᚦ, ᚨ, ᚱ)
+// - Aksara Arab Hijaiyah (العربية)
+// ============================================================================
+
+cetak("==================================================================");
+cetak("🌍 DUKUNGAN AKSARA DUNIA (WORLD WRITING SYSTEMS) DI WIDYA-LANG");
+cetak("==================================================================");
+
+// 1. TRANSLITERASI AKSARA YUNANI (GREEK ALPHABET)
+cetak("\n--- 1. Aksara Yunani (Greek Alphabet) ---");
+var teks_yunani = "filosofia matematika astronomia widya";
+var aksara_yunani = latin_ke_aksara_yunani(teks_yunani);
+cetak("Latin     : " + teks_yunani);
+cetak("Yunani (α): " + aksara_yunani);
+cetak("Contoh Nama: " + latin_ke_aksara_yunani("Sokrates Platon Aristoteles"));
+
+// 2. TRANSLITERASI AKSARA SIRILIK (CYRILLIC)
+cetak("\n--- 2. Aksara Sirilik (Cyrillic / Slavia) ---");
+var teks_sirilik = "spasibo bolshoye widya mir";
+var aksara_sirilik = latin_ke_aksara_sirilik(teks_sirilik);
+cetak("Latin      : " + teks_sirilik);
+cetak("Sirilik (а): " + aksara_sirilik);
+cetak("Sapaan     : " + latin_ke_aksara_sirilik("Zdravstvuyte, dobro pozhalovat v Widya-lang!"));
+
+// 3. TRANSLITERASI JEPANG: HIRAGANA & KATAKANA
+cetak("\n--- 3. Aksara Jepang: Hiragana & Katakana (かな) ---");
+var romaji = "konnichiwa arigatou widya nihon";
+var hiragana = latin_ke_hiragana(romaji);
+var katakana = latin_ke_katakana("widya kompyuuta sofutowea");
+cetak("Romaji        : " + romaji);
+cetak("Hiragana (あ) : " + hiragana);
+cetak("Katakana (ア) : " + katakana);
+
+// 4. TRANSLITERASI KOREA: HANGUL
+cetak("\n--- 4. Aksara Korea: Hangul (한글) ---");
+var teks_korea = "annyeonghaseyo widya lang";
+var hangul = latin_ke_hangul(teks_korea);
+cetak("Romanisasi : " + teks_korea);
+cetak("Hangul (한): " + hangul);
+
+// 5. TRANSLITERASI DEVANAGARI (INDIA & SANSEKERTA)
+cetak("\n--- 5. Aksara Devanagari (India / Hindi / Sansekerta) ---");
+var teks_sanskrit = "namaste vidya shanti karma";
+var devanagari = latin_ke_devanagari(teks_sanskrit);
+cetak("Latin      : " + teks_sanskrit);
+cetak("Devanagari : " + devanagari);
+
+// 6. TRANSLITERASI IBRANI (HEBREW)
+cetak("\n--- 6. Aksara Ibrani (Hebrew / Ivrit) [RTL] ---");
+var teks_hebrew = "shalom widya haverim";
+var ibrani = latin_ke_aksara_ibrani(teks_hebrew);
+cetak("Latin      : " + teks_hebrew);
+cetak("Ibrani (א) : " + ibrani);
+
+// 7. TRANSLITERASI THAI (THAILAND)
+cetak("\n--- 7. Aksara Thai (Thailand) ---");
+var teks_thai = "sawatdee widya khobkhun";
+var thai = latin_ke_aksara_thai(teks_thai);
+cetak("Latin   : " + teks_thai);
+cetak("Thai (ก): " + thai);
+
+// 8. TRANSLITERASI RUNE (ELDER FUTHARK)
+cetak("\n--- 8. Aksara Rune Skandinavia (Elder Futhark) ---");
+var teks_rune = "futhark viking odin thor widya";
+var rune = latin_ke_aksara_rune(teks_rune);
+cetak("Latin   : " + teks_rune);
+cetak("Rune (ᚠ): " + rune);
+
+// 9. MASTER DATA 15 AKSARA DUNIA
+cetak("\n--- 9. Master Registry 15 Aksara Utama Peradaban Dunia ---");
+var master_dunia = daftar_aksara_dunia();
+cetak("Total Aksara Dunia Terdaftar: " + ke_teks(panjang(master_dunia)) + " sistem penulisan");
+
+untuk item dalam master_dunia {
+    cetak("  • " + item["nama"] + " [" + item["rentang_unicode"] + "] (" + item["arah_penulisan"] + ")");
+    cetak("    Rumpun : " + item["rumpun_aksara"] + " | Wilayah: " + item["wilayah_penutur"]);
+    cetak("    Contoh : " + item["contoh_aksara"]);
+}
+
+// 10. PAPAN KETIK VIRTUAL AKSARA DUNIA
+cetak("\n--- 10. Papan Ketik Virtual Aksara Dunia Siap Pakai ---");
+var daftar_vk_dunia = ["yunani", "sirilik", "hiragana", "katakana", "devanagari", "ibrani", "thai", "rune"];
+
+untuk aks in daftar_vk_dunia {
+    var vk = buat_papan_ketik_aksara_dunia(aks);
+    cetak("\n[" + vk["nama"] + "] (Arah: " + vk["arah"] + ")");
+    cetak("  Baris 1 : " + gabung(vk["baris_1"], " "));
+    cetak("  Baris 2 : " + gabung(vk["baris_2"], " "));
+    cetak("  Baris 3 : " + gabung(vk["baris_3"], " "));
+    cetak("  Diakritik: " + gabung(vk["diakritik"], " "));
+}
+
+cetak("\n==================================================================");
+cetak("✨ SELURUH AKSARA DUNIA & TRANSLITERASI GLOBAL BERFUNGSI SEMPURNA!");
+cetak("==================================================================");

@@ -20,6 +20,9 @@ pub enum WalOpType {
     Commit = 5,
     Rollback = 6,
     Checkpoint = 7,
+    Prepare = 8,
+    CommitPrepared = 9,
+    AbortPrepared = 10,
 }
 
 impl WalOpType {
@@ -32,6 +35,9 @@ impl WalOpType {
             5 => WalOpType::Commit,
             6 => WalOpType::Rollback,
             7 => WalOpType::Checkpoint,
+            8 => WalOpType::Prepare,
+            9 => WalOpType::CommitPrepared,
+            10 => WalOpType::AbortPrepared,
             _ => WalOpType::Insert,
         }
     }

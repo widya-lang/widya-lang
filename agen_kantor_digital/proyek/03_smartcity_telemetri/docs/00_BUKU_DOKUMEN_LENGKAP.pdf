@@ -1,193 +1,231 @@
-%PDF-1.4
-%“Œ‹ž ReportLab Generated PDF document (opensource)
+%PDF-1.7
+%âãÏÓ
 1 0 obj
-<<
-/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 6 0 R /F6 7 0 R
->>
+<< /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<<
-/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
->>
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R ] /Count 13 /MediaBox [ 0 0 595.28 841.89 ] >>
 endobj
 3 0 obj
-<<
-/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
->>
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
 endobj
 4 0 obj
-<<
-/BaseFont /ZapfDingbats /Name /F3 /Subtype /Type1 /Type /Font
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
 endobj
 5 0 obj
-<<
-/BaseFont /Courier-Bold /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
->>
+<< /Length 755 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (BUKU DOKUMEN MASTER LENGKAP PROYEK 03_smartcity_telemetri) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+0.94 0.97 1 rg 50 691.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 691.89 m 50 727.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 705.89 Tm (KUTIPAN: Standar Resmi Spesifikasi Industri ISO 32000-1 *  Kedaulatan Sistem On-Premise) Tj ET
+endstream
 endobj
 6 0 obj
-<<
-/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F5 /Subtype /Type1 /Type /Font
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
-<<
-/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F6 /Subtype /Type1 /Type /Font
->>
+<< /Length 891 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SMARTCITY ISPU TELEMETRI & SPATIAL GIS) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_analis` \(SOP-02\) & `agen_arsitek` \(SOP-03\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 673.89 Tm (**Standar Regulasi:** Permen LHK No. P.14/2020 tentang Indeks Standar Pencemar Udara \(ISPU\)) Tj ET
+endstream
 endobj
 8 0 obj
-<<
-/Contents 17 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
 endobj
 9 0 obj
-<<
-/Contents 18 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 1081 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Problem Statement & Target Solusi) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Dinas Lingkungan Hidup \(DLH\) dan Dinas Perhubungan di berbagai kabupaten/kota membutuhkan platform pemantauan kualitas udara dan manajemen lalu lintas cerdas yang terintegrasi secara mandiri tanpa tergantung server cloud asing.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (**Tujuan**: Mengembangkan platform telemetri IoT multi-sensor dengan visualisasi GIS peta geospasial interaktif, kalkulator baku mutu resmi ISPU \(PM2.5, PM10, SO2, CO, O3\), optimasi durasi lampu lalu lintas adaptif \(ATCS\) rasio V/C, dan geofencing armada truk sampah/patroli.) Tj ET
+endstream
 endobj
 10 0 obj
-<<
-/Contents 19 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
 endobj
 11 0 obj
-<<
-/Contents 20 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 1228 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Fitur Utama) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (1. **Peta Geospasial Multi-Layer SVG/GIS**: Menampilkan titik stasiun sensor lingkungan, status lampu lalu lintas, dan pergerakan armada secara real-time.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (2. **Kalkulator Interpolasi ISPU Permen LHK**: Konversi otomatis konsentrasi mikrogram/mÂ³ menjadi kategori \(Baik, Sedang, Tidak Sehat, Sangat Tidak Sehat, Berbahaya\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (3. **Adaptive Traffic Control System \(ATCS\)**: Perhitungan optimasi fase hijau berbasis formula Webster rasio Volume/Kapasitas \(V/C\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (4. **Geofencing Haversine**: Deteksi radius masuk/keluar armada truk ke zona kelurahan/desa inti.) Tj ET
+endstream
 endobj
 12 0 obj
-<<
-/Contents 21 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
 endobj
 13 0 obj
-<<
-/Contents 22 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 16 0 R /Resources <<
-/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
->> /Rotate 0 /Trans <<
-
->> 
-  /Type /Page
->>
+<< /Length 733 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (ARSITEKTUR TELEMETRI & ENTITY RELATIONSHIP DIAGRAM \(ERD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SMARTCITY ISPU TELEMETRI & SPATIAL GIS) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_arsitek` \(SOP-03\)) Tj ET
+endstream
 endobj
 14 0 obj
-<<
-/PageMode /UseNone /Pages 16 0 R /Type /Catalog
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
 endobj
 15 0 obj
-<<
-/Author (\(anonymous\)) /CreationDate (D:20261002014920+07'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261002014920+07'00') /Producer (ReportLab PDF Library - \(opensource\)) 
-  /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
->>
+<< /Length 1303 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Skema ERD Relasional) Tj ET
+0.94 0.97 1 rg 50 701.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 701.89 m 50 737.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 715.89 Tm (KODE \(MERMAID\): erDiagram     STASIUN_SENSOR ||--o{ DATA_TELEMETRI : mencatat     SIMPANG_LALULINTAS ||--o{ LOG_FASE_LAMPU : mengoptimasi     ARMADA_KENDARAAN ||--o{ LOG_POSISI_GPS : melacak      STASIUN_SENSOR {         string id_stasiun PK         string nama_lokasi         decimal latitude         decimal longitude         string status_sensor     }      DATA_TELEMETRI {         string id_telemetri PK         string id_stasiun FK         decimal pm25         decimal pm10         int nilai_ispu         string kategori_ispu         datetime waktu_rekam     }      SIMPANG_LALULINTAS {         string id_simpang PK         string nama_persimpangan         decimal rasio_vc         int durasi_hijau_detik     }) Tj ET
+endstream
 endobj
 16 0 obj
-<<
-/Count 6 /Kids [ 8 0 R 9 0 R 10 0 R 11 0 R 12 0 R 13 0 R ] /Type /Pages
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
 endobj
 17 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1165
->>
+<< /Length 720 >>
 stream
-Gatm:?#SFZ'Y`a3S=<5h'!CW?M6jg9Ug41WP_;c#.SX5(bQH9GKYH`dIuj3K!\IYN"[O\hSEG0X+!67=`@n:kDq4pO)4Xtd?lZI40UK;2%3`kTIlja"ku$pq,>n^Y=*1STL-4pEk\l59;K>8-L*;*u./"I8%UuY4=9l,h6Lkmi=?u"fi\?rt+e(dl>MT6"65W'NrYeM*pi6Mb.#TFo,Yk+YOSsas4nSFa+m5mnE['-^[nhW\*e__P%n%Fh92!6%j0#4JW'E5=KEdYE*Y@JE54q_aFO-k;.J1Z5l'H&dBbI9476Ck)(p[g/MGncSZ=HoGa71'V8Mj$!0F:6'N(0.d0R4:`o/nX#M%TBI(s]3"k"+Jca/ME[Y>rJBV2"lqFVl5?qnXjnbkFN%Ah`XCOA*[OUVV_C;.YT!=Vn%.F0en9H"5!PT;>lY[4Vhc9l$+h,(8;nZ(%%/T;_l=HDqt87R<aVPqSH'K]+gj98M%OAtMuTA+16<qG*=1h^XEG'U!nHUK[fT5NA""a5l`?\1Tq1)^,K.HjQs;]2f?%P8g/*-$99,T9V:]O#^<8K.@,tn6'Fl^[KN!>4'm55-=1nT:Z?"D?Fn.+:$Xg6u.*_S+A,=_^\aLFou)o@HM1$2PsLP9I#`sYV3tu"7@;%0^m\KF20#=2Z8^Z%&_!W$K8?6B=M#f(=D8As!UMN*<5\0;qWQJbWR9WqPmLBZh)Mali?jl&)k*hRG,Mkk*=&$gO+R4*U8!bK(/WmM1fjE8dQC!RG+et$TY"p;sO%tD#?*U@5\t!Dd]+0P!Z@s7RLjHhPIfqdk`t9+1et9O/q%&%!/,.C8"F+j-:7>kZeq=9R5>$Y9a.;R6;sSnkp9JL"/Ce^G^&UHlk,M[RC79WGnR&'$bVsn'DH\53)*-L\QEjYtu%s#Tb+hWZjGW\]!J,g9S)g$55<uOB-e:l(WMfoP$o\\@2r8HecZ"35@VC<k#=cpD+,/eQ@D\CTu2UG2/r*)f6\gRm(Z<I8&33m'?`*C:%$l'=Z3J0Ha\#4c`r6VioI^`Ob4>6k_2Z%?&fekX-&co1\or*=G*NOtU-f"i50Njc;p3:qs9F-p1Gq!OpC/WH\,q=d^Sc(9fG:\+dJ\As'uU4uYF4?Jc(X8kQ%H/]K0G;JV6;!3;LgDpKEMq&a$;/X6~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 7 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (SPESIFIKASI KEAMANAN & INTEGRITAS IOT SENSOR) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SMARTCITY ISPU TELEMETRI & SPATIAL GIS) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_keamanan` \(SOP-07\)) Tj ET
+endstream
 endobj
 18 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 2145
->>
-stream
-Gatm<gN)"=&:O:So[=RI@A2)>]O=0DX`5IShGgMR8r_)Ga1AOeABS3SnU!abC'2S(A'.94C\R)BVe<q=a+r2p*tk<+O?+I$0n[>'0h\i$*7>rlqt#cK7bY;j9\1N@Yr0knHC0Fnc#Z%kA>F?jg[bi4b84fjRc':hflW8C>gWEIR9m(LhXsoq]p8,&,DXKTD%'qo1GLM]k6s*"+AY__9YKcV(28M=frtKXl"1`Y;!Xj"60n^<N5h&Fd5q]-W:`sX7;*Wg*Sd=Br)P(*0-=a#r2g[<848lhH;sZG=nNXSA_HPII6,h^[D%3O%+@,GE4YB!J7N\Sm_@=j-ahuZLaf:WoMq*hf:m2=1nB!b5&[l9JYJ?DDh3DkAKC4pbh[4mjuSf$)Jd3d)-r.TD\\Qig6P'0iQQ&0NB0Z`^t-94$u%KlI-490[t@I"ogb?motqL"rTUori,*=>mZ&k'+B-?rVPio/E),_&2F=DDh#QWl#d<Wsd!N0tdl!2smPqi5mJ1DGCi\*C@V/=^ehrhs^fcBEDEq*I=u.M8m7kGj5Q"-&0YX<$0E_gC`2DK@)#$A32l%rg3!Foo(ctd'2$e(e--]B4!YR@;k'o_7@Y"$B]6-*$WS)'B]BW7=]V^>8>U>Pi*&hYoqm*/X.]#un*^A-aWN9B"Csf9%g+6ep.LYdki!CBC)_ff?Hm-pV4QWh!?7p?B!`1?`NR)`Wq@<#opC6^\Q6LXuNok$s4*s!\^QB!uT$DRU'="KF?H<4^O%#XrP_RdKoI87&X>-bck_;j/825HWIQA->60kAe,(1#!2S-eU*,[46rkKt+<'qY]fO<?N<t8ud`eu](Xn2/U;hiq1CU;d=0$cQ3jZ(<5h^#hA8TsePqCj%^BD3eZ$IBDc+YCOGOQR!K;NSjtEMuEED)n?$Vt!(g4T\_mVS&Rq9G^Qk/pL"?E`Ob(ec,%V\M6HE1B]O[XR;Q41J.<b^ZPtW.H:*P&rrcY-n@;(,.Xo"l7p/[A^&>CQ7$Ht>"e>hS>spP<CkdUlW,m$e3<*V:C7YjH!F2t;q:mjneo05'ba6&UJWR_0UW:<TOqZa9]hMRc6ZO:?sj9s2k(R,s"8><LpLhcR$]M5P5l]fW`$rK4CE(ucEMTr'X':_"5SiV!?C(h/r[.t7?F-qPZ2WOcO5jN=\^bM#Ne+$<Crn$#IT/L![1^&XB;3Na/%)*GuVq3H\5,4is=@8@[29]<EQ`3E3:Z'g!h/ZhciISgGHWUHCKMKdAG)aRmp5[2J('0->L.q<C\@tag0V.+J3Y4R:DdoGSt=OU8>kBoLJ)M?&'M6c64cq&+Mcu/1U6@U&k_n`ssM`B<aQ:3X\CP8.&Sp>LMZ911M=h1KgT%Zto+9F'M*C.*u"A)D,\A)L[i]"d(E__GAjB'@PikKB"`rZJWH5VS0,fZnAYR'j>*9cDrNWDehZMq(o<6puAB\54#r)%5:,g.Pj\"8h^B!P;l:<;Ban1=^-$6<O"p6%J^o_2U#Al1fRZ:EQ,SU[cE%\kMWg/8NYE#jTlbhLZ$E8Fa]P.b=pI]->g5'r;_X4=UImAd&bG(?HRko/-UK6S\p;CndH_3FHWW^R*bKtM9hF96[Q0,-)NP:?#UZI'*M]JZmh4q*oXk(?D8$+]\IG;:fZP<5P+-OduYK_*)cCk+RR]ooj(C]oD)WTct/Lmje:VC5dfHMZ$fGKKp6.I+ZH\dkCoR!q8B>2A/;saM)iFB?c5+Yb[1]$c2`^bgi/Mo8jK:+B]P3SA&dKU"Mil7DR=j&XfJR9?h9^`WAoE%?f8-s0QOB'km1[sW"Y#t_C9M,lQ\]FB.54YQ%LGuB-mtgWn(nC2g'ICq!6N3X,D@,F&oIFE5QDH-^aQ;/qjW4qh:cu(4!Ko+DZDqqd4]'$g:tRT(p-PL:rLqVM='hC3lYXVRW!&!ro$FdgQ*(bo\msi7?ejG4eViKeYYN>.UWrQFGPu%n9(i?.[C?:53s`jo1W2NANCqFYGatein)]"8M/h!Sg!"^_P2(=T,&`G<[qo[ATFH#;tbM+.BaOfNP`6e^_XI\RrSXeZ@Z6Zu1O(/G'uT&h9`\,pHVG,Ya]md]JHOl!NN<R8_GPJJbI$Ee1isb!rXslNTXNf6#>Cmr?SqpfQF(]&U$UlqrP`rWS;*TS3~>endstream
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
 endobj
 19 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1574
->>
+<< /Length 1106 >>
 stream
-Gatm:D/Yn7&H88.0qV3Y-.C\(je^kURA??[$WpE*88)QJLY1N)`iZ8<s8?OGYd'2:46[A(XEJc1Sp>M9-kQ<QlMi%1\;fFa*<jS.H3@tr#"0^*U78o9BRQ%bNTuf=QH;#=G&1,FWFfACTi9;X_JPe$\RK]F9*Gt;RmS:4708P=Dhtt0V2Zpu9X+sm-Ks"9G`WtSijhbIN)6!p/X82a3&WKVA!XqC"/7!NK/TBHleV^?#_[aJKRVtkUNlhAG62))!-ear1\>"S&&9``IeAG?>*!lq.*=t^reSa.P@R6fV!:qO?@r*6^Coa;q"K02=je9W]1hD35n4lu+@Et.MSD)$A;UUsC`l](Uu!:C461X^&t\<85+&K5,%0s$4.M4flQSZ"YBS-n.4Jl1TpSk#;eh_TL#;0H2<G_i7?Z^I[?3E=`a0ASn-=3%aH+&%i/QO5T2*7!riG(_2t5Z#^`C<[%j0fi>mIhDW2A#R1kpr]i\fPXF9>"2jqo'?5k9?]e`%DSgoSW2][NV,Qn]&!N>Z$@Sp;GJYD@08jcYul$@#"$,c1mHE9meVT99UISBXi#$>2ni4+_fDI$4\cZr#/)"KRD:c'Ep99IN[.s25%_ONL=B%HXaqn]#!-0&*'BNQ\]XYp/DSj$C92n+Jb82p'N=jcI^V>-S>*NcDRdR5/FF9@4Dp`2^nC=,Bq?a.h4_A[4M7kq*/X;rMiL-i.buMUI.;B-QbGmF$1.<X2n^N"'jAI_Ymu&8jS]@ZfDH_j$YX"MW/k7g,mFV,`(J!3$1]3m!%)MF"N[]6'O#c'tB0<uoSu5rXdU0scjEAIGe9*.lfhbD&I0VL@Ze=8bK=rg*h`9@ksgJ;e5L[u^]3L4!m?.2Lr5eO,L/OG[$]1.@!K?X`#Mrd5?6hB\TqnG:l-Dgu5'M;7lng`I\4nqAJ\fi%I_1O!j]O5/-1jA5967X6i(O71lN6dZ`dKMl,n?ck4Ck;Zf+#%Ml8`^=Z"E!$mq=\F0$%K4Y7mq8=lhhZtg+#LTKs#f/M_[`$:+C3"!&e/:Wc\<7a>\#&8CtC%jQH91_DI=^3[+m<u%`pV9SVcV>d8mg8`OdDQD2Y1]f.#u@?9;"+g2n/!Q</:J97/B1j'B9]*-]lEKKS(H1er6Jq[3dI;'r>\E@tPV2SNQ#ho31^a$m:O8(!`o*O4#j5\]p9E-^i%?BV$H,4\C9$CT`?\&G=^bIu\lT@.AWO-bZJI1ET)nr[tnV?r8aR]_+n6]XpoC3l#Chi0e>1[V`Ng$KW((q$Q4+GQ(q>GN`;4Y/X_=]YssMq-$T6e><&o<Y15%Bp/$-):4R++/4m=Q9Rk^^iRF\[N_E0P8./3h28E$+=n.o^D]$VHH&WiqsIMr>(*0ffB5aZ=jeR,DLV#l\AF"JIp8-3&&S>0H85D1=^nX*uJFfFnZgW!B)1u/EdT;#%X&><37FXs%:Po[?aZQ8[fe1?B7HC*>c@,c7VZ<eKj#k-A?]]ck@UY#X]FB8UXYh4Aa4QEOn`nn0MB>&E*BrDSIJdP-/c@G^N1$aXOCu#&U(HgMUhT&f]&Q*8A;-@"C"-iYcY5!KIR*'E~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 8 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Keamanan Komunikasi IoT Telemetri) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (1. **Enkripsi Saluran Sensor**: Data telemetri dikirim menggunakan protokol aman MQTT over TLS \(port 8883\) dengan otentikasi kunci pre-shared key \(PSK\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (2. **Anti-Tampering Sensor**: Verifikasi signature digital pada setiap paket telemetri untuk mencegah injeksi data palsu dari luar jaringan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (3. **Privasi Geospasial Warga \(UU PDP\)**: Data pergerakan warga tidak disimpan dalam bentuk identitas individu, hanya dalam bentuk kepadatan agregat \(*anonymized heatmaps*\).) Tj ET
+endstream
 endobj
 20 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1525
->>
-stream
-Gatn%gMZ%0&;KZF'Q[86Md";VNk&*>g8sT7&5-^K+M`Sg(l+5"]98[QMEZECP-!;mmA@kVYXO?fEqmo*iD:ZlV=jk:#&kX$kH>RJKD5JGBp]H=64fdeGs^8JQ=Wn\\DZ#*iOYV=B%Un/Nb`YBL.<fHAN6i[TB+_A#1KuQO3^/0_l"/Gc\&p#V+A96Haf(G]U9]Dd`tQ,Qdn!\B[+?C`Wdf^92%%,@p8'uH:>?!CI%@D56lWAKL6H$\XnNF/I_P3%"kN$?[ouEF>*kXL%kt#Il@mgl"kAZ%(4X[1)!*!YH!rXQ!DC(<e[PD`LjND=8:;Us+\:d'>r5@10gGkMg<C\ZO)e`?"!Df%?7IOJW0h$ofLU9,!0_al]@uba6os3\n+=GZ!QJ\[`^eg`V<IJG=\3l1h.KQZp@EcA"*rlRlDA21F[K]f$Q=1_QVqFO$X!9O8La'r<:&X**aV35D!he@iWM9A@;a&X&%6unqeMN:"\C,jpEM.__Wm'\-C[gF=`BbA[`B2c"VP&&-CU0%O'c<f^'(KD\./P=rK[GDQ?'s&T![FNVlrW7B8#!VUl@aQbb)+B-H8j:jJaa#o@#l%"`?&/[+@BK%!95E4*QE7*UDb-P@apP_UJY\RB>5m-3YUd.QDpS8h4']\`0DQ0WI]_djo4cftu(6er[STRC<n;__Ju;LDBt$#[[q@-X`0>ispB.5I$Dr9[J(I"8h81n"&oF*DpE.HfO4hf_k84..*oCCdU#+#iD0rI4dF,Es5`,<;]$bM>@^LI(?jE%PDMV"EA,C;@%W%Dubcc;c>d"lV4kpdh!'ou/]\T,Gl5G^?Ll+XCg8<tB->e'65Io!D4DoJI8>Fb/sN1,#!5452P.Le9q![38DH.T?V?bieS?/lK&^(!C?[/f10X_!!8.@JMG^oK#<5Xd2D`J^AIDQf"?#K%;o'=in<kR&0-H?K"S`?Ts?6-BQ@d1nI1S]2R`<6h\tHZB$a4dJ&)@ZBZt?5!Ma1GO0fmG$1hj/ugd8iJF#(8h=?r&cni1PZV?UQ.6Z9F^D1K:&82A`?V>Z8Z$&HW*Z2CZP&1:%>hmZMmXtk8SDa)I[$8brH)ZLA'Cg(HIa2kjK`$!!t!b=@P0@af@RTkBQMK@%3jrF/8E$"W(eb,L_N.@.U1lT6nC_1J&iOs9!klR;0K<GSu?:eXFGpoOhZ_.iMk=HW,NM,0+`;\rj7.,SKB%_jtE/!$cVoi7?r^0q9ITA&Zb.W4*deXhV.PD1[MPp_i(Fl!dXa\]39irhBXDj"IBZ?WnpH0\Fh#\$=Pi`Ki%i:r])#_`Z,ghL=`2.%,4cNF1oFALdp?h[r!Ge`gNqD:#[)0FLu,%BEF\96M_C7j<f=0Sf#85c\sQd2><4P(WkpA%_%)$(N3X'Uif=;],rfGo\EVX6Q>FMLV__k_mE*uk^'#'IbmBPF`#nQU=LBn6;\FO*iTiBTq?B0GLUV?U_YG6)jR(^r"('CnK]/oQomL0Hb%>-,Nobm\F*sgDd%cQ^Y'T7HUg,9ndd#YnT+~>endstream
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
 endobj
 21 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1407
->>
+<< /Length 720 >>
 stream
-Gb!$FD/Yn7&BE]*;p:^m3L*;3&XGu^!llR_pjj:1.[$Wa98H5X@hmaBWcT?^AcYj.Qr_Ao)Co.4m-`*qp:n4L$3WT#pjQBHF<e<.Tg0J`00k47+R4Ru[D'(_ePf(mE_Csp8jb%3i@qVWb#3gi0Phqu@b<?+[PC"]"JI)_Yg!i+H.O7Z4D<Q^,)%Oji5c%-cA`iY*@CJa'P$u!RXrn>%8L_.";o>q&nA_U#e/1d[(B'L`"eqbljg4iT`]j-]Y4@'3CC;t!%oDj!ptK["s=bD*aBfao>fB*cIYkVqV1$kR4!o'SYno[ka`4T%R3#(&,?1$AQ[Y06dL]aAg7K6,fjYHMrqd`*#8\aI$d9']HbrWZL`fumnt'J`nf1J.nTpqq0aR_:#`O:d)PqL1,_"#`jUtC8XWK"'Ge.=&f]%1'MTM;+l(u6UXSs`:?[6F#59fc,OWV^UFjE-d!(5.M^(p]&5Bbc0npr2E.][#),QfW/L2s^k$7Mb,g&B@("C,]/UE;1.HDp%]MP/%"5tO;Ro-/9<3%ZF0H/#58E%?%8(V)>:f<,)^,p;/Z%m_D^kk1O&%>ki(4mZgW9>"K<@Z3h>&[$,@)@DN"LSj'd<%g>/iViL@9YrS-(pgp%EIuii'kZ!FL>7g1)S9"cW<P%H?WEmgJGQqoi0/b]+nP-R:%4>#uaV7:Qt/8CV2mR3U`oME"mDMHppnseiE2eUhr!8Z]i+`OD;_DL">[63p-R,b!%+=WD4pBRa"!B)W;:u(:'duWEo]u%JUdde)tt@_TaiCD!!Hoj4OV@S+WXXCQRV8,_Q)C+,3Dj!eZA'7Mn.TQnXT%$;^F[=oH^a:8h_)CurPF3+r+<W@d&KW(<R_i%ME:P-&erC+s%/rr\M%@)>St]j+s_:HOq_-;OHbS?DL83GJB\3ghVloEr0ik>*^hZ^@,.r2f_/0X9Z*R)%k/314N:;s<qFiU(EVE0=R#;#E:%/;M=$OePP9TSi4gob#i'-[LK5Yg$NJ=lMCoWnnF,j1BXl6tJC+cYuhD5L`haKsmQ*-?#Eb#<*s34X%SVp$ufWKBFML`Ykl<5Ee+OQJ#V:N^NDK[7J-SU,6(%GoE#>o[l6tT>c#W^7tP.$>A0JX7@2[L9cj&`?,ju3^pT'VapiG&.PK7am2)Li!puU*/qSXKtc"FEES\5]ode/E/.QZ\=n-,q77=mlQRn"_h$Eq[e_S[(JM`A+NbfneS`'>"Ip&j3YY5dHb?D*!=VI&0M>bMX>0I;;@/KOl5\9hWtS,Q.;87Il_P[AL:;(]$6So5j*;KS.MRRN2UR4f=gfA:ji+Em[\)XNB@KJ2.iY><F;D'<G+(akW^/[ABCI?urYC.H6+B<c,j?"YYEtUJ.G<fd'1@6^V7&SEa7FP,o1O=go+]Chks4QA1`%YG~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 9 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (RENCANA PENGUJIAN & VALIDASI ISPU \(QA TEST PLAN\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SMARTCITY ISPU TELEMETRI & SPATIAL GIS) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_qa` \(SOP-05\)) Tj ET
+endstream
 endobj
 22 0 obj
-<<
-/Filter [ /ASCII85Decode /FlateDecode ] /Length 1322
->>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 23 0 R >>
+endobj
+23 0 obj
+<< /Length 1203 >>
 stream
-Gatn%>Ar4f&BE]('_?E7/$[s3GF^Zjg`E(QT\*rn.8j]-6_&,;0lEaWrU=HCD29@N8Yq0WY.V63hu79.$n-Rlqjf8<c4f\21LM2c4(+4B8GWlEXaaQVSuEE466":c,/s`iQf0>Ig.9&1"B68VEF(A8/aWT]Uf#LT[`ICp@uIpHE--.8F[ts\#PfLB]l>7NRYgVODG;3SF"hbl&Mu1@!o[<4ZiR;',/?"-IGR*lFTtf24<-X?r&,P6d-G"IGLR^@&&QKmhub58d/I$&!2K)R3kW6sic`"+MfOuI0=PLNcPBYdjDJ#hdG"F35M"\@nGCQVg7HIWGV0[@&4PMU"?$11_p98=$\ngGF,8X.>!J`C:[%,/C2dhAfBpsC.LK@m?H<&,4?g\Pit?Q$9+.3[%;8e)Ak`)"@p<4piIPN!A5P8cs4,%,LZ<=3(^Ag>?8RZPi-Vkdl%V&8Tinfl(eYQ>M^4AkYM(2VU=0IQ?26@m2gbCP39ImBlXS3JV_Wbf]Vq>23)eE(qP$sn_)f?Y9K_O!P>>%r%8f7!JgB]<K.n05La4$aPGm5k02[*(K(&;c<GVb'=(3AnC(!Tm-K;L*8;8ORh_c'8D&a%%[s?g'E#W0d@p_3VHhmNYqSs5'oBcJ#3Fnnq?J(#/M;3!fI2ea01@t\id1o?e<BA<h\'s^,l=mrHd4#I]`bMYDrL4<FJI8[TH[ghTboCp!X95gJ2K$=<4.XYg6Pqm77=%q0atuKX35u%%G1'r%-?fYL!eY=bONu>:A%I=Q.t2(6%+=5o064uk=qr>#9#YM=9'_,\DG#PE4'5dQ+ANhO1tprSReiKT_+doPYl,dMJlQ8lQ'>9S+h"nV]jse^R\Q-C7[#9GpT$aF<=8AioBAp%5t!NtWE?iEO5>^[?kKdQnaO:eMcj),"cfMHXP*m0%P`6X8WVI4RmtdBMQLiIc'!W[Wmm*#s!nuA.F"#Q5<MatPWYs9`Q^Jc`Od>%T>%*o'O:LuI`hQuVYSn`jbWf>Hogl3q.c)<moSiGbf]RR83,K4H`*b;KcqRfXX;8ZeU'q`SiD.s]m*H'7YPutrB9FOG6.#53$+'S3.ubT4GFg#2=uV>='4uHd>)`63P+Fo;>i*Jj"MN294':<4_#BX8nnWsAp\>.%mb/,Bnp+G\[mAiDZlCo!aL)BEo,IG7&`Gq<`S>nP!sel!aO%YjB]suEiN-lZ&9+h5t#!,AM%[tQ0gM,KmT;)?XuTOT<@c"eWJq9fje3sG(r#6Bao]BSj1)9(JroniY@2IQHuf/gth(UCmXIRTV7#WZT7&a9R7*%hhPp'\^')p%^c3;!CV1'~>endstream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 10 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Validasi Formula Baku Mutu ISPU Permen LHK No. P.14/2020) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- [OK]  Kasus 1: Konsentrasi PM2.5 = 8.2 Âµg/mÂ³   ISPU: 26 \(Kategori: BAIK\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- [OK]  Kasus 2: Konsentrasi PM2.5 = 24.5 Âµg/mÂ³   ISPU: 68 \(Kategori: SEDANG\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- [OK]  Kasus 3: Konsentrasi PM2.5 = 65.0 Âµg/mÂ³   ISPU: 124 \(Kategori: TIDAK SEHAT\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (- [OK]  Kasus 4: Konsentrasi PM2.5 = 185.0 Âµg/mÂ³   ISPU: 236 \(Kategori: SANGAT TIDAK SEHAT\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 651.89 Tm (- **Akurasi Formula**: 100% Cocok dengan tabel konversi resmi Kementerian LHK RI.) Tj ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 25 0 R >>
+endobj
+25 0 obj
+<< /Length 713 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 11 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (SOP DEVOPS & DEPLOYMENT SERVER MANDIRI) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SMARTCITY ISPU TELEMETRI & SPATIAL GIS) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Disusun Oleh:** `agen_devops` \(SOP-06\)) Tj ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 27 0 R >>
+endobj
+27 0 obj
+<< /Length 826 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 12 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Menjalankan Server Mandiri \(Port 8003\)) Tj ET
+0.94 0.97 1 rg 50 701.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 701.89 m 50 737.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 715.89 Tm (KODE \(BASH\): cd /home/devops/widya-lang/proyek/03_smartcity_telemetri ../../target/release/widya server.wya) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 681.89 Tm (Layanan akan aktif di: **`http://localhost:8003`**) Tj ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 29 0 R >>
+endobj
+29 0 obj
+<< /Length 357 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 13 dari 13) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+endstream
 endobj
 xref
-0 23
+0 30
 0000000000 65535 f 
-0000000061 00000 n 
-0000000142 00000 n 
-0000000249 00000 n 
-0000000361 00000 n 
-0000000444 00000 n 
-0000000554 00000 n 
-0000000659 00000 n 
-0000000774 00000 n 
-0000000979 00000 n 
-0000001184 00000 n 
-0000001390 00000 n 
-0000001596 00000 n 
-0000001802 00000 n 
-0000002008 00000 n 
-0000002078 00000 n 
-0000002359 00000 n 
-0000002453 00000 n 
-0000003710 00000 n 
-0000005947 00000 n 
-0000007613 00000 n 
-0000009230 00000 n 
-0000010729 00000 n 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000238 00000 n 
+0000000335 00000 n 
+0000000437 00000 n 
+0000001242 00000 n 
+0000001344 00000 n 
+0000002285 00000 n 
+0000002387 00000 n 
+0000003519 00000 n 
+0000003623 00000 n 
+0000004903 00000 n 
+0000005007 00000 n 
+0000005791 00000 n 
+0000005895 00000 n 
+0000007250 00000 n 
+0000007354 00000 n 
+0000008125 00000 n 
+0000008229 00000 n 
+0000009387 00000 n 
+0000009491 00000 n 
+0000010262 00000 n 
+0000010366 00000 n 
+0000011621 00000 n 
+0000011725 00000 n 
+0000012489 00000 n 
+0000012593 00000 n 
+0000013470 00000 n 
+0000013574 00000 n 
 trailer
-<<
-/ID 
-[<bb1b1945da3bd135e8c3dfa9765817db><bb1b1945da3bd135e8c3dfa9765817db>]
-% ReportLab generated PDF document -- digest (opensource)
-
-/Info 15 0 R
-/Root 14 0 R
-/Size 23
->>
+<< /Size 30 /Root 1 0 R /Info << /Title (BUKU DOKUMEN LENGKAP - 03_smartcity_telemetri) /Author (Widya-Lang Sovereign OS \(Proyek: 03_smartcity_telemetri\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
 startxref
-12143
+13982
 %%EOF

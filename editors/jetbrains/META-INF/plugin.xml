@@ -1,0 +1,31 @@
+<idea-plugin>
+    <id>org.widya-lang.intellij</id>
+    <name>Widya-Lang</name>
+    <vendor email="team@widya-lang.org" url="https://widya-lang.org">Tim Widya-Lang</vendor>
+    <description><![CDATA[
+        Dukungan resmi bahasa pemrograman <b>Widya-Lang</b> untuk seluruh JetBrains IDE
+        (IntelliJ IDEA, WebStorm, PyCharm, CLion, RustRover, GoLand).
+        <br><br>
+        <b>Fitur:</b>
+        <ul>
+            <li>Penyorotan sintaksis dwibahasa (Nusantara & Internasional)</li>
+            <li>Deteksi tipe berkas <code>.wya</code>, <code>.widya</code>, dan <code>.wd</code></li>
+            <li>Pemberian komentar cerdas (Line comment <code>//</code> & Block comment <code>/* */</code>)</li>
+            <li>Pelipatan kode dan pencocokan kurung kurawal</li>
+            <li>Dukungan TextMate grammar bundel bawaan</li>
+        </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="textmate-support.xml">org.jetbrains.plugins.textmate</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+            name="Widya"
+            implementationClass="com.intellij.openapi.fileTypes.LanguageFileType"
+            fieldName="INSTANCE"
+            language="Widya"
+            extensions="wya;widya;wd"/>
+    </extensions>
+</idea-plugin>

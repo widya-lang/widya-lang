@@ -5,7 +5,7 @@ tags:
 kode_proyek: PRJ-ARKAS-WEB-01
 nama_proyek: Aplikasi ARKAS Web Terintegrasi
 status: AKTIF
-tanggal_didaftarkan: 2026-09-30
+tanggal_didaftarkan: 2026-10-02
 database: kantor_digital.wdb
 ---
 
@@ -23,8 +23,14 @@ Proyek **Aplikasi ARKAS Web Terintegrasi** adalah inisiatif strategis berbasis s
 ## 📋 Daftar Penugasan Kerja Terdaftar (Tugas Tim)
 | Kode Tugas | Rincian Penugasan | Prioritas | Status | PIC Pelaksana | Target Selesai |
 |:-----------|:------------------|:---------:|:------:|:-------------:|:---------------|
-| **TSK-ARKAS-01** | Perancangan Modul Anggaran & Belanja Sekolah (BOS) | **P1** | `TODO` | @agen_coder | 16:00 WIB |
+| **TSK-ARKAS-01** | Perancangan Modul Anggaran & Belanja Sekolah (BOS) | **P1** | `VERIFIED` | @agen_coder | Selesai (Lulus QA 100%) |
+| **TSK-ARKAS-02** | Integrasi Modul Sinkronisasi Konsolidasi MARKAS Dinas | **P2** | `TODO` | @agen_coder | 17:30 WIB |
 
+## 🌐 Endpoint Layanan & Dokumen Resmi
+- **Web Dashboard**: `http://localhost:8012`
+- **Basis Data**: `database/data.wdb` (Slotted-Page B+Tree, WAL ACID, 5 Tabel Aktif, Rantai SHA-256)
+- **Dokumen Persiapan ISO 32000-1**: `docs/00_BUKU_DOKUMEN_LENGKAP.pdf`
+- **Modul Engine Rust**: `src/arkas/` (`bku_transaksi.rs`, `rkas_anggaran.rs`, `siplah_integrasi.rs`)
 
 ---
 

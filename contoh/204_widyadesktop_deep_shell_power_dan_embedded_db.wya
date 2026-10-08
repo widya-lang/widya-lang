@@ -1,0 +1,52 @@
+// ============================================================================
+// CONTOH 204: WIDYADESKTOP DEEP OS SHELL, POWER THROTTLING & EMBEDDED DB
+// Bahasa Pemrograman Widya (Widya-lang)
+//
+// 1. Deep OS & Shell Integration (Custom Protocol Deep Link, File Association, Taskbar JumpList)
+// 2. Resource Management & Power Efficiency (Sleep Listening, macOS App Nap & Windows Efficiency)
+// 3. Embedded Database & Local State (SQLite/DuckDB ACID, OS Keychain & Credential Manager Vault)
+// ============================================================================
+
+cetak("============================================================================");
+cetak("💻 WIDYADESKTOP DEEP OS INTEGRATION, POWER MANAGEMENT & EMBEDDED DB");
+cetak("============================================================================");
+
+// ----------------------------------------------------------------------------
+// 1. DEEP OS & SHELL INTEGRATION
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 1] DEEP OS & SHELL INTEGRATION:");
+var deep_link = desktop_deep_link_skema_daftar("widyaapp", "buka_halaman_handler");
+cetak("    • Custom Protocol Deep Link    : " + deep_link["custom_url_scheme"] + " -> " + deep_link["deep_link_status"]);
+cetak("                                     (" + deep_link["os_registry_bridge"] + ")");
+
+var file_assoc = desktop_asosiasi_berkas_daftar(".wya-proyek", "Widya Project Document", "/icons/wya_doc.ico", ["Buka di Widya", "Kompilasi"]);
+cetak("    • File Association & Context   : " + file_assoc["file_extension"] + " -> " + file_assoc["status"]);
+
+var jump_list = desktop_taskbar_jump_list_dock(["faktur_2026.wya", "dasbor_toko.wya"], ["Buat Dokumen Baru", "Export PDF"], 85.0);
+cetak("    • Taskbar JumpList & Dock Tile : Progress: " + ke_teks(jump_list["progress_bar_percentage"]) + "% -> " + jump_list["os_shell_display"]);
+
+// ----------------------------------------------------------------------------
+// 2. RESOURCE MANAGEMENT & BACKGROUND POWER EFFICIENCY
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 2] RESOURCE MANAGEMENT & BACKGROUND POWER EFFICIENCY:");
+var pwr_state = desktop_daya_dan_status_tidur("on_power_state_change");
+cetak("    • Power & Sleep State Listener : " + pwr_state["mode_daya_saat_ini"] + " (" + pwr_state["power_listener"] + ")");
+
+var app_nap = desktop_app_nap_throttling_set(benar, 2500);
+cetak("    • App Nap & Process Throttling : " + app_nap["efisiensi_baterai"] + " (" + app_nap["status"] + ")");
+
+// ----------------------------------------------------------------------------
+// 3. EMBEDDED DATABASE & LOCAL STATE MANAGEMENT
+// ----------------------------------------------------------------------------
+cetak("\n[PILAR 3] EMBEDDED DATABASE & LOCAL STATE MANAGEMENT:");
+var db_query = desktop_embedded_db_kueri("SQLITE", "./data/app_local.db", "SELECT * FROM lisensi_pengguna WHERE aktif = 1", []);
+cetak("    • Embedded ACID Database       : Engine: " + db_query["embedded_engine"] + " (" + db_query["mode_transaksi"] + ")");
+cetak("                                     Latensi: " + db_query["latensi_kueri"] + " -> " + db_query["status"]);
+
+var secure_vault = desktop_penyimpanan_aman_os("auth_jwt_token_master", "sec_token_991823_prod", "SIMPAN");
+cetak("    • Zero-Latency OS Secure Vault : Kunci: " + secure_vault["key_id"] + " (" + secure_vault["secure_enclave_vault"] + ")");
+cetak("                                     Status: " + secure_vault["status_enkripsi"]);
+
+cetak("\n============================================================================");
+cetak("✨ KETIGA PILAR DEEP OS, POWER EFFICIENCY & EMBEDDED DB 100% TERCOVER!");
+cetak("============================================================================");

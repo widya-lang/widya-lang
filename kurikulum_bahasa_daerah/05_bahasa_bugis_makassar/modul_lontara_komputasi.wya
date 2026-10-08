@@ -1,0 +1,66 @@
+// ==============================================================================
+// MODUL BD-105: KOMPUTASI BAHASA BUGIS-MAKASSAR & AKSARA LONTARA
+// Implementasi Kurikulum Pembelajaran Bahasa Daerah Berbasis Widya-Lang
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("📚 MODUL BD-105: PEMBELAJARAN BUGIS-MAKASSAR & AKSARA LONTARA");
+cetak("==================================================================");
+
+// 1. TRANSLITERASI TEKS KE AKSARA LONTARA
+cetak("\n--- [1] Transliterasi Latin ke Aksara Lontara (Unicode Compliant) ---");
+
+var kalimat_lontara = [
+    "kurru sumange",
+    "sipakatau",
+    "sipakalebbi",
+    "sipakainge",
+    "widya nusantara"
+];
+
+untuk k dalam kalimat_lontara {
+    var aksara = latin_ke_aksara_lontara(k);
+    cetak("  • Latin  : " + k);
+    cetak("    Lontara: " + aksara);
+}
+
+// 2. KAMUS LEKSIKOGRAFI KOMPARATIF BUGIS - MAKASSAR - INDONESIA
+cetak("\n--- [2] Kamus Komparatif Bahasa Bugis vs Makassar ---");
+
+struktur EntriSulsel {
+    bahasa_bugis,
+    bahasa_makassar,
+    arti_indonesia
+}
+
+misal kamus_sulsel = [
+    EntriSulsel("manre", "nganre", "makan"),
+    EntriSulsel("matinro", "tinro", "tidur"),
+    EntriSulsel("bola", "balla", "rumah"),
+    EntriSulsel("pole", "battu", "datang"),
+    EntriSulsel("makkunrai", "baine", "perempuan / wanita"),
+    EntriSulsel("urane", "bura'ne", "laki-laki / pria")
+];
+
+untuk item dalam kamus_sulsel {
+    cetak("  • Indonesia : " + item.arti_indonesia);
+    cetak("    - Bugis    : " + item.bahasa_bugis);
+    cetak("    - Makassar : " + item.bahasa_makassar);
+}
+
+// 3. FALSAFAH LUHUNG SIRI' NA PACCE & PASENG
+cetak("\n--- [3] Falsafah Luhung Siri' na Pacce & Paseng Ade' ---");
+
+var paseng = [
+    "Siri' emmi rianriang (Hanya karena kehormatan martabat dan harga diri itulah kita hidup)",
+    "Sipakatau, Sipakalebbi, Sipakainge (Saling memanusiakan manusia, saling menghormati, dan saling mengingatkan dalam kebaikan)",
+    "Taro ada taro gau (Kesesuaian mutlak antara perkataan yang diucapkan dengan perbuatan nyata)"
+];
+
+untuk p dalam paseng {
+    cetak("  🌟 " + p);
+}
+
+cetak("\n==================================================================");
+cetak("✅ Modul BD-105 Bahasa Bugis-Makassar selesai dipelajari!");
+cetak("==================================================================");

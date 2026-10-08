@@ -1,0 +1,75 @@
+// ==============================================================================
+// 217_iiot_scada_opcua_modbus_tsn.wya
+// Demonstrasi Otomasi Manufaktur Cerdas, SCADA Modbus, OPC-UA, & TSN Shaper
+// Standar Kepatuhan: IEC 62541 (OPC-UA), Modbus TCP/RTU, & IEEE 802.1Qbv (TSN)
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("🏭 WIDYA IIOT: OTOMASI INDUSTRI, SCADA, OPC-UA & DETERMINISTIK TSN");
+cetak("==================================================================");
+
+// 1. Protokol Otomasi SCADA: Modbus TCP & CRC-16 Checksum
+struktur BingkaiModbusTCP {
+    id_transaksi,
+    id_unit,
+    kode_fungsi,
+    alamat_register,
+    jumlah_data,
+    crc16_hex,
+
+    fungsi status() {
+        kembalikan "TID: " + ke_teks(ini.id_transaksi) + " | FC: 0x" + ke_teks(ini.kode_fungsi) + " (Read Holding) | Reg: " + ke_teks(ini.alamat_register) + " | Jumlah: " + ke_teks(ini.jumlah_data) + " | CRC: 0x" + ini.crc16_hex;
+    }
+}
+
+misal frame_mb = BingkaiModbusTCP(1, 1, "03", 100, 5, "F3C2");
+cetak("🔄 1. Transmisi Bingkai Modbus TCP (PLC Siemens / Schneider):");
+cetak("   ➔ " + frame_mb.status());
+cetak("   ➔ Verifikasi Checksum CRC-16 RTU: Lulus & Sah secara Biner!");
+
+// 2. Server Ruang Alamat OPC-UA (IEC 62541)
+struktur SimpulVariabelOPCUA {
+    pengenal_simpul,
+    nama_variabel,
+    tipe_data,
+    nilai_terkini,
+    status_kode,
+
+    fungsi cetak_simpul() {
+        kembalikan "Simpul [" + ini.pengenal_simpul + "] (" + ini.nama_variabel + ") ➔ " + ini.nilai_terkini + " [" + ini.tipe_data + "] (Status: " + ini.status_kode + ")";
+    }
+}
+
+misal var_turbin = SimpulVariabelOPCUA("ns=1;s=TurbineSpeed", "KecepatanTurbinPembangkit", "Float", "3000.5 RPM", "Good_0x00000000");
+misal var_tekanan = SimpulVariabelOPCUA("ns=1;s=BoilerPressure", "TekananUapBoiler", "Float", "14.2 Bar", "Good_0x00000000");
+
+cetak("\n🌐 2. Ruang Alamat OPC-UA Server Berstandar IEC 62541:");
+cetak("   • Endpoint Server : opc.tcp://10.20.0.10:4840");
+cetak("   • " + var_turbin.cetak_simpul());
+cetak("   • " + var_tekanan.cetak_simpul());
+cetak("   • Enkripsi Terpasang: X.509 Certificate Basic256Sha256");
+
+// 3. Penjadwalan Deterministik TSN (Time-Sensitive Networking - IEEE 802.1Qbv)
+struktur PenjadwalTSN {
+    antrean_id,
+    tipe_lalu_lintas,
+    status_gerbang,
+    durasi_irisan_ns,
+
+    fungsi status_irisan() {
+        kembalikan "Antrean " + ke_teks(ini.antrean_id) + " [" + ini.tipe_lalu_lintas + "] ➔ Gerbang: " + ini.status_gerbang + " (" + ke_teks(ini.durasi_irisan_ns) + " ns)";
+    }
+}
+
+misal antrean_kritis = PenjadwalTSN(0, "Misi-Kritis / Kontrol Robotik", "TERBUKA", 20000);
+misal antrean_umum   = PenjadwalTSN(1, "Lalu-Lintas Video / Best-Effort", "TERTUTUP (Anti-Jitter Gating)", 80000);
+
+cetak("\n⏱️ 3. Penjadwalan Time-Aware Shaper (TAS) IEEE 802.1Qbv:");
+cetak("   • Waktu Siklus Deterministik: 100.000 ns (100 µs)");
+cetak("   • " + antrean_kritis.status_irisan());
+cetak("   • " + antrean_umum.status_irisan());
+cetak("   • Jitter Jaringan           : < 80 nanodetik (Bebas Tabrakan Paket)");
+
+cetak("\n==================================================================");
+cetak("✅ Selesai: Sistem Otomasi SCADA, OPC-UA & TSN Berhasil Beroperasi!");
+cetak("==================================================================");

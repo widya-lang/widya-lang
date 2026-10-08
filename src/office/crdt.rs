@@ -426,17 +426,80 @@ impl CollabSession {
 
         format!(
             r#"<!DOCTYPE html><html><head><meta charset='utf-8'><title>Kolaborasi: {}</title>
+<link rel='preconnect' href='https://fonts.googleapis.com'>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+<link href='https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&display=swap' rel='stylesheet'>
 <style>
     body {{ font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 24px; }}
     .header {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 16px; }}
+    .toolbar {{ display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: #1e293b; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; }}
+    .toolbar button, .toolbar select {{ background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 6px 12px; border-radius: 4px; font-size: 9pt; cursor: pointer; }}
+    .toolbar button:hover {{ background: #475569; }}
+    .toolbar button.active {{ background: #0284c7; border-color: #38bdf8; }}
     .user-pill {{ background: #1e293b; padding: 4px 10px; border-radius: 4px; font-size: 8.5pt; margin-right: 6px; }}
-    textarea {{ width: 100%; height: 500px; background: #1e293b; color: #f8fafc; border: 1px solid #334155; border-radius: 8px; padding: 16px; font-family: 'Consolas', monospace; font-size: 11pt; box-sizing: border-box; }}
+    textarea {{ width: 100%; height: 500px; background: #1e293b; color: #f8fafc; border: 1px solid #334155; border-radius: 8px; padding: 16px; font-family: 'Consolas', monospace; font-size: 11pt; box-sizing: border-box; line-height: 1.6; }}
+    textarea.rtl-mode {{ direction: rtl; text-align: right; font-family: 'Amiri', 'Scheherazade New', Tahoma, serif; font-size: 14pt; line-height: 1.9; }}
 </style></head><body>
     <div class='header'>
         <div><h2>📝 Ruang Kolaborasi: {}</h2><div>Peserta: {}</div></div>
         <div style='color:#34d399; font-weight: bold;'>● CRDT LWW Aktif</div>
     </div>
-    <textarea>{}</textarea>
+    <div class='toolbar'>
+        <span style='font-size: 9pt; color: #94a3b8;'>Pengaturan Arah Teks:</span>
+        <button id='btn-ltr' class='active' onclick='setDirection("ltr")'>LTR (Kiri-ke-Kanan)</button>
+        <button id='btn-rtl' onclick='setDirection("rtl")'>RTL (Kanan-ke-Kiri / Arab 🇸🇦)</button>
+        <button id='btn-auto' onclick='setDirection("auto")'>Otomatis (Auto-Detect)</button>
+        <span style='font-size: 9pt; color: #94a3b8; margin-left: 12px;'>Font Arab:</span>
+        <select id='font-select' onchange='changeFont(this.value)'>
+            <option value="'Amiri', serif">Amiri (Naskh)</option>
+            <option value="'Scheherazade New', serif">Scheherazade New</option>
+            <option value="Tahoma, sans-serif">Tahoma</option>
+            <option value="'Consolas', monospace">Monospace (Default)</option>
+        </select>
+        <button onclick='insertRtlMark()' title='Sisipkan Karakter Unicode Right-to-Left Mark'>+ RLM (U+200F)</button>
+    </div>
+    <textarea id='editor' dir='auto' oninput='checkAutoDirection()'>{}</textarea>
+<script>
+    const ed = document.getElementById('editor');
+    function setDirection(dir){{
+        document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
+        if(dir === 'rtl'){{
+            ed.classList.add('rtl-mode');
+            ed.dir = 'rtl';
+            document.getElementById('btn-rtl').classList.add('active');
+        }} else if(dir === 'ltr'){{
+            ed.classList.remove('rtl-mode');
+            ed.dir = 'ltr';
+            document.getElementById('btn-ltr').classList.add('active');
+        }} else {{
+            ed.dir = 'auto';
+            document.getElementById('btn-auto').classList.add('active');
+            checkAutoDirection();
+        }}
+    }}
+    function changeFont(f){{
+        ed.style.fontFamily = f;
+    }}
+    function insertRtlMark(){{
+        const start = ed.selectionStart;
+        const end = ed.selectionEnd;
+        const text = ed.value;
+        ed.value = text.substring(0, start) + "\u200F" + text.substring(end);
+        ed.selectionStart = ed.selectionEnd = start + 1;
+        ed.focus();
+    }}
+    function checkAutoDirection(){{
+        const isAuto = document.getElementById('btn-auto').classList.contains('active');
+        if(isAuto){{
+            const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+            if(arabicRegex.test(ed.value)){{
+                ed.classList.add('rtl-mode');
+            }} else {{
+                ed.classList.remove('rtl-mode');
+            }}
+        }}
+    }}
+</script>
 </body></html>"#,
             self.document_name, self.room_id, user_list, doc_text
         )

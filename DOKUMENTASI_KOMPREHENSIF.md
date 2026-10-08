@@ -423,16 +423,64 @@ widya profile skrip.wya
 
 ---
 
-## 13. Widya Package Manager (WPM) & Lockfile
+## 13. Widya Package Manager (WPM) & Ekosistem Paket Berdaulat
 
-Untuk menjamin keamanan rantai pasok (*supply chain integrity*), WPM menyediakan lockfile otomatis:
+Widya Package Manager (**WPM**) adalah ekosistem manajemen pustaka dan paket berdaulat tingkat enterprise yang dirancang untuk menjamin keamanan rantai pasok (*supply chain integrity*), resolusi dependensi berbasis SAT solver **PubGrub SemVer**, dan verifikasi kriptografis **Ed25519**.
 
+### Perintah CLI WPM (Dukungan Dwibahasa / Bilingual)
+| Perintah Internasional | Alias Nusantara | Fungsi & Deskripsi |
+| :--- | :--- | :--- |
+| `widya wpm init <nama>` | `widya wpm new <nama>` | Inisialisasi manifest `widya.toml` proyek baru |
+| `widya wpm add <paket>` | `widya wpm add <paket> --versi <v>` | Menambahkan dependensi paket ke proyek dan memperbarui `widya.lock` |
+| `widya wpm lock` | `widya wpm lock` | Membuat & memperbarui berkas `widya.lock` dengan checksum SHA-256 |
+| `widya wpm verify` | `widya wpm verify` | Memverifikasi integritas checksum SHA-256 seluruh pustaka yang terpasang |
+| `widya wpm list` | `widya wpm ls` | Menampilkan seluruh pohon dependensi paket yang terkunci |
+| `widya wpm search <kueri>` | `widya wpm cari <kueri>` | Mencari paket pustaka pada Central / Private Registry WPM |
+| `widya wpm info <paket>` | `widya wpm informasi <paket>` | Menampilkan metadata rinci, versi, tanda tangan, lisensi, dan unduhan |
+| `widya wpm audit` | `widya wpm periksa-keamanan` | **Audit Keamanan Rantai Pasok**: Memeriksa CVE/WSA, Checksum SHA256, dan Ed25519 |
+| `widya wpm outdated` | `widya wpm usang` | **Pemeriksa Versi Usang**: Menganalisis SemVer (*Patch*, *Minor*, *Major*) yang tersedia |
+| `widya wpm vendor` | `widya wpm pasok` | Memasok seluruh dependensi ke direktori lokal untuk lingkungan *Offline / Air-Gapped* |
+| `widya wpm publish` | `widya wpm publish` | Mempublikasikan paket ke Central Registry dengan checksum & Ed25519 |
+| `widya wpm login <token>` | `widya wpm masuk <token>` | Menyimpan token autentikasi API Registry di `~/.widya/credentials.toml` |
+| `widya wpm serve-registry` | `widya wpm layani-registry` | Menjalankan server registry privat mandiri (*Self-Hosted Registry* & Web Hub) |
+
+### 21 Pustaka Resmi Berdaulat Bawaan (10 Mega Frontier Domains)
+1. `widya-math`: Pustaka matematika dan aljabar linier presisi tinggi SIMD.
+2. `widya-http`: Klien dan server HTTP/HTTPS asinkron berbasis epoll/kqueue.
+3. `widya-crypto`: Kriptografi pasca-kuantum (PQC Kyber/Dilithium), Ed25519 & ChaCha20.
+4. `widya-ui`: Kerangka kerja UI reaktif bergaya Flutter dengan GPU canvas rendering.
+5. `widya-ai`: Mesin komputasi tensor, autograd diferensial otomatis, dan jembatan ekosistem AI.
+6. `widya-sql`: Driver basis data & ORM berdaulat WidyaBase (B+Tree, WAL ACID, Vector HNSW).
+7. `widya-office`: Kompilator dokumen legal ISO 32000-1 PDF, Word DOCX OpenXML, Excel XLSX & TTE.
+8. `widya-pqc`: Kriptografi pasca-kuantum NIST FIPS 203 (ML-KEM), FIPS 204 (ML-DSA) & ZKP.
+9. `widya-bifast`: Gateway switching transaksi finansial nasional BI-FAST ISO 20022 & QRIS.
+10. `widya-arkas`: Tata kelola anggaran pendidikan BOS & BKU berantai audit anti-fraud BPK.
+11. `widya-siplah`: Integrasi pengadaan barang/jasa satuan pendidikan daring Permen 15/2026.
+12. `widya-wasi`: Eksekusi serverless edge berbasis WASI Preview 2 Component Model & WIT ABI.
+13. `widya-canbus`: Driver telemetri otomotif CAN Bus 2.0B / CAN-FD & OBD-II ISO 26262 ASIL-D.
+14. `widya-scada`: Otomasi industri IIoT Modbus TCP/RTU, OPC-UA IEC 62541 & TSN deterministik.
+15. `widya-fhir`: Standar rekam medis SatuSehat HL7 FHIR v4, DICOM v3 imaging & sekuens DNA.
+16. `widya-quantum`: Simulator sirkuit kuantum OpenQASM 3.0, QIR Alliance & algoritma hibrida VQE.
+17. `widya-i18n`: Lokalisasi 12 Aksara Nusantara (Hanacaraka, Lontara, dll) & perender Arab RTL.
+18. `widya-test`: Framework pengujian berbasis properti QuickCheck, fuzzing & benchmarking.
+19. `widya-json`: Parser & serialisasi JSON terakselerasi SIMD dengan skema validator.
+20. `widya-grpc`: RPC terdistribusi berkinerja tinggi berbasis Protobuf & transport HTTP/2.
+21. `widya-log`: Logging terstruktur asinkron dengan integrasi tracing OpenTelemetry & APM.
+
+### Contoh Alur Kerja Audit & Pembaruan
 ```bash
-# Membuat berkas widya.lock dengan checksum SHA-256
-widya wpm lock
+# 1. Periksa keamanan dan keaslian tanda tangan pustaka
+widya wpm audit
 
-# Memverifikasi integritas checksum pustaka
-widya wpm verify
+# 2. Cek apakah ada rilis versi pustaka yang lebih baru
+widya wpm outdated
+
+# 3. Dapatkan informasi detail mengenai paket resmi
+widya wpm info widya-office
+
+# 4. Melayani Private Registry lokal di port 8090
+widya wpm serve-registry --port 8090
+# Kunjungi http://localhost:8090/hub untuk antarmuka web Widya Package Hub
 ```
 
 ---

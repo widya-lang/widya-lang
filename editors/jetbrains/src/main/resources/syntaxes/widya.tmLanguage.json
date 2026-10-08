@@ -1,0 +1,93 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Widya",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#builtins" },
+    { "include": "#types" },
+    { "include": "#functions" },
+    { "include": "#attributes" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.widya",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.widya",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.widya",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.widya",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.widya",
+          "match": "\\b[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.widya",
+          "match": "\\b[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.hex.widya",
+          "match": "\\b0x[0-9a-fA-F]+\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.widya",
+          "match": "\\b(fn|fungsi|let|tetapkan|misal|var|tetap|mut|const|if|jika|kalau|else|lain|lainnya|selain_itu|kalau_tidak|match|cocokkan|for|untuk|in|dalam|while|selama|ulang|berhenti|break|henti|lanjut|continue|return|kembalikan|struct|struktur|enum|pilihan|impl|terapkan|trait|sifat|where|di_mana|type|tipe|async|asinkron|await|tunggu_hasil|try|coba|catch|tangkap|throw|lempar|impor|import|gunakan|use|modul|module|ekspor|export|sebagai|as|baru|new|ini|this|eksternal|volatil|pinjam|mutabel|pasok|vendor|basis_data|tabel|kueri|sisip|perbarui|hapus|indeks|transaksi|komit|batal|skema|kolom)\\b"
+        },
+        {
+          "name": "constant.language.boolean.widya",
+          "match": "\\b(true|false|benar|salah|null|nil|nihil|kosong)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.widya",
+          "match": "\\b(dan|atau|bukan|&&|\\|\\||!)\\b"
+        }
+      ]
+    },
+    "builtins": {
+      "patterns": [
+        {
+          "name": "support.function.builtin.widya",
+          "match": "\\b(cetak|pastikan|ke_teks|ke_angka|panjang|tipe_dari|buka_basis_data|eksekusi_kueri|kueri|mulai_transaksi|BuatAplikasiDesktop|JendelaDesktop|MenuBilah|BakiSistem|SinyalReaktif|BukaDialogPilihBerkas|BukaDialogSimpanBerkas|TampilkanKotakPesan|AuditKeamananAplikasi|baca_berkas|tulis_berkas|hapus_berkas)\\b"
+        }
+      ]
+    },
+    "types": {
+      "name": "entity.name.type.widya",
+      "match": "\\b(Int|Angka|Float|String|Teks|Bool|Bolean|Array|Larik|Map|Peta|Byte|Waktu|BasisData|Hasil|Opsi|Uuid|Blob|Tabel|Kueri|Option|Result|Any|Void|Objek)\\b"
+    },
+    "functions": {
+      "name": "entity.name.function.widya",
+      "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\\s*\\()"
+    },
+    "attributes": {
+      "name": "meta.annotation.widya",
+      "match": "@\\[[a-zA-Z0-9_\\(\\),\\s]+\\]|#\\[[a-zA-Z0-9_\\(\\),\\s]+\\]"
+    }
+  },
+  "scopeName": "source.widya"
+}

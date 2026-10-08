@@ -1,0 +1,75 @@
+// ==============================================================================
+// MODUL BD-104: KOMPUTASI BAHASA MINANGKABAU & KATO NAN AMPEK
+// Implementasi Kurikulum Pembelajaran Bahasa Daerah Berbasis Widya-Lang
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("📚 MODUL BD-104: PEMBELAJARAN BAHASA MINANGKABAU & ETNOSAINS");
+cetak("==================================================================");
+
+// 1. FILSAFAT KATO NAN AMPEK (ETIKA BERTUTUR ADAT)
+cetak("\n--- [1] Filsafat Kato Nan Ampek (Ragam Tutur Bahasa Minang) ---");
+
+struktur RagamKato {
+    ragam,
+    tujuan_tutur,
+    contoh_sapaan
+}
+
+misal daftar_kato = [
+    RagamKato("Kato Mandaki", "Bicara kapado urang tuo, guru, ulama, pamimpin", "Baa kaba Mak Tuo? Semoga Mandeh salalu di agiah kasehatan."),
+    RagamKato("Kato Manurun", "Bicara kapado anak ketek, adiak, kamanakan", "Baja lah elok-elok Buyung, supayo capek pandai."),
+    RagamKato("Kato Mandege", "Bicara kapado kawan saumua, dunsanak sabaya", "Oi kawan, bilo awak ka marantau samo-samo?"),
+    RagamKato("Kato Melereng", "Bicara kapado bako, besan, mamak ipa, urang disigani", "Ampun baribu kali ampun, kok lai rila hati mamak.")
+];
+
+untuk k dalam daftar_kato {
+    cetak("  • " + k.ragam + ":");
+    cetak("    - Konteks : " + k.tujuan_tutur);
+    cetak("    - Contoh  : \"" + k.contoh_sapaan + "\"");
+}
+
+// 2. KAMUS LEKSIKOGRAFI MINANG - INDONESIA
+cetak("\n--- [2] Kamus Leksikon Minangkabau - Indonesia ---");
+
+struktur EntriKamusMinang {
+    kata_minang,
+    arti_indonesia,
+    contoh_kalimat
+}
+
+misal kamus_minang = [
+    EntriKamusMinang("manggaleh", "berdagang / berniaga", "Rang Minang rancak manggaleh di pasa."),
+    EntriKamusMinang("marantau", "merantau ke negeri orang", "Anak mudo Pai marantau manuntut ilmu."),
+    EntriKamusMinang("rancak", "bagus / cantik / elok", "Rancak bana pamandangan di Ngarai Sianok."),
+    EntriKamusMinang("taragak", "rindu / kangen", "Ambo taragak bana jo kampuang halaman."),
+    EntriKamusMinang("dunsanak", "saudara / kerabat", "Awak kasadonyo ko dunsanak sabangso.")
+];
+
+untuk entri dalam kamus_minang {
+    cetak("  • " + entri.kata_minang + " = " + entri.arti_indonesia);
+    cetak("    Contoh: \"" + entri.contoh_kalimat + "\"");
+}
+
+// 3. PETATAH PETITIH & MAMANG ADAT MINANGKABAU
+cetak("\n--- [3] Petatah Petitih & Falsafah Luhung Minangkabau ---");
+
+var petatah = [
+    "Adat basandi syarak, syarak basandi Kitabullah (Pondasi adat Minang berakar kuat pada syariat agama)",
+    "Alam takambang jadi guru (Segala fenomena dan dinamika alam semesta dijadikan sumber ilmu)",
+    "Duduk samo randah, tagak samo tinggi (Menjunjung tinggi egalitarianisme dan kesetaraan martabat)",
+    "Barek samo dipikua, ringan samo dijinjiang (Semangat gotong royong dan kebersamaan sejati)"
+];
+
+untuk p dalam petatah {
+    cetak("  🌟 " + p);
+}
+
+// 4. GENERATOR DIALOG PASAMBAHAN ADAT
+cetak("\n--- [4] Simulasi Dialog Pasambahan Adat Makan ---");
+cetak("  Juru Sambah Tuan Rumah : 'Sambah sujuah kapado Datuak, hidangan lah tasadio di ateh jamba, silakan ditarimo.'");
+cetak("  Juru Sambah Tamu       : 'Alah sampai Datuak? Gayuang basambua, kato bajawab, bari ampun kami manarimo barakah.'");
+
+cetak("\n==================================================================");
+cetak("✅ Modul BD-104 Bahasa Minangkabau berhasil diselesaikan!");
+cetak("==================================================================");

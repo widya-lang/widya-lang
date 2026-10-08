@@ -1,20 +1,64 @@
+// ============================================================================
 // compiler_self_hosted/token.widya
-// Definisi struktur Token dan TokenKind mandiri dalam Widya-Lang
-
-struktur Posisi {
-    baris: Int,
-    kolom: Int
-}
+// Modul Definisi Token & Kategori Leksikal Kompiler Mandiri Widya-Lang
+// ============================================================================
 
 struktur Token {
-    jenis: String,
-    nilai: String
+    jenis,
+    nilai,
+    baris,
+    kolom,
+
+    fungsi apakah(target_jenis) {
+        kembalikan ini.jenis == target_jenis;
+    }
+
+    fungsi ke_teks() {
+        kembalikan "[" + ini.jenis + " : '" + ini.nilai + "' di " + ke_teks(ini.baris) + ":" + ke_teks(ini.kolom) + "]";
+    }
 }
 
-fungsi buat_token(jenis: String, nilai: String) -> Token {
-    misal tok = {
-        "jenis": jenis,
-        "nilai": nilai
-    };
-    kembalikan tok["jenis"];
+fungsi buat_token(jenis, nilai, baris, kolom) {
+    kembalikan Token(jenis, nilai, baris, kolom);
 }
+
+fungsi apakah_kata_kunci(kata) {
+    jika kata == "fungsi" || kata == "fn" { kembalikan benar; }
+    jika kata == "misal" || kata == "let" { kembalikan benar; }
+    jika kata == "tetap" || kata == "const" { kembalikan benar; }
+    jika kata == "kembalikan" || kata == "return" { kembalikan benar; }
+    jika kata == "jika" || kata == "if" { kembalikan benar; }
+    jika kata == "lainnya" || kata == "else" || kata == "selain_itu" { kembalikan benar; }
+    jika kata == "selama" || kata == "while" { kembalikan benar; }
+    jika kata == "untuk" || kata == "for" { kembalikan benar; }
+    jika kata == "struktur" || kata == "struct" { kembalikan benar; }
+    jika kata == "impor" || kata == "import" { kembalikan benar; }
+    jika kata == "ekspor" || kata == "export" { kembalikan benar; }
+    jika kata == "cocokkan" || kata == "match" { kembalikan benar; }
+    jika kata == "tipe" || kata == "type" { kembalikan benar; }
+    jika kata == "benar" || kata == "true" { kembalikan benar; }
+    jika kata == "salah" || kata == "false" { kembalikan benar; }
+    jika kata == "kosong" || kata == "nil" { kembalikan benar; }
+    kembalikan salah;
+}
+
+fungsi apakah_operator(op) {
+    jika op == "+" || op == "-" || op == "*" || op == "/" || op == "%" { kembalikan benar; }
+    jika op == "==" || op == "!=" || op == "<" || op == "<=" || op == ">" || op == ">=" { kembalikan benar; }
+    jika op == "&&" || op == "||" || op == "!" || op == "=" { kembalikan benar; }
+    kembalikan salah;
+}
+
+fungsi uji_token() {
+    misal tok = buat_token("IDENTIFIER", "jumlah_total", 1, 5);
+    misal teks = tok.ke_teks();
+    misal cek_kw = apakah_kata_kunci("fungsi");
+    misal cek_op = apakah_operator("+");
+    jika tok.apakah("IDENTIFIER") && cek_kw && cek_op {
+        kembalikan "TOKEN_OK";
+    }
+    kembalikan "TOKEN_GALAT";
+}
+
+// Jalankan self-test verifikasi modul
+uji_token();

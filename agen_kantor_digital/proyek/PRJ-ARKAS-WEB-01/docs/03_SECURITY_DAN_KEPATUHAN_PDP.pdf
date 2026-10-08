@@ -1,0 +1,141 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R ] /Count 5 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 826 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (APLIKASI RENCANA KEGIATAN DAN ANGGARAN SEKOLAH \(ARKAS\) WEB TERINTEGRASI) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Kode Proyek:** `PRJ-ARKAS-WEB-01` | **Klasifikasi:** Dokumen Kepatuhan Hukum & Keamanan Siber) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1988 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Kepatuhan Undang-Undang Perlindungan Data Pribadi \(UU PDP No. 27/2022\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Sistem ARKAS Web memproses berbagai data spesifik dan sensitif milik pendidik, tenaga kependidikan, serta rekanan sekolah, antara lain NIK Guru, NPWP Rekanan, Nomor Rekening Bank Sekolah, serta nominal honorarium. Untuk memenuhi UU PDP No. 27/2022, diterapkan standar berikut:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (1. **Penyamaran Data Otomatis \(*Data Masking*\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- NIK Guru pada laporan publik disamarkan: `330215******0002`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (- Nomor Rekening Bank pada tampilan layar: `140-**-*****-2`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 651.89 Tm (- NPWP Rekanan: `00.***.***.*-521.000`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 631.89 Tm (2. **Kriptografi Penyimpanan Lokal \(*Encryption at Rest*\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 611.89 Tm (- Seluruh berkas penyimpanan basis data `database/data.wdb` dan catatan audit dienkripsi menggunakan ChaCha20-Poly1305 / AES-GCM 256-bit standar industri.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 591.89 Tm (3. **Penyimpanan On-Premise Berdaulat \(*Zero Telemetry*\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 571.89 Tm (- Data keuangan sekolah tidak dialirkan ke cloud komersial pihak ketiga atau server asing. Semua data tetap berada di bawah kedaulatan server sekolah / dinas pendidikan setempat.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1273 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. Rantai Audit Kriptografis Anti-Tampering \(BPK / Inspektorat\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Setiap transaksi Buku Kas Umum \(BKU\) dilengkapi dengan *cryptographic signature hash chain*:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- Algoritma: **SHA-256** \(Secure Hash Algorithm 256-bit\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- Formula: `Hash\(N\) = SHA256\(Hash\(N-1\) || NoUrut || Tanggal || NoBukti || Terima || Keluar || Saldo\)`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (- Keunggulan: Apabila terjadi perubahan nilai pada transaksi masa lalu \(misal Rp 15.000.000 diubah menjadi Rp 5.000.000\), seluruh hash transaksi berikutnya akan menjadi tidak valid \(*chain broken*\), sehingga manipulasi dapat dideteksi seketika oleh auditor BPK/Inspektorat.) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2814 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (3. Kontrol Akses Berbasis Peran \(*Role-Based Access Control / RBAC*\)) Tj ET
+0.92 0.95 0.98 rg 50 729.89 495 22 re f
+0.2 0.4 0.7 RG 0.75 w 50 729.89 495 22 re S
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 56 734.89 Tm (Peran \(*Role*\)) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 155 734.89 Tm (Hak Akses RKAS) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 254 734.89 Tm (Hak Akses BKU) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 353 734.89 Tm (Hak Tutup Buku) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 452 734.89 Tm (Akses Pajak) Tj ET
+1 1 1 rg 50 707.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 707.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 712.89 Tm (**Kepala Sekol...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 155 712.89 Tm (Baca, Usul, Sa...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 254 712.89 Tm (Baca, Verifikasi) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 353 712.89 Tm (Setujui Tutup ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 452 712.89 Tm (Baca Laporan) Tj ET
+0.98 0.98 0.99 rg 50 685.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 685.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 690.89 Tm (**Bendahara BO...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 155 690.89 Tm (Baca, Rancang) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 254 690.89 Tm (Baca, Tulis, H...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 353 690.89 Tm (Ajukan Tutup Buku) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 452 690.89 Tm (Pungut & Setor) Tj ET
+1 1 1 rg 50 663.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 663.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 668.89 Tm (**Operator Kom...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 155 668.89 Tm (Baca Ringkasan) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 254 668.89 Tm (Baca Transaksi...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 353 668.89 Tm (Tidak Ada) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 452 668.89 Tm (Tidak Ada) Tj ET
+0.98 0.98 0.99 rg 50 641.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 641.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 646.89 Tm (**Auditor Peng...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 155 646.89 Tm (Baca Lengkap) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 254 646.89 Tm (Verifikasi Ran...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 353 646.89 Tm (Audit Log) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 452 646.89 Tm (Rekonsiliasi NTPN) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 1001 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 5) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (4. Pencegahan Serangan Siber Aplikasi Web) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (- **Proteksi XSS \(Cross-Site Scripting\)**: Sanitasi otomatis entri teks uraian belanja menggunakan encoder HTML entitas WidyaWeb.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (- **Proteksi CSRF**: Penggunaan token kriptografi acak satu kali pakai \(*one-time nonce*\) pada setiap mutasi anggaran.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (- **SQL Injection Prevention**: Penggunaan prepared statement dan parser parser internal WidyaBase.) Tj ET
+endstream
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000181 00000 n 
+0000000278 00000 n 
+0000000380 00000 n 
+0000001256 00000 n 
+0000001358 00000 n 
+0000003397 00000 n 
+0000003499 00000 n 
+0000004823 00000 n 
+0000004927 00000 n 
+0000007793 00000 n 
+0000007897 00000 n 
+trailer
+<< /Size 14 /Root 1 0 R /Info << /Title (KEBIJAKAN KEAMANAN INFORMASI & KEPATUHAN UU PDP NO. 27/2022) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-ARKAS-WEB-01\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
+startxref
+8950
+%%EOF

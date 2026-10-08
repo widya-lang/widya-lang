@@ -10,13 +10,37 @@ pub mod ir;
 pub mod vm;
 pub mod llvm_backend;
 pub mod fiber;
+pub mod incremental;
+pub mod hmr;
+pub mod bytecode_compiler;
+pub mod arena;
+pub mod unikernel;
+pub mod pure_emitter;
 
 use generic_codegen::GenericCodeGenerator;
 pub use decimal::Desimal;
-pub use ir::{IrModule, IrFunction, IrInstruction, IrType, IrValue, IrOptimizer};
-pub use vm::{VirtualMachine, BytecodeChunk, Opcode, VmValue};
+pub use arena::{ScopedArena, ArenaStats, EscapeStatus, EscapeAnalysis, EscapeAnalysisReport};
+pub use pure_emitter::*;
+pub use unikernel::{
+    UnikernelArch, BootProtocol, UnikernelConfig, UnikernelImageBuilder,
+    UnikernelImageReport, Multiboot2Header, LinuxBootHeader,
+};
+pub use ir::{
+    IrModule, IrFunction, IrInstruction, IrType, IrValue, IrBinOp, BasicBlock, IrOptimizer,
+    SimdTargetIsa, InductionVariable, VectorizationPlan,
+    InlineDecision, OptimizationAdvice, AiOptimizationAdvisor,
+    ChaitinBriggsRegisterAllocator, RegisterAllocationResult,
+};
+pub use vm::{VirtualMachine, BytecodeChunk, Opcode, VmValue, NanBoxedValue, JitTier, InlineCacheEntry, PolymorphicInlineCache, DeoptReason, DeoptimizationBailout, OsrLoopTracker};
 pub use llvm_backend::LlvmBackend;
-pub use fiber::{WorkStealingScheduler, FiberTask, FiberId};
+pub use fiber::{
+    WorkStealingScheduler, FiberTask, FiberId, FiberPriority, FiberChannel,
+    SupervisionStrategy, RestartPolicy, ChildSpec, Supervisor,
+    FiberPid, DistributedMessage, DistributedFiberNetwork,
+};
+pub use incremental::{IncrementalCache, ModuleMetadata};
+pub use hmr::{HotModuleReloader, StateSnapshot};
+pub use bytecode_compiler::{BytecodeCompiler, CompilationUnit};
 
 pub struct NativeCompiler {
     indent_level: usize,

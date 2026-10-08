@@ -1,0 +1,44 @@
+{
+  "name": "tree-sitter-widya",
+  "version": "1.0.0",
+  "description": "Tree-sitter grammar for the Widya programming language (Widya-Lang)",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "lexer",
+    "widya",
+    "widya-lang",
+    "tree-sitter"
+  ],
+  "author": "Tim Inti Widya-Lang <team@widya-lang.org>",
+  "license": "MIT",
+  "dependencies": {
+    "nan": "^2.18.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.22.6"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.widya",
+      "file-types": [
+        "wya",
+        "widya",
+        "wd"
+      ],
+      "injection-regex": "^(wya|widya)$",
+      "highlights": [
+        "queries/highlights.scm"
+      ],
+      "indents": [
+        "queries/indents.scm"
+      ],
+      "folds": [
+        "queries/folds.scm"
+      ],
+      "locals": [
+        "queries/locals.scm"
+      ]
+    }
+  ]
+}

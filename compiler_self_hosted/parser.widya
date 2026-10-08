@@ -1,21 +1,293 @@
+// ============================================================================
 // compiler_self_hosted/parser.widya
-// Parser rekursif mandiri dalam bahasa Widya-Lang
+// Modul Recursive Descent Parser Mandiri dalam Bahasa Widya-Lang
+// Mengubah aliran token menjadi Abstract Syntax Tree (AST) terstruktur.
+// ============================================================================
 
-fungsi validasi_sintaks(jumlah_token: Int) -> Bool {
-    jika jumlah_token > 0 {
-        kembalikan true;
+struktur NodeASTParser {
+    jenis,
+    nilai,
+    anak,
+
+    fungsi tambah_anak(node) {
+        tambah(ini.anak, node);
     }
-    kembalikan false;
-}
 
-fungsi parsing_pernyataan_misal(nama_var: String, nilai_int: Int) -> Int {
-    misal hasil = nilai_int * 1;
-    kembalikan hasil;
-}
-
-fungsi parsing_blok(jumlah_pernyataan: Int) -> Bool {
-    jika jumlah_pernyataan >= 0 {
-        kembalikan true;
+    fungsi ke_teks() {
+        kembalikan "<" + ini.jenis + ":" + ini.nilai + " [anak:" + ke_teks(panjang(ini.anak)) + "]>";
     }
-    kembalikan false;
 }
+
+fungsi buat_ast_node(jenis, nilai) {
+    kembalikan NodeASTParser(jenis, nilai, []);
+}
+
+struktur ParserMandiri {
+    tokens,
+    posisi,
+    total_token,
+
+    fungsi token_saat_ini() {
+        jika ini.posisi >= ini.total_token {
+            kembalikan { "jenis": "EOF", "nilai": "" };
+        }
+        kembalikan ini.tokens[ini.posisi];
+    }
+
+    fungsi maju() {
+        misal tok = ini.token_saat_ini();
+        ini.posisi = ini.posisi + 1;
+        kembalikan tok;
+    }
+
+    fungsi cocok_jenis(jenis_target) {
+        misal tok = ini.token_saat_ini();
+        jika tok["jenis"] == jenis_target {
+            ini.maju();
+            kembalikan benar;
+        }
+        kembalikan salah;
+    }
+
+    fungsi konsumsi(jenis_target) {
+        misal tok = ini.token_saat_ini();
+        jika tok["jenis"] == jenis_target {
+            kembalikan ini.maju();
+        }
+        kembalikan kosong;
+    }
+
+    fungsi parse_primer() {
+        misal tok = ini.token_saat_ini();
+        jika tok["jenis"] == "LITERAL_ANGKA" {
+            ini.maju();
+            kembalikan buat_ast_node("LITERAL_ANGKA", tok["nilai"]);
+        }
+        jika tok["jenis"] == "LITERAL_STRING" {
+            ini.maju();
+            kembalikan buat_ast_node("LITERAL_STRING", tok["nilai"]);
+        }
+        jika tok["jenis"] == "LITERAL_BOOL" {
+            ini.maju();
+            kembalikan buat_ast_node("LITERAL_BOOL", tok["nilai"]);
+        }
+        jika tok["jenis"] == "IDENTIFIER" {
+            ini.maju();
+            // Periksa apakah ini pemanggilan fungsi nama(...)
+            jika ini.cocok_jenis("KURUNG_BUKA") {
+                misal panggil_node = buat_ast_node("PANGGILAN", tok["nilai"]);
+                jika !ini.cocok_jenis("KURUNG_TUTUP") {
+                    selama benar {
+                        misal arg = ini.parse_ekspresi();
+                        panggil_node.tambah_anak(arg);
+                        jika !ini.cocok_jenis("KOMA") {
+                            ini.cocok_jenis("KURUNG_TUTUP");
+                            kembalikan panggil_node;
+                        }
+                    }
+                }
+                kembalikan panggil_node;
+            }
+            kembalikan buat_ast_node("IDENTIFIER", tok["nilai"]);
+        }
+        jika ini.cocok_jenis("KURUNG_BUKA") {
+            misal expr = ini.parse_ekspresi();
+            ini.cocok_jenis("KURUNG_TUTUP");
+            kembalikan expr;
+        }
+        ini.maju();
+        kembalikan buat_ast_node("KOSONG", "nil");
+    }
+
+    fungsi parse_ekspresi() {
+        misal kiri = ini.parse_primer();
+
+        selama benar {
+            misal tok = ini.token_saat_ini();
+            misal j = tok["jenis"];
+            jika j == "OPERATOR_TAMBAH" || j == "OPERATOR_KURANG" ||
+               j == "OPERATOR_KALI" || j == "OPERATOR_BAGI" ||
+               j == "OPERATOR_EQ" || j == "OPERATOR_NEQ" ||
+               j == "OPERATOR_LT" || j == "OPERATOR_GT" {
+                ini.maju();
+                misal kanan = ini.parse_primer();
+                misal bin = buat_ast_node("BINER", tok["nilai"]);
+                bin.tambah_anak(kiri);
+                bin.tambah_anak(kanan);
+                kiri = bin;
+            } lainnya {
+                kembalikan kiri;
+            }
+        }
+        kembalikan kiri;
+    }
+
+    fungsi parse_pernyataan_misal() {
+        ini.maju(); // lewati 'misal'
+        misal var_tok = ini.konsumsi("IDENTIFIER");
+        misal nama_var = "temp";
+        jika var_tok != kosong {
+            nama_var = var_tok["nilai"];
+        }
+
+        misal init_node = buat_ast_node("KOSONG", "nil");
+        jika ini.cocok_jenis("OPERATOR_PENUGASAN") {
+            init_node = ini.parse_ekspresi();
+        }
+        ini.cocok_jenis("TITIK_KOMA");
+
+        misal var_node = buat_ast_node("DEKLARASI_VARIABEL", nama_var);
+        var_node.tambah_anak(init_node);
+        kembalikan var_node;
+    }
+
+    fungsi parse_pernyataan_kembalikan() {
+        ini.maju(); // lewati 'kembalikan'
+        misal expr = ini.parse_ekspresi();
+        ini.cocok_jenis("TITIK_KOMA");
+
+        misal ret_node = buat_ast_node("KEMBALIKAN", "return");
+        ret_node.tambah_anak(expr);
+        kembalikan ret_node;
+    }
+
+    fungsi parse_pernyataan_jika() {
+        ini.maju(); // lewati 'jika'
+        misal kondisi = ini.parse_ekspresi();
+        misal blok_jika = ini.parse_blok();
+
+        misal jika_node = buat_ast_node("PERNYATAAN_JIKA", "if");
+        jika_node.tambah_anak(kondisi);
+        jika_node.tambah_anak(blok_jika);
+
+        jika ini.cocok_jenis("KATA_KUNCI_LAINNYA") {
+            misal blok_lainnya = ini.parse_blok();
+            jika_node.tambah_anak(blok_lainnya);
+        }
+
+        kembalikan jika_node;
+    }
+
+    fungsi parse_pernyataan_selama() {
+        ini.maju(); // lewati 'selama'
+        misal kondisi = ini.parse_ekspresi();
+        misal tubuh = ini.parse_blok();
+
+        misal loop_node = buat_ast_node("PERNYATAAN_SELAMA", "while");
+        loop_node.tambah_anak(kondisi);
+        loop_node.tambah_anak(tubuh);
+        kembalikan loop_node;
+    }
+
+    fungsi parse_blok() {
+        ini.cocok_jenis("KURAWAL_BUKA");
+        misal blok_node = buat_ast_node("BLOK", "{}");
+
+        selama ini.token_saat_ini()["jenis"] != "KURAWAL_TUTUP" &&
+               ini.token_saat_ini()["jenis"] != "EOF" {
+            misal stmt = ini.parse_pernyataan();
+            blok_node.tambah_anak(stmt);
+        }
+
+        ini.cocok_jenis("KURAWAL_TUTUP");
+        kembalikan blok_node;
+    }
+
+    fungsi parse_deklarasi_fungsi() {
+        ini.maju(); // lewati 'fungsi'
+        misal fn_tok = ini.konsumsi("IDENTIFIER");
+        misal nama_fn = "tanpa_nama";
+        jika fn_tok != kosong {
+            nama_fn = fn_tok["nilai"];
+        }
+
+        ini.cocok_jenis("KURUNG_BUKA");
+        misal params = "";
+        jika !ini.cocok_jenis("KURUNG_TUTUP") {
+            selama benar {
+                misal p = ini.konsumsi("IDENTIFIER");
+                jika p != kosong {
+                    jika params == "" {
+                        params = p["nilai"];
+                    } lainnya {
+                        params = params + ", " + p["nilai"];
+                    }
+                }
+                jika !ini.cocok_jenis("KOMA") {
+                    ini.cocok_jenis("KURUNG_TUTUP");
+                    berhenti;
+                }
+            }
+        }
+
+        misal tubuh = ini.parse_blok();
+        misal fn_node = buat_ast_node("DEKLARASI_FUNGSI", nama_fn + "(" + params + ")");
+        fn_node.tambah_anak(tubuh);
+        kembalikan fn_node;
+    }
+
+    fungsi parse_pernyataan() {
+        misal tok = ini.token_saat_ini();
+        misal j = tok["jenis"];
+        jika j == "KATA_KUNCI_MISAL" {
+            kembalikan ini.parse_pernyataan_misal();
+        }
+        jika j == "KATA_KUNCI_KEMBALIKAN" {
+            kembalikan ini.parse_pernyataan_kembalikan();
+        }
+        jika j == "KATA_KUNCI_JIKA" {
+            kembalikan ini.parse_pernyataan_jika();
+        }
+        jika j == "KATA_KUNCI_SELAMA" {
+            kembalikan ini.parse_pernyataan_selama();
+        }
+        jika j == "KATA_KUNCI_FUNGSI" {
+            kembalikan ini.parse_deklarasi_fungsi();
+        }
+        jika j == "KURAWAL_BUKA" {
+            kembalikan ini.parse_blok();
+        }
+
+        // Default: pernyataan ekspresi
+        misal expr = ini.parse_ekspresi();
+        ini.cocok_jenis("TITIK_KOMA");
+        misal expr_stmt = buat_ast_node("PERNYATAAN_EKSPRESI", "expr");
+        expr_stmt.tambah_anak(expr);
+        kembalikan expr_stmt;
+    }
+
+    fungsi parse_program() {
+        misal program_node = buat_ast_node("PROGRAM", "root");
+        selama ini.token_saat_ini()["jenis"] != "EOF" {
+            misal stmt = ini.parse_pernyataan();
+            program_node.tambah_anak(stmt);
+        }
+        kembalikan program_node;
+    }
+}
+
+fungsi buat_parser(daftar_token) {
+    kembalikan ParserMandiri(daftar_token, 0, panjang(daftar_token));
+}
+
+fungsi uji_parser() {
+    misal tokens = [
+        { "jenis": "KATA_KUNCI_MISAL", "nilai": "misal" },
+        { "jenis": "IDENTIFIER", "nilai": "x" },
+        { "jenis": "OPERATOR_PENUGASAN", "nilai": "=" },
+        { "jenis": "LITERAL_ANGKA", "nilai": "42" },
+        { "jenis": "TITIK_KOMA", "nilai": ";" },
+        { "jenis": "EOF", "nilai": "" }
+    ];
+
+    misal parser = buat_parser(tokens);
+    misal program = parser.parse_program();
+
+    jika panjang(program.anak) == 1 {
+        kembalikan "PARSER_OK";
+    }
+    kembalikan "PARSER_GALAT";
+}
+
+// Jalankan pengujian mandiri parser
+uji_parser();

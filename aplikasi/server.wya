@@ -17,6 +17,8 @@ cetak("   4. SmartCity ISPU    : http://localhost:" + ke_teks(port) + "/03_smart
 cetak("   5. WidyaMedika SIMRS : http://localhost:" + ke_teks(port) + "/04_widyamedika_simrs/index.html");
 cetak("   6. Workspace CRDT    : http://localhost:" + ke_teks(port) + "/05_widya_workspace_crdt/index.html");
 cetak("   7. WidyaOS Desktop   : http://localhost:" + ke_teks(port) + "/06_widyaos_web_desktop/index.html");
+cetak("   8. WidyaBlok Scratch : http://localhost:" + ke_teks(port) + "/07_widyablok_visual_studio/index.html");
+cetak("   9. MCR Penyiaran Silat: http://localhost:" + ke_teks(port) + "/08_widya_broadcasting_studio/index.html");
 cetak("==================================================================");
 
 // Jalankan edge dev server bawaan Widya-Lang

@@ -288,7 +288,7 @@
     <div class="nav-container">
       <a href="index.html" class="nav-logo">
         <span>⚡ Widya-Lang</span>
-        <span class="badge-nav">v1.0.0</span>
+        <span class="badge-nav">v2.6.0 Stable</span>
       </a>
       <div class="nav-links">
         <a href="index.html">Overview</a>
@@ -473,6 +473,60 @@ WidyaBase.exe kueri "PILIH * DARI pengguna DIMANA aktif = benar;" --data app.wdb
       </div>
       <div class="callout" style="border-left-color: var(--primary);">
         <strong>Konektivitas Global:</strong> <code>WidyaBase.exe</code> mendengarkan pada port 5432 sehingga dapat langsung dihubungkan dari <code>psql</code>, DBeaver, TablePlus, Prisma, maupun klien bahasa pemrograman lainnya.
+      </div>
+    </section>
+
+    <!-- Step 7: WPM Package Manager -->
+    <section class="step-card">
+      <div class="step-header">
+        <div class="step-num">7</div>
+        <h2>Manajemen Paket & Audit Keamanan Rantai Pasok (WPM)</h2>
+      </div>
+      <p style="color: var(--text-muted);">Kelola dependensi proyek, audit keamanan rantai pasok (CVE/WSA), dan pasang pustaka resmi berdaulat bawaan:</p>
+
+      <div class="terminal-box">
+        <div class="terminal-header">
+          <span>Terminal WPM</span>
+          <button class="btn-copy" onclick="copySnippet('cmdWpm')">Salin</button>
+        </div>
+        <div class="terminal-code" id="cmdWpm"># 1. Tambahkan pustaka resmi berdaulat (contoh: WidyaOffice atau WidyaBase)
+widya wpm add widya-office --versi 2.5.0
+
+# 2. Audit keamanan rantai pasok & validasi Ed25519
+widya wpm audit
+
+# 3. Periksa apakah dependensi memiliki versi pembaruan terbaru
+widya wpm outdated
+
+# 4. Cari pustaka di katalog registry
+widya wpm search "crypto"</div>
+      </div>
+      <div class="callout" style="border-left-color: var(--accent);">
+        <strong>Keamanan Kriptografis:</strong> WPM memvalidasi tanda tangan kurva Edwards Ed25519 dan hash SHA-256 pada setiap rilis pustaka untuk mencegah serangan supply-chain.
+      </div>
+    </section>
+
+    <!-- Step 8: 5 Pilar Kemandirian dari Pustaka Luar -->
+    <section class="step-card">
+      <div class="step-header">
+        <div class="step-num">8</div>
+        <h2>5 Pilar Kemandirian dari Pustaka Luar (Zero-Dependency Stack)</h2>
+      </div>
+      <p style="color: var(--text-muted);">Gunakan modul murni bawaan untuk komputasi berdaulat tanpa bergantung pada crates eksternal, libc malloc, atau compiler C asing:</p>
+
+      <div class="terminal-box">
+        <div class="terminal-header">
+          <span>Terminal Kedaulatan</span>
+          <button class="btn-copy" onclick="copySnippet('cmdPilar')">Salin</button>
+        </div>
+        <div class="terminal-code" id="cmdPilar"># Jalankan demonstrasi resmi 5 Pilar Kemandirian
+widya contoh/220_lima_pilar_kemandirian_pustaka_luar.wya
+
+# Uji integrasi seluruh suite pengujian kedaulatan
+cargo test --test pilar_kemandirian_test</div>
+      </div>
+      <div class="callout" style="border-left-color: var(--primary);">
+        <strong>Buku Putih Kedaulatan:</strong> Unduh <a href="downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf" style="color: var(--primary); font-weight: 600;">DOKUMENTASI_PILAR_KEMANDIRIAN.pdf</a> untuk spesifikasi teknis lengkap FIPS 180-4, RFC 8032, RFC 8439, Direct Syscall, dan MicroVM Unikernel.
       </div>
     </section>
 

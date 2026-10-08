@@ -1,0 +1,85 @@
+// ==============================================================================
+// 214_interactive_notebook_dan_crossplatform_packager.wya
+// Demonstrasi Widya Interactive Notebook (.wnb) & Pemaket Lintas Platform (DevEx)
+// Platform Sains Data: Sel Reaktif DAG, HTML Mandiri, & Multi-Target Single Command
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("📓 WIDYA NOTEBOOK (.WNB) & MULTI-TARGET CROSS-PLATFORM DEVEX");
+cetak("==================================================================");
+
+// 1. Paradigma Sel Dokumen Interaktif Widya Notebook (.wnb)
+struktur SelNotebook {
+    id_sel,
+    tipe_sel,
+    konten_sumber,
+    status_eksekusi,
+    durasi_ms,
+
+    fungsi status() {
+        kembalikan "Sel [" + ini.id_sel + "] (" + ini.tipe_sel + ") ➔ Status: " + ini.status_eksekusi + " (" + ke_teks(ini.durasi_ms) + " ms)";
+    }
+}
+
+misal sel_dokumen = [
+    SelNotebook("sel-01", "MARKDOWN", "# Pemodelan Ketahanan Pangan Nasional 2026", "SUKSES", 1),
+    SelNotebook("sel-02", "KODE_WIDYA", "misal stok_beras = 3500000; misal konsumsi = 2900000; cetak(stok_beras - konsumsi);", "SUKSES", 4),
+    SelNotebook("sel-03", "SQL_WIDYABASE", "PILIH provinsi, surplus_ton DARI lumbung_daerah ORDER BY surplus_ton DESC;", "SUKSES", 12),
+    SelNotebook("sel-04", "CHART_GRAFIK", "Grafik Batang (Bar Chart) Surplus Pangan per Provinsi", "SUKSES", 2)
+];
+
+cetak("📊 1. Eksekusi Sel Terurut Graf Ketergantungan (DAG Reactive Execution):");
+untuk sel dalam sel_dokumen {
+    cetak("   • " + sel.status());
+}
+
+// 2. Pembuatan Laporan HTML Mandiri Tanpa Ketergantungan Luar (Zero-CDN)
+struktur EksporLaporanHtml {
+    judul_dokumen,
+    penulis,
+    jumlah_sel,
+    ukuran_html_kb,
+
+    fungsi ringkasan() {
+        kembalikan "Laporan HTML: '" + ini.judul_dokumen + "' oleh " + ini.penulis + " (" + ke_teks(ini.ukuran_html_kb) + " KB)";
+    }
+}
+
+misal laporan = EksporLaporanHtml("Analisis Agrikultur Nusantara", "Pusat Studi Komputasi Widya", 4, 185);
+cetak("\n🌐 2. Pengekspor Dokumen Mandiri (Self-Contained Interactive Report):");
+cetak("   ➔ " + laporan.ringkasan());
+cetak("   ➔ Keunggulan: Dapat dibuka offline di peramban web manapun tanpa koneksi internet CDN!");
+
+// 3. Matriks Target Kompilasi & Pemaket Aplikasi Sekali Perintah (DevexBuilder)
+struktur TargetPaket {
+    platform,
+    ekstensi,
+    ukuran_mb,
+    terverifikasi_tanda_tangan,
+    keterangan,
+
+    fungsi info() {
+        misal tanda = "Biner Standar";
+        jika ini.terverifikasi_tanda_tangan {
+            tanda = "Tertanda Digital (PQC/Ed25519)";
+        }
+        kembalikan "Target [" + ini.platform + "] ➔ " + ini.ekstensi + " (" + ke_teks(ini.ukuran_mb) + " MB) - " + tanda + " | " + ini.keterangan;
+    }
+}
+
+misal matriks_build = [
+    TargetPaket("Android", ".apk", 15, benar, "Native APK dengan Java/Kotlin Native Bridge"),
+    TargetPaket("iOS", ".ipa", 18, benar, "Cocoa Touch / Metal Graphics Bundle"),
+    TargetPaket("Serverless WASI", ".wasm", 1, salah, "Micro-Container WasmEdge <250KB"),
+    TargetPaket("Linux Native", ".bin", 8, salah, "ELF x86_64 / aarch64 Portable"),
+    TargetPaket("Windows Desktop", ".exe", 9, benar, "Win32 PE Executable Berdaulat")
+];
+
+cetak("\n🚀 3. Matriks Hasil Kompilasi Satu Perintah (widya bangun --target <nama>):");
+untuk target dalam matriks_build {
+    cetak("   • " + target.info());
+}
+
+cetak("\n==================================================================");
+cetak("✅ Selesai: Ekosistem Notebook (.wnb) & Cross-Platform DevEx Sukses!");
+cetak("==================================================================");

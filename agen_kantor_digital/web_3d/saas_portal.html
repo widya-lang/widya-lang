@@ -1491,7 +1491,7 @@
       { id: "agen_analis_data", nama: "Dewi Lestari, M.Sc.", peran: "Kepala Intelijen Data & KPI", avatar: "📊", sop: "SOP-10", load: 0, greeting: "Saya menganalisis KPI tim, deteksi anomali produktivitas, dan menerbitkan paket laporan.", prompts: ["Analisis metrik produktivitas tim", "Deteksi anomali beban kerja", "Terbitkan deck presentasi KPI"] }
     ];
 
-    const PROJECTS_LIST = [
+    let PROJECTS_LIST = [
       { kode: "PRJ-01-KOPERASI", nama: "Koperasi Merah Putih & Simpan Pinjam Syariah", kategori: "Fintech & Koperasi", lead: "agen_coder", p1: "Modul Pinjaman Syariah & SHU Otomatis", p2: "Skema Akuntansi B+Tree WidyaBase", p3: "Benchmark 50k TPS Transaksi Koperasi", slide: "proyek/PRJ-02-SMARTCITY/laporan/PRESENTASI_PROGRES.html" },
       { kode: "PRJ-02-SMARTCITY", nama: "Platform Telemetri ISPU & GIS Smart City", kategori: "IoT & Spatial Geo-intelligence", lead: "agen_arsitek", p1: "Kalkulasi Standar ISPU PM2.5 Permen LHK No. P.14/2020", p2: "Geofencing Ray-Casting & Haversine Great-Circle GIS", p3: "Optimasi Lampu Lalu Lintas Adaptif Rasio V/C", slide: "proyek/PRJ-02-SMARTCITY/laporan/PRESENTASI_PROGRES.html" },
       { kode: "PRJ-03-COLLAB-DOC", nama: "Kolaborasi Dokumen Realtime CRDT & Markdown", kategori: "Productivity & Knowledge Engine", lead: "agen_coder", p1: "Sync Engine State-based CRDT YATA", p2: "Bi-directional Markdown AST Transpiler", p3: "Conflict Resolution & Peer Mesh Network", slide: "proyek/PRJ-02-SMARTCITY/laporan/PRESENTASI_PROGRES.html" },
@@ -1503,6 +1503,41 @@
       { kode: "PRJ-09-WIDYAAI-BOX", nama: "WidyaAI Box Offline & Cyber Shield PQC", kategori: "Defense Intelligence & Sovereign AI", lead: "agen_keamanan", p1: "Inferensi LLM On-Premise Air-Gapped", p2: "Enklave Kriptografi Pasca-Kuantum (ML-KEM)", p3: "Penetration Testing OWASP LLM Top 10", slide: "proyek/PRJ-02-SMARTCITY/laporan/PRESENTASI_PROGRES.html" },
       { kode: "PRJ-10-WIDYALEDGER", nama: "WidyaLedger Sovereign Blockchain & RWA", kategori: "Web3 & Commodity Asset Tokenization", lead: "agen_arsitek", p1: "Smart Contract Resi Gudang Komoditas Desa", p2: "Arsitektur Konsensus BFT 100.000 TPS", p3: "Simulasi Transaksi Rupiah Digital Garuda BI", slide: "proyek/PRJ-02-SMARTCITY/laporan/PRESENTASI_PROGRES.html" }
     ];
+
+    async function loadDynamicProjects() {
+      try {
+        const res = await fetch('/api/widyabase/proyek');
+        if (res.ok) {
+          const remoteList = await res.json();
+          if (Array.isArray(remoteList) && remoteList.length > 0) {
+            remoteList.forEach(rp => {
+              const kode = rp.kode_proyek || rp.kode;
+              const nama = rp.nama_proyek || rp.nama || kode;
+              const idx = PROJECTS_LIST.findIndex(x => x.kode === kode);
+              const prjObj = {
+                kode,
+                nama,
+                kategori: rp.kategori || "Aplikasi Industri Widya",
+                lead: rp.lead || "agen_orkestrator",
+                p1: rp.p1 || "Modul Utama & Integrasi Berdaulat",
+                p2: rp.p2 || "Penyimpanan ACID WidyaBase",
+                p3: rp.p3 || "Kepatuhan UU PDP No. 27/2022",
+                slide: rp.slide || "proyek/PRJ-02-SMARTCITY/laporan/PRESENTASI_PROGRES.html",
+                status: rp.status || "AKTIF"
+              };
+              if (idx >= 0) {
+                PROJECTS_LIST[idx] = { ...PROJECTS_LIST[idx], ...prjObj };
+              } else {
+                PROJECTS_LIST.push(prjObj);
+              }
+            });
+            const projCountEl = document.getElementById('val-projects-count');
+            if (projCountEl) projCountEl.textContent = `${PROJECTS_LIST.length} Proyek`;
+            renderReportsGrid();
+          }
+        }
+      } catch (e) {}
+    }
 
     let activeChatAgent = AGENTS_LIST[0];
     let currentModalDocType = 'PDF';
@@ -1919,7 +1954,7 @@
         dbFolder.file('skema.sql', `-- Skema Basis Data WidyaBase untuk ${p.kode}\nBUAT_TABEL ${p.kode.toLowerCase().replace(/-/g, '_')} (\n  id_transaksi TEKS KUNCI_UTAMA,\n  nama TEKS TIDAK_KOSONG,\n  status TEKS,\n  waktu TEKS\n);\n`);
 
         // Add Web App
-        webFolder.file('index.html', `<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <title>${p.nama}</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>${p.nama}</h1>\n  <p>${p.kategori} • ${p.p1}</p>\n  <script src="app.js"></script>\n</body>\n</html>\n`);
+        webFolder.file('index.html', `<!DOCTYPE html>\n<html lang="id">\n<head>\n  <meta charset="UTF-8">\n  <title>${p.nama}</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>${p.nama}</h1>\n  <p>${p.kategori} • ${p.p1}</p>\n  <script src="app.js"><\\/script>\n</body>\n</html>\n`);
         webFolder.file('app.js', `// Logic for ${p.nama}\nconsole.log("Ready: ${p.kode}");\n`);
         webFolder.file('style.css', `/* Style for ${p.nama} */\nbody { background: #090d16; color: #f8fafc; font-family: sans-serif; padding: 20px; }\nh1 { color: #38bdf8; }\n`);
 
@@ -2602,6 +2637,7 @@
     renderChatAgentList();
     selectAgentForChat('agen_orkestrator');
     renderReportsGrid();
+    loadDynamicProjects();
 
     // Deep-linking / Tab Persistence for Suite Interoperability (e.g. Brankas Arsip from 3D Office or Portfolio)
     try {

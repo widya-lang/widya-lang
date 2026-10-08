@@ -184,6 +184,7 @@ impl LlvmBackend {
             IrType::String => "i8*".to_string(),
             IrType::Pointer(inner) => format!("{}*", self.to_llvm_type(inner)),
             IrType::Array(inner, len) => format!("[{} x {}]", len, self.to_llvm_type(inner)),
+            IrType::Vector(inner, len) => format!("<{} x {}>", len, self.to_llvm_type(inner)),
             IrType::Struct(name, _) => format!("%struct.{}", name),
         }
     }

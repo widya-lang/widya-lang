@@ -1,0 +1,99 @@
+// ==============================================================================
+// 📖 CONTOH 187: PENGATURAN DAN EDITING TEKS BAHASA ARAB / KANAN-KE-KIRI (RTL)
+// ==============================================================================
+// Fitur Komprehensif:
+// 1. Deteksi otomatis karakter Arab dan teks Kanan-ke-Kiri (apakah_rtl, arah_teks)
+// 2. Pemformatan teks Arab & penanda Bidi Unicode (teks_ke_rtl, format_arab)
+// 3. Pembersihan tanda harakat / tasydid (hapus_harakat)
+// 4. Balik visual untuk rendering konsol non-BiDi (balik_teks_visual)
+// 5. Integrasi Dokumen Word (.docx), PDF, PPTX, dan Editor Kolaboratif Studio
+// ==============================================================================
+
+cetak("======================================================================");
+cetak("🕌 MODUL EDITING TEKS BAHASA ARAB & RIGHT-TO-LEFT (RTL) WIDYA-LANG");
+cetak("======================================================================");
+
+// 1. Inisialisasi Teks Bahasa Arab
+misal bismillah = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+misal salam = "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ";
+misal teks_latin = "Widya-lang mendukung penuh editing teks dwiarah (BiDi)!";
+
+cetak("\n[1] Contoh Teks Asli:");
+cetak(" • Teks Arab 1 :", bismillah);
+cetak(" • Teks Arab 2 :", salam);
+cetak(" • Teks Latin  :", teks_latin);
+
+// 2. Deteksi Karakter RTL & Arah Teks
+misal rtl1 = apakah_rtl(bismillah);
+misal arah1 = arah_teks(bismillah);
+misal rtl_latin = apakah_rtl(teks_latin);
+misal arah_latin = arah_teks(teks_latin);
+
+cetak("\n[2] Analisis Karakter & Arah (Directionality):");
+cetak(" • Apakah bismillah RTL? ->", rtl1, " | Arah penulisan:", arah1);
+cetak(" • Apakah latin RTL?     ->", rtl_latin, " | Arah penulisan:", arah_latin);
+
+// 3. Analisis Metadata & Struktur Format Arab
+misal meta_arab = format_arab(bismillah);
+cetak("\n[3] Metadata Pemformatan Arab:");
+cetak(" • Arah Teks       :", meta_arab["arah"]);
+cetak(" • Apakah Arab     :", meta_arab["apakah_arab"]);
+cetak(" • Jumlah Huruf    :", meta_arab["panjang_huruf"]);
+cetak(" • Rekomendasi Font:", meta_arab["font_rekomendasi"]);
+
+// 4. Manipulasi Teks: Menghapus Harakat untuk Pencarian / Indeksasi
+misal bismillah_gundul = hapus_harakat(bismillah);
+misal salam_gundul = hapus_harakat(salam);
+
+cetak("\n[4] Normalisasi Teks Arab (Hapus Harakat untuk Pencarian):");
+cetak(" • Bismillah Asli   :", bismillah);
+cetak(" • Bismillah Gundul :", bismillah_gundul);
+cetak(" • Salam Gundul     :", salam_gundul);
+
+// 5. Pembungkusan BiDi Unicode Embedding
+misal bidi_wrapped = teks_ke_rtl(bismillah);
+cetak("\n[5] Pembungkus Unicode RTL Embedding (U+202B ... U+202C):");
+cetak(" • Hasil format BiDi:", bidi_wrapped);
+
+// 6. Pembalikan Visual untuk Lingkungan Terminal Monospace
+misal visual_rev = balik_teks_visual(bismillah_gundul);
+cetak("\n[6] Balik Karakter Visual:");
+cetak(" • Pembalikan visual :", visual_rev);
+
+// 7. Penanganan Angka (Angka Ditulis dari Kiri ke Kanan / LTR di dalam Teks Arab RTL)
+cetak("\n[7] Penulisan Angka (Tetap Kiri ke Kanan / LTR di dalam Kalimat Arab):");
+misal tahun = 2026;
+misal harga = "1500.50";
+misal tahun_arab = angka_ke_arab(tahun);
+misal harga_arab = angka_ke_arab(harga);
+misal balik_latin = angka_ke_latin(tahun_arab);
+
+cetak(" • Tahun Latin (LTR)         :", tahun);
+cetak(" • Tahun Arab Timur (LTR)    :", tahun_arab, " (Digit 2 di kiri, 6 di kanan)");
+cetak(" • Harga Desimal Arab        :", harga_arab);
+cetak(" • Konversi Balik ke Latin   :", balik_latin);
+
+// Contoh Kalimat Campuran Teks Arab (RTL) + Angka (LTR)
+misal kalimat_berangka = "عام 2026 م - الإصدار رقم 2.0";
+misal kalimat_angka_timur = "عام ٢٠٢٦ م - الإصدار رقم ٢٫٠";
+cetak(" • Kalimat Arab + Angka Latin:", kalimat_berangka);
+cetak(" • Kalimat Arab + Angka Timur:", kalimat_angka_timur);
+
+// 8. Pengaturan Konfigurasi Editor Widya Studio
+cetak("\n[8] Konfigurasi Editor Widya Studio:");
+misal config_editor = {
+    "tema": "widya-dark",
+    "arah_teks": "rtl",
+    "font_keluarga": "Amiri, Scheherazade New, Segoe UI, Tahoma",
+    "ukuran_font": 16,
+    "bidi_override": true,
+    "pintasan_keyboard": "Ctrl+Alt+R (Alihkan LTR <-> RTL)"
+};
+
+cetak(" • Mode Editor Aktif   :", config_editor["arah_teks"]);
+cetak(" • Font Khusus Arab    :", config_editor["font_keluarga"]);
+cetak(" • Pintasan Alihkan RTL:", config_editor["pintasan_keyboard"]);
+
+cetak("\n======================================================================");
+cetak("✅ Selesai! Widya-lang siap digunakan untuk editing teks Bahasa Arab & Angka LTR!");
+cetak("======================================================================");

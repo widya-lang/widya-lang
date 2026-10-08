@@ -5,7 +5,7 @@ tags:
 kode_proyek: PRJ-WIDYA-INV-02
 nama_proyek: Manajemen Inventaris UMKM Nusantara
 status: AKTIF
-tanggal_didaftarkan: 2026-09-30
+tanggal_didaftarkan: 2026-10-02
 database: kantor_digital.wdb
 ---
 
@@ -23,8 +23,13 @@ Proyek **Manajemen Inventaris UMKM Nusantara** adalah inisiatif strategis berbas
 ## 📋 Daftar Penugasan Kerja Terdaftar (Tugas Tim)
 | Kode Tugas | Rincian Penugasan | Prioritas | Status | PIC Pelaksana | Target Selesai |
 |:-----------|:------------------|:---------:|:------:|:-------------:|:---------------|
-| **TSK-006** | Perancangan Skema Barcode & RFID Gudang | **P1** | `TODO` | @agen_coder | 15:00 WIB |
+| **TSK-006** | Perancangan Skema Barcode & RFID Gudang | **P1** | `VERIFIED` | @agen_coder | Selesai (Lulus QA 100%) |
 
+## 🌐 Endpoint Layanan & Dokumen Resmi
+- **Web Dashboard**: `http://localhost:8011`
+- **Basis Data**: `database/data.wdb` (Slotted-Page B+Tree, WAL ACID, 5 Tabel Aktif)
+- **Dokumen Persiapan ISO 32000-1**: `docs/00_BUKU_DOKUMEN_LENGKAP.pdf`
+- **Modul Engine Rust**: `src/inventory/` (`barcode.rs`, `rfid.rs`, `warehouse.rs`)
 
 ---
 

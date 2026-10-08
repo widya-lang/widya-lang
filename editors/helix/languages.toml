@@ -1,0 +1,20 @@
+# Helix Editor Language Configuration untuk Widya-Lang
+# Simpan berkas ini di ~/.config/helix/languages.toml
+
+[[language]]
+name = "widya"
+scope = "source.widya"
+injection-regex = "widya"
+file-types = ["wya", "widya", "wd"]
+roots = ["widya.toml", ".git"]
+comment-token = "//"
+indent = { tab-width = 4, unit = "    " }
+language-servers = [ "widya-lsp" ]
+
+[[grammar]]
+name = "widya"
+source = { git = "https://github.com/widya-lang/tree-sitter-widya", rev = "main" }
+
+[language-server.widya-lsp]
+command = "widya"
+args = ["lsp"]

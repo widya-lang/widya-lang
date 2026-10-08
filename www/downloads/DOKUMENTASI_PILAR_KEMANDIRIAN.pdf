@@ -1,0 +1,260 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R ] /Count 9 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 920 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 721.89 Tm (**Bahasa Pemrograman Widya \(Widya-Lang v2.6.0 Sovereign Edition\)**) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 701.89 Tm (**Standar Keandalan:** FIPS 180-4, RFC 8032, RFC 8439, RFC 8259, RFC 4180, RFC 7230, Linux System V ELF-64, ISO 32000-1) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 3057 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (  Ringkasan Eksekutif) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 729.89 Tm (Dalam rekayasa perangkat lunak modern tingkat tinggi, ancaman paling berbahaya terhadap stabilitas, keamanan nasional, dan kelangsungan jangka panjang adalah **Software Supply Chain Attacks** dan **Vendor Lock-in** akibat ribuan pustaka \(*third-party crates / packages*\) pihak ketiga.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 709.89 Tm (Inisiatif **Pilar Kemandirian dari Pustaka Luar** mentransformasikan Widya-Lang dari bahasa yang sebelumnya masih memanfaatkan beberapa *crates* pembantu menjadi **Sovereign Independent Computing Stack** 100% mandiri yang mengimplementasikan seluruh subsistem inti secara murni \(*pure in-house*\).) Tj ET
+0.94 0.97 1 rg 50 659.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 659.89 m 50 695.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 673.89 Tm (KODE \(MERMAID\): flowchart TD     subgraph Pilar_1["Pilar I: Kompiler & Linker Mandiri"]         P1_1["Direct ELF-64 Binary Emitter \(`src/compiler/pure_emitter.rs`\)"]         P1_2["Direct x86_64 Machine Code Generator \(Zero GCC/Clang/ld\)"]     end      subgraph Pilar_2["Pilar II: Pustaka Standar Murni \(In-House Stdlib\)"]         P2_1["Kriptografi Murni \(`src/kripto/pure_crypto.rs`\): SHA-256/512, Ed25519, ChaCha20-Poly1305, Hex, Base64"]         P2_2["Format Serialisasi Murni \(`src/stdlib/pure_format.rs`\): JSON, CSV, INI \(Zero Serde/Toml/Csv\)"]         P2_3["Engine Argumen CLI Mandiri \(`src/cli/pure_args.rs`\): Zero Clap/Structopt"]         P2_4["Networking HTTP/1.1 Murni \(`src/web/pure_http.rs`\): Raw TcpStream/TcpListener \(Zero Ureq/Tokio\)"]     end      subgraph Pilar_3["Pilar III: Direct Kernel Syscalls & Alokator Memori"]         P3_1["Direct Linux Syscalls \(`src/sys/syscall.rs`\): sys_write, sys_read, sys_mmap, sys_munmap, sys_getpid"]         P3_2["Sovereign Slab Memory Allocator \(`src/sys/allocator.rs`\): O\(1\) Fixed-Block Pools Bebas Glibc Malloc"]     end      subgraph Pilar_4["Pilar IV: Basis Data Berdaulat Murni"]         P4_1["WidyaBase Autonomous Engine: B+Tree, WAL, MVCC, Raft, HNSW"]         P4_2["WidyaWire Protocol Client \(`src/widyabase/wire.rs`\): Raw TCP Client Bebas C-FFI Drivers"]     end      subgraph Pilar_5["Pilar V: Target Bare-Metal & Unikernel OS"]         P5_1["MicroVM Direct Boot \(`src/compiler/unikernel.rs`\): HdrS Linux Direct Boot, Multiboot2, PVH"]         P5_2["Bare-Metal UART 16550 COM1 Serial & VirtIO Drivers untuk Sub-5ms Boot"]     end      Pilar_2 --> Pilar_1     Pilar_3 --> Pilar_1     Pilar_4 --> Pilar_2     Pilar_1 --> Pilar_5) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 1970 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (1. Pilar I: Kompiler & Linker Mandiri \(`src/compiler/pure_emitter.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 729.89 Tm (Sebagian besar bahasa pemrograman bergantung pada kompiler C eksternal \(GCC/Clang\) atau linker eksternal \(GNU `ld`, LLVM `lld`\) untuk menghasilkan biner yang dapat dieksekusi. Widya-Lang kini menyertakan pemancar format biner **ELF-64 murni**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 709.89 Tm (* **Spesifikasi ELF-64**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 689.89 Tm (- `Elf64Header`: Identifikasi System V ABI 64-bit, Little Endian, Entry Point terpetakan pada `0x401000`.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 669.89 Tm (- `Elf64Phdr`: Dua segmen `PT_LOAD`:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 649.89 Tm (1. Segmen Kode `.text` \(`PF_R | PF_X`\) selaras dengan halaman 4096 byte.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 629.89 Tm (2. Segmen Data Konstan `.rodata` \(`PF_R | PF_W`\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 609.89 Tm (* **Pembangkit Kode Mesin x86_64**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 589.89 Tm (- Menghasilkan urutan opcode langsung: `mov rax, imm32` \(`0xB8`\), `mov rdi, imm32` \(`0xBF`\), `mov rsi, imm64` \(`0x48 0xBE`\), `mov rdx, imm32` \(`0xBA`\), `syscall` \(`0x0F 0x05`\), dan `sys_exit` \(`60`\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 569.89 Tm (- Menghasilkan biner mandiri yang dapat langsung dieksekusi sistem Linux tanpa bantuan compiler eksternal.) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3811 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (2. Pilar II: Pustaka Standar Murni \(*In-House Sovereign Stdlib*\)) Tj ET
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 727.89 Tm (A. Kriptografi Murni \(`src/kripto/pure_crypto.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 703.89 Tm (Menghapus dependensi pada crates `sha2`, `hex`, `base64`, `ed25519-dalek`, dan `chacha20poly1305`:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 683.89 Tm (1. **FIPS 180-4 SHA-256 & SHA-512**: Implementasi transformasi bitwise murni, tabel konstanta K, dan padding pesan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 663.89 Tm (2. **RFC 2104 HMAC-SHA256**: Otentikasi pesan kriptografis berbasis kunci rahasia.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 643.89 Tm (3. **RFC 4648 Hex & Base64**: Encoder dan decoder streaming tanpa alokasi tak perlu.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 623.89 Tm (4. **RFC 8439 ChaCha20-Poly1305 AEAD**: Enkripsi terotentikasi 256-bit dengan 128-bit MAC tag.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 603.89 Tm (5. **RFC 8032 Ed25519**: Penandatanganan digital berkecepatan tinggi pada kurva Edwards twisted.) Tj ET
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 581.89 Tm (B. Format Serialisasi Murni \(`src/stdlib/pure_format.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 557.89 Tm (Menghapus dependensi pada crates `serde`, `serde_json`, `toml`, dan `csv`:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 537.89 Tm (1. **RFC 8259 JSON Parser & Serializer**: Tokenizer rekursif murni yang mendukung Objek, Array, String ber-escape, Angka floating-point/integer, Boolean, dan Null. Dilengkapi formatter *pretty-print*.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 517.89 Tm (2. **RFC 4180 CSV Parser & Serializer**: Parser tabel berbasis delimiter kustom dengan dukungan kutipan berulang \(`""`\) dan karakter baris baru dalam sel.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 497.89 Tm (3. **INI Configuration Parser**: Parser konfigurasi hierarki per-seksi \(`[section] key = value`\).) Tj ET
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 475.89 Tm (C. Engine Argumen Baris Perintah Murni \(`src/cli/pure_args.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 451.89 Tm (Menghapus ketergantungan pada crate `clap`:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 431.89 Tm (1. Penanganan Subcommand berjenjang \(misal: `widya wpm install <pkg>`\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 411.89 Tm (2. Opsi pendek \(`-v`\), opsi panjang \(`--version`\), opsi bernilai \(`--port 8080`, `--port=8080`\), dan argumen posisi.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 391.89 Tm (3. Generator teks panduan \(*bilingual help generator*\) dalam Bahasa Indonesia dan Bahasa Inggris.) Tj ET
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 369.89 Tm (D. Engine Jaringan HTTP/1.1 Murni \(`src/web/pure_http.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 345.89 Tm (Menghapus ketergantungan pada crate `ureq`, `hyper`, dan `tokio`:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 325.89 Tm (1. Klien HTTP/1.1 murni \(`PureHttpClient`\) berbasis raw `std::net::TcpStream` dengan penanganan timeout, header `Host`, dan parsing respons.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 305.89 Tm (2. Server HTTP/1.1 murni \(`PureHttpServer`\) berbasis multi-threaded `std::net::TcpListener` yang memproses permintaan secara paralel.) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 2049 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (3. Pilar III: Direct Kernel Syscalls & Sovereign Allocator \(`src/sys/`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 729.89 Tm (Menghapus ketergantungan pada C-Runtime Library \(`glibc` / `musl` / `malloc`\):) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 709.89 Tm (* **Direct Linux Syscalls \(`src/sys/syscall.rs`\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 689.89 Tm (- Menggunakan instruksi assembly `syscall` x86_64 langsung:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 669.89 Tm (- `sys_write` \(1\): Menulis langsung ke deskriptor berkas \(FD 1 stdout, FD 2 stderr\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 649.89 Tm (- `sys_read` \(0\): Membaca langsung dari deskriptor berkas.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 629.89 Tm (- `sys_mmap` \(9\): Mengalokasikan halaman memori virtual anonim \(`MAP_PRIVATE | MAP_ANONYMOUS`\) langsung dari kernel.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 609.89 Tm (- `sys_munmap` \(11\): Mengembalikan halaman memori ke kernel.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 589.89 Tm (- `sys_getpid` \(39\): Mengambil ID proses berjalan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 569.89 Tm (* **Sovereign Slab Memory Allocator \(`src/sys/allocator.rs`\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 549.89 Tm (- Mengelola heap mandiri menggunakan blok berukuran tetap \(*Slab Classes*: 32B, 64B, 128B, 256B, 512B, 1024B, 2048B\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 529.89 Tm (- Alokasi dan dealokasi instan $O\(1\)$ dengan *freelist chaining* tanpa fragmentasi heap.) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 1273 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (4. Pilar IV: Basis Data Berdaulat Murni \(`src/widyabase/wire.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 729.89 Tm (Mempensiunkan kebutuhan driver pihak ketiga \(`rusqlite`, `postgres`, `mysql`, `duckdb`\):) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 709.89 Tm (* **Protokol Wire Biner Klien-Server**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 689.89 Tm (- `WidyaWireClient` terhubung ke server WidyaBase via raw socket TCP.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 669.89 Tm (- Mengirim `StartupMessage` dan membaca frame handshake \(`ReadyForQuery`\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 649.89 Tm (- Mengirim `Query` SQL dan mem-parsing frame `RowDescription` \('T'\), `DataRow` \('D'\), dan `CommandComplete` \('C'\) langsung menjadi struktur data tabel native.) Tj ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 1705 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 7 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (5. Pilar V: Target Bare-Metal & Unikernel OS \(`src/compiler/unikernel.rs`\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 729.89 Tm (Puncak kedaulatan perangkat lunak: kemampuan kode untuk berjalan tanpa sistem operasi \(*freestanding microVM*\):) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 709.89 Tm (* **Protokol Boot Langsung**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 689.89 Tm (- **Linux 64-bit Direct Kernel Boot**: Header 1024-byte dengan magic `0x53726448` \("HdrS"\) dan boot flag `0xAA55` untuk boot langsung di bawah **AWS Firecracker** dan **QEMU -kernel**.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 669.89 Tm (- **Multiboot2 Specification**: Magic `0xE85250D6` untuk GRUB2 dan hypervisor modern.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 649.89 Tm (- **PVH Direct Boot**: Header minimal untuk Cloud Hypervisor.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 629.89 Tm (* **Inisialisasi Perangkat Keras**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 609.89 Tm (- Stub booting Long Mode 64-bit dengan inisialisasi port serial COM1 \(UART 16550 pada port I/O `0x3F8`\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 589.89 Tm (- Waktu boot terukur **sub-5 milidetik** \(Firecracker: ~3.2 ms\).) Tj ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 4220 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 8 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (  Matriks Status 5 Pilar Kemandirian) Tj ET
+0.92 0.95 0.98 rg 50 727.89 495 22 re f
+0.2 0.4 0.7 RG 0.75 w 50 727.89 495 22 re S
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 56 732.89 Tm (Pilar Kedaulatan) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 179.75 732.89 Tm (Modul Implementasi) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 303.5 732.89 Tm (Status) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 427.25 732.89 Tm (Crate yang Digantikan) Tj ET
+1 1 1 rg 50 705.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 705.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 710.89 Tm (**Pilar I: Kompile...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 710.89 Tm ([`src/compiler/pur...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 710.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 710.89 Tm (GCC, Clang, GNU ld...) Tj ET
+0.98 0.98 0.99 rg 50 683.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 683.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 688.89 Tm (**Pilar II-A: Krip...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 688.89 Tm ([`src/kripto/pure_...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 688.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 688.89 Tm (sha2, hex, base64,...) Tj ET
+1 1 1 rg 50 661.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 661.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 666.89 Tm (**Pilar II-B: Form...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 666.89 Tm ([`src/stdlib/pure_...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 666.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 666.89 Tm (serde, serde_json,...) Tj ET
+0.98 0.98 0.99 rg 50 639.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 639.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 644.89 Tm (**Pilar II-C: Engi...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 644.89 Tm ([`src/cli/pure_arg...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 644.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 644.89 Tm (clap, structopt, argh) Tj ET
+1 1 1 rg 50 617.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 617.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 622.89 Tm (**Pilar II-D: Pure...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 622.89 Tm ([`src/web/pure_htt...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 622.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 622.89 Tm (ureq, reqwest, hyp...) Tj ET
+0.98 0.98 0.99 rg 50 595.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 595.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 600.89 Tm (**Pilar III: Sysca...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 600.89 Tm ([`src/sys/syscall....) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 600.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 600.89 Tm (glibc, musl, libc,...) Tj ET
+1 1 1 rg 50 573.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 573.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 578.89 Tm (**Pilar IV: Basis ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 578.89 Tm ([`src/widyabase/wi...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 578.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 578.89 Tm (postgres, rusqlite...) Tj ET
+0.98 0.98 0.99 rg 50 551.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 551.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 556.89 Tm (**Pilar V: Bare-Me...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 556.89 Tm ([`src/compiler/uni...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 556.89 Tm (**100% Mandiri**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 556.89 Tm (OS kernel dependen...) Tj ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 21 0 R >>
+endobj
+21 0 obj
+<< /Length 1572 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 9 dari 9) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 753.89 Tm (  Hasil Verifikasi Suite Pengujian) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 729.89 Tm (Seluruh pilar diuji secara otomatis melalui suite pengujian integrasi terpadu pada [`tests/pilar_kemandirian_test.rs`]\(file:///home/devops/widya-lang/tests/pilar_kemandirian_test.rs\):) Tj ET
+0.94 0.97 1 rg 50 679.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 679.89 m 50 715.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 693.89 Tm (KODE \(TEXT\): running 5 tests test test_pilar_1_kompiler_dan_linker_mandiri ... ok test test_pilar_2_pustaka_standar_murni ... ok test test_pilar_3_direct_syscall_dan_alokator_murni ... ok test test_pilar_4_basis_data_murni_widyawire ... ok test test_pilar_5_baremetal_dan_unikernel ... ok  test result: ok. 5 passed; 0 failed; 0 ignored; finished in 0.04s) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 659.89 Tm (Dengan tuntasnya kelima pilar ini, ekosistem **Widya-Lang** kini memiliki kedaulatan teknologi sejati \(*true technological sovereignty*\), terbebas dari jeratan dependensi pustaka asing, dan siap diimplementasikan untuk infrastruktur nasional skala misi kritis.) Tj ET
+endstream
+endobj
+xref
+0 22
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000209 00000 n 
+0000000306 00000 n 
+0000000408 00000 n 
+0000001378 00000 n 
+0000001480 00000 n 
+0000004588 00000 n 
+0000004690 00000 n 
+0000006711 00000 n 
+0000006815 00000 n 
+0000010678 00000 n 
+0000010782 00000 n 
+0000012883 00000 n 
+0000012987 00000 n 
+0000014312 00000 n 
+0000014416 00000 n 
+0000016173 00000 n 
+0000016277 00000 n 
+0000020549 00000 n 
+0000020653 00000 n 
+trailer
+<< /Size 22 /Root 1 0 R /Info << /Title ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) /Author (Widya Office Suite) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008104004Z) >> >>
+startxref
+22277
+%%EOF

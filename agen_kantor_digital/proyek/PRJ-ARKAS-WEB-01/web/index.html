@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARKAS Web - Sistem Rencana Kegiatan & Anggaran Sekolah Berdaulat</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand-header">
+        <div class="brand-icon">🏛️</div>
+        <div>
+          <h2>ARKAS WEB</h2>
+          <span class="badge-kemdikbud">Kemendikdasmen RI</span>
+        </div>
+      </div>
+
+      <div class="school-profile-card">
+        <div class="school-name">SD NEGERI 1 SOMAGEDE</div>
+        <div class="school-npsn">NPSN: <strong>20301234</strong> • Kab. Banyumas</div>
+        <div class="fiscal-year">Tahun Anggaran: <strong>2026</strong></div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="tab-dashboard">
+          <span class="nav-icon">📊</span> Ringkasan Eksekutif
+        </button>
+        <button class="nav-item" data-tab="tab-rkas">
+          <span class="nav-icon">📋</span> Perencanaan RKAS (8 SNP)
+        </button>
+        <button class="nav-item" data-tab="tab-bku">
+          <span class="nav-icon">📖</span> Buku Kas Umum (BKU)
+        </button>
+        <button class="nav-item" data-tab="tab-transaksi-baru">
+          <span class="nav-icon">➕</span> Input Transaksi BKU
+        </button>
+        <button class="nav-item" data-tab="tab-pembantu">
+          <span class="nav-icon">📑</span> Buku Pembantu (Bank/Kas/Pajak)
+        </button>
+        <button class="nav-item" data-tab="tab-siplah">
+          <span class="nav-icon">🛒</span> Integrasi SIPLah Permen 15
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="integrity-badge" id="sidebarIntegrityBadge">
+          <span class="pulse-dot"></span> Rantai SHA-256 Valid
+        </div>
+        <div class="system-meta">Widya-Lang Native • Port 8012</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle">Dasbor Tata Kelola Keuangan Sekolah</h1>
+          <p class="subtitle">Platform Mandiri Pengelolaan BOSP, BOS Kinerja, BOSDA, dan Banper APBN</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="btnAuditChain">
+            <span>🛡️</span> Uji Integritas Audit BPK
+          </button>
+          <button class="btn btn-primary" id="btnTutupBuku">
+            <span>🔒</span> Tutup Buku Bulanan
+          </button>
+        </div>
+      </header>
+
+      <!-- KPI METRIC CARDS -->
+      <section class="kpi-grid">
+        <div class="kpi-card card-blue">
+          <div class="kpi-title">TOTAL PAGU RKAS 2026</div>
+          <div class="kpi-value" id="kpiTotalPagu">Rp 445.000.000</div>
+          <div class="kpi-meta">Alokasi 4 Sumber Dana Resmi</div>
+        </div>
+
+        <div class="kpi-card card-purple">
+          <div class="kpi-title">TOTAL REALISASI BELANJA</div>
+          <div class="kpi-value" id="kpiTotalRealisasi">Rp 168.000.000</div>
+          <div class="kpi-progress-bar">
+            <div class="kpi-progress-fill" id="kpiProgressFill" style="width: 37.75%"></div>
+          </div>
+          <div class="kpi-meta">Serapan Anggaran: <strong id="kpiSerapanPersen">37.75%</strong></div>
+        </div>
+
+        <div class="kpi-card card-green">
+          <div class="kpi-title">SALDO KAS BANK (BPD)</div>
+          <div class="kpi-value" id="kpiSaldoBank">Rp 70.500.000</div>
+          <div class="kpi-meta">Rek: 140-00-9876543-2</div>
+        </div>
+
+        <div class="kpi-card card-amber">
+          <div class="kpi-title">SALDO KAS TUNAI BENDAHARA</div>
+          <div class="kpi-value" id="kpiSaldoTunai">Rp 5.500.000</div>
+          <div class="kpi-meta">Maksimal Tunai Juknis: Rp 10 Juta</div>
+        </div>
+      </section>
+
+      <!-- TAB CONTENTS -->
+
+      <!-- 1. DASHBOARD OVERVIEW -->
+      <section class="tab-pane active" id="tab-dashboard">
+        <div class="dashboard-grid">
+          <!-- Multi Sumber Dana Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Alokasi & Penyaluran Sumber Dana Pendidikan</h3>
+              <span class="badge-tag">Tahun 2026</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="tableSumberDana">
+                <thead>
+                  <tr>
+                    <th>Sumber Dana</th>
+                    <th>Pagu Tahunan</th>
+                    <th>Dana Cair</th>
+                    <th>Sisa Saldo</th>
+                    <th>Status Penyaluran</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Juknis Compliance Card -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Kepatuhan Batas Aturan Juknis BOSP</h3>
+              <span class="badge-success">Sesuai Permendikbudristek 63/2023</span>
+            </div>
+            <div class="compliance-box">
+              <div class="compliance-item">
+                <div class="compliance-label">
+                  <span>Alokasi Honorarium Guru Non-ASN</span>
+                  <strong>21.33% / Max 50.0%</strong>
+                </div>
+                <div class="compliance-progress">
+                  <div class="compliance-bar" style="width: 42.66%;"></div>
+                </div>
+                <div class="compliance-note">Pagu Honor: Rp 48.000.000 dari Pagu BOSP Rp 225.000.000 (Aman)</div>
+              </div>
+
+              <div class="compliance-item">
+                <div class="compliance-label">
+                  <span>Belanja Melalui Mitra Resmi SIPLah</span>
+                  <strong>80.35% / Rekomendasi > 70%</strong>
+                </div>
+                <div class="compliance-progress">
+                  <div class="compliance-bar bar-green" style="width: 80.35%;"></div>
+                </div>
+                <div class="compliance-note">Belanja SIPLah: Rp 135.000.000 (Permen 15/2026)</div>
+              </div>
+
+              <div class="compliance-item">
+                <div class="compliance-label">
+                  <span>Integritas Rantai Audit BKU (SHA-256)</span>
+                  <span class="badge-success">100% Tidak Termodifikasi</span>
+                </div>
+                <div class="compliance-note">Seluruh 5 blok transaksi memiliki hash chaining konsisten.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. RKAS 8 SNP -->
+      <section class="tab-pane" id="tab-rkas">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Rencana Kegiatan dan Anggaran Sekolah (RKAS Murni v1.0)</h3>
+              <p class="panel-desc">Pemetaan Program Sekolah Berdasarkan 8 Standar Nasional Pendidikan (SNP)</p>
+            </div>
+            <div class="panel-tags">
+              <span class="badge-success">Disahkan Dinas Pendidikan Banyumas</span>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="tableRkas">
+              <thead>
+                <tr>
+                  <th>Kode SNP</th>
+                  <th>Uraian Kegiatan & Program</th>
+                  <th>Kode Rekening</th>
+                  <th>Kelompok Belanja</th>
+                  <th>Pagu (Rp)</th>
+                  <th>Realisasi (Rp)</th>
+                  <th>Sisa Pagu (Rp)</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. BUKU KAS UMUM (BKU) -->
+      <section class="tab-pane" id="tab-bku">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Buku Kas Umum (BKU) & Rantai Audit Kriptografis</h3>
+              <p class="panel-desc">Catatan Transaksi Real-time Dilengkapi Hash SHA-256 Anti-Fraud BPK</p>
+            </div>
+            <div class="panel-tools">
+              <select id="filterBkuSumberDana" class="form-control-inline">
+                <option value="ALL">Semua Sumber Dana</option>
+                <option value="BOSP">BOSP Reguler</option>
+                <option value="BANPER">Banper APBN</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table font-mono-table" id="tableBku">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal</th>
+                  <th>No Bukti</th>
+                  <th>Uraian Transaksi</th>
+                  <th>Metode Bayar</th>
+                  <th>Penerimaan (Rp)</th>
+                  <th>Pengeluaran (Rp)</th>
+                  <th>Saldo (Rp)</th>
+                  <th>Hash SHA-256 Audit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. FORM INPUT TRANSAKSI -->
+      <section class="tab-pane" id="tab-transaksi-baru">
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3>Catat Mutasi Transaksi BKU Baru</h3>
+            <p>Pilih jenis transaksi untuk menghitung otomatis pemotongan pajak dan pembaruan rantai hash.</p>
+          </div>
+
+          <form id="formTransaksiBku" class="form-grid">
+            <div class="form-group">
+              <label>Jenis Transaksi</label>
+              <select id="inputJenisTransaksi" class="form-control" required>
+                <option value="BelanjaOperasionalSIPLah">Belanja Pengadaan SIPLah (Daring)</option>
+                <option value="BelanjaNonSIPLah">Belanja Non-SIPLah (Langsung/Honor/Langganan)</option>
+                <option value="TarikTunaiDariBank">Tarik Tunai dari Bank ke Kas Bendahara</option>
+                <option value="SetorTunaiKeBank">Setor Kas Tunai ke Rekening Bank</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Metode Pembayaran</label>
+              <select id="inputMetodeBayar" class="form-control" required>
+                <option value="VirtualAccountSIPLah">Virtual Account SIPLah (Bank BPD)</option>
+                <option value="KasTunaiBendahara">Kas Tunai Bendahara</option>
+                <option value="TransferBankGiro">Transfer Bank / Kliring BPD</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Nomor Bukti / SP</label>
+              <input type="text" id="inputNoBukti" class="form-control" placeholder="e.g. SP-SIP-202603-01 / KWT-005" required>
+            </div>
+
+            <div class="form-group">
+              <label>Tanggal Transaksi</label>
+              <input type="date" id="inputTanggal" class="form-control" value="2026-03-15" required>
+            </div>
+
+            <div class="form-group form-col-span-2">
+              <label>Uraian Belanja / Transaksi</label>
+              <input type="text" id="inputUraian" class="form-control" placeholder="e.g. Pembelian Alat Kebersihan & Sanitasi Siswa" required>
+            </div>
+
+            <div class="form-group">
+              <label>Pilih Pos Kegiatan RKAS</label>
+              <select id="inputPosKegiatan" class="form-control" required>
+                <option value="KEG-01-SNP6">KEG-01: Pengadaan Buku Teks Utama</option>
+                <option value="KEG-02-SNP5">KEG-02: Honorarium GTT / PTT</option>
+                <option value="KEG-03-SNP8">KEG-03: Langganan Listrik & Internet</option>
+                <option value="KEG-05-SNP7">KEG-05: Pelaksanaan ANBK Sekolah</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Nominal Transaksi (Rp)</label>
+              <input type="number" id="inputNominal" class="form-control" placeholder="e.g. 5000000" min="1000" required>
+            </div>
+
+            <!-- Kalkulator Pajak Otomatis -->
+            <div class="tax-box form-col-span-2">
+              <h4>Kalkulator Pajak Belanja Otomatis (HPP & Juknis BOSP)</h4>
+              <div class="tax-inputs">
+                <label>
+                  <input type="checkbox" id="chkKenaPajak" checked> Aktifkan Perhitungan Pajak
+                </label>
+                <label>
+                  Kategori Objek:
+                  <select id="selKategoriPajak" class="form-control-inline">
+                    <option value="Barang">Belanja Barang (PPN 11% + PPh 22 1.5%)</option>
+                    <option value="Jasa">Belanja Jasa (PPN 11% + PPh 23 2%)</option>
+                    <option value="HonorNonPNS">Honor Guru Non-PNS (PPh 21 5%)</option>
+                  </select>
+                </label>
+                <label>
+                  <input type="checkbox" id="chkMemilikiNpwp" checked> Rekanan Ber-NPWP
+                </label>
+              </div>
+              <div class="tax-result-display" id="taxResultDisplay">
+                Estimasi PPN: <strong id="estPpn">Rp 0</strong> • Estimasi PPh: <strong id="estPph">Rp 0</strong> • Total Potongan: <strong id="estTotalPajak">Rp 0</strong>
+              </div>
+            </div>
+
+            <div class="form-actions form-col-span-2">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <span>💾</span> Simpan & Kunci Rantai Transaksi BKU
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- 5. BUKU PEMBANTU -->
+      <section class="tab-pane" id="tab-pembantu">
+        <div class="pembantu-grid">
+          <!-- Pembantu Bank -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Buku Pembantu Bank (BPD Jateng)</h3>
+              <span class="badge-tag">Rekening: 140-00-9876543-2</span>
+            </div>
+            <div class="pembantu-card">
+              <div class="pembantu-saldo-box">
+                <span class="sub-label">Saldo Akhir Bank:</span>
+                <span class="val-highlight" id="bpBankSaldo">Rp 70.500.000</span>
+              </div>
+              <p class="card-desc">Merekam mutasi penerimaan transfer dana salur dari Kas Negara/Kasda dan pengeluaran transaksi via giro / SIPLah Virtual Account.</p>
+            </div>
+          </div>
+
+          <!-- Pembantu Kas Tunai -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Buku Pembantu Kas Tunai Bendahara</h3>
+              <span class="badge-tag">Maksimal Rp 10 Juta</span>
+            </div>
+            <div class="pembantu-card">
+              <div class="pembantu-saldo-box">
+                <span class="sub-label">Saldo Kas Tunai:</span>
+                <span class="val-highlight" id="bpKasSaldo">Rp 5.500.000</span>
+              </div>
+              <p class="card-desc">Merekam dana tunai fisik di brankas sekolah hasil penarikan bank untuk belanja belanja langsung bernilai kecil dan operasional rutin.</p>
+            </div>
+          </div>
+
+          <!-- Pembantu Pajak -->
+          <div class="panel form-col-span-2">
+            <div class="panel-header">
+              <h3>Buku Pembantu Pajak (PPh 21, 22, 23 & PPN)</h3>
+              <span class="badge-success">Status: Seluruh Pungutan Telah Disetor ke Kas Negara</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="tablePajak">
+                <thead>
+                  <tr>
+                    <th>ID Pajak</th>
+                    <th>Nomor Bukti BKU</th>
+                    <th>PPh 21 (Rp)</th>
+                    <th>PPh 22 (Rp)</th>
+                    <th>PPh 23 (Rp)</th>
+                    <th>PPN 11% (Rp)</th>
+                    <th>Total Setor (Rp)</th>
+                    <th>Kode e-Billing</th>
+                    <th>NTPN Setor</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. SIPLAH INTEGRATION -->
+      <section class="tab-pane" id="tab-siplah">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Integrasi Pengadaan Barang & Jasa Sekolah (SIPLah)</h3>
+              <p class="panel-desc">Kepatuhan Terhadap Permendikdasmen No. 15 Tahun 2026 (Enam Dokumen Pengadaan Sah)</p>
+            </div>
+            <span class="badge-kemdikbud">Mitra Resmi Kemendikdasmen</span>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="tableSiplah">
+              <thead>
+                <tr>
+                  <th>Nomor Surat Pesanan (SP)</th>
+                  <th>Mitra Pasar Daring</th>
+                  <th>Penyedia / Toko Rekanan</th>
+                  <th>Nilai Pesanan (Rp)</th>
+                  <th>Nomor BAST Digital</th>
+                  <th>Tanggal BAST</th>
+                  <th>Status Pembayaran</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL AUDIT KRIPTOGRAFIS -->
+  <div class="modal-overlay" id="auditModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🛡️ Hasil Audit Rantai Kriptografis BKU (BPK / Inspektorat)</h3>
+        <button class="modal-close" id="btnCloseAuditModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="audit-status-banner banner-success">
+          <span class="banner-icon">✓</span>
+          <div>
+            <strong>SELURUH RANTAI AUDIT VERIFIED & VALID</strong>
+            <p>5 dari 5 entri BKU terbukti autentik tanpa adanya modifikasi nilai masa lalu.</p>
+          </div>
+        </div>
+
+        <div class="hash-chain-visualizer" id="hashVisualizer">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnExportAuditLog">Cetak Berita Acara Rekonsiliasi PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

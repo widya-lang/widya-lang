@@ -1,0 +1,179 @@
+%PDF-1.7
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R ] /Count 6 /MediaBox [ 0 0 595.28 841.89 ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1110 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 18 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 749.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET
+0.1 0.4 0.8 RG 1.2 w 50 745.89 m 545 745.89 l S
+BT /F1 14 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 717.89 Tm (PROYEK: SISTEM MANAJEMEN INVENTARIS UMKM NUSANTARA \(PRJ-WIDYA-INV-02\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 693.89 Tm (**Kode Proyek**: `PRJ-WIDYA-INV-02`) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 673.89 Tm (**Disusun Oleh**: `agen_analis` \(SOP-02: Dekomposisi Kebutuhan & Spesifikasi Produk\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 653.89 Tm (**Disetujui Oleh**: `agen_orkestrator` \(Mandor PM\) & `agen_arsitek` \(Tech Lead\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 633.89 Tm (**Status**: RESMI *  SIAP EKSEKUSI PRODUKSI) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2048 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (1. Ringkasan Eksekutif & Problem Statement) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (Sektor logistik dan pergudangan UMKM di Indonesia kerap menghadapi tantangan inefisiensi pencatatan stok fisik, selisih inventaris \(*phantom inventory*\), dan lambatnya proses audit siklus \(*cycle count*\). Berbagai sistem pergudangan konvensional masih mengandalkan pencatatan manual atau pemindai generik yang tidak terintegrasi secara standar dengan penomoran internasional GS1 dan teknologi frekuensi radio \(UHF RFID\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (**Tujuan Produk**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (Membangun platform **Manajemen Inventaris UMKM Nusantara** berdaulat berbasis runtime Widya-Lang native dengan kapabilitas:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (1. **Standarisasi Barcode Global**: Dukungan penuh kalkulasi checksum EAN-13 dan parsing GS1-128 Application Identifiers \(AI `\(01\)` GTIN, `\(10\)` Batch, `\(17\)` Expire, `\(21\)` Serial\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 651.89 Tm (2. **Otomasi Gerbang RFID**: Protokol EPC Gen2 SGTIN-96 \(96-bit UHF\) dengan pemantauan RSSI signal level dan deteksi arah perpindahan gerbang \(IN/OUT\).) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 631.89 Tm (3. **Manajemen Bin/Rak Cerdas**: Pemetaan topologi rak 3 dimensi \(Zona, Lorong, Rak, Tingkat\) dengan kalkulasi kapasitas dan utilisasi.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 611.89 Tm (4. **Audit Stok Opname Real-Time**: Rekonsiliasi perbedaan stok tercatat vs stok fisik otomatis dengan pelaporan deviasi instan.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 2590 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (2. User Persona & User Journey Map) Tj ET
+BT /F1 11 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 730.89 Tm (Persona Pengguna:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 706.89 Tm (1. **Kepala Gudang \(Warehouse Supervisor\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 686.89 Tm (- *Kebutuhan*: Memantau pergerakan stok real-time, utilisasi kapasitas rak, dan approval rekonsiliasi opname.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 666.89 Tm (- *Pain Point*: Selisih stok yang baru diketahui saat audit tahunan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 646.89 Tm (2. **Operator Penerimaan & Pemindaian \(Barcode Operator\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 626.89 Tm (- *Kebutuhan*: Pemindaian cepat EAN-13/GS1-128 dengan validasi instan, pencetakan label barcode SKU.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 606.89 Tm (- *Pain Point*: Barcode cacat atau tidak sesuai standar checksum GS1 menyebabkan penolakan barang.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 586.89 Tm (3. **Petugas Gerbang Logistik \(RFID Gate Checker\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 566.89 Tm (- *Kebutuhan*: Deteksi palet/karton otomatis saat melintasi portal RFID UHF tanpa membuka kemasan.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 546.89 Tm (- *Pain Point*: Pemindaian manual per barang memakan waktu berjam-jam saat truk bongkar muat.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 526.89 Tm (4. **Auditor Keuangan & Kepatuhan \(Internal Auditor\)**:) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 506.89 Tm (- *Kebutuhan*: Jejak audit mutasi \(movement history\) yang tamper-proof dan bebas manipulasi.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 486.89 Tm (- *Pain Point*: Catatan kertas mutasi rentan hilang atau diubah sepihak.) Tj ET
+BT /F1 11 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 465.89 Tm (User Journey:) Tj ET
+0.94 0.97 1 rg 50 411.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 411.89 m 50 447.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 425.89 Tm (KODE \(\): [Barang Datang] -> [Scan Barcode GS1-128 / Labeling EPC] -> [Alokasi ke Bin/Rak]                  -> [Pintu Keluar: Deteksi Gate RFID UHF] -> [Rekonsiliasi Stok Otomatis]) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 3258 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (3. Matriks Fitur) Tj ET
+0.92 0.95 0.98 rg 50 729.89 495 22 re f
+0.2 0.4 0.7 RG 0.75 w 50 729.89 495 22 re S
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 56 734.89 Tm (Prioritas) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 179.75 734.89 Tm (Modul / Fitur) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 303.5 734.89 Tm (Deskripsi Fungsional) Tj ET
+BT /F1 9.5 Tf 0.05 0.2 0.45 rg 1 0 0 1 427.25 734.89 Tm (Acceptance Criteria \(BDD\)) Tj ET
+1 1 1 rg 50 707.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 707.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 712.89 Tm (**P1**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 712.89 Tm (**EAN-13 & GS1-128...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 712.89 Tm (Validasi checksum ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 712.89 Tm (**Given** SKU 12 d...) Tj ET
+0.98 0.98 0.99 rg 50 685.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 685.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 690.89 Tm (**P1**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 690.89 Tm (**UHF RFID EPC Gen...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 690.89 Tm (Encode dan decode ...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 690.89 Tm (**Given** EPC hex ...) Tj ET
+1 1 1 rg 50 663.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 663.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 668.89 Tm (**P1**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 668.89 Tm (**Simulasi Gerbang...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 668.89 Tm (Deteksi transisi b...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 668.89 Tm (**Given** sinyal t...) Tj ET
+0.98 0.98 0.99 rg 50 641.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 641.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 646.89 Tm (**P2**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 646.89 Tm (**Topologi Rak / B...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 646.89 Tm (Representasi spasi...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 646.89 Tm (**Given** lokasi `...) Tj ET
+1 1 1 rg 50 619.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 619.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 624.89 Tm (**P2**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 624.89 Tm (**Rekonsiliasi Sto...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 624.89 Tm (Penghitungan selis...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 624.89 Tm (**Given** stok sis...) Tj ET
+0.98 0.98 0.99 rg 50 597.89 495 22 re f
+0.8 0.85 0.9 RG 0.75 w 50 597.89 495 22 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 56 602.89 Tm (**P3**) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 179.75 602.89 Tm (**Telemetri & Geof...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 303.5 602.89 Tm (Visualisasi RSSI r...) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 427.25 602.89 Tm (**Given** tag asin...) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 1542 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (4. Acceptance Criteria \(BDD Specification\)) Tj ET
+0.94 0.97 1 rg 50 701.89 495 36 re f
+0.1 0.5 0.85 RG 3.5 w 50 701.89 m 50 737.89 l S
+BT /F1 9.5 Tf 0.05 0.25 0.5 rg 1 0 0 1 60 715.89 Tm (KODE \(GHERKIN\): Skenario 1: Validasi Barcode GS1 EAN-13 Given Sebuah produk dengan prefix pabrik dan kode item 12 digit "899275312345" When Sistem mengeksekusi perhitungan Ean13Generator Then Checksum digit ke-13 dihitung menjadi "6" And Barcode lengkap "8992753123456" dinyatakan valid oleh validator GS1.  Skenario 2: Deteksi Masuk Melalui RFID UHF Gate Given Tag RFID EPC SGTIN-96 "3014257BF7194E4000001A85" terpasang pada kardus barang When Palet melewati Gate Masuk Gudang A dengan RSSI -42.5 dBm Then Sistem mencatat event "BarangMasuk" secara instan And Stok sistem untuk SKU bersangkutan bertambah sejumlah unit pada palet.  Skenario 3: Audit Stok Opname dan Deteksi Deviasi Given SKU "BRG-KOP-001" memiliki stok buku sistem sebanyak 50 unit When Tim gudang melakukan stock opname fisik dan memindai 48 unit Then Sistem menghasilkan selisih -2 unit \(Deviasi: -4.0%\) And Kartu stok opname diterbitkan dengan status "MenungguApproval".) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 1105 >>
+stream
+q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+BT /F1 12 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 755.89 Tm (5. Metrik Keberhasilan Bisnis \(KPI\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 731.89 Tm (1. **Kecepatan Penerimaan Barang**: Reduksi waktu check-in logistik dari 15 menit per palet menjadi < 30 detik menggunakan RFID Gate.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 711.89 Tm (2. **Akurasi Inventaris**: Peningkatan akurasi pencatatan stok fisik vs buku hingga **99.8%**.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 691.89 Tm (3. **Zero Phantom Stock**: Eliminasi stok fiktif melalui jejak audit pergerakan mutasi real-time.) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 671.89 Tm (4. **Kepatuhan Standar Industri**: 100% interoperabilitas format GS1-128 dan EPC Global Gen2 UHF.) Tj ET
+endstream
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000188 00000 n 
+0000000285 00000 n 
+0000000387 00000 n 
+0000001548 00000 n 
+0000001650 00000 n 
+0000003749 00000 n 
+0000003851 00000 n 
+0000006492 00000 n 
+0000006596 00000 n 
+0000009906 00000 n 
+0000010010 00000 n 
+0000011604 00000 n 
+0000011708 00000 n 
+trailer
+<< /Size 16 /Root 1 0 R /Info << /Title (PRODUCT REQUIREMENT DOCUMENT \(PRD\)) /Author (Widya-Lang Sovereign OS \(Proyek: PRJ-WIDYA-INV-02\)) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008063757Z) >> >>
+startxref
+12865
+%%EOF

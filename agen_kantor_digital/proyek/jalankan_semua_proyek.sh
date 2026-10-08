@@ -41,8 +41,10 @@ start_project "PRJ-07-WIDYAMEDIKA" "WidyaMedika SIMRS & SATUSEHAT HL7 FHIR" 8007
 start_project "PRJ-08-WIDYAOS" "WidyaOS Bare-Metal Rust Kernel & OEM" 8008
 start_project "PRJ-09-WIDYAAI-BOX" "WidyaAI Box Offline & Cyber Shield PQC" 8009
 start_project "PRJ-10-WIDYALEDGER" "WidyaLedger Sovereign Blockchain & RWA" 8010
+start_project "PRJ-WIDYA-INV-02" "Manajemen Inventaris UMKM Nusantara" 8011
+start_project "PRJ-ARKAS-WEB-01" "Aplikasi ARKAS Web Terintegrasi (BOS)" 8012
 
 echo "================================================================================"
-echo "✅ Seluruh 10 Proyek Industri Telah Aktif di Port 8001 s/d 8010 (Native Widya-Lang)"
+echo "✅ Seluruh 12 Proyek Industri Telah Aktif di Port 8001 s/d 8012 (Native Widya-Lang)"
 echo "Kedaulatan Sistem: 100% On-Premise, Zero-Python Runtime, Standar ISO 32000-1"
 echo "================================================================================"

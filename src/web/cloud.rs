@@ -1114,6 +1114,22 @@ impl SovereignGatewayServer {
             return;
         }
 
+        // Cek permintaan untuk runtime script client reactive component
+        if raw_path == "/_widya/live.js" {
+            let js = crate::web::reactive::get_widya_live_client_js();
+            let mut headers = HashMap::new();
+            headers.insert("content-type".to_string(), "application/javascript; charset=utf-8".to_string());
+            headers.insert("cache-control".to_string(), "public, max-age=3600".to_string());
+            Self::send_response(&mut stream, 200, &headers, js.as_bytes());
+            return;
+        }
+
+        // Cek permintaan WebSocket RFC 6455 untuk Komponen Reaktif LiveView
+        if raw_path == "/_widya/live" {
+            Self::handle_reactive_websocket(&mut stream, &req_headers);
+            return;
+        }
+
         // Resolusi Deployment ID:
         // 1. Lewat query parameter `_widya_deploy=dpl_...`
         // 2. Lewat query parameter `_widya_project=...`
@@ -1278,6 +1294,76 @@ impl SovereignGatewayServer {
             h,
             r#"<!DOCTYPE html><html><body style="background:#0b0f19;color:#fff;font-family:sans-serif;text-align:center;padding:50px;"><h1>404 - Halaman Tidak Ditemukan</h1><p>Aset statis atau rute serverless tidak terdaftar di WidyaWeb.</p></body></html>"#.as_bytes().to_vec(),
         )
+    }
+
+    fn handle_reactive_websocket(stream: &mut TcpStream, req_headers: &HashMap<String, String>) {
+        let sec_key = match req_headers.get("sec-websocket-key") {
+            Some(k) => k,
+            None => {
+                let _ = stream.write_all(b"HTTP/1.1 400 Bad Request\r\n\r\nMissing Sec-WebSocket-Key");
+                return;
+            }
+        };
+
+        let accept_token = crate::web::ws::generate_sec_websocket_accept(sec_key);
+        let handshake_resp = format!(
+            "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: {}\r\n\r\n",
+            accept_token
+        );
+
+        if stream.write_all(handshake_resp.as_bytes()).is_err() {
+            return;
+        }
+
+        let _ = stream.set_read_timeout(Some(Duration::from_secs(60)));
+
+        let mut buf = [0u8; 8192];
+        loop {
+            let n = match stream.read(&mut buf) {
+                Ok(n) if n > 0 => n,
+                _ => break,
+            };
+
+            let data = &buf[..n];
+            if let Some((header, hlen)) = crate::web::ws::parse_frame_header(data) {
+                let mut payload_bytes = Vec::new();
+                if header.mask && data.len() >= hlen + 4 {
+                    let mask_key = &data[hlen..hlen + 4];
+                    let raw_payload = &data[hlen + 4..];
+                    for (i, byte) in raw_payload.iter().enumerate() {
+                        payload_bytes.push(*byte ^ mask_key[i % 4]);
+                    }
+                } else if data.len() >= hlen {
+                    payload_bytes.extend_from_slice(&data[hlen..]);
+                }
+
+                if header.opcode == 0x01 {
+                    // Text frame
+                    let text = String::from_utf8_lossy(&payload_bytes);
+                    if let Ok(val) = serde_json::from_str::<serde_json::Value>(&text) {
+                        let cid = val.get("cid").and_then(|c| c.as_str()).unwrap_or_default();
+                        if let Some(comp) = crate::web::reactive::get_reactive_component(cid) {
+                            let reply_text = comp.handle_ws_frame(&text);
+                            let out_frame = crate::web::ws::encode_frame(0x01, reply_text.as_bytes(), false);
+                            if stream.write_all(&out_frame).is_err() {
+                                break;
+                            }
+                        }
+                    }
+                } else if header.opcode == 0x08 {
+                    // Close frame
+                    let close_frame = crate::web::ws::encode_frame(0x08, &[0x03, 0xE8], false);
+                    let _ = stream.write_all(&close_frame);
+                    break;
+                } else if header.opcode == 0x09 {
+                    // Ping -> kirim Pong (opcode 0x0A)
+                    let pong_frame = crate::web::ws::encode_frame(0x0A, &payload_bytes, false);
+                    if stream.write_all(&pong_frame).is_err() {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     fn handle_dashboard_request(

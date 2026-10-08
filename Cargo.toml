@@ -1,10 +1,24 @@
+[workspace]
+members = [
+    "crates/widya-core",
+    "crates/widya-vm",
+    "crates/widya-compiler",
+    "crates/widyabase",
+    "crates/widya-wpm",
+]
+
 [package]
 name = "widya"
-version = "1.0.0-beta.1"
+version = "2.6.0"
 edition = "2024"
 default-run = "widya"
 
 [dependencies]
+widya-core = { path = "crates/widya-core" }
+widya-vm = { path = "crates/widya-vm" }
+widya-compiler = { path = "crates/widya-compiler" }
+widyabase = { path = "crates/widyabase" }
+widya-wpm = { path = "crates/widya-wpm" }
 clap = { version = "4.5", features = ["derive"] }
 colored = "2.1"
 rustyline = "14.0"

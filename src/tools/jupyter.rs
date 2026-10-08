@@ -79,7 +79,7 @@ impl WidyaJupyterKernel {
             implementation_version: "1.0.0".to_string(),
             language_info: WidyaLanguageInfo {
                 name: "widya".to_string(),
-                version: "1.0.0-beta.1".to_string(),
+                version: "2.6.0".to_string(),
                 mimetype: "text/x-widya".to_string(),
                 file_extension: ".wid".to_string(),
                 pygments_lexer: "rust".to_string(),

@@ -6258,7 +6258,7 @@ dependencies = [
 
 [[package]]
 name = "widya"
-version = "1.0.0-beta.1"
+version = "2.6.0"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -6294,7 +6294,84 @@ dependencies = [
  "ureq 2.12.1",
  "uuid",
  "webpki",
+ "widya-compiler",
+ "widya-core",
+ "widya-vm",
+ "widya-wpm",
+ "widyabase",
  "zeroize",
+]
+
+[[package]]
+name = "widya-compiler"
+version = "2.6.0"
+dependencies = [
+ "colored",
+ "hex",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "thiserror 1.0.69",
+ "widya-core",
+ "widya-vm",
+]
+
+[[package]]
+name = "widya-core"
+version = "2.6.0"
+dependencies = [
+ "chrono",
+ "colored",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "widya-vm"
+version = "2.6.0"
+dependencies = [
+ "colored",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "widya-core",
+]
+
+[[package]]
+name = "widya-wpm"
+version = "2.6.0"
+dependencies = [
+ "chrono",
+ "colored",
+ "ed25519-dalek",
+ "hex",
+ "rand 0.8.8",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "ureq 2.12.1",
+]
+
+[[package]]
+name = "widyabase"
+version = "2.6.0"
+dependencies = [
+ "aes-gcm",
+ "chrono",
+ "colored",
+ "hex",
+ "hmac 0.12.1",
+ "rand 0.8.8",
+ "regex",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "thiserror 1.0.69",
+ "tokio",
+ "uuid",
+ "widya-core",
+ "widya-vm",
 ]
 
 [[package]]

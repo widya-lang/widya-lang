@@ -96,6 +96,7 @@ pub fn jalankan_studio(port: u16) {
         Respon::Alir(Box::new(move |stream| handle_sse_run(&badan, stream)))
     });
     ws.registrasi_rute("POST", "/api/check", |req| Respon::Json(handle_api_check(&req.badan)));
+    ws.registrasi_rute("POST", "/api/playground/eval", |req| Respon::Json(handle_api_playground_eval(&req.badan)));
     ws.registrasi_rute("GET", "/api/contoh", |_req| Respon::Json(handle_api_list_contoh()));
     ws.registrasi_rute("GET", "/api/rate/status", |_req| {
         Respon::Json(crate::web::rate_status_json())
@@ -273,6 +274,12 @@ fn handle_api_check(body: &str) -> String {
     let source = v.get("source").and_then(|s| s.as_str()).unwrap_or("");
     let diags = WidyaLsp::get_diagnostics(source);
     serde_json::to_string(&diags).unwrap_or_else(|_| "[]".to_string())
+}
+
+fn handle_api_playground_eval(body: &str) -> String {
+    let v = parse_body(body);
+    let source = v.get("source").and_then(|s| s.as_str()).unwrap_or(body);
+    crate::wasm_playground::WasmPlayground::evaluate_to_json(source)
 }
 
 fn handle_sse_run(body: &str, stream: &mut TcpStream) {
@@ -1836,6 +1843,9 @@ fn render_ide_html() -> String {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Widya Studio - IDE Mandiri Level Industri Bahasa Pemrograman Widya</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&family=Noto+Sans+Javanese:wght@400;700&family=Noto+Sans+Sundanese:wght@400;700&family=Noto+Sans+Balinese:wght@400;700&family=Noto+Sans+Batak:wght@400;700&family=Noto+Sans+Buginese:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1863,6 +1873,22 @@ fn render_ide_html() -> String {
         .btn-secondary { background: #313244; color: #cdd6f4; border-color: #45475a; } .btn-secondary:hover { background: #45475a; }
         .btn-success { background: #a6e3a1; color: #11111b; } .btn-success:hover { background: #94d98f; }
         .btn-danger { background: #f38ba8; color: #11111b; } .btn-danger:hover { background: #eba0ac; }
+        .btn-rtl-active { background: #8839ef !important; color: #ffffff !important; border-color: #cba6f7 !important; }
+
+        /* Pengaturan Editing Teks Kanan-ke-Kiri (RTL / Bahasa Arab) */
+        .rtl-editor #editor-area .monaco-editor,
+        .rtl-editor .monaco-editor .view-lines,
+        .rtl-editor .monaco-editor .view-line,
+        .rtl-editor .monaco-editor .inputarea {
+            direction: rtl !important;
+            text-align: right !important;
+            unicode-bidi: embed !important;
+        }
+        .arabic-text {
+            font-family: 'Amiri', 'Scheherazade New', 'Segoe UI', Tahoma, sans-serif !important;
+            direction: rtl;
+            text-align: right;
+        }
         .pass-row { background: rgba(166,227,161,0.08); }
         .fail-row { background: rgba(243,139,168,0.12); }
         .monaco-split { flex: 1; display: flex; }
@@ -1893,6 +1919,8 @@ fn render_ide_html() -> String {
                 </div>
             </div>
             <button id="btn-cargo-test" class="btn btn-secondary" title="Jalankan Cargo Test Suite (33 tests 9Layer)"><i class="fa-solid fa-flask-vial text-xs"></i> Cargo Test</button>
+            <button id="btn-rtl" class="btn btn-secondary" onclick="toggleRtlMode()" title="Alihkan Arah Teks Editing (LTR ⇄ RTL / Kanan-ke-Kiri / Bahasa Arab - Ctrl+Alt+R)"><i class="fa-solid fa-paragraph text-xs"></i> <span id="rtl-label">Arah: LTR</span></button>
+            <button id="btn-keyboard-aksara" class="btn btn-secondary" onclick="toggleKeyboardAksara()" title="Papan Ketik Aksara Nusantara (Ctrl+Alt+K)"><i class="fa-solid fa-keyboard text-xs text-amber-400"></i> <span id="aksara-kb-label">Aksara</span></button>
             <button id="btn-format" class="btn btn-secondary" title="Format Dokumen (Alt+Shift+F)"><i class="fa-solid fa-align-left text-xs"></i> Format</button>
             <button id="btn-save" class="btn btn-secondary" title="Simpan File (Ctrl+S)"><i class="fa-solid fa-floppy-disk text-xs"></i> Simpan</button>
             <button id="btn-run" class="btn btn-success" title="Jalankan (F5)"><i class="fa-solid fa-play text-xs"></i> Jalankan (F5)</button>
@@ -2082,6 +2110,12 @@ fn render_ide_html() -> String {
                         <select id="s-tabsize" class="w-full" onchange="applySettings()"><option>2</option><option selected>4</option><option>8</option></select></div>
                     <div><label class="text-[11px] uppercase tracking-wider text-gray-400 font-bold block mb-2">Indentasi Saat Menekan Enter</label>
                         <select id="s-indent" class="w-full" onchange="applySettings()"><option value="4" selected>4 spasi (Rust-style)</option><option value="2">2 spasi (compact)</option></select></div>
+                    <div><label class="text-[11px] uppercase tracking-wider text-gray-400 font-bold block mb-2">Arah Teks Editor (BiDi / RTL)</label>
+                        <select id="s-direction" class="w-full" onchange="applySettings()"><option value="ltr" selected>LTR (Kiri ke Kanan / Standar)</option><option value="rtl">RTL (Kanan ke Kiri / Arab 🇸🇦)</option><option value="auto">Otomatis (Deteksi Bahasa Arab)</option></select></div>
+                    <div><label class="text-[11px] uppercase tracking-wider text-gray-400 font-bold block mb-2">Font Tipografi / Aksara Nusantara</label>
+                        <select id="s-arabicfont" class="w-full" onchange="applySettings()"><option value="'Amiri', 'Scheherazade New', monospace" selected>Amiri (Naskh Arabic / Pegon)</option><option value="'Scheherazade New', 'Amiri', monospace">Scheherazade New</option><option value="'Noto Sans Javanese', sans-serif">Noto Sans Javanese (ꦲꦤꦕꦫꦏ)</option><option value="'Noto Sans Sundanese', sans-serif">Noto Sans Sundanese (ᮃᮊ᮪ᮞᮛ ᮞᮥᮔ᮪ᮓ)</option><option value="'Noto Sans Balinese', sans-serif">Noto Sans Balinese (ᬅᬓ᭄ᬱᬭ ᬩᬮᬶ)</option><option value="'Noto Sans Batak', sans-serif">Noto Sans Batak (ᯀᯂ᯲ᯘᯒ ᯅᯖᯂ᯲)</option><option value="'Noto Sans Buginese', sans-serif">Noto Sans Buginese (ᨕᨀᨔᨑ ᨒᨚᨈᨑ)</option><option value="Tahoma, 'Segoe UI', sans-serif">Tahoma / Segoe UI</option></select></div>
+                    <div><label class="text-[11px] uppercase tracking-wider text-gray-400 font-bold block mb-2">Bahasa Antarmuka (Locale / i18n)</label>
+                        <select id="s-locale" class="w-full" onchange="applySettings()"><option value="id-ID" selected>🇮🇩 Bahasa Indonesia (ID)</option><option value="en-US">🇺🇸 English (US)</option><option value="ar-SA">🇸🇦 العربية (Arabic - RTL)</option><option value="jv-ID">🇮🇩 Basa Jawa (ID)</option><option value="su-ID">🇮🇩 Basa Sunda (ID)</option><option value="ban-ID">🇮🇩 Basa Bali (ID)</option><option value="min-ID">🇮🇩 Baso Minangkabau (ID)</option><option value="bug-ID">🇮🇩 Basa Ugi / Bugis (ID)</option><option value="btk-ID">🇮🇩 Hata Batak (ID)</option><option value="ace-ID">🇮🇩 Basa Acèh (ID)</option><option value="mad-ID">🇮🇩 Basa Madhura (ID)</option><option value="ja-JP">🇯🇵 日本語 (JA)</option></select></div>
                 </div>
                 <div class="grid grid-cols-2 gap-6 pt-4 border-t border-[#313244]">
                     <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="s-autosave" onchange="applySettings()"/> <span>Auto Save tiap 5 detik setelah edit</span></label>
@@ -2099,16 +2133,75 @@ fn render_ide_html() -> String {
                         <div>Toggle Breakpoint: <span class="kbd">F9</span></div><div>Simpan File: <span class="kbd">Ctrl+S</span></div>
                         <div>Save As: <span class="kbd">Ctrl+Shift+S</span></div><div>File Baru: <span class="kbd">Ctrl+N</span></div>
                         <div>Quick Open: <span class="kbd">Ctrl+P</span></div><div>Command Palette: <span class="kbd">Ctrl+Shift+P</span></div>
-                        <div>Pengaturan: <span class="kbd">Ctrl+,</span></div><div>Toggle Panel: <span class="kbd">Ctrl+`</span></div>
-                        <div>Format Dokumen: <span class="kbd">Alt+Shift+F</span></div><div>Zen Mode: <span class="kbd">Ctrl+K Z</span></div>
-                        <div>File Explorer: <span class="kbd">Ctrl+Shift+E</span></div><div>Source Control: <span class="kbd">Ctrl+Shift+G</span></div>
-                        <div>Debug Sidebar: <span class="kbd">Ctrl+Shift+D</span></div><div>Cari di Proyek: <span class="kbd">Ctrl+Shift+F</span></div>
-                        <div>Split Kanan: <span class="kbd">Ctrl+\</span></div><div>AI Complete: <span class="kbd">Ctrl+Space</span></div>
-                        <div>Tutup Tab: <span class="kbd">Ctrl+W</span></div><div>Tab Sebelum/Selanjutnya: <span class="kbd">Ctrl+Tab / Ctrl+Shift+Tab</span></div>
+                        <div>Pengaturan: <span class="kbd">Ctrl+,</span></div><div>Arah Teks RTL / Arab: <span class="kbd">Ctrl+Alt+R</span></div>
+                        <div>Toggle Panel: <span class="kbd">Ctrl+`</span></div><div>Format Dokumen: <span class="kbd">Alt+Shift+F</span></div>
+                        <div>Zen Mode: <span class="kbd">Ctrl+K Z</span></div><div>File Explorer: <span class="kbd">Ctrl+Shift+E</span></div>
+                        <div>Source Control: <span class="kbd">Ctrl+Shift+G</span></div><div>Debug Sidebar: <span class="kbd">Ctrl+Shift+D</span></div>
+                        <div>Cari di Proyek: <span class="kbd">Ctrl+Shift+F</span></div><div>Split Kanan: <span class="kbd">Ctrl+\</span></div>
+                        <div>AI Complete: <span class="kbd">Ctrl+Space</span></div><div>Tutup Tab: <span class="kbd">Ctrl+W</span></div>
                     </div>
                 </div>
             </div>
             <div class="p-4 border-t border-[#313244] flex justify-end gap-2"><button class="btn btn-secondary" onclick="resetSettings()">Kembalikan Default</button><button class="btn btn-primary" onclick="toggleSettings(false)">Selesai</button></div>
+        </div>
+    </div>
+
+    <div id="keyboard-aksara-modal" class="fixed inset-0 z-50 bg-black/60 hidden items-center justify-center p-4">
+        <div class="w-full max-w-4xl bg-[#1e1e2e] border border-[#313244] rounded-lg shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="p-4 border-b border-[#313244] flex items-center justify-between bg-[#181825]">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl text-amber-400">⌨️</span>
+                    <div>
+                        <h2 class="font-bold text-base flex items-center gap-2">Papan Ketik Virtual Aksara Nusantara</h2>
+                        <p class="text-xs text-gray-400">Pilih aksara, klik glif untuk menyisipkan ke editor aktif, atau aktifkan IME Fonetik</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btn-ime-toggle" class="btn btn-secondary text-xs" onclick="toggleImeMode()"><i class="fa-solid fa-toggle-off mr-1"></i> IME Fonetik: Nonaktif</button>
+                    <i class="fa-solid fa-xmark text-xl cursor-pointer text-gray-400 hover:text-white ml-2" onclick="toggleKeyboardAksara(false)"></i>
+                </div>
+            </div>
+
+            <!-- TAB PILIHAN AKSARA -->
+            <div class="flex overflow-x-auto bg-[#11111b] border-b border-[#313244] p-1 gap-1 text-xs" id="kb-aksara-tabs">
+                <button class="px-3 py-1.5 rounded font-medium bg-[#313244] text-white" onclick="switchAksaraKb('jawa')">ꦲ Jawa</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('sunda')">ᮃ Sunda</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('bali')">ᬅ Bali</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('batak')">ᯀ Batak</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('lontara')">ᨕ Lontara</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('kawi')">𑼑 Kawi</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('makasar')">𑻠 Makasar</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('lampung')">ᰀ Lampung</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('rejang')">ꤰ Rejang/Incung</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('cia_cia')">ㅂ Cia-Cia</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('pegon')">ڠ Pegon/Jawi</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('yunani')">α Yunani</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('sirilik')">а Sirilik</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('hiragana')">あ Hiragana</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('katakana')">ア Katakana</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('devanagari')">क Devanagari</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('ibrani')">א Ibrani</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('thai')">ก Thai</button>
+                <button class="px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300" onclick="switchAksaraKb('rune')">ᚠ Rune</button>
+            </div>
+
+            <!-- BUFFER TEKS PRATINJAU -->
+            <div class="p-3 bg-[#181825] border-b border-[#313244] flex items-center gap-2">
+                <input id="kb-preview-input" class="flex-1 bg-[#11111b] border border-[#313244] rounded px-3 py-2 text-lg text-amber-200" placeholder="Ketik atau klik tombol aksara di bawah...">
+                <button class="btn btn-secondary text-xs" onclick="clearKbBuffer()" title="Hapus Pratinjau"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn btn-secondary text-xs" onclick="copyKbBuffer()" title="Salin Teks"><i class="fa-regular fa-copy"></i> Salin</button>
+                <button class="btn btn-primary text-xs" onclick="insertKbBufferToEditor()" title="Sisipkan ke Editor"><i class="fa-solid fa-file-import mr-1"></i> Sisipkan ke Editor</button>
+            </div>
+
+            <!-- KEYPAD TOMBOL GLIF -->
+            <div class="p-4 overflow-y-auto space-y-3" id="kb-keypad-container">
+                <!-- Baris tombol akan dirender oleh javascript -->
+            </div>
+
+            <div class="p-3 border-t border-[#313244] bg-[#181825] flex items-center justify-between text-xs text-gray-400">
+                <span>Pintasan: <span class="kbd">Ctrl+Alt+K</span> untuk buka/tutup keyboard | Klik tombol aksara untuk langsung mengetik</span>
+                <button class="btn btn-secondary text-xs" onclick="toggleKeyboardAksara(false)">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -2133,9 +2226,325 @@ fn render_ide_html() -> String {
 
     const DEFAULT_SETTINGS = {
         theme: "widya-dark", fontSize: 14, tabSize: 4, indent: 4,
-        autosave: false, formatonsave: false, minimap: true, wordwrap: false, ai: true, ratewarn: true
+        autosave: false, formatonsave: false, minimap: true, wordwrap: false, ai: true, ratewarn: true,
+        textDirection: "ltr", arabicFont: "'Amiri', 'Scheherazade New', monospace",
+        locale: "id-ID"
     };
     let settings = loadSettings();
+
+    function checkIsArabicContent(txt){
+        if(!txt) return false;
+        return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(txt);
+    }
+
+    function toggleRtlMode(){
+        if(settings.textDirection === "rtl"){
+            settings.textDirection = "ltr";
+        } else {
+            settings.textDirection = "rtl";
+        }
+        saveSettings();
+        applySettings();
+        toast("Arah teks editor diubah: " + settings.textDirection.toUpperCase(), "info");
+    }
+
+    // ====== PAPAN KETIK VIRTUAL AKSARA NUSANTARA ======
+    const AKSARA_LAYOUTS = {
+        jawa: {
+            title: "Aksara Jawa (Hanacaraka)",
+            rows: [
+                ["ꦲ", "ꦤ", "ꦕ", "ꦫ", "ꦏ", "ꦢ", "ꦠ", "ꦱ", "ꦮ", "ꦭ"],
+                ["ꦥ", "ꦝ", "ꦗ", "ꦪ", "ꦚ", "ꦩ", "ꦒ", "ꦧ", "ꦛ", "ꦔ"],
+                ["ꦄ", "ꦆ", "ꦈ", "ꦌ", "ꦎ", "ꦑ", "ꦓ", "ꦖ", "ꦘ", "ꦨ"],
+                ["ꦶ", "ꦸ", "ꦺ", "ꦺꦴ", "ꦼ", "ꦁ", "ꦂ", "ꦃ", "꧀", "꧈", "꧉", " "]
+            ]
+        },
+        sunda: {
+            title: "Aksara Sunda (Kaganga)",
+            rows: [
+                ["ᮊ", "ᮌ", "ᮍ", "ᮎ", "ᮏ", "ᮑ", "ᮒ", "ᮓ", "ᮔ", "ᮕ"],
+                ["ᮘ", "ᮙ", "ᮚ", "ᮛ", "ᮜ", "ᮝ", "ᮞ", "ᮠ", "ᮖ", "ᮗ"],
+                ["ᮃ", "ᮄ", "ᮅ", "ᮈ", "ᮉ", "ᮊ", "ᮋ", "ᮌ", "ᮍ", "ᮎ"],
+                ["ᮤ", "ᮥ", "ᮦ", "ᮧ", "ᮨ", "ᮩ", "ᮀ", "ᮁ", "ᮂ", "᮪", "ᮞ᮪", " "]
+            ]
+        },
+        bali: {
+            title: "Aksara Bali (Wewangsan)",
+            rows: [
+                ["ᬳ", "ᬦ", "ᬘ", "ᬭ", "ᬓ", "ᬤ", "ᬢ", "ᬲ", "ᬯ", "ᬮ"],
+                ["ᬧ", "ᬤ", "ᬚ", "ᬬ", "ᬜ", "ᬫ", "ᬕ", "ᬩ", "ᬝ", "ᬗ"],
+                ["ᬅ", "ᬇ", "ᬉ", "ᬏ", "ᬑ", "ᬔ", "ᬖ", "ᬙ", "ᬛ", "ᬪ"],
+                ["ᬶ", "ᬸ", "ᬾ", "ᭀ", "ᬺ", "ᬁ", "ᬃ", "ᬄ", "᭄", "᭞", "᭟", " "]
+            ]
+        },
+        batak: {
+            title: "Surat Batak",
+            rows: [
+                ["ᯀ", "ᯅ", "ᯖ", "ᯂ", "ᯑ", "ᯉ", "ᯔ", "ᯞ", "ᯒ", "ᯘ"],
+                ["ᯇ", "ᯐ", "ᯎ", "ᯚ", "ᯛ", "ᯝ", "ᯞ", "ᯟ", "ᯠ", "ᯡ"],
+                ["ᯂ", "ᯃ", "ᯄ", "ᯅ", "ᯆ", "ᯇ", "ᯈ", "ᯉ", "ᯊ", "ᯋ"],
+                ["ᯪ", "ᯮ", "ᯩ", "ᯬ", "᯲", "᯳", "᯴", "᯵", "᯶", "᯷", "᯸", " "]
+            ]
+        },
+        lontara: {
+            title: "Aksara Lontara Bugis/Makassar",
+            rows: [
+                ["ᨀ", "ᨁ", "ᨂ", "ᨃ", "ᨄ", "ᨅ", "ᨆ", "ᨇ", "ᨈ", "ᨉ"],
+                ["ᨊ", "ᨋ", "ᨌ", "ᨍ", "ᨎ", "ᨏ", "ᨐ", "ᨑ", "ᨒ", "ᨓ"],
+                ["ᨔ", "ᨕ", "ᨖ", "ᨗ", "ᨘ", "ᨙ", "ᨚ", "ᨛ", "᨞", "᨟"],
+                ["ᨀ", "ᨁ", "ᨂ", "ᨃ", "ᨄ", "ᨅ", "ᨆ", "ᨇ", "ᨈ", "ᨉ", " "]
+            ]
+        },
+        kawi: {
+            title: "Aksara Kawi Kuno",
+            rows: [
+                ["𑼑", "𑼓", "𑼖", "𑼘", "𑼠", "𑼢", "𑼤", "𑼥", "𑼧", "𑼩"],
+                ["𑼪", "𑼫", "𑼬", "𑼭", "𑼮", "𑼱", "𑼂", "𑼄", "𑼆", "𑼊"],
+                ["𑼒", "𑼔", "𑼕", "𑼚", "𑼡", "𑼣", "𑼨", "𑼎", "𑼳", "𑼵"],
+                ["𑼳", "𑼵", "𑼷", "𑼹", "𑼻", "𑼽", "𑼾", "𑼿", "𑽀", "𑽁", "𑽂", " "]
+            ]
+        },
+        makasar: {
+            title: "Aksara Makasar Kuno (Jangang-Jangang)",
+            rows: [
+                ["𑻠", "𑻡", "𑻢", "𑻣", "𑻤", "𑻥", "𑻦", "𑻧", "𑻨", "𑻩"],
+                ["𑻪", "𑻫", "𑻬", "𑻭", "𑻮", "𑻯", "𑻰", "𑻱", "𑻲", "𑻳"],
+                ["𑻠", "𑻡", "𑻢", "𑻣", "𑻤", "𑻥", "𑻦", "𑻧", "𑻨", "𑻩"],
+                ["𑻳", "𑻴", "𑻵", "𑻶", "𑻷", "𑻸", "𑻹", "𑻺", "𑻻", "𑻼", "𑻽", " "]
+            ]
+        },
+        lampung: {
+            title: "Had Lampung",
+            rows: [
+                ["ᰀ", "ᰁ", "ᰂ", "ᰃ", "ᰄ", "ᰅ", "ᰆ", "ᰇ", "ᰈ", "ᰉ"],
+                ["ᰊ", "ᰋ", "ᰌ", "ᰍ", "ᰎ", "ᰏ", "ᰐ", "ᰑ", "ᰒ", "ᰓ"],
+                ["ᰔ", "ᰕ", "ᰖ", "ᰗ", "ᰘ", "ᰙ", "ᰚ", "ᰛ", "ᰜ", "ᰝ"],
+                ["ᰤ", "ᰥ", "ᰦ", "ᰧ", "ᰨ", "ᰩ", "ᰪ", "ᰫ", "ᰬ", "ᰭ", "ᰮ", " "]
+            ]
+        },
+        rejang: {
+            title: "Aksara Rejang & Surat Incung",
+            rows: [
+                ["ꤰ", "ꤱ", "ꤲ", "ꤳ", "ꤴ", "ꤵ", "ꤶ", "ꤷ", "ꤸ", "ꤹ"],
+                ["ꤺ", "ꤻ", "ꤼ", "ꤽ", "ꤾ", "ꤿ", "ꥀ", "ꥁ", "ꥂ", "ꥃ"],
+                ["ꤰ", "ꤱ", "ꤲ", "ꤳ", "ꤴ", "ꤵ", "ꤶ", "ꤷ", "ꤸ", "ꤹ"],
+                ["ꥇ", "ꥈ", "ꥉ", "ꥊ", "ꥋ", "ꥌ", "ꥍ", "ꥎ", "ꥏ", "ꥐ", "ꥑ", " "]
+            ]
+        },
+        cia_cia: {
+            title: "Aksara Cia-Cia Buton (Hangul)",
+            rows: [
+                ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ"],
+                ["ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "ᄛ"],
+                ["ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ"],
+                ["ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ", " "]
+            ]
+        },
+        pegon: {
+            title: "Arab Pegon & Jawi Nusantara",
+            rows: [
+                ["ض", "ص", "ث", "ق", "ف", "ڤ", "غ", "ڠ", "ع", "ه"],
+                ["خ", "ح", "ج", "چ", "ش", "س", "ي", "ب", "ل", "ا"],
+                ["ت", "ن", "م", "ک", "ݢ", "ط", "ظ", "د", "ذ", "ر"],
+                ["ز", "و", "ۏ", "ڽ", "ء", "ئ", "ؤ", "ة", "ى", "ـ", "؟", " "]
+            ]
+        },
+        yunani: {
+            title: "Aksara Yunani (Greek)",
+            rows: [
+                ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "ι", "κ"],
+                ["λ", "μ", "ν", "ξ", "ο", "π", "ρ", "σ", "ς", "τ"],
+                ["υ", "φ", "χ", "ψ", "ω", "Α", "Β", "Γ", "Δ", "Ω"],
+                ["ά", "έ", "ή", "ί", "ό", "ύ", "ώ", "ϊ", "ϋ", "·", ";", " "]
+            ]
+        },
+        sirilik: {
+            title: "Aksara Sirilik (Cyrillic)",
+            rows: [
+                ["й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з"],
+                ["ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж"],
+                ["я", "ч", "с", "м", "и", "т", "ь", "б", "ю", "э"],
+                ["ъ", "ё", "і", "ї", "є", "ў", "ґ", "№", "—", "«", "»", " "]
+            ]
+        },
+        hiragana: {
+            title: "Aksara Hiragana (Jepang)",
+            rows: [
+                ["あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ"],
+                ["さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と"],
+                ["な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ"],
+                ["ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "を", "ん", "っ", "゛", "゜", " "]
+            ]
+        },
+        katakana: {
+            title: "Aksara Katakana (Jepang)",
+            rows: [
+                ["ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ"],
+                ["サ", "シ", "ス", "セ", "ソ", "タ", "チ", "ツ", "テ", "ト"],
+                ["ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ", "フ", "ヘ", "ホ"],
+                ["マ", "ミ", "ム", "メ", "モ", "ヤ", "ユ", "ヨ", "ラ", "リ", "ル", "レ", "ロ", "ワ", "ヲ", "ン", "ッ", "ー", "・", " "]
+            ]
+        },
+        devanagari: {
+            title: "Aksara Devanagari (Hindi/Sansekerta)",
+            rows: [
+                ["क", "ख", "ग", "घ", "ङ", "च", "छ", "ज", "झ", "ञ"],
+                ["ट", "ठ", "ड", "ढ", "ण", "त", "थ", "द", "ध", "न"],
+                ["प", "फ", "ब", "भ", "म", "य", "र", "ल", "व", "श"],
+                ["ष", "स", "ह", "ा", "ि", "ी", "ु", "ू", "े", "ै", "ो", "ौ", "्", "ं", "ः", "।", "॥", " "]
+            ]
+        },
+        ibrani: {
+            title: "Aksara Ibrani (Hebrew)",
+            rows: [
+                ["ק", "ר", "א", "ט", "ו", "ן", "ם", "פ", "ש", "ד"],
+                ["ג", "כ", "ע", "י", "ח", "ל", "ך", "ף", "ז", "ס"],
+                ["ב", "ה", "נ", "מ", "צ", "ת", "ץ", "ט", "א", "ש"],
+                ["ֱ", "ֲ", "ֳ", "ִ", "ֵ", "ֶ", "ַ", "ָ", "ֹ", "ֻ", "ּ", " "]
+            ]
+        },
+        thai: {
+            title: "Aksara Thai (Thailand)",
+            rows: [
+                ["ก", "ข", "ค", "ง", "จ", "ฉ", "ช", "ซ", "ญ", "ด"],
+                ["ต", "ถ", "ท", "น", "บ", "ป", "ผ", "ฝ", "พ", "ฟ"],
+                ["ม", "ย", "ร", "ล", "ว", "ส", "ห", "อ", "ฮ", "ฤ"],
+                ["ะ", "า", "ิ", "ี", "ึ", "ื", "ุ", "ู", "เ", "แ", "โ", "ใ", "ไ", "่", "้", "๊", "๋", "์", " "]
+            ]
+        },
+        rune: {
+            title: "Aksara Rune (Elder Futhark)",
+            rows: [
+                ["ᚠ", "ᚢ", "ᚦ", "ᚨ", "ᚱ", "ᚲ", "ᚷ", "ᚹ"],
+                ["ᚺ", "ᚾ", "ᛁ", "ᛃ", "ᛈ", "ᛉ", "ᛊ", "ᛏ"],
+                ["ᛒ", "ᛖ", "ᛗ", "ᛚ", "ᛜ", "ᛞ", "ᛟ", "᛫"],
+                ["᛫", "᛬", "᛭", "ᛮ", "ᛯ", "ᛰ", " "]
+            ]
+        }
+    };
+
+    let activeAksaraKb = "jawa";
+    let imeActive = false;
+
+    function toggleKeyboardAksara(force){
+        const modal = $("keyboard-aksara-modal");
+        if(!modal) return;
+        const willShow = (force !== undefined) ? force : modal.classList.contains("hidden");
+        if(willShow){
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            renderAksaraKeypad(activeAksaraKb);
+            setTimeout(()=>{$("kb-preview-input")?.focus();}, 50);
+        } else {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+    }
+
+    function switchAksaraKb(scriptId){
+        if(!AKSARA_LAYOUTS[scriptId]) return;
+        activeAksaraKb = scriptId;
+        const tabs = $("kb-aksara-tabs");
+        if(tabs){
+            Array.from(tabs.children).forEach(btn => {
+                const isCur = btn.getAttribute("onclick").includes(scriptId);
+                btn.className = isCur 
+                    ? "px-3 py-1.5 rounded font-medium bg-[#313244] text-white" 
+                    : "px-3 py-1.5 rounded font-medium hover:bg-[#1e1e2e] text-gray-300";
+            });
+        }
+        renderAksaraKeypad(scriptId);
+    }
+
+    function renderAksaraKeypad(scriptId){
+        const container = $("kb-keypad-container");
+        if(!container) return;
+        const layout = AKSARA_LAYOUTS[scriptId] || AKSARA_LAYOUTS.jawa;
+        container.innerHTML = "";
+
+        layout.rows.forEach((row) => {
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "flex flex-wrap gap-1.5 justify-center";
+            row.forEach(ch => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "min-w-[42px] h-10 px-2 rounded bg-[#313244] hover:bg-[#45475a] active:bg-[#585b70] text-amber-200 text-base font-semibold flex items-center justify-center transition border border-[#45475a] shadow";
+                btn.textContent = (ch === " ") ? "Spasi" : ch;
+                if(ch === " ") btn.className += " min-w-[90px] text-xs text-gray-300";
+                btn.onclick = () => typeAksaraChar(ch);
+                rowDiv.appendChild(btn);
+            });
+            container.appendChild(rowDiv);
+        });
+
+        const ctrlRow = document.createElement("div");
+        ctrlRow.className = "flex gap-2 justify-center pt-2";
+        ctrlRow.innerHTML = `
+            <button class="btn btn-secondary text-xs" onclick="typeAksaraBackspace()"><i class="fa-solid fa-delete-left mr-1"></i> Backspace</button>
+            <button class="btn btn-secondary text-xs" onclick="typeAksaraChar(' ')"><i class="fa-solid fa-arrows-left-right mr-1"></i> Spasi</button>
+            <button class="btn btn-primary text-xs" onclick="insertKbBufferToEditor()"><i class="fa-solid fa-file-import mr-1"></i> Sisipkan ke Editor</button>
+        `;
+        container.appendChild(ctrlRow);
+    }
+
+    function typeAksaraChar(ch){
+        const inp = $("kb-preview-input");
+        if(!inp) return;
+        inp.value += ch;
+    }
+
+    function typeAksaraBackspace(){
+        const inp = $("kb-preview-input");
+        if(!inp || !inp.value) return;
+        inp.value = Array.from(inp.value).slice(0, -1).join("");
+    }
+
+    function clearKbBuffer(){
+        const inp = $("kb-preview-input");
+        if(inp) inp.value = "";
+    }
+
+    function copyKbBuffer(){
+        const inp = $("kb-preview-input");
+        if(!inp || !inp.value) return;
+        navigator.clipboard.writeText(inp.value);
+        toast("Teks aksara disalin ke papan klip!", "success");
+    }
+
+    function insertKbBufferToEditor(){
+        const inp = $("kb-preview-input");
+        if(!inp || !inp.value) return;
+        const text = inp.value;
+        const ed = getActiveEditor();
+        if(ed){
+            const pos = ed.getPosition();
+            ed.executeEdits("keyboard-aksara", [{
+                range: new monaco.Range(pos.lineNumber, pos.column, pos.lineNumber, pos.column),
+                text: text,
+                forceMoveMarkers: true
+            }]);
+            ed.focus();
+            toast("Teks aksara disisipkan ke editor", "success");
+            toggleKeyboardAksara(false);
+        } else {
+            toast("Editor tidak aktif", "warn");
+        }
+    }
+
+    function toggleImeMode(){
+        imeActive = !imeActive;
+        const btn = $("btn-ime-toggle");
+        if(btn){
+            btn.innerHTML = imeActive 
+                ? '<i class="fa-solid fa-toggle-on text-emerald-400 mr-1"></i> IME Fonetik: Aktif' 
+                : '<i class="fa-solid fa-toggle-off mr-1"></i> IME Fonetik: Nonaktif';
+        }
+        const lbl = $("aksara-kb-label");
+        if(lbl){
+            lbl.textContent = imeActive ? "IME On" : "Aksara";
+        }
+        toast("IME Fonetik Nusantara: " + (imeActive ? "AKTIF" : "NONAKTIF"), "info");
+    }
 
     // ====== UTILITAS ======
     function $(id){return document.getElementById(id);}
@@ -2161,7 +2570,7 @@ fn render_ide_html() -> String {
     require(['vs/editor/editor.main'], function() {
         monaco.languages.register({ id: 'widya' });
         const KW = ['misal','tetap','fungsi','struktur','enum','sifat','terapkan','impor','muat','sebagai','jika','kalau','lainnya','selama','untuk','dalam','ulang','kembalikan','berhenti','lanjut','coba','tangkap','akhirnya','lempar','cocokkan','dan','atau','bukan','ini','diri','benar','salah','nihil','crate','pub'];
-        const BI = ['cetak','tulis','baca','tipe','ke_angka','ke_teks','ke_boolean','ke_json','dari_json','tulis_berkas','baca_berkas','Ok','Err','Ada','Kosong','buka','buka_atau','apakah_ok','apakah_err','pastikan','petakan','saring','lipat','untuk_setiap','temukan','gabungkan','ambil','lewati','apakah_ada','semua','buat_utas','panjang','tambah','hapus','sisip','urutkan','balik','potong','render_html','Aplikasi','Halaman'];
+        const BI = ['cetak','tulis','baca','tipe','ke_angka','ke_teks','ke_boolean','ke_json','dari_json','tulis_berkas','baca_berkas','Ok','Err','Ada','Kosong','buka','buka_atau','apakah_ok','apakah_err','pastikan','petakan','saring','lipat','untuk_setiap','temukan','gabungkan','ambil','lewati','apakah_ada','semua','buat_utas','panjang','tambah','hapus','sisip','urutkan','balik','apakah_rtl','teks_ke_rtl','arah_teks','format_arab','balik_teks_visual','hapus_harakat','potong','render_html','Aplikasi','Halaman'];
         monaco.languages.setMonarchTokensProvider('widya', { keywords: KW, builtins: BI, tokenizer: { root: [
             [/[a-zA-Z_][a-zA-Z0-9_]*/, { cases: { '@keywords':'keyword','@builtins':'type.identifier','@default':'identifier' } }],
             [/\/\/.*$/,'comment'],[/\/\*/,'comment','@comment'], [/"([^"\\]|\\.)*"/,'string'],[/\d+(\.\d+)?/,'number'], [/[{}()\[\]]/,'@brackets'], [/(=>|::|\?|\+|\-|\*|\/|==|!=|<=|>=|<|>|=)/,'operator']
@@ -2177,7 +2586,7 @@ fn render_ide_html() -> String {
         ], colors:{ 'editor.background':'#eff1f5','editor.foreground':'#4c4f69','editorLineNumber.foreground':'8c8fa1' }});
 
         S.palette = buildPaletteActions();
-        newTab("halo_dunia_starter.wya", "// ==========================================================\n// 🎨 WIDYA STUDIO INDUSTRI — FILE AWAL\n// ==========================================================\n// Tips: Klik nomor baris (gutter) di kiri untuk set breakpoint\n//       F5 = Jalankan | Alt+Shift+F = Format | Ctrl+S = Simpan\n//       Ctrl+Shift+P = 35+ Aksi Semua Perintah\n\nmisal pesan = \"Selamat datang di Widya Studio Level Industri! 🇮🇩\";\nmisal versi = 2.0;\nmisal layers_lulus = 9;\n\ncetak(\"🎯 Studio Status:\", pesan);\ncetak(\"📦 Versi:\", versi, \" | 9 Layer 100% siap:\", layers_lulus, \"/9\");\n\n// Silakan eksplorasi sidebar Modul 80+ Industri dan Contoh 168 file!\nuntuk (i dalam [1, 2, 3, 4, 5]) {\n    cetak(\"   • iterasi ke-\", i, \"/5\");\n}\n\ncetak(\"✅ File awal dijalankan dengan sukses!\");\n");
+        newTab("halo_dunia_starter.wya", "// ==========================================================\n// 🎨 WIDYA STUDIO INDUSTRI — FILE AWAL\n// ==========================================================\n// Tips: Klik nomor baris (gutter) di kiri untuk set breakpoint\n//       F5 = Jalankan | Alt+Shift+F = Format | Ctrl+S = Simpan\n//       Ctrl+Alt+R = Alihkan Arah RTL/LTR | Ctrl+Shift+P = Semua Aksi\n\nmisal pesan = \"Selamat datang di Widya Studio Level Industri! 🇮🇩\";\nmisal versi = 2.0;\nmisal layers_lulus = 9;\n\ncetak(\"🎯 Studio Status:\", pesan);\ncetak(\"📦 Versi:\", versi, \" | 9 Layer 100% siap:\", layers_lulus, \"/9\");\n\n// Contoh teks Arab dan fungsi RTL:\nmisal doa = \"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\";\ncetak(\"📖 Teks Arab:\", doa);\ncetak(\"🔍 Apakah RTL:\", apakah_rtl(doa), \"| Arah:\", arah_teks(doa));\n\nuntuk (i dalam [1, 2, 3, 4, 5]) {\n    cetak(\"   • iterasi ke-\", i, \"/5\");\n}\n\ncetak(\"✅ File awal dijalankan dengan sukses!\");\n");
         S.palette[0] && (S.palette[0].id === S.palette[0].id); // no-op
         loadWorkspace(); loadContohList(); loadModulKategori(); loadGit();
         applySettings(true);
@@ -2206,6 +2615,8 @@ fn render_ide_html() -> String {
             if (ctrl && k==='p' && !shift) { e.preventDefault(); promptQuickOpen(); return; }
             if (ctrl && shift && k==='p'){ e.preventDefault(); openCommandPalette(); return; }
             if (ctrl && k===',')   { e.preventDefault(); toggleSettings(); return; }
+            if (ctrl && alt && (k==='r'||k==='R')){ e.preventDefault(); toggleRtlMode(); return; }
+            if (ctrl && alt && (k==='k'||k==='K')){ e.preventDefault(); toggleKeyboardAksara(); return; }
             if (ctrl && k==='`')   { e.preventDefault(); togglePanel(); return; }
             if (ctrl && shift && k==='e'){ e.preventDefault(); setActiveSide('explorer'); return; }
             if (ctrl && shift && k==='g'){ e.preventDefault(); setActiveSide('git'); return; }
@@ -2860,6 +3271,11 @@ fn render_ide_html() -> String {
             {id:"ai.toggle", icon:"fa-wand-magic-sparkles", cat:"AI", label:"AI: Aktif/Nonaktifkan Autocomplete", shortcut:"-", run:()=>{ settings.ai = !settings.ai; saveSettings(); applySettings(); toast("AI Autocomplete: "+(settings.ai?"ON":"OFF"));}},
             {id:"ai.trigger", icon:"fa-wand-magic-sparkles", cat:"AI", label:"AI: Jalankan Suggestion (Ctrl+Space)", shortcut:"Ctrl+Space", run:()=>triggerAIComplete()},
             {id:"pref.settings", icon:"fa-sliders", cat:"Preferences", label:"Preferences: Buka Pengaturan", shortcut:"Ctrl+,", run:()=>toggleSettings()},
+            {id:"pref.rtl_toggle", icon:"fa-paragraph", cat:"Preferences", label:"Preferences: Alihkan Arah Teks (LTR ⇄ RTL Arab)", shortcut:"Ctrl+Alt+R", run:()=>toggleRtlMode(), desc:"Ubah arah penulisan teks editor (Kiri-ke-Kanan atau Kanan-ke-Kiri untuk Bahasa Arab)"},
+            {id:"pref.keyboard_aksara", icon:"fa-keyboard", cat:"Preferences", label:"Preferences: Papan Ketik Virtual Aksara Nusantara", shortcut:"Ctrl+Alt+K", run:()=>toggleKeyboardAksara(), desc:"Buka keypad virtual untuk mengetik Aksara Jawa, Sunda, Bali, Batak, Lontara, dll"},
+            {id:"pref.ime_toggle", icon:"fa-language", cat:"Preferences", label:"Preferences: Alihkan IME Fonetik Aksara Nusantara", shortcut:"-", run:()=>toggleImeMode(), desc:"Aktifkan atau nonaktifkan konversi fonetik pengetikan aksara daerah"},
+            {id:"pref.rtl_arabic", icon:"fa-globe", cat:"Preferences", label:"Preferences: Mode Arab (RTL + Font Amiri)", shortcut:"-", run:()=>{ settings.textDirection="rtl"; saveSettings(); applySettings(); toast("Mode Bahasa Arab RTL Aktif"); }},
+            {id:"pref.rtl_auto", icon:"fa-wand-magic-sparkles", cat:"Preferences", label:"Preferences: Deteksi Arah Teks Otomatis (BiDi)", shortcut:"-", run:()=>{ settings.textDirection="auto"; saveSettings(); applySettings(); toast("Deteksi Arah Teks Otomatis Aktif"); }},
             {id:"pref.theme", icon:"fa-palette", cat:"Preferences", label:"Preferences: Ganti Tema (siklus)", shortcut:"-", run:()=>{ const seq=["widya-dark","widya-latte","vs-dark","vs"]; settings.theme=seq[(seq.indexOf(settings.theme)+1)%seq.length]; applySettings(true); toast("Tema: "+settings.theme);}},
             {id:"pref.reset", icon:"fa-rotate-left", cat:"Preferences", label:"Preferences: Kembalikan Default Pengaturan", shortcut:"-", run:()=>resetSettings()}
         ];
@@ -2897,6 +3313,9 @@ fn render_ide_html() -> String {
             $("s-font").value = String(settings.fontSize);
             $("s-tabsize").value = String(settings.tabSize);
             $("s-indent").value = String(settings.indent);
+            if($("s-direction")) $("s-direction").value = settings.textDirection || "ltr";
+            if($("s-arabicfont")) $("s-arabicfont").value = settings.arabicFont || "'Amiri', 'Scheherazade New', monospace";
+            if($("s-locale")) $("s-locale").value = settings.locale || "id-ID";
             $("s-autosave").checked = !!settings.autosave;
             $("s-formatonsave").checked = !!settings.formatonsave;
             $("s-minimap").checked = !!settings.minimap;
@@ -2912,6 +3331,9 @@ fn render_ide_html() -> String {
         settings.fontSize = pick("s-font", e=>parseInt(e.value)||14) || settings.fontSize;
         settings.tabSize = pick("s-tabsize", e=>parseInt(e.value)||4) || settings.tabSize;
         settings.indent = pick("s-indent", e=>parseInt(e.value)||4) || settings.indent;
+        settings.textDirection = pick("s-direction", e=>e.value) || settings.textDirection || "ltr";
+        settings.arabicFont = pick("s-arabicfont", e=>e.value) || settings.arabicFont || "'Amiri', 'Scheherazade New', monospace";
+        settings.locale = pick("s-locale", e=>e.value) || settings.locale || "id-ID";
         settings.autosave = pick("s-autosave", e=>e.checked) ?? settings.autosave;
         settings.formatonsave = pick("s-formatonsave", e=>e.checked) ?? settings.formatonsave;
         settings.minimap = pick("s-minimap", e=>e.checked) ?? settings.minimap;
@@ -2919,8 +3341,37 @@ fn render_ide_html() -> String {
         settings.ai = pick("s-ai", e=>e.checked) ?? settings.ai;
         settings.ratewarn = pick("s-ratewarn", e=>e.checked) ?? settings.ratewarn;
         saveSettings();
+
+        const activeEd = getActiveEditor();
+        const activeContent = activeEd ? activeEd.getValue() : "";
+        const isRtl = settings.textDirection === "rtl" || (settings.textDirection === "auto" && checkIsArabicContent(activeContent));
+        const area = $("editor-area");
+        if(area){
+            if(isRtl){
+                area.classList.add("rtl-editor");
+            } else {
+                area.classList.remove("rtl-editor");
+            }
+        }
+        const btnRtl = $("btn-rtl");
+        if(btnRtl){
+            btnRtl.classList.toggle("btn-rtl-active", isRtl);
+            const lbl = $("rtl-label");
+            if(lbl){
+                lbl.textContent = settings.textDirection === "auto" ? "Arah: Auto (" + (isRtl ? "RTL" : "LTR") + ")" : "Arah: " + settings.textDirection.toUpperCase();
+            }
+        }
+
         Object.values(S.editors).forEach(ed=>{
-            ed.updateOptions({ theme: undefined, fontSize: settings.fontSize, tabSize: settings.tabSize, minimap:{enabled: settings.minimap}, wordWrap: settings.wordwrap?'on':'off', formatOnPaste: settings.formatonsave});
+            ed.updateOptions({
+                theme: undefined,
+                fontSize: settings.fontSize,
+                tabSize: settings.tabSize,
+                fontFamily: isRtl ? settings.arabicFont : undefined,
+                minimap: { enabled: settings.minimap },
+                wordWrap: settings.wordwrap ? 'on' : 'off',
+                formatOnPaste: settings.formatonsave
+            });
             try { monaco.editor.setTheme(settings.theme==="widya-dark"||settings.theme==="widya-latte" ? settings.theme : (settings.theme==="vs-dark"? "vs-dark":"vs"));} catch(e){}
         });
         document.body.style.background = settings.theme==="widya-latte" ? "#eff1f5" : "#11111b";

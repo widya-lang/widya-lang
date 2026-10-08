@@ -1,0 +1,91 @@
+// ==============================================================================
+// MODUL BD-101: KOMPUTASI BAHASA JAWA & AKSARA HANACARAKA
+// Implementasi Kurikulum Pembelajaran Bahasa Daerah Berbasis Widya-Lang
+// ==============================================================================
+
+cetak("==================================================================");
+cetak("📚 MODUL BD-101: PEMBELAJARAN BAHASA JAWA & ETNOSAINS KOMPUTASI");
+cetak("==================================================================");
+
+// 1. SISTEM UNGGAH-UNGGUH BASA (TINGKATAN TUTUR)
+cetak("\n--- [1] Konversi Tingkatan Tutur (Unggah-Ungguh Basa) ---");
+
+struktur EntriKamusJawa {
+    ngoko,
+    krama_madya,
+    krama_inggil,
+    arti_indonesia
+}
+
+misal kamus_tutur = [
+    EntriKamusJawa("mangan", "nedha", "dhahar", "makan"),
+    EntriKamusJawa("turu", "tilem", "sare", "tidur"),
+    EntriKamusJawa("omah", "griya", "dalem", "rumah"),
+    EntriKamusJawa("teka", "dugi", "rawuh", "datang"),
+    EntriKamusJawa("lunga", "kesah", "tindak", "pergi")
+];
+
+cetak("Katalog Kosakata Tingkatan Tutur:");
+untuk item dalam kamus_tutur {
+    cetak("  • Indonesia: " + item.arti_indonesia);
+    cetak("    - Ngoko        : " + item.ngoko);
+    cetak("    - Krama Madya  : " + item.krama_madya);
+    cetak("    - Krama Inggil : " + item.krama_inggil);
+}
+
+// 2. TRANSLITERASI AKSARA HANACARAKA (CARAKAN & SANDHANGAN)
+cetak("\n--- [2] Transliterasi Latin ke Aksara Jawa (Unicode Compliant) ---");
+
+var teks_latihan = [
+    "hana caraka",
+    "data sawala",
+    "pada jayanya",
+    "maga batanga",
+    "widya nusantara"
+];
+
+untuk kalimat dalam teks_latihan {
+    var aksara = latin_ke_aksara_jawa(kalimat);
+    cetak("  • Latin  : " + kalimat);
+    cetak("    Aksara : " + aksara);
+}
+
+// 3. PERHITUNGAN WETON, NEPTU & WUKU JAWA
+cetak("\n--- [3] Etnomatematika Weton, Neptu & Watak Penanggalan Jawa ---");
+
+misal tgl_contoh_tahun = 2026;
+misal tgl_contoh_bulan = 10;
+misal tgl_contoh_hari = 3;
+
+var info_weton = hitung_weton(tgl_contoh_tahun, tgl_contoh_bulan, tgl_contoh_hari);
+cetak("Analisis Tanggal: " + ke_teks(tgl_contoh_hari) + "/" + ke_teks(tgl_contoh_bulan) + "/" + ke_teks(tgl_contoh_tahun));
+cetak("  - Dina (Hari)        : " + info_weton["dina"] + " (Neptu: " + ke_teks(info_weton["neptu_dina"]) + ")");
+cetak("  - Pasaran Pancawara  : " + info_weton["pasaran"] + " (Neptu: " + ke_teks(info_weton["neptu_pasaran"]) + ")");
+cetak("  - Gunggung Neptu     : " + ke_teks(info_weton["neptu_total"]));
+cetak("  - Wuku Siklus 30     : " + info_weton["wuku"]);
+cetak("  - Weton Lengkap      : " + info_weton["weton_lengkap"]);
+
+// 4. KALENDER AGRARIS PRANATA MANGSA
+cetak("\n--- [4] Kalender Pertanian Jawa (Pranata Mangsa) ---");
+var pm = hitung_pranata_mangsa(tgl_contoh_bulan, tgl_contoh_hari);
+cetak("Status Musim Pertanian:");
+cetak("  - Mangsa             : " + pm["mangsa"]);
+cetak("  - Candra Sesanti     : \"" + pm["candra_sesanti"] + "\"");
+cetak("  - Makna Fenologi     : " + pm["makna_alam"]);
+cetak("  - Rentang Waktu      : " + pm["rentang_waktu"]);
+
+// 5. PARIBASAN & WEWANGSALAN
+cetak("\n--- [5] Falsafah Piwulang & Paribasan Jawa ---");
+var paribasan = [
+    "Urip iku urup (Hidup itu hendaknya memberi manfaat dan menerangi sesama)",
+    "Sura dira jayaningrat lebur dening pangastuti (Segala angkara murka dikalahkan oleh kebaikan)",
+    "Ajining dhiri dumunung ana ing lathi (Kehormatan diri terletak pada ucapan lidah)"
+];
+
+untuk p dalam paribasan {
+    cetak("  🌟 " + p);
+}
+
+cetak("\n==================================================================");
+cetak("✅ Modul BD-101 Bahasa Jawa selesai dieksekusi dengan sukses!");
+cetak("==================================================================");
