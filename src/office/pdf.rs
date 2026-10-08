@@ -99,6 +99,28 @@ impl PdfPage {
         });
     }
 
+    /// Menambahkan teks dengan pembungkusan otomatis (word-wrapping) agar tidak melampaui margin kanan
+    pub fn add_wrapped_text(
+        &mut self,
+        text: &str,
+        x: f32,
+        mut y: f32,
+        max_width: f32,
+        font_size: f32,
+        line_height: f32,
+        bold: bool,
+        color_rgb: (f32, f32, f32),
+    ) -> f32 {
+        let lines = wrap_text(text, max_width, font_size, bold);
+        for line in lines {
+            if !line.is_empty() {
+                self.add_styled_text(&line, x, y, font_size, bold, color_rgb);
+            }
+            y -= line_height;
+        }
+        y
+    }
+
     pub fn add_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, width: f32) {
         self.elements.push(PdfElement::Line {
             x1, y1, x2, y2, width,
@@ -181,7 +203,15 @@ impl PdfDocument {
         let mut curr_x = margin_x;
         for (i, &h) in headers.iter().enumerate() {
             let w = col_widths.get(i).copied().unwrap_or(80.0);
-            page.add_styled_text(h, curr_x + 6.0, start_y - 11.0, 9.5, true, (0.05, 0.2, 0.45));
+            let max_h_chars = ((w - 8.0) / 5.6).max(3.0) as usize;
+            let clean_h = sanitize_pdf_text(h);
+            let display_h = if clean_h.chars().count() > max_h_chars {
+                let trunc: String = clean_h.chars().take(max_h_chars.saturating_sub(2)).collect();
+                format!("{}..", trunc)
+            } else {
+                clean_h
+            };
+            page.add_styled_text(&display_h, curr_x + 6.0, start_y - 11.0, 9.0, true, (0.05, 0.2, 0.45));
             curr_x += w;
         }
         start_y -= row_height;
@@ -268,10 +298,17 @@ impl PdfDocument {
 
             // Header Otomatis (jika diaktifkan)
             if self.enable_auto_header_footer {
-                let safe_title = escape_pdf_string(&sanitize_pdf_text(&self.title));
+                let clean_title = sanitize_pdf_text(&self.title).replace('\n', " ");
+                let safe_title = if clean_title.chars().count() > 80 {
+                    let trunc: String = clean_title.chars().take(77).collect();
+                    format!("{}...", trunc)
+                } else {
+                    clean_title
+                };
+                let safe_title_esc = escape_pdf_string(&safe_title);
                 stream_data.push_str(&format!(
                     "q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 {} Tm ({}) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 {} m {} {} l S Q\n",
-                    height - 35.0, safe_title, height - 42.0, width - 50.0, height - 42.0
+                    height - 35.0, safe_title_esc, height - 42.0, width - 50.0, height - 42.0
                 ));
 
                 // Footer Otomatis: "Halaman X dari Y" + Stempel Resmi
@@ -286,7 +323,7 @@ impl PdfDocument {
             for el in &page.elements {
                 match el {
                     PdfElement::Text { text, font_size, x, y, bold: _, color_rgb } => {
-                        let clean = sanitize_pdf_text(text);
+                        let clean = sanitize_pdf_text(text).replace('\n', " ");
                         let safe_text = escape_pdf_string(&clean);
                         stream_data.push_str(&format!(
                             "BT /F1 {} Tf {} {} {} rg 1 0 0 1 {} {} Tm ({}) Tj ET\n",
@@ -392,7 +429,47 @@ pub fn sanitize_pdf_text(s: &str) -> String {
             }
             '✓' => result.push_str("[V] "),
             '…' => result.push_str("..."),
-            '\n' | '\r' | '\t' => result.push(' '),
+            '→' => result.push_str("->"),
+            '←' => result.push_str("<-"),
+            '↔' => result.push_str("<->"),
+            '⇒' => result.push_str("=>"),
+            '≤' => result.push_str("<="),
+            '≥' => result.push_str(">="),
+            '≠' => result.push_str("!="),
+            '×' => result.push_str("x"),
+            '÷' => result.push_str("/"),
+            '±' => result.push_str("+/-"),
+            'µ' => result.push_str("u"),
+            '👑' => result.push_str("[MASTER] "),
+            '📦' => result.push_str("[PKG] "),
+            '📋' => result.push_str("[INFO] "),
+            '📌' => result.push_str("[PIN] "),
+            '✨' => result.push_str("[*] "),
+            '🎉' => result.push_str("[*] "),
+            '🌐' => result.push_str("[WEB] "),
+            '💻' => result.push_str("[PC] "),
+            '📱' => result.push_str("[APP] "),
+            '🖥' => { if chars.peek() == Some(&'\u{fe0f}') { chars.next(); } result.push_str("[MCR] "); }
+            '⚖' => { if chars.peek() == Some(&'\u{fe0f}') { chars.next(); } result.push_str("[VAR] "); }
+            '📡' => result.push_str("[RADIO] "),
+            '🎥' => result.push_str("[CAM] "),
+            '⚙' => { if chars.peek() == Some(&'\u{fe0f}') { chars.next(); } result.push_str("[SYS] "); }
+            '🧠' => result.push_str("[AI] "),
+            '📄' => result.push_str("[DOC] "),
+            '📜' => result.push_str("[SCRIPT] "),
+            '📁' => result.push_str("[DIR] "),
+            '🎯' => result.push_str("[TARGET] "),
+            '🧪' => result.push_str("[TEST] "),
+            '❌' => result.push_str("[FAIL] "),
+            '🇮' => {
+                if chars.peek() == Some(&'🇩') {
+                    chars.next();
+                    result.push_str("[ID] ");
+                }
+            }
+            '\r' => result.push(' '),
+            '\t' => result.push_str("    "),
+            '\n' => result.push('\n'),
             c if c.is_ascii() => result.push(c),
             c if (c as u32) >= 0x20 && (c as u32) <= 0xFF => result.push(c),
             _ => result.push(' '),
@@ -401,8 +478,117 @@ pub fn sanitize_pdf_text(s: &str) -> String {
     result
 }
 
-fn escape_pdf_string(s: &str) -> String {
+pub fn escape_pdf_string(s: &str) -> String {
     s.replace('\\', "\\\\")
         .replace('(', "\\(")
         .replace(')', "\\)")
+}
+
+/// Estimasi lebar karakter pada font Helvetica (PDF Type 1) per unit font_size
+pub fn helvetica_char_width(c: char, bold: bool) -> f32 {
+    let base_width: f32 = match c {
+        ' ' => 0.285,
+        '!' | '.' | ',' | ':' | ';' | '/' | '\\' | '[' | ']' | 'I' | '|' => 0.285,
+        '\'' | '`' => 0.230,
+        'i' | 'j' | 'l' => 0.230,
+        'f' | 't' | 'r' => 0.345,
+        '(' | ')' | '{' | '}' | '-' => 0.345,
+        '"' => 0.365,
+        '*' => 0.400,
+        'c' | 'k' | 's' | 'v' | 'x' | 'y' | 'z' | 'J' => 0.515,
+        'a' | 'b' | 'd' | 'e' | 'g' | 'h' | 'n' | 'o' | 'p' | 'q' | 'u' => 0.575,
+        '0'..='9' | '$' | '#' | '?' | '_' => 0.575,
+        '+' | '<' | '=' | '>' | '~' | 'L' => 0.600,
+        'F' | 'T' | 'Z' => 0.630,
+        'A' | 'B' | 'E' | 'K' | 'P' | 'S' | 'V' | 'X' | 'Y' => 0.685,
+        '&' => 0.685,
+        'w' => 0.745,
+        'C' | 'D' | 'H' | 'N' | 'R' | 'U' => 0.745,
+        'G' | 'O' | 'Q' => 0.800,
+        'm' | 'M' => 0.860,
+        '%' => 0.915,
+        'W' => 0.970,
+        '@' => 1.045,
+        _ => 0.575,
+    };
+    if bold {
+        base_width * 1.08
+    } else {
+        base_width
+    }
+}
+
+/// Menghitung lebar string dalam satuan points (1/72 inci)
+pub fn string_width(s: &str, font_size: f32, bold: bool) -> f32 {
+    let mut total = 0.0;
+    for c in s.chars() {
+        total += helvetica_char_width(c, bold) * font_size;
+    }
+    total
+}
+
+/// Memecah teks menjadi baris-baris yang tidak melampaui `max_width` (Word Wrapping)
+pub fn wrap_text(text: &str, max_width: f32, font_size: f32, bold: bool) -> Vec<String> {
+    let mut lines = Vec::new();
+    let sanitized = sanitize_pdf_text(text);
+
+    for raw_line in sanitized.split('\n') {
+        let trimmed = raw_line.trim();
+        if trimmed.is_empty() {
+            lines.push(String::new());
+            continue;
+        }
+
+        let words: Vec<&str> = trimmed.split_whitespace().collect();
+        if words.is_empty() {
+            lines.push(String::new());
+            continue;
+        }
+
+        let space_w = helvetica_char_width(' ', bold) * font_size;
+        let mut cur_line = String::new();
+        let mut cur_w: f32 = 0.0;
+
+        for word in words {
+            let word_w = string_width(word, font_size, bold);
+
+            // Jika satu kata melebihi seluruh lebar baris, potong secara paksa per karakter
+            if word_w > max_width {
+                if !cur_line.is_empty() {
+                    lines.push(cur_line);
+                    cur_line = String::new();
+                    cur_w = 0.0;
+                }
+                for ch in word.chars() {
+                    let ch_w = helvetica_char_width(ch, bold) * font_size;
+                    if cur_w + ch_w > max_width && !cur_line.is_empty() {
+                        lines.push(cur_line);
+                        cur_line = String::new();
+                        cur_w = 0.0;
+                    }
+                    cur_line.push(ch);
+                    cur_w += ch_w;
+                }
+                continue;
+            }
+
+            if cur_line.is_empty() {
+                cur_line.push_str(word);
+                cur_w = word_w;
+            } else if cur_w + space_w + word_w <= max_width {
+                cur_line.push(' ');
+                cur_line.push_str(word);
+                cur_w += space_w + word_w;
+            } else {
+                lines.push(cur_line);
+                cur_line = word.to_string();
+                cur_w = word_w;
+            }
+        }
+
+        if !cur_line.is_empty() {
+            lines.push(cur_line);
+        }
+    }
+    lines
 }

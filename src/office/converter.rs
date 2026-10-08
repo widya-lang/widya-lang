@@ -1,7 +1,7 @@
 use crate::office::docx::{DocxDocument, DocxElement};
 use crate::office::latex::{LatexDocument, LatexElement};
 use crate::office::markdown::{MarkdownBlock, MarkdownDocument};
-use crate::office::pdf::PdfDocument;
+use crate::office::pdf::{wrap_text, PdfDocument};
 use crate::office::xlsx::XlsxWorkbook;
 
 /// Mesin Pipeline Konversi Dokumen Universal Lintas Format
@@ -21,7 +21,7 @@ impl DocumentConverter {
         let (_, page_height) = pdf.page_size.dimensions_points();
         let mut current_y = page_height - 70.0;
         let margin_x = 50.0;
-        let content_width = 495.0;
+        let content_width = 480.0;
 
         for el in &doc.elements {
             if current_y < 90.0 {
@@ -31,21 +31,35 @@ impl DocumentConverter {
 
             match el {
                 DocxElement::Heading { level, text } => {
-                    let font_size = match level {
-                        1 => 18.0,
-                        2 => 14.0,
-                        3 => 12.0,
-                        _ => 11.0,
+                    let (font_size, line_height) = match level {
+                        1 => (16.0, 22.0),
+                        2 => (13.5, 18.0),
+                        3 => (11.5, 16.0),
+                        _ => (10.5, 14.0),
                     };
-                    current_y -= font_size + 4.0;
-                    pdf.current_page_mut().add_styled_text(
-                        text,
-                        margin_x,
-                        current_y,
-                        font_size,
-                        true,
-                        (0.05, 0.15, 0.35),
-                    );
+
+                    let wrapped = wrap_text(text, content_width, font_size, true);
+                    current_y -= 8.0;
+
+                    for line in wrapped {
+                        if line.is_empty() {
+                            continue;
+                        }
+                        if current_y < 80.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+                        current_y -= line_height;
+                        pdf.current_page_mut().add_styled_text(
+                            &line,
+                            margin_x,
+                            current_y,
+                            font_size,
+                            true,
+                            (0.05, 0.15, 0.35),
+                        );
+                    }
+
                     if *level == 1 {
                         current_y -= 4.0;
                         pdf.current_page_mut().add_styled_line(
@@ -57,36 +71,83 @@ impl DocumentConverter {
                             (0.1, 0.4, 0.8),
                         );
                     }
-                    current_y -= 10.0;
+                    current_y -= 6.0;
                 }
-                DocxElement::Paragraph { runs, .. } => {
+                DocxElement::Paragraph { runs, is_rtl, .. } => {
                     let mut line_text = String::new();
                     for r in runs {
                         line_text.push_str(&r.text);
                     }
-                    current_y -= 14.0;
-                    pdf.current_page_mut().add_styled_text(
-                        &line_text,
-                        margin_x,
-                        current_y,
-                        10.0,
-                        false,
-                        (0.15, 0.2, 0.25),
-                    );
-                    current_y -= 6.0;
-                }
-                DocxElement::BulletItem { text, .. } => {
-                    current_y -= 14.0;
-                    let bullet_text = format!("* {}", text);
-                    pdf.current_page_mut().add_styled_text(
-                        &bullet_text,
-                        margin_x + 12.0,
-                        current_y,
-                        9.5,
-                        false,
-                        (0.2, 0.25, 0.3),
-                    );
+                    if line_text.trim().is_empty() {
+                        current_y -= 6.0;
+                        continue;
+                    }
+
+                    let font_size = 10.0;
+                    let line_height = 14.0;
+                    let wrapped = wrap_text(&line_text, content_width, font_size, false);
+
+                    for line in wrapped {
+                        if line.is_empty() {
+                            current_y -= 4.0;
+                            continue;
+                        }
+                        if current_y < 80.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+                        current_y -= line_height;
+                        if *is_rtl {
+                            pdf.current_page_mut().add_rtl_text(&line, margin_x + content_width, current_y, font_size, false);
+                        } else {
+                            pdf.current_page_mut().add_styled_text(
+                                &line,
+                                margin_x,
+                                current_y,
+                                font_size,
+                                false,
+                                (0.15, 0.2, 0.25),
+                            );
+                        }
+                    }
                     current_y -= 4.0;
+                }
+                DocxElement::BulletItem { text, indent_level } => {
+                    let font_size = 9.5;
+                    let line_height = 13.5;
+                    let indent_px = 16.0 + (*indent_level as f32 * 12.0);
+                    let bullet_content_w = (content_width - indent_px).max(100.0);
+                    let wrapped = wrap_text(text, bullet_content_w, font_size, false);
+
+                    for (idx, line) in wrapped.iter().enumerate() {
+                        if line.is_empty() {
+                            continue;
+                        }
+                        if current_y < 80.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+                        current_y -= line_height;
+                        if idx == 0 {
+                            pdf.current_page_mut().add_styled_text(
+                                "*",
+                                margin_x + indent_px - 10.0,
+                                current_y,
+                                font_size,
+                                true,
+                                (0.15, 0.35, 0.7),
+                            );
+                        }
+                        pdf.current_page_mut().add_styled_text(
+                            line,
+                            margin_x + indent_px,
+                            current_y,
+                            font_size,
+                            false,
+                            (0.2, 0.25, 0.3),
+                        );
+                    }
+                    current_y -= 2.0;
                 }
                 DocxElement::Table { rows, has_header } => {
                     if !rows.is_empty() {
@@ -110,13 +171,55 @@ impl DocumentConverter {
                         current_y -= 12.0;
                     }
                 }
-                DocxElement::Callout { title, text, .. } => {
-                    current_y -= 36.0;
+                DocxElement::Callout { title, text, border_color } => {
+                    let font_size = 8.5;
+                    let line_height = 12.0;
+                    let inner_w = content_width - 24.0;
+                    let lines = wrap_text(text, inner_w, font_size, false);
+
+                    let (border_rgb, bg_rgb) = if border_color.contains("3b82f6") || border_color.contains("blue") {
+                        ((0.15, 0.45, 0.85), (0.94, 0.97, 1.0))
+                    } else if border_color.contains("8b5cf6") || border_color.contains("purple") {
+                        ((0.45, 0.25, 0.85), (0.97, 0.95, 1.0))
+                    } else {
+                        ((0.35, 0.40, 0.48), (0.96, 0.97, 0.98))
+                    };
+
+                    current_y -= 8.0;
+
+                    // Header Callout (Judul)
+                    if current_y < 85.0 {
+                        pdf.add_page();
+                        current_y = page_height - 70.0;
+                    }
+                    let header_h = 18.0;
                     let page = pdf.current_page_mut();
-                    page.add_rect(margin_x, current_y - 8.0, content_width, 36.0, true, (0.94, 0.97, 1.0));
-                    page.add_styled_line(margin_x, current_y - 8.0, margin_x, current_y + 28.0, 3.5, (0.1, 0.5, 0.85));
-                    page.add_styled_text(&format!("{}: {}", title, text), margin_x + 10.0, current_y + 6.0, 9.5, true, (0.05, 0.25, 0.5));
-                    current_y -= 14.0;
+                    page.add_rect(margin_x, current_y - header_h, content_width, header_h, true, bg_rgb);
+                    page.add_styled_line(margin_x, current_y - header_h, margin_x, current_y, 3.5, border_rgb);
+                    page.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
+                    page.add_styled_line(margin_x + content_width, current_y - header_h, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
+                    page.add_styled_text(title, margin_x + 10.0, current_y - 12.0, 9.0, true, (0.1, 0.25, 0.45));
+                    current_y -= header_h;
+
+                    for line in &lines {
+                        if current_y < 80.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+                        let page = pdf.current_page_mut();
+                        page.add_rect(margin_x, current_y - line_height, content_width, line_height, true, bg_rgb);
+                        page.add_styled_line(margin_x, current_y - line_height, margin_x, current_y, 3.5, border_rgb);
+                        page.add_styled_line(margin_x + content_width, current_y - line_height, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
+                        if !line.is_empty() {
+                            page.add_styled_text(line, margin_x + 10.0, current_y - 9.0, font_size, false, (0.15, 0.2, 0.25));
+                        }
+                        current_y -= line_height;
+                    }
+
+                    // Garis penutup bawah kotak
+                    let page = pdf.current_page_mut();
+                    page.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
+                    current_y -= 8.0;
                 }
                 DocxElement::PageBreak => {
                     pdf.add_page();
