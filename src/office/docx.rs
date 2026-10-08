@@ -61,6 +61,7 @@ pub enum DocxElement {
     Paragraph { runs: Vec<TextRun>, align: String, is_rtl: bool },
     Table { rows: Vec<Vec<String>>, has_header: bool },
     PageBreak,
+    Divider,
     BulletItem { text: String, indent_level: u8 },
     Callout { title: String, text: String, border_color: String },
 }
@@ -202,6 +203,10 @@ impl DocxDocument {
         self.elements.push(DocxElement::PageBreak);
     }
 
+    pub fn add_divider(&mut self) {
+        self.elements.push(DocxElement::Divider);
+    }
+
     /// Template Engine & Mail Merge: Ganti Placeholder `{{kunci}}` dengan Nilai Nyata
     pub fn apply_template(&mut self, variables: &HashMap<String, String>) {
         for el in &mut self.elements {
@@ -310,6 +315,9 @@ impl DocxDocument {
                 DocxElement::PageBreak => {
                     out.push_str("\n--- [Page Break] ---\n\n");
                 }
+                DocxElement::Divider => {
+                    out.push_str("\n--------------------\n\n");
+                }
             }
         }
         out
@@ -390,6 +398,9 @@ impl DocxDocument {
                 }
                 DocxElement::PageBreak => {
                     xml.push_str(r#"<w:p><w:r><w:br w:type="page"/></w:r></w:p>"#);
+                }
+                DocxElement::Divider => {
+                    xml.push_str(r#"<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="CBD5E1"/></w:pBdr></w:pPr></w:p>"#);
                 }
             }
         }
@@ -568,6 +579,9 @@ impl DocxDocument {
                 }
                 DocxElement::PageBreak => {
                     html.push_str("<hr style='margin: 40px 0; border: 1px dashed #94a3b8;' />");
+                }
+                DocxElement::Divider => {
+                    html.push_str("<hr style='margin: 20px 0; border: none; border-top: 1px solid #cbd5e1;' />");
                 }
             }
         }

@@ -182,7 +182,7 @@ impl PdfDocument {
         self.pages.last_mut().unwrap()
     }
 
-    /// Gambar Tabel Bergaris Resmi dengan Pemisah Halaman Otomatis
+    /// Gambar Tabel Bergaris Resmi Tingkat Penerbitan dengan Pembungkusan Teks Multi-baris & Header Berulang
     pub fn add_table(
         &mut self,
         headers: &[&str],
@@ -191,58 +191,103 @@ impl PdfDocument {
         mut start_y: f32,
         col_widths: &[f32],
     ) -> f32 {
-        let row_height = 22.0;
         let total_width: f32 = col_widths.iter().sum();
         let (_, page_height) = self.page_size.dimensions_points();
 
-        // 1. Header Bar
-        let page = self.current_page_mut();
-        page.add_rect(margin_x, start_y - 16.0, total_width, row_height, true, (0.92, 0.95, 0.98));
-        page.add_rect(margin_x, start_y - 16.0, total_width, row_height, false, (0.2, 0.4, 0.7));
+        // Helper lokal untuk menggambar Header Bar pada halaman tertentu
+        fn draw_header(
+            page: &mut PdfPage,
+            headers: &[&str],
+            col_widths: &[f32],
+            margin_x: f32,
+            top_y: f32,
+            total_width: f32,
+        ) -> f32 {
+            let header_cells: Vec<Vec<String>> = headers
+                .iter()
+                .enumerate()
+                .map(|(i, &h)| {
+                    let w = col_widths.get(i).copied().unwrap_or(80.0);
+                    wrap_text(h, (w - 10.0).max(15.0), 9.0, true)
+                })
+                .collect();
 
-        let mut curr_x = margin_x;
-        for (i, &h) in headers.iter().enumerate() {
-            let w = col_widths.get(i).copied().unwrap_or(80.0);
-            let max_h_chars = ((w - 8.0) / 5.6).max(3.0) as usize;
-            let clean_h = sanitize_pdf_text(h);
-            let display_h = if clean_h.chars().count() > max_h_chars {
-                let trunc: String = clean_h.chars().take(max_h_chars.saturating_sub(2)).collect();
-                format!("{}..", trunc)
-            } else {
-                clean_h
-            };
-            page.add_styled_text(&display_h, curr_x + 6.0, start_y - 11.0, 9.0, true, (0.05, 0.2, 0.45));
-            curr_x += w;
+            let max_h_lines = header_cells.iter().map(|l| l.len()).max().unwrap_or(1).max(1);
+            let h_line_height = 11.5;
+            let header_h = (max_h_lines as f32 * h_line_height) + 10.0;
+
+            // Background & Outer Border
+            page.add_rect(margin_x, top_y - header_h, total_width, header_h, true, (0.92, 0.95, 0.98));
+            page.add_rect(margin_x, top_y - header_h, total_width, header_h, false, (0.22, 0.42, 0.72));
+
+            // Garis pembagi kolom vertikal header & teks
+            let mut curr_x = margin_x;
+            for (i, lines) in header_cells.iter().enumerate() {
+                let w = col_widths.get(i).copied().unwrap_or(80.0);
+                if i > 0 {
+                    page.add_styled_line(curr_x, top_y - header_h, curr_x, top_y, 0.75, (0.22, 0.42, 0.72));
+                }
+                for (l_idx, line) in lines.iter().enumerate() {
+                    if !line.is_empty() {
+                        let text_y = top_y - 10.5 - (l_idx as f32 * h_line_height);
+                        page.add_styled_text(line, curr_x + 5.0, text_y, 9.0, true, (0.05, 0.20, 0.45));
+                    }
+                }
+                curr_x += w;
+            }
+
+            top_y - header_h
         }
-        start_y -= row_height;
+
+        // 1. Header Bar Pertama
+        start_y = draw_header(self.current_page_mut(), headers, col_widths, margin_x, start_y, total_width);
 
         // 2. Data Rows
         for (row_idx, row) in rows.iter().enumerate() {
-            if start_y < 80.0 {
-                // Halaman baru jika melebihi batas margin bawah
+            // Hitung teks terbungkus untuk tiap sel
+            let cell_lines: Vec<Vec<String>> = row
+                .iter()
+                .enumerate()
+                .map(|(c_idx, cell)| {
+                    let w = col_widths.get(c_idx).copied().unwrap_or(80.0);
+                    wrap_text(cell, (w - 10.0).max(15.0), 8.5, false)
+                })
+                .collect();
+
+            let max_lines = cell_lines.iter().map(|l| l.len()).max().unwrap_or(1).max(1);
+            let line_height = 11.0;
+            let row_height = (max_lines as f32 * line_height) + 8.0;
+
+            // Jika baris ini melampaui batas bawah margin halaman, buat halaman baru & ulang header
+            if start_y - row_height < 75.0 {
                 self.add_page();
-                start_y = page_height - 90.0;
+                start_y = page_height - 70.0;
+                start_y = draw_header(self.current_page_mut(), headers, col_widths, margin_x, start_y, total_width);
             }
 
             let page = self.current_page_mut();
-            let bg_color = if row_idx % 2 == 1 { (0.98, 0.98, 0.99) } else { (1.0, 1.0, 1.0) };
-            page.add_rect(margin_x, start_y - 16.0, total_width, row_height, true, bg_color);
-            page.add_rect(margin_x, start_y - 16.0, total_width, row_height, false, (0.8, 0.85, 0.9));
+            let bg_color = if row_idx % 2 == 1 { (0.97, 0.98, 0.99) } else { (1.0, 1.0, 1.0) };
 
+            // Background & Outer Border
+            page.add_rect(margin_x, start_y - row_height, total_width, row_height, true, bg_color);
+            page.add_rect(margin_x, start_y - row_height, total_width, row_height, false, (0.80, 0.85, 0.90));
+
+            // Garis pembagi kolom vertikal & teks sel
             let mut curr_x = margin_x;
-            for (c_idx, cell) in row.iter().enumerate() {
+            for (c_idx, lines) in cell_lines.iter().enumerate() {
                 let w = col_widths.get(c_idx).copied().unwrap_or(80.0);
-                let max_chars = ((w - 10.0) / 5.2).max(4.0) as usize;
-                let clean_cell = sanitize_pdf_text(cell);
-                let display_cell = if clean_cell.chars().count() > max_chars {
-                    let truncated: String = clean_cell.chars().take(max_chars.saturating_sub(3)).collect();
-                    format!("{}...", truncated)
-                } else {
-                    clean_cell
-                };
-                page.add_styled_text(&display_cell, curr_x + 6.0, start_y - 11.0, 8.5, false, (0.15, 0.2, 0.25));
+                if c_idx > 0 {
+                    page.add_styled_line(curr_x, start_y - row_height, curr_x, start_y, 0.5, (0.80, 0.85, 0.90));
+                }
+                for (l_idx, line) in lines.iter().enumerate() {
+                    if !line.is_empty() {
+                        let text_y = start_y - 9.5 - (l_idx as f32 * line_height);
+                        page.add_styled_text(line, curr_x + 5.0, text_y, 8.5, false, (0.15, 0.20, 0.25));
+                    }
+                }
                 curr_x += w;
             }
+
             start_y -= row_height;
         }
 

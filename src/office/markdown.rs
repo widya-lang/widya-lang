@@ -92,6 +92,25 @@ impl MarkdownDocument {
                 continue;
             }
 
+            // 5b. Unordered List (- item, * item, + item)
+            if (line.starts_with("- ") || line.starts_with("* ") || line.starts_with("+ "))
+                && !line.starts_with("---") && !line.starts_with("***") {
+                let mut list_items = Vec::new();
+                while i < lines.len() {
+                    let l = lines[i].trim();
+                    if (l.starts_with("- ") || l.starts_with("* ") || l.starts_with("+ "))
+                        && !l.starts_with("- [ ] ") && !l.starts_with("- [x] ") && !l.starts_with("- [X] ")
+                        && !l.starts_with("---") && !l.starts_with("***") {
+                        list_items.push(l[2..].trim().to_string());
+                        i += 1;
+                    } else {
+                        break;
+                    }
+                }
+                blocks.push(MarkdownBlock::UnorderedList(list_items));
+                continue;
+            }
+
             // 6. Table (| Col1 | Col2 |)
             if line.starts_with('|') && line.ends_with('|') {
                 let headers: Vec<String> = line.split('|')

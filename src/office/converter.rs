@@ -31,6 +31,7 @@ impl DocumentConverter {
 
             match el {
                 DocxElement::Heading { level, text } => {
+                    let clean_text = clean_markdown_inline(text);
                     let (font_size, line_height) = match level {
                         1 => (16.0, 22.0),
                         2 => (13.5, 18.0),
@@ -38,7 +39,7 @@ impl DocumentConverter {
                         _ => (10.5, 14.0),
                     };
 
-                    let wrapped = wrap_text(text, content_width, font_size, true);
+                    let wrapped = wrap_text(&clean_text, content_width, font_size, true);
                     current_y -= 8.0;
 
                     for line in wrapped {
@@ -78,14 +79,15 @@ impl DocumentConverter {
                     for r in runs {
                         line_text.push_str(&r.text);
                     }
-                    if line_text.trim().is_empty() {
+                    let cleaned = clean_markdown_inline(&line_text);
+                    if cleaned.trim().is_empty() {
                         current_y -= 6.0;
                         continue;
                     }
 
                     let font_size = 10.0;
                     let line_height = 14.0;
-                    let wrapped = wrap_text(&line_text, content_width, font_size, false);
+                    let wrapped = wrap_text(&cleaned, content_width, font_size, false);
 
                     for line in wrapped {
                         if line.is_empty() {
@@ -113,11 +115,12 @@ impl DocumentConverter {
                     current_y -= 4.0;
                 }
                 DocxElement::BulletItem { text, indent_level } => {
+                    let cleaned = clean_markdown_inline(text);
                     let font_size = 9.5;
                     let line_height = 13.5;
                     let indent_px = 16.0 + (*indent_level as f32 * 12.0);
                     let bullet_content_w = (content_width - indent_px).max(100.0);
-                    let wrapped = wrap_text(text, bullet_content_w, font_size, false);
+                    let wrapped = wrap_text(&cleaned, bullet_content_w, font_size, false);
 
                     for (idx, line) in wrapped.iter().enumerate() {
                         if line.is_empty() {
@@ -152,30 +155,43 @@ impl DocumentConverter {
                 DocxElement::Table { rows, has_header } => {
                     if !rows.is_empty() {
                         let col_count = rows[0].len().max(1);
-                        let col_w = content_width / col_count as f32;
-                        let widths: Vec<f32> = vec![col_w; col_count];
-
-                        let header_slice: Vec<&str> = if *has_header {
-                            rows[0].iter().map(|s| s.as_str()).collect()
+                        let header_slice: Vec<String> = if *has_header {
+                            rows[0].iter().map(|s| clean_markdown_inline(s)).collect()
                         } else {
-                            (1..=col_count).map(|_| "Kolom").collect()
+                            (1..=col_count).map(|i| format!("Kolom {}", i)).collect()
                         };
+                        let header_refs: Vec<&str> = header_slice.iter().map(|s| s.as_str()).collect();
 
-                        let data_rows = if *has_header && rows.len() > 1 {
+                        let data_rows_raw = if *has_header && rows.len() > 1 {
                             &rows[1..]
                         } else {
                             &rows[..]
                         };
 
-                        current_y = pdf.add_table(&header_slice, data_rows, margin_x, current_y, &widths);
-                        current_y -= 12.0;
+                        let cleaned_data_rows: Vec<Vec<String>> = data_rows_raw
+                            .iter()
+                            .map(|row| row.iter().map(|c| clean_markdown_inline(c)).collect())
+                            .collect();
+
+                        let widths = calculate_table_col_widths(&header_refs, &cleaned_data_rows, content_width);
+
+                        // Beri jarak atas sebelum tabel agar tidak menimpa teks paragraf sebelumnya
+                        current_y -= 14.0;
+                        current_y = pdf.add_table(&header_refs, &cleaned_data_rows, margin_x, current_y, &widths);
+                        current_y -= 14.0;
                     }
                 }
                 DocxElement::Callout { title, text, border_color } => {
+                    let clean_title = clean_markdown_inline(title);
+                    let clean_text = if title.starts_with("KODE") {
+                        text.clone()
+                    } else {
+                        clean_markdown_inline(text)
+                    };
                     let font_size = 8.5;
                     let line_height = 12.0;
                     let inner_w = content_width - 24.0;
-                    let lines = wrap_text(text, inner_w, font_size, false);
+                    let lines = wrap_text(&clean_text, inner_w, font_size, false);
 
                     let (border_rgb, bg_rgb) = if border_color.contains("3b82f6") || border_color.contains("blue") {
                         ((0.15, 0.45, 0.85), (0.94, 0.97, 1.0))
@@ -198,7 +214,7 @@ impl DocumentConverter {
                     page.add_styled_line(margin_x, current_y - header_h, margin_x, current_y, 3.5, border_rgb);
                     page.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
                     page.add_styled_line(margin_x + content_width, current_y - header_h, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
-                    page.add_styled_text(title, margin_x + 10.0, current_y - 12.0, 9.0, true, (0.1, 0.25, 0.45));
+                    page.add_styled_text(&clean_title, margin_x + 10.0, current_y - 12.0, 9.0, true, (0.1, 0.25, 0.45));
                     current_y -= header_h;
 
                     for line in &lines {
@@ -220,6 +236,22 @@ impl DocumentConverter {
                     let page = pdf.current_page_mut();
                     page.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
                     current_y -= 8.0;
+                }
+                DocxElement::Divider => {
+                    current_y -= 8.0;
+                    if current_y < 80.0 {
+                        pdf.add_page();
+                        current_y = page_height - 70.0;
+                    }
+                    pdf.current_page_mut().add_styled_line(
+                        margin_x,
+                        current_y,
+                        margin_x + content_width,
+                        current_y,
+                        0.8,
+                        (0.80, 0.85, 0.90),
+                    );
+                    current_y -= 12.0;
                 }
                 DocxElement::PageBreak => {
                     pdf.add_page();
@@ -277,9 +309,6 @@ impl DocumentConverter {
 
             if sheet.max_row > 0 && sheet.max_col > 0 {
                 let col_count = sheet.max_col;
-                let col_w = content_width / col_count as f32;
-                let widths = vec![col_w; col_count as usize];
-
                 let mut headers = Vec::new();
                 for c in 1..=col_count {
                     headers.push(sheet.get_cell(1, c).to_display_string());
@@ -301,6 +330,8 @@ impl DocumentConverter {
                     data_rows.push(row_vals);
                 }
 
+                let widths = calculate_table_col_widths(&header_refs, &data_rows, content_width);
+                current_y -= 10.0;
                 pdf.add_table(&header_refs, &data_rows, margin_x, current_y, &widths);
             }
         }
@@ -317,41 +348,44 @@ impl DocumentConverter {
                 None
             }
         });
-        let mut doc = DocxDocument::new(first_heading.unwrap_or("Dokumen Markdown"));
+        let raw_title = first_heading.unwrap_or("Dokumen Markdown");
+        let mut doc = DocxDocument::new(&clean_markdown_inline(raw_title));
 
         for block in &md.blocks {
             match block {
                 MarkdownBlock::Heading { level, text } => {
-                    doc.add_heading(text, *level);
+                    doc.add_heading(&clean_markdown_inline(text), *level);
                 }
                 MarkdownBlock::Paragraph(text) => {
-                    doc.add_paragraph(text);
+                    doc.add_paragraph(&clean_markdown_inline(text));
                 }
                 MarkdownBlock::UnorderedList(items) => {
                     for item in items {
-                        doc.add_bullet(item);
+                        doc.add_bullet(&clean_markdown_inline(item));
                     }
                 }
                 MarkdownBlock::Checklist(items) => {
                     for (checked, item) in items {
                         let prefix = if *checked { "[x] " } else { "[ ] " };
-                        doc.add_bullet(&format!("{}{}", prefix, item));
+                        doc.add_bullet(&format!("{}{}", prefix, clean_markdown_inline(item)));
                     }
                 }
                 MarkdownBlock::CodeBlock { lang, code } => {
                     doc.add_callout(&format!("KODE ({})", lang.to_uppercase()), code, "#64748b");
                 }
                 MarkdownBlock::Table { headers, rows } => {
+                    let cleaned_headers: Vec<String> = headers.iter().map(|h| clean_markdown_inline(h)).collect();
+                    let cleaned_rows: Vec<Vec<String>> = rows.iter().map(|r| r.iter().map(|c| clean_markdown_inline(c)).collect()).collect();
                     let mut all_rows = Vec::new();
-                    all_rows.push(headers.clone());
-                    all_rows.extend(rows.clone());
+                    all_rows.push(cleaned_headers);
+                    all_rows.extend(cleaned_rows);
                     doc.add_table(all_rows, true);
                 }
                 MarkdownBlock::Blockquote(text) => {
-                    doc.add_callout("KUTIPAN", text, "#3b82f6");
+                    doc.add_callout("KUTIPAN", &clean_markdown_inline(text), "#3b82f6");
                 }
                 MarkdownBlock::HorizontalRule => {
-                    doc.add_page_break();
+                    doc.add_divider();
                 }
             }
         }
@@ -402,5 +436,272 @@ impl DocumentConverter {
         }
 
         doc
+    }
+}
+
+/// Menghitung pembagian lebar kolom tabel secara proporsional cerdas berdasarkan kepadatan isi
+pub fn calculate_table_col_widths(
+    headers: &[&str],
+    rows: &[Vec<String>],
+    total_width: f32,
+) -> Vec<f32> {
+    let col_count = headers.len().max(rows.iter().map(|r| r.len()).max().unwrap_or(0)).max(1);
+    if col_count == 1 {
+        return vec![total_width];
+    }
+
+    // Hitung perkiraan panjang karakter maksimum tiap kolom
+    let mut col_max_lens: Vec<usize> = Vec::with_capacity(col_count);
+    for i in 0..col_count {
+        let h_len = headers.get(i).map(|h| h.chars().count()).unwrap_or(4);
+        let max_data_len = rows
+            .iter()
+            .filter_map(|r| r.get(i))
+            .map(|cell| cell.chars().count())
+            .max()
+            .unwrap_or(0);
+        col_max_lens.push(h_len.max(max_data_len));
+    }
+
+    // Tentukan bobot dan batas minimum per kolom
+    let mut weights: Vec<f32> = Vec::with_capacity(col_count);
+    let mut min_widths: Vec<f32> = Vec::with_capacity(col_count);
+
+    for &len in &col_max_lens {
+        if len <= 3 {
+            // Kolom sangat sempit seperti "No", "ID", "#"
+            weights.push(22.0);
+            min_widths.push(25.0);
+        } else if len <= 8 {
+            // Kolom sempit seperti "Versi", "1.0.0", "Status"
+            weights.push(42.0);
+            min_widths.push(40.0);
+        } else if len <= 16 {
+            // Kolom sedang seperti "Nama Paket", "Perintah"
+            weights.push(75.0);
+            min_widths.push(65.0);
+        } else if len <= 30 {
+            // Kolom panjang sedang
+            weights.push(110.0);
+            min_widths.push(80.0);
+        } else {
+            // Kolom deskripsi lebar
+            let extra = ((len.saturating_sub(30)) as f32 * 1.5).min(120.0);
+            weights.push(140.0 + extra);
+            min_widths.push(100.0);
+        }
+    }
+
+    let total_weight: f32 = weights.iter().sum();
+    let mut widths: Vec<f32> = weights
+        .iter()
+        .map(|w| (w / total_weight) * total_width)
+        .collect();
+
+    // Pastikan setiap kolom memenuhi batas minimum
+    for i in 0..col_count {
+        if widths[i] < min_widths[i] {
+            widths[i] = min_widths[i];
+        }
+    }
+
+    // Normalisasi ulang agar total tepat sama dengan total_width
+    let current_total: f32 = widths.iter().sum();
+    let diff = total_width - current_total;
+    if diff.abs() > 0.1 {
+        let max_idx = widths
+            .iter()
+            .enumerate()
+            .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+            .map(|(i, _)| i)
+            .unwrap_or(col_count - 1);
+        widths[max_idx] += diff;
+    }
+
+    widths
+}
+
+/// Membersihkan sintaks inline Markdown (bold, italic, code, link, gambar, strikethrough, tag HTML sederhana)
+/// agar teks bersih berstandar penerbitan profesional tanpa karakter mentah yang bocor.
+pub fn clean_markdown_inline(s: &str) -> String {
+    let mut result = s.to_string();
+
+    // 1. Gambar Markdown: ![alt](url) -> [Gambar: alt]
+    while let Some(img_start) = result.find("![") {
+        if let Some(bracket_end) = result[img_start..].find(']') {
+            let abs_b_end = img_start + bracket_end;
+            if result[abs_b_end..].starts_with("](") {
+                if let Some(paren_end) = result[abs_b_end..].find(')') {
+                    let abs_p_end = abs_b_end + paren_end;
+                    let alt = &result[img_start + 2..abs_b_end];
+                    let replacement = if alt.trim().is_empty() {
+                        String::new()
+                    } else {
+                        format!("[Gambar: {}]", alt.trim())
+                    };
+                    result.replace_range(img_start..=abs_p_end, &replacement);
+                    continue;
+                }
+            }
+        }
+        break;
+    }
+
+    // 2. Tautan Markdown: [text](url) -> text
+    while let Some(link_start) = result.find('[') {
+        if link_start > 0 && result.as_bytes()[link_start - 1] == b'!' {
+            break;
+        }
+        if let Some(bracket_end) = result[link_start..].find(']') {
+            let abs_b_end = link_start + bracket_end;
+            if result[abs_b_end..].starts_with("](") {
+                if let Some(paren_end) = result[abs_b_end..].find(')') {
+                    let abs_p_end = abs_b_end + paren_end;
+                    let inner_text = result[link_start + 1..abs_b_end].to_string();
+                    result.replace_range(link_start..=abs_p_end, &inner_text);
+                    continue;
+                }
+            }
+        }
+        break;
+    }
+
+    // 3. Autolink: <http://...> atau <https://...>
+    while let Some(start) = result.find("<http") {
+        if let Some(end) = result[start..].find('>') {
+            let url = result[start + 1..start + end].to_string();
+            result.replace_range(start..=start + end, &url);
+        } else {
+            break;
+        }
+    }
+
+    // 4. Bold & Italic: ***text***
+    while let Some(start) = result.find("***") {
+        if let Some(end) = result[start + 3..].find("***") {
+            let abs_end = start + 3 + end;
+            let inner = result[start + 3..abs_end].to_string();
+            result.replace_range(start..abs_end + 3, &inner);
+        } else {
+            break;
+        }
+    }
+
+    // 5. Bold: **text**
+    while let Some(start) = result.find("**") {
+        if let Some(end) = result[start + 2..].find("**") {
+            let abs_end = start + 2 + end;
+            let inner = result[start + 2..abs_end].to_string();
+            result.replace_range(start..abs_end + 2, &inner);
+        } else {
+            break;
+        }
+    }
+
+    // 6. Bold underscore: __text__
+    while let Some(start) = result.find("__") {
+        if let Some(end) = result[start + 2..].find("__") {
+            let abs_end = start + 2 + end;
+            let inner = result[start + 2..abs_end].to_string();
+            result.replace_range(start..abs_end + 2, &inner);
+        } else {
+            break;
+        }
+    }
+
+    // 7. Inline code: `code`
+    while let Some(start) = result.find('`') {
+        if let Some(end) = result[start + 1..].find('`') {
+            let abs_end = start + 1 + end;
+            let inner = result[start + 1..abs_end].to_string();
+            result.replace_range(start..abs_end + 1, &inner);
+        } else {
+            break;
+        }
+    }
+
+    // 8. Strikethrough: ~~text~~
+    while let Some(start) = result.find("~~") {
+        if let Some(end) = result[start + 2..].find("~~") {
+            let abs_end = start + 2 + end;
+            let inner = result[start + 2..abs_end].to_string();
+            result.replace_range(start..abs_end + 2, &inner);
+        } else {
+            break;
+        }
+    }
+
+    // 9. Italic: *text* (hindari bullet point '* ' atau ekspresi matematika)
+    let mut cleaned_italic = String::with_capacity(result.len());
+    let chars: Vec<char> = result.chars().collect();
+    let mut i = 0;
+    while i < chars.len() {
+        if chars[i] == '*' && i + 1 < chars.len() && chars[i + 1] != ' ' && chars[i + 1] != '*' {
+            let mut found_end = None;
+            for j in (i + 2)..chars.len() {
+                if chars[j] == '*' && chars[j - 1] != ' ' {
+                    found_end = Some(j);
+                    break;
+                }
+            }
+            if let Some(end_idx) = found_end {
+                for c in &chars[i + 1..end_idx] {
+                    cleaned_italic.push(*c);
+                }
+                i = end_idx + 1;
+                continue;
+            }
+        }
+        cleaned_italic.push(chars[i]);
+        i += 1;
+    }
+    result = cleaned_italic;
+
+    // 10. Tag HTML format sederhana
+    let html_tags = [
+        "<b>", "</b>", "<i>", "</i>", "<em>", "</em>",
+        "<strong>", "</strong>", "<code>", "</code>",
+        "<kbd>", "</kbd>", "<mark>", "</mark>",
+    ];
+    for tag in html_tags {
+        result = result.replace(tag, "");
+    }
+    result = result.replace("<br>", " ")
+        .replace("<br/>", " ")
+        .replace("<br />", " ");
+
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_clean_markdown_inline() {
+        assert_eq!(
+            clean_markdown_inline("**Pilar I: Kompiler & Linker**"),
+            "Pilar I: Kompiler & Linker"
+        );
+        assert_eq!(
+            clean_markdown_inline("[`src/compiler/pure_emitter.rs`](file:///path/to/pure_emitter.rs)"),
+            "src/compiler/pure_emitter.rs"
+        );
+        assert_eq!(
+            clean_markdown_inline("*third-party crates / packages*"),
+            "third-party crates / packages"
+        );
+        assert_eq!(
+            clean_markdown_inline("`widya wpm init <nama>`"),
+            "widya wpm init <nama>"
+        );
+        assert_eq!(
+            clean_markdown_inline("pure_emitter.rs dan pure_crypto.rs"),
+            "pure_emitter.rs dan pure_crypto.rs"
+        );
+        assert_eq!(
+            clean_markdown_inline("Teks dengan **tebal** dan `kode` serta [tautan](https://widya-lang.org)"),
+            "Teks dengan tebal dan kode serta tautan"
+        );
     }
 }

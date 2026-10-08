@@ -89,28 +89,27 @@ pub fn verify_package_signature(content: &[u8], sig: &PackageSignature) -> Resul
     if sig.algorithm != "Ed25519" {
         return Err(format!("Algoritma tanda tangan '{}' tidak didukung (harus Ed25519)", sig.algorithm));
     }
-    use crate::kripto::pure_crypto::{PureEd25519, PureHex};
-    let pk_bytes = PureHex::decode(&sig.public_key_hex)
+    use ed25519_dalek::{VerifyingKey, Signature, Verifier};
+    let pk_bytes = hex::decode(&sig.public_key_hex)
         .map_err(|e| format!("Kunci publik hex tidak valid: {}", e))?;
     if pk_bytes.len() != 32 {
         return Err("Panjang kunci publik Ed25519 harus tepat 32 byte".to_string());
     }
-    let mut pk_arr = [0u8; 32];
-    pk_arr.copy_from_slice(&pk_bytes);
+    let pk_arr: [u8; 32] = pk_bytes.try_into().map_err(|_| "Panjang kunci publik harus 32 byte".to_string())?;
+    let verifying_key = VerifyingKey::from_bytes(&pk_arr)
+        .map_err(|e| format!("Kunci publik Ed25519 tidak valid: {}", e))?;
 
-    let sig_bytes = PureHex::decode(&sig.signature_hex)
+    let sig_bytes = hex::decode(&sig.signature_hex)
         .map_err(|e| format!("Tanda tangan hex tidak valid: {}", e))?;
     if sig_bytes.len() != 64 {
         return Err("Panjang tanda tangan Ed25519 harus tepat 64 byte".to_string());
     }
-    let mut sig_arr = [0u8; 64];
-    sig_arr.copy_from_slice(&sig_bytes);
+    let sig_arr: [u8; 64] = sig_bytes.try_into().map_err(|_| "Panjang tanda tangan harus 64 byte".to_string())?;
+    let signature = Signature::from_bytes(&sig_arr);
 
-    let valid = PureEd25519::verify(&pk_arr, content, &sig_arr);
-    if valid {
-        Ok(true)
-    } else {
-        Err("Verifikasi tanda tangan kriptografis Ed25519 murni gagal".to_string())
+    match verifying_key.verify(content, &signature) {
+        Ok(()) => Ok(true),
+        Err(e) => Err(format!("Verifikasi tanda tangan kriptografis Ed25519 gagal: {}", e)),
     }
 }
 
