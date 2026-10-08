@@ -110,12 +110,95 @@ impl PureElfBuilder {
 
     /// sys_exit(code)
     pub fn emit_exit(&mut self, exit_code: u32) {
-        // mov eax, 60 (sys_exit)
-        self.emit_mov_rax_imm32(60);
-        // mov rdi, exit_code
-        self.emit_mov_rdi_imm32(exit_code);
-        // syscall
-        self.emit_syscall();
+        match self.arch {
+            MachineArch::X86_64 => {
+                // mov eax, 60 (sys_exit)
+                self.emit_mov_rax_imm32(60);
+                // mov rdi, exit_code
+                self.emit_mov_rdi_imm32(exit_code);
+                // syscall
+                self.emit_syscall();
+            }
+            MachineArch::AArch64 => {
+                self.emit_arm64_exit(exit_code as u16);
+            }
+            MachineArch::RiscV64 => {
+                // Future RISC-V implementation
+            }
+        }
+    }
+
+    // ========================================================================
+    // PEMBANGKIT INSTRUKSI AARCH64 (ARM64) MANDIRI (ZERO TOOLCHAIN)
+    // ========================================================================
+
+    /// Emit instruksi MOVZ Rd, #imm16, LSL #(shift_idx * 16)
+    /// Opcode AArch64 MOVZ 64-bit: 0xd2800000 | (hw << 21) | (imm16 << 5) | Rd
+    pub fn emit_arm64_movz(&mut self, rd: u8, imm16: u16, shift_idx: u8) {
+        let instr: u32 = 0xd2800000
+            | (((shift_idx as u32) & 0x3) << 21)
+            | (((imm16 as u32) & 0xFFFF) << 5)
+            | ((rd as u32) & 0x1F);
+        self.code_bytes.extend_from_slice(&instr.to_le_bytes());
+    }
+
+    /// Emit instruksi MOVK Rd, #imm16, LSL #(shift_idx * 16)
+    /// Opcode AArch64 MOVK 64-bit: 0xf2800000 | (hw << 21) | (imm16 << 5) | Rd
+    pub fn emit_arm64_movk(&mut self, rd: u8, imm16: u16, shift_idx: u8) {
+        let instr: u32 = 0xf2800000
+            | (((shift_idx as u32) & 0x3) << 21)
+            | (((imm16 as u32) & 0xFFFF) << 5)
+            | ((rd as u32) & 0x1F);
+        self.code_bytes.extend_from_slice(&instr.to_le_bytes());
+    }
+
+    /// Memuat nilai 64-bit ke register AArch64 menggunakan kombinasi MOVZ dan MOVK
+    pub fn emit_arm64_mov_imm64(&mut self, rd: u8, val: u64) {
+        let p0 = (val & 0xFFFF) as u16;
+        let p1 = ((val >> 16) & 0xFFFF) as u16;
+        let p2 = ((val >> 32) & 0xFFFF) as u16;
+        let p3 = ((val >> 48) & 0xFFFF) as u16;
+
+        self.emit_arm64_movz(rd, p0, 0);
+        if p1 != 0 {
+            self.emit_arm64_movk(rd, p1, 1);
+        }
+        if p2 != 0 {
+            self.emit_arm64_movk(rd, p2, 2);
+        }
+        if p3 != 0 {
+            self.emit_arm64_movk(rd, p3, 3);
+        }
+    }
+
+    /// Emit instruksi syscall AArch64: `svc #0`
+    /// Opcode AArch64: 0xd4000001 (Little Endian: 01 00 00 d4)
+    pub fn emit_arm64_svc_zero(&mut self) {
+        self.code_bytes.extend_from_slice(&0xd4000001u32.to_le_bytes());
+    }
+
+    /// sys_exit untuk Linux AArch64 (Syscall nr 93 di register x8, kode keluar di x0)
+    pub fn emit_arm64_exit(&mut self, exit_code: u16) {
+        // movz x8, #93 (Linux sys_exit di ARM64)
+        self.emit_arm64_movz(8, 93, 0);
+        // movz x0, exit_code
+        self.emit_arm64_movz(0, exit_code, 0);
+        // svc #0
+        self.emit_arm64_svc_zero();
+    }
+
+    /// sys_write untuk Linux AArch64 (Syscall nr 64 di register x8: write(x0=fd, x1=buf, x2=len))
+    pub fn emit_arm64_write(&mut self, fd: u16, buf_addr: u64, len: u16) {
+        // movz x8, #64 (Linux sys_write di ARM64)
+        self.emit_arm64_movz(8, 64, 0);
+        // movz x0, fd
+        self.emit_arm64_movz(0, fd, 0);
+        // x1 = buf_addr
+        self.emit_arm64_mov_imm64(1, buf_addr);
+        // movz x2, len
+        self.emit_arm64_movz(2, len, 0);
+        // svc #0
+        self.emit_arm64_svc_zero();
     }
 
     /// Rakit dan hasilkan citra biner berkas ELF-64 mandiri
@@ -252,6 +335,39 @@ mod tests {
 
         // Periksa bahwa segmen kode memuat opcode syscall
         assert!(binary.windows(2).any(|w| w == [0x0F, 0x05]), "Harus mengandung instruksi syscall x86_64");
+
+        // Periksa bahwa segmen data memuat string pesan
+        assert!(binary.windows(pesan.len()).any(|w| w == pesan), "Segmen data harus memuat teks pesan");
+    }
+
+    #[test]
+    fn test_arm64_emitter_structure() {
+        let mut builder = PureElfBuilder::new(MachineArch::AArch64);
+
+        let pesan = b"Widya Sovereign AArch64 Linux Native 2026\n";
+        let pesan_addr = builder.add_rodata(pesan);
+
+        // sys_write(stdout, pesan_addr, len)
+        builder.emit_arm64_write(1, pesan_addr, pesan.len() as u16);
+
+        // sys_exit(0)
+        builder.emit_exit(0);
+
+        let binary = builder.build_elf_binary();
+
+        // Validasi header ELF AArch64
+        assert!(binary.len() >= 64);
+        assert_eq!(&binary[0..4], b"\x7fELF");
+        assert_eq!(binary[4], 2, "Harus format 64-bit");
+        assert_eq!(binary[5], 1, "Harus Little-Endian");
+        let e_machine = u16::from_le_bytes([binary[18], binary[19]]);
+        assert_eq!(e_machine, 183, "e_machine harus EM_AARCH64 (183)");
+
+        // Periksa bahwa segmen kode memuat opcode svc #0 (0x01, 0x00, 0x00, 0xd4)
+        assert!(
+            binary.windows(4).any(|w| w == [0x01, 0x00, 0x00, 0xd4]),
+            "Harus mengandung instruksi svc #0 AArch64"
+        );
 
         // Periksa bahwa segmen data memuat string pesan
         assert!(binary.windows(pesan.len()).any(|w| w == pesan), "Segmen data harus memuat teks pesan");

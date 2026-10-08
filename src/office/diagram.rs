@@ -251,6 +251,154 @@ impl WidyaDiagram {
     }
 }
 
+/// Jenis Panah / Relasi dalam Diagram Urutan (Sequence Diagram)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SequenceArrowType {
+    SolidArrow,   // ->>
+    DashedArrow,  // -->>
+    SolidLine,    // ->
+    DashedLine,   // -->
+}
+
+/// Pesan Interaksi antar Partisipan
+#[derive(Debug, Clone)]
+pub struct SequenceMessage {
+    pub from: String,
+    pub to: String,
+    pub arrow: SequenceArrowType,
+    pub text: String,
+}
+
+/// Partisipan / Entitas dalam Sequence Diagram
+#[derive(Debug, Clone)]
+pub struct SequenceParticipant {
+    pub id: String,
+    pub label: String,
+}
+
+/// Struktur Data Diagram Urutan (Mermaid Sequence Diagram)
+#[derive(Debug, Clone)]
+pub struct WidyaSequenceDiagram {
+    pub title: Option<String>,
+    pub participants: Vec<SequenceParticipant>,
+    pub messages: Vec<SequenceMessage>,
+}
+
+impl WidyaSequenceDiagram {
+    pub fn parse(source: &str) -> Option<Self> {
+        let mut is_sequence = false;
+        let mut title = None;
+        let mut participants: Vec<SequenceParticipant> = Vec::new();
+        let mut messages: Vec<SequenceMessage> = Vec::new();
+
+        for raw_line in source.lines() {
+            let line = raw_line.trim();
+            if line.is_empty() || line.starts_with("%%") {
+                continue;
+            }
+
+            if line.starts_with("sequenceDiagram") {
+                is_sequence = true;
+                continue;
+            }
+
+            if !is_sequence {
+                continue;
+            }
+
+            if line.starts_with("title:") || line.starts_with("title ") {
+                let t = line.trim_start_matches("title:").trim_start_matches("title").trim();
+                title = Some(clean_markdown_inline(t));
+                continue;
+            }
+
+            if line.starts_with("autonumber") {
+                continue;
+            }
+
+            // Deklarasi Partisipan / Actor: participant A as Alice atau participant A
+            if line.starts_with("participant") || line.starts_with("actor") {
+                let rest = if line.starts_with("participant") {
+                    line.trim_start_matches("participant").trim()
+                } else {
+                    line.trim_start_matches("actor").trim()
+                };
+
+                let (id, label) = if let Some(as_pos) = rest.find(" as ") {
+                    let id = rest[..as_pos].trim().to_string();
+                    let lbl = rest[as_pos + 4..].trim().trim_matches('"').to_string();
+                    (id, lbl)
+                } else {
+                    let clean = rest.trim_matches('"').to_string();
+                    (clean.clone(), clean)
+                };
+
+                if !participants.iter().any(|p| p.id == id) {
+                    participants.push(SequenceParticipant {
+                        id,
+                        label: clean_markdown_inline(&label),
+                    });
+                }
+                continue;
+            }
+
+            // Pesan Interaksi: A->>B: text atau A-->>B: text atau A->B: text atau A-->B: text
+            let arrow_info = if line.contains("-->>") {
+                Some(("-->>", SequenceArrowType::DashedArrow))
+            } else if line.contains("->>") {
+                Some(("->>", SequenceArrowType::SolidArrow))
+            } else if line.contains("-->") {
+                Some(("-->", SequenceArrowType::DashedLine))
+            } else if line.contains("->") {
+                Some(("->", SequenceArrowType::SolidLine))
+            } else {
+                None
+            };
+
+            if let Some((arrow_str, arrow_type)) = arrow_info {
+                let (conn_part, text_part) = if let Some(colon_pos) = line.find(':') {
+                    (&line[..colon_pos], line[colon_pos + 1..].trim())
+                } else {
+                    (line, "")
+                };
+
+                let parts: Vec<&str> = conn_part.split(arrow_str).collect();
+                if parts.len() >= 2 {
+                    let from = parts[0].trim().to_string();
+                    let to = parts[1].trim().to_string();
+
+                    // Daftarkan partisipan otomatis jika belum ada
+                    for part_id in [&from, &to] {
+                        if !participants.iter().any(|p| p.id == **part_id) {
+                            participants.push(SequenceParticipant {
+                                id: (*part_id).clone(),
+                                label: clean_markdown_inline(part_id),
+                            });
+                        }
+                    }
+
+                    messages.push(SequenceMessage {
+                        from,
+                        to,
+                        arrow: arrow_type,
+                        text: clean_markdown_inline(text_part),
+                    });
+                }
+            }
+        }
+
+        if is_sequence {
+            Some(Self {
+                title,
+                participants,
+                messages,
+            })
+        } else {
+            None
+        }
+    }
+}
+
 /// Mesin Pembangkit Diagram Vektor Mandiri Widya-Lang (Zero Dependency)
 pub struct WidyaDiagramEngine;
 
@@ -263,10 +411,23 @@ impl WidyaDiagramEngine {
         current_y: f32,
         content_width: f32,
     ) -> f32 {
-        let diagram = WidyaDiagram::parse(source);
         let (_, page_height) = pdf.page_size.dimensions_points();
 
-        // 1. Jika diagram memiliki Subgraph (Diagram Arsitektur Sistem)
+        // 1. Cek apakah ini Mermaid Sequence Diagram
+        if let Some(seq_diag) = WidyaSequenceDiagram::parse(source) {
+            return Self::render_sequence_diagram(
+                pdf,
+                &seq_diag,
+                margin_x,
+                current_y,
+                content_width,
+                page_height,
+            );
+        }
+
+        let diagram = WidyaDiagram::parse(source);
+
+        // 2. Jika diagram memiliki Subgraph (Diagram Arsitektur Sistem)
         if !diagram.subgraphs.is_empty() {
             return Self::render_subgraph_architecture(
                 pdf,
@@ -278,7 +439,7 @@ impl WidyaDiagramEngine {
             );
         }
 
-        // 2. Jika diagram flowchart sederhana tanpa Subgraph
+        // 3. Jika diagram flowchart sederhana tanpa Subgraph
         if !diagram.nodes.is_empty() {
             return Self::render_simple_flowchart(
                 pdf,
@@ -552,6 +713,190 @@ impl WidyaDiagramEngine {
         current_y -= total_chart_h;
         current_y
     }
+
+    /// Render Diagram Urutan (Mermaid Sequence Diagram) ke Elemen Vektor Asli PDF
+    fn render_sequence_diagram(
+        pdf: &mut PdfDocument,
+        diag: &WidyaSequenceDiagram,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+        page_height: f32,
+    ) -> f32 {
+        if diag.participants.is_empty() {
+            return current_y;
+        }
+
+        let banner_h = 22.0;
+        let box_h = 20.0;
+        let msg_h = 24.0;
+        let total_diag_h = banner_h + 10.0 + box_h + 10.0 + (diag.messages.len() as f32 * msg_h) + 12.0 + box_h + 14.0;
+
+        if current_y - total_diag_h < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        // 1. Banner Judul Sequence Diagram
+        let page = pdf.current_page_mut();
+        let title_text = diag.title.as_deref().unwrap_or("DIAGRAM URUTAN (SEQUENCE DIAGRAM) & ALUR PESAN");
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
+        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
+        page.add_styled_text(
+            title_text,
+            margin_x + 12.0,
+            current_y - 15.0,
+            9.5,
+            true,
+            (0.08, 0.22, 0.48),
+        );
+        current_y -= banner_h + 10.0;
+
+        // 2. Hitung Posisi Partisipan
+        let n = diag.participants.len();
+        let col_w = content_width / n as f32;
+        let box_w = (col_w - 12.0).min(110.0).max(45.0);
+
+        let mut x_centers: HashMap<String, f32> = HashMap::new();
+        for (i, p) in diag.participants.iter().enumerate() {
+            let cx = margin_x + (i as f32 + 0.5) * col_w;
+            x_centers.insert(p.id.clone(), cx);
+        }
+
+        let top_box_bottom_y = current_y - box_h;
+
+        // Render Kotak Partisipan Bagian Atas
+        for p in &diag.participants {
+            if let Some(&cx) = x_centers.get(&p.id) {
+                let bx = cx - box_w / 2.0;
+                let page = pdf.current_page_mut();
+                page.add_rect(bx, current_y - box_h, box_w, box_h, true, (0.12, 0.28, 0.52));
+                page.add_rect(bx, current_y - box_h, box_w, box_h, false, (0.2, 0.45, 0.75));
+
+                let label_text = if p.label.chars().count() > 16 {
+                    let tr: String = p.label.chars().take(14).collect();
+                    format!("{}..", tr)
+                } else {
+                    p.label.clone()
+                };
+                let tw = crate::office::pdf::styled_string_width(&label_text, 8.5, true, false);
+                let tx = (cx - tw / 2.0).max(bx + 2.0);
+                page.add_styled_text(&label_text, tx, current_y - 13.5, 8.5, true, (1.0, 1.0, 1.0));
+            }
+        }
+        current_y -= box_h + 10.0;
+
+        // Hitung Y akhir untuk lifelines
+        let lifeline_start_y = top_box_bottom_y;
+        let lifeline_end_y = current_y - (diag.messages.len() as f32 * msg_h) - 4.0;
+
+        // 3. Render Garis Hidup Vertikal (Lifeline)
+        for p in &diag.participants {
+            if let Some(&cx) = x_centers.get(&p.id) {
+                Self::draw_dashed_vertical_line(pdf.current_page_mut(), cx, lifeline_start_y, lifeline_end_y, 0.8, (0.65, 0.70, 0.78));
+            }
+        }
+
+        // 4. Render Pesan Interaksi
+        for msg in &diag.messages {
+            let arrow_y = current_y - 12.0;
+            if let (Some(&x1), Some(&x2)) = (x_centers.get(&msg.from), x_centers.get(&msg.to)) {
+                let page = pdf.current_page_mut();
+
+                // Teks pesan di atas garis panah
+                if !msg.text.is_empty() {
+                    let mid_x = (x1 + x2) / 2.0;
+                    let tw = crate::office::pdf::styled_string_width(&msg.text, 8.0, false, false);
+                    let tx = (mid_x - tw / 2.0).max(margin_x + 4.0).min(margin_x + content_width - tw - 4.0);
+                    page.add_styled_text(&msg.text, tx, arrow_y + 3.0, 8.0, false, (0.12, 0.20, 0.35));
+                }
+
+                // Garis Panah
+                let is_dashed = msg.arrow == SequenceArrowType::DashedArrow || msg.arrow == SequenceArrowType::DashedLine;
+                let color = (0.2, 0.45, 0.75);
+
+                if is_dashed {
+                    Self::draw_dashed_horizontal_line(page, x1, x2, arrow_y, 1.0, color);
+                } else {
+                    page.add_styled_line(x1, arrow_y, x2, arrow_y, 1.0, color);
+                }
+
+                // Kepala Panah jika SolidArrow atau DashedArrow
+                if msg.arrow == SequenceArrowType::SolidArrow || msg.arrow == SequenceArrowType::DashedArrow {
+                    if x2 > x1 {
+                        page.add_arrow(x2 - 8.0, arrow_y, x2, arrow_y, 1.0, color);
+                    } else if x2 < x1 {
+                        page.add_arrow(x2 + 8.0, arrow_y, x2, arrow_y, 1.0, color);
+                    }
+                }
+            }
+            current_y -= msg_h;
+        }
+
+        current_y -= 8.0;
+
+        // 5. Render Kotak Partisipan Bagian Bawah
+        for p in &diag.participants {
+            if let Some(&cx) = x_centers.get(&p.id) {
+                let bx = cx - box_w / 2.0;
+                let page = pdf.current_page_mut();
+                page.add_rect(bx, current_y - box_h, box_w, box_h, true, (0.92, 0.95, 0.99));
+                page.add_rect(bx, current_y - box_h, box_w, box_h, false, (0.2, 0.45, 0.75));
+
+                let label_text = if p.label.chars().count() > 16 {
+                    let tr: String = p.label.chars().take(14).collect();
+                    format!("{}..", tr)
+                } else {
+                    p.label.clone()
+                };
+                let tw = crate::office::pdf::styled_string_width(&label_text, 8.5, true, false);
+                let tx = (cx - tw / 2.0).max(bx + 2.0);
+                page.add_styled_text(&label_text, tx, current_y - 13.5, 8.5, true, (0.12, 0.28, 0.52));
+            }
+        }
+        current_y -= box_h + 12.0;
+
+        current_y
+    }
+
+    fn draw_dashed_horizontal_line(
+        page: &mut PdfPage,
+        x1: f32,
+        x2: f32,
+        y: f32,
+        width: f32,
+        color: (f32, f32, f32),
+    ) {
+        let (min_x, max_x) = if x1 < x2 { (x1, x2) } else { (x2, x1) };
+        let dash_len = 4.0;
+        let gap_len = 3.0;
+        let mut cur = min_x;
+        while cur < max_x {
+            let next = (cur + dash_len).min(max_x);
+            page.add_styled_line(cur, y, next, y, width, color);
+            cur += dash_len + gap_len;
+        }
+    }
+
+    fn draw_dashed_vertical_line(
+        page: &mut PdfPage,
+        x: f32,
+        y_start: f32,
+        y_end: f32,
+        width: f32,
+        color: (f32, f32, f32),
+    ) {
+        let (top_y, bot_y) = if y_start > y_end { (y_start, y_end) } else { (y_end, y_start) };
+        let dash_len = 4.0;
+        let gap_len = 3.0;
+        let mut cur = top_y;
+        while cur > bot_y {
+            let next = (cur - dash_len).max(bot_y);
+            page.add_styled_line(x, cur, x, next, width, color);
+            cur -= dash_len + gap_len;
+        }
+    }
 }
 
 #[cfg(test)]
@@ -597,5 +942,43 @@ mod tests {
         assert_eq!(diagram.nodes.len(), 3);
         assert_eq!(diagram.edges.len(), 2);
         assert_eq!(diagram.nodes[0].label, "Mulai");
+    }
+
+    #[test]
+    fn test_parse_and_render_sequence_diagram() {
+        let code = r#"
+        sequenceDiagram
+            title: Alur Autentikasi Pengguna
+            participant Klien as Aplikasi Web
+            participant Auth as Server Autentikasi
+            participant DB as Basis Data Widya
+
+            Klien->>Auth: POST /login (username, password)
+            Auth->>DB: Cari identitas & hash argon2
+            DB-->>Auth: Data akun terverifikasi
+            Auth-->>Klien: JWT Token 200 OK
+        "#;
+
+        let seq = WidyaSequenceDiagram::parse(code);
+        assert!(seq.is_some(), "Sequence diagram harus berhasil di-parse");
+        let diag = seq.unwrap();
+        assert_eq!(diag.title.as_deref(), Some("Alur Autentikasi Pengguna"));
+        assert_eq!(diag.participants.len(), 3);
+        assert_eq!(diag.participants[0].id, "Klien");
+        assert_eq!(diag.participants[0].label, "Aplikasi Web");
+        assert_eq!(diag.participants[2].id, "DB");
+        assert_eq!(diag.participants[2].label, "Basis Data Widya");
+        assert_eq!(diag.messages.len(), 4);
+        assert_eq!(diag.messages[0].from, "Klien");
+        assert_eq!(diag.messages[0].to, "Auth");
+        assert_eq!(diag.messages[0].arrow, SequenceArrowType::SolidArrow);
+        assert_eq!(diag.messages[2].arrow, SequenceArrowType::DashedArrow);
+
+        // Uji rendering ke PDF
+        let mut pdf = PdfDocument::new("Uji Sequence Diagram");
+        let final_y = WidyaDiagramEngine::render_to_pdf(&mut pdf, code, 50.0, 750.0, 480.0);
+        assert!(final_y < 750.0, "Y position harus berkurang setelah render");
+        let bytes = pdf.generate_pdf_bytes();
+        assert!(!bytes.is_empty(), "Bytes PDF hasil render sequence diagram harus valid");
     }
 }

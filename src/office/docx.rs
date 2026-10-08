@@ -18,6 +18,7 @@ pub struct TextStyle {
     pub font_family: String,
     pub is_rtl: bool,
     pub is_monospace: bool,
+    pub link_url: Option<String>,
 }
 
 impl TextStyle {
@@ -32,6 +33,7 @@ impl TextStyle {
             font_family: "Calibri".to_string(),
             is_rtl: false,
             is_monospace: false,
+            link_url: None,
         }
     }
 
@@ -62,10 +64,11 @@ impl TextStyle {
         s
     }
 
-    pub fn link() -> Self {
+    pub fn link(url: &str) -> Self {
         let mut s = Self::new();
         s.underline = true;
         s.color_hex = Some("#0284c7".to_string());
+        s.link_url = Some(url.to_string());
         s
     }
 
@@ -89,10 +92,15 @@ pub struct TextRun {
 pub enum DocxElement {
     Heading { level: u8, text: String },
     Paragraph { runs: Vec<TextRun>, align: String, is_rtl: bool },
-    Table { rows: Vec<Vec<String>>, has_header: bool },
+    Table {
+        rows: Vec<Vec<String>>,
+        has_header: bool,
+        alignments: Vec<crate::office::markdown::ColumnAlignment>,
+    },
     PageBreak,
     Divider,
     BulletItem { runs: Vec<TextRun>, indent_level: u8 },
+    NumberedItem { number: usize, runs: Vec<TextRun>, indent_level: u8 },
     Callout { title: String, text: String, border_color: String },
     Diagram { raw_mermaid: String },
 }
@@ -171,6 +179,7 @@ impl DocxDocument {
                     font_family: "Calibri".to_string(),
                     is_rtl: false,
                     is_monospace: false,
+                    link_url: None,
                 },
             }],
             align: "left".to_string(),
@@ -193,6 +202,7 @@ impl DocxDocument {
                     font_family: "Amiri".to_string(),
                     is_rtl: true,
                     is_monospace: false,
+                    link_url: None,
                 },
             }],
             align: "right".to_string(),
@@ -215,6 +225,7 @@ impl DocxDocument {
                     font_family: font_family.unwrap_or("Amiri").to_string(),
                     is_rtl: true,
                     is_monospace: false,
+                    link_url: None,
                 },
             }],
             align: "right".to_string(),
@@ -223,7 +234,28 @@ impl DocxDocument {
     }
 
     pub fn add_table(&mut self, rows: Vec<Vec<String>>, has_header: bool) {
-        self.elements.push(DocxElement::Table { rows, has_header });
+        self.add_table_aligned(rows, has_header, Vec::new());
+    }
+
+    pub fn add_table_aligned(
+        &mut self,
+        rows: Vec<Vec<String>>,
+        has_header: bool,
+        alignments: Vec<crate::office::markdown::ColumnAlignment>,
+    ) {
+        self.elements.push(DocxElement::Table {
+            rows,
+            has_header,
+            alignments,
+        });
+    }
+
+    pub fn add_numbered_runs(&mut self, number: usize, runs: Vec<TextRun>, indent_level: u8) {
+        self.elements.push(DocxElement::NumberedItem {
+            number,
+            runs,
+            indent_level,
+        });
     }
 
     pub fn add_bullet(&mut self, text: &str) {
@@ -322,6 +354,11 @@ impl DocxDocument {
                         r.text = OfficeSecurity::redact_pdp_sensitive_text(&r.text);
                     }
                 }
+                DocxElement::NumberedItem { runs, .. } => {
+                    for r in runs {
+                        r.text = OfficeSecurity::redact_pdp_sensitive_text(&r.text);
+                    }
+                }
                 DocxElement::Callout { text, .. } => {
                     *text = OfficeSecurity::redact_pdp_sensitive_text(text);
                 }
@@ -368,6 +405,13 @@ impl DocxDocument {
                 }
                 DocxElement::BulletItem { runs, .. } => {
                     out.push_str("• ");
+                    for r in runs {
+                        out.push_str(&r.text);
+                    }
+                    out.push('\n');
+                }
+                DocxElement::NumberedItem { number, runs, .. } => {
+                    out.push_str(&format!("{}. ", number));
                     for r in runs {
                         out.push_str(&r.text);
                     }
@@ -441,12 +485,17 @@ impl DocxDocument {
                     }
                     xml.push_str("</w:p>");
                 }
-                DocxElement::Table { rows, .. } => {
+                DocxElement::Table { rows, alignments, .. } => {
                     xml.push_str("<w:tbl><w:tblPr><w:tblBorders><w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/><w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/><w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/></w:tblBorders></w:tblPr>");
                     for row in rows {
                         xml.push_str("<w:tr>");
-                        for cell in row {
-                            xml.push_str("<w:tc><w:p>");
+                        for (c_idx, cell) in row.iter().enumerate() {
+                            let jc_tag = match alignments.get(c_idx) {
+                                Some(crate::office::markdown::ColumnAlignment::Center) => r#"<w:pPr><w:jc w:val="center"/></w:pPr>"#,
+                                Some(crate::office::markdown::ColumnAlignment::Right) => r#"<w:pPr><w:jc w:val="right"/></w:pPr>"#,
+                                _ => "",
+                            };
+                            xml.push_str(&format!("<w:tc><w:p>{}", jc_tag));
                             let runs = parse_markdown_runs(cell);
                             for r in runs {
                                 xml.push_str("<w:r>");
@@ -476,6 +525,36 @@ impl DocxDocument {
                     xml.push_str(&format!(
                         r#"<w:p><w:pPr><w:numPr><w:ilvl w:val="{}"/><w:numId w:val="1"/></w:numPr></w:pPr>"#,
                         indent_level
+                    ));
+                    for r in runs {
+                        xml.push_str("<w:r>");
+                        let mut rpr = String::new();
+                        if r.style.is_rtl { rpr.push_str("<w:rtl/>"); }
+                        if r.style.bold { rpr.push_str("<w:b/>"); }
+                        if r.style.italic { rpr.push_str("<w:i/>"); }
+                        if r.style.underline { rpr.push_str(r#"<w:u w:val="single"/>"#); }
+                        if r.style.strikethrough { rpr.push_str(r#"<w:strike/>"#); }
+                        if r.style.font_size_pt > 0.0 {
+                            rpr.push_str(&format!(r#"<w:sz w:val="{}"/>"#, (r.style.font_size_pt * 2.0) as u32));
+                        }
+                        if let Some(ref c) = r.style.color_hex {
+                            rpr.push_str(&format!(r#"<w:color w:val="{}"/>"#, c.trim_start_matches('#')));
+                        }
+                        if !r.style.font_family.is_empty() {
+                            rpr.push_str(&format!(r#"<w:rFonts w:ascii="{0}" w:hAnsi="{0}" w:cs="{0}"/>"#, r.style.font_family));
+                        }
+                        if !rpr.is_empty() {
+                            xml.push_str(&format!("<w:rPr>{}</w:rPr>", rpr));
+                        }
+                        xml.push_str(&format!("<w:t>{}</w:t></w:r>", html_escape(&r.text)));
+                    }
+                    xml.push_str("</w:p>");
+                }
+                DocxElement::NumberedItem { number, runs, indent_level } => {
+                    let indent_val = 720 + (*indent_level as usize * 360);
+                    xml.push_str(&format!(
+                        r#"<w:p><w:pPr><w:numPr><w:ilvl w:val="{}"/><w:numId w:val="2"/></w:numPr><w:ind w:left="{}" w:hanging="360"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="0369A1"/></w:rPr><w:t>{}. </w:t></w:r>"#,
+                        indent_level, indent_val, number
                     ));
                     for r in runs {
                         xml.push_str("<w:r>");
@@ -670,13 +749,18 @@ impl DocxDocument {
                     }
                     html.push_str("</p>");
                 }
-                DocxElement::Table { rows, has_header } => {
+                DocxElement::Table { rows, has_header, alignments } => {
                     html.push_str("<table>");
                     for (i, row) in rows.iter().enumerate() {
                         html.push_str("<tr>");
-                        for cell in row {
+                        for (c_idx, cell) in row.iter().enumerate() {
                             let tag = if i == 0 && *has_header { "th" } else { "td" };
-                            html.push_str(&format!("<{}>", tag));
+                            let align_style = match alignments.get(c_idx) {
+                                Some(crate::office::markdown::ColumnAlignment::Center) => "text-align: center;",
+                                Some(crate::office::markdown::ColumnAlignment::Right) => "text-align: right;",
+                                _ => "text-align: left;",
+                            };
+                            html.push_str(&format!("<{} style='{}'>", tag, align_style));
                             let runs = parse_markdown_runs(cell);
                             for r in runs {
                                 let mut style = String::new();
@@ -703,6 +787,19 @@ impl DocxDocument {
                         html.push_str(&format!("<span style='{}'>{}</span>", style, html_escape(&r.text)));
                     }
                     html.push_str("</li></ul>");
+                }
+                DocxElement::NumberedItem { number, runs, indent_level } => {
+                    let pad = 20 + (*indent_level as usize * 16);
+                    html.push_str(&format!(r#"<div style="margin-left: {}px; margin-bottom: 4px; display: flex;"><span style="min-width: 22px; font-weight: bold; color: #0284c7;">{}. </span><div>"#, pad, number));
+                    for r in runs {
+                        let mut style = String::new();
+                        if r.style.bold { style.push_str("font-weight:bold;"); }
+                        if r.style.italic { style.push_str("font-style:italic;"); }
+                        if r.style.is_monospace { style.push_str("font-family:'Courier New', monospace;"); }
+                        if let Some(ref c) = r.style.color_hex { style.push_str(&format!("color:{};", c)); }
+                        html.push_str(&format!("<span style='{}'>{}</span>", style, html_escape(&r.text)));
+                    }
+                    html.push_str("</div></div>");
                 }
                 DocxElement::Callout { title, text, border_color } => {
                     html.push_str(&format!(
@@ -774,7 +871,7 @@ pub fn parse_markdown_runs(text: &str) -> Vec<TextRun> {
     parse_spans_internal(text, InlineSpanStyle::default())
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 struct InlineSpanStyle {
     bold: bool,
     italic: bool,
@@ -782,6 +879,7 @@ struct InlineSpanStyle {
     strikethrough: bool,
     monospace: bool,
     is_link: bool,
+    link_url: Option<String>,
 }
 
 impl InlineSpanStyle {
@@ -806,6 +904,7 @@ impl InlineSpanStyle {
             },
             is_rtl: false,
             is_monospace: self.monospace,
+            link_url: self.link_url.clone(),
         }
     }
 }
@@ -861,8 +960,10 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
                         let abs_p = abs_b + 2 + paren_end;
                         flush_buf(&mut plain_buf, &mut runs, &current_style);
                         let link_text: String = chars[i + 1..abs_b].iter().collect();
-                        let mut sub_style = current_style;
+                        let link_url: String = chars[abs_b + 2..abs_p].iter().collect();
+                        let mut sub_style = current_style.clone();
                         sub_style.is_link = true;
+                        sub_style.link_url = Some(link_url);
                         let sub_runs = parse_spans_internal(&link_text, sub_style);
                         runs.extend(sub_runs);
                         i = abs_p + 1;
@@ -878,7 +979,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
                 let abs_end = i + 1 + end;
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let code_text: String = chars[i + 1..abs_end].iter().collect();
-                let mut code_style = current_style;
+                let mut code_style = current_style.clone();
                 code_style.monospace = true;
                 runs.push(TextRun {
                     text: code_text,
@@ -901,7 +1002,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_idx) = found_end {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner: String = chars[i + 3..end_idx].iter().collect();
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.bold = true;
                 next_style.italic = true;
                 runs.extend(parse_spans_internal(&inner, next_style));
@@ -922,7 +1023,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_idx) = found_end {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner: String = chars[i + 2..end_idx].iter().collect();
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.bold = true;
                 runs.extend(parse_spans_internal(&inner, next_style));
                 i = end_idx + 2;
@@ -942,7 +1043,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_idx) = found_end {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner: String = chars[i + 2..end_idx].iter().collect();
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.bold = true;
                 runs.extend(parse_spans_internal(&inner, next_style));
                 i = end_idx + 2;
@@ -962,7 +1063,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_idx) = found_end {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner: String = chars[i + 2..end_idx].iter().collect();
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.strikethrough = true;
                 runs.extend(parse_spans_internal(&inner, next_style));
                 i = end_idx + 2;
@@ -985,7 +1086,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_idx) = found_end {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner: String = chars[i + 1..end_idx].iter().collect();
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.italic = true;
                 runs.extend(parse_spans_internal(&inner, next_style));
                 i = end_idx + 1;
@@ -1009,7 +1110,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_idx) = found_end {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner: String = chars[i + 1..end_idx].iter().collect();
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.italic = true;
                 runs.extend(parse_spans_internal(&inner, next_style));
                 i = end_idx + 1;
@@ -1025,7 +1126,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_pos) = remaining[tag_len..].find(close_tag) {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner = &remaining[tag_len..tag_len + end_pos];
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.bold = true;
                 runs.extend(parse_spans_internal(inner, next_style));
                 let advance = tag_len + end_pos + close_tag.len();
@@ -1039,7 +1140,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_pos) = remaining[tag_len..].find(close_tag) {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner = &remaining[tag_len..tag_len + end_pos];
-                let mut next_style = current_style;
+                let mut next_style = current_style.clone();
                 next_style.italic = true;
                 runs.extend(parse_spans_internal(inner, next_style));
                 let advance = tag_len + end_pos + close_tag.len();
@@ -1051,7 +1152,7 @@ fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<Text
             if let Some(end_pos) = remaining[6..].find("</code>") {
                 flush_buf(&mut plain_buf, &mut runs, &current_style);
                 let inner = &remaining[6..6 + end_pos];
-                let mut code_style = current_style;
+                let mut code_style = current_style.clone();
                 code_style.monospace = true;
                 runs.push(TextRun {
                     text: inner.to_string(),

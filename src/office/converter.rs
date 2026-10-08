@@ -33,6 +33,9 @@ impl DocumentConverter {
             match el {
                 DocxElement::Heading { level, text } => {
                     let clean_text = clean_markdown_inline(text);
+                    let page_idx = pdf.pages.len().saturating_sub(1);
+                    pdf.add_bookmark(&clean_text, page_idx, current_y, *level);
+
                     let (font_size, line_height) = match level {
                         1 => (16.0, 22.0),
                         2 => (13.5, 18.0),
@@ -127,6 +130,15 @@ impl DocumentConverter {
                                         frag.color_rgb,
                                     );
                                     let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                    if let Some(ref url) = frag.link_url {
+                                        pdf.current_page_mut().add_link(
+                                            curr_x,
+                                            current_y - 2.0,
+                                            curr_x + frag_w,
+                                            current_y + frag.font_size + 1.0,
+                                            url,
+                                        );
+                                    }
                                     if frag.underline {
                                         pdf.current_page_mut().add_styled_line(
                                             curr_x,
@@ -163,7 +175,7 @@ impl DocumentConverter {
                         current_y -= line_height;
                         if idx == 0 {
                             pdf.current_page_mut().add_styled_text(
-                                "*",
+                                "•",
                                 margin_x + indent_px - 10.0,
                                 current_y,
                                 font_size,
@@ -185,6 +197,15 @@ impl DocumentConverter {
                                     frag.color_rgb,
                                 );
                                 let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                if let Some(ref url) = frag.link_url {
+                                    pdf.current_page_mut().add_link(
+                                        curr_x,
+                                        current_y - 2.0,
+                                        curr_x + frag_w,
+                                        current_y + frag.font_size + 1.0,
+                                        url,
+                                    );
+                                }
                                 if frag.underline {
                                     pdf.current_page_mut().add_styled_line(
                                         curr_x,
@@ -201,7 +222,74 @@ impl DocumentConverter {
                     }
                     current_y -= 2.0;
                 }
-                DocxElement::Table { rows, has_header } => {
+                DocxElement::NumberedItem { number, runs, indent_level } => {
+                    let font_size = 9.5;
+                    let line_height = 13.5;
+                    let indent_px = 18.0 + (*indent_level as f32 * 12.0);
+                    let num_content_w = (content_width - indent_px).max(100.0);
+                    let default_color = (0.2, 0.25, 0.3);
+                    let lines = wrap_runs_to_styled_lines(runs, num_content_w, font_size, default_color);
+
+                    for (idx, line) in lines.iter().enumerate() {
+                        if line.is_empty() {
+                            continue;
+                        }
+                        if current_y < 80.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+                        current_y -= line_height;
+                        if idx == 0 {
+                            let num_label = format!("{}.", number);
+                            pdf.current_page_mut().add_styled_text(
+                                &num_label,
+                                margin_x + indent_px - 14.0,
+                                current_y,
+                                font_size,
+                                true,
+                                (0.15, 0.35, 0.7),
+                            );
+                        }
+                        let mut curr_x = margin_x + indent_px;
+                        for frag in line {
+                            if !frag.text.is_empty() {
+                                pdf.current_page_mut().add_formatted_text(
+                                    &frag.text,
+                                    curr_x,
+                                    current_y,
+                                    frag.font_size,
+                                    frag.bold,
+                                    frag.italic,
+                                    frag.monospace,
+                                    frag.color_rgb,
+                                );
+                                let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                if let Some(ref url) = frag.link_url {
+                                    pdf.current_page_mut().add_link(
+                                        curr_x,
+                                        current_y - 2.0,
+                                        curr_x + frag_w,
+                                        current_y + frag.font_size + 1.0,
+                                        url,
+                                    );
+                                }
+                                if frag.underline {
+                                    pdf.current_page_mut().add_styled_line(
+                                        curr_x,
+                                        current_y - 1.5,
+                                        curr_x + frag_w,
+                                        current_y - 1.5,
+                                        0.6,
+                                        frag.color_rgb,
+                                    );
+                                }
+                                curr_x += frag_w;
+                            }
+                        }
+                    }
+                    current_y -= 2.0;
+                }
+                DocxElement::Table { rows, has_header, alignments } => {
                     if !rows.is_empty() {
                         let col_count = rows[0].len().max(1);
                         let header_slice: Vec<String> = if *has_header {
@@ -221,7 +309,7 @@ impl DocumentConverter {
 
                         // Beri jarak atas sebelum tabel agar tidak menimpa teks paragraf sebelumnya
                         current_y -= 14.0;
-                        current_y = pdf.add_table(&header_refs, data_rows_raw, margin_x, current_y, &widths);
+                        current_y = pdf.add_table_aligned(&header_refs, data_rows_raw, margin_x, current_y, &widths, alignments);
                         current_y -= 14.0;
                     }
                 }
@@ -243,6 +331,7 @@ impl DocumentConverter {
                             underline: false,
                             color_rgb: (0.1, 0.2, 0.3),
                             font_size,
+                            link_url: None,
                         }]).collect()
                     } else {
                         let runs = parse_markdown_runs(text);
@@ -295,7 +384,17 @@ impl DocumentConverter {
                                     frag.monospace,
                                     frag.color_rgb,
                                 );
-                                curr_x += styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                if let Some(ref url) = frag.link_url {
+                                    page.add_link(
+                                        curr_x,
+                                        current_y - 11.0,
+                                        curr_x + frag_w,
+                                        current_y - 9.0 + frag.font_size,
+                                        url,
+                                    );
+                                }
+                                curr_x += frag_w;
                             }
                         }
                         current_y -= line_height;
@@ -440,6 +539,12 @@ impl DocumentConverter {
                         doc.add_bullet_runs(runs, 0);
                     }
                 }
+                MarkdownBlock::OrderedList(items) => {
+                    for (num, item) in items {
+                        let runs = parse_markdown_runs(item);
+                        doc.add_numbered_runs(*num, runs, 0);
+                    }
+                }
                 MarkdownBlock::Checklist(items) => {
                     for (checked, item) in items {
                         let prefix = if *checked { "[x] " } else { "[ ] " };
@@ -458,11 +563,11 @@ impl DocumentConverter {
                         doc.add_callout(&format!("KODE ({})", lang.to_uppercase()), code, "#64748b");
                     }
                 }
-                MarkdownBlock::Table { headers, rows } => {
+                MarkdownBlock::Table { headers, alignments, rows } => {
                     let mut all_rows = Vec::new();
                     all_rows.push(headers.clone());
                     all_rows.extend(rows.clone());
-                    doc.add_table(all_rows, true);
+                    doc.add_table_aligned(all_rows, true, alignments.clone());
                 }
                 MarkdownBlock::Blockquote(text) => {
                     doc.add_callout("KUTIPAN", text, "#3b82f6");

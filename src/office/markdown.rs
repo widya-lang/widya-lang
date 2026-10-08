@@ -1,5 +1,13 @@
 use serde::{Deserialize, Serialize};
 
+/// Perataan Kolom Tabel Markdown
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ColumnAlignment {
+    Left,
+    Center,
+    Right,
+}
+
 /// AST Blok Markdown GFM
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum MarkdownBlock {
@@ -8,8 +16,13 @@ pub enum MarkdownBlock {
     CodeBlock { lang: String, code: String },
     Blockquote(String),
     UnorderedList(Vec<String>),
+    OrderedList(Vec<(usize, String)>),
     Checklist(Vec<(bool, String)>), // (checked, text)
-    Table { headers: Vec<String>, rows: Vec<Vec<String>> },
+    Table {
+        headers: Vec<String>,
+        alignments: Vec<ColumnAlignment>,
+        rows: Vec<Vec<String>>,
+    },
     HorizontalRule,
 }
 
@@ -111,6 +124,39 @@ impl MarkdownDocument {
                 continue;
             }
 
+            // 5c. Ordered List (1. item, 2. item)
+            let is_digit_dot = |s: &str| -> Option<(usize, String)> {
+                let bytes = s.as_bytes();
+                let mut num_end = 0;
+                while num_end < bytes.len() && bytes[num_end].is_ascii_digit() {
+                    num_end += 1;
+                }
+                if num_end > 0 && num_end < bytes.len() && bytes[num_end] == b'.' {
+                    if num_end + 1 < bytes.len() && bytes[num_end + 1] == b' ' {
+                        if let Ok(num) = s[..num_end].parse::<usize>() {
+                            return Some((num, s[num_end + 2..].trim().to_string()));
+                        }
+                    }
+                }
+                None
+            };
+
+            if let Some((num, text)) = is_digit_dot(line) {
+                let mut list_items = vec![(num, text)];
+                i += 1;
+                while i < lines.len() {
+                    let l = lines[i].trim();
+                    if let Some((n, t)) = is_digit_dot(l) {
+                        list_items.push((n, t));
+                        i += 1;
+                    } else {
+                        break;
+                    }
+                }
+                blocks.push(MarkdownBlock::OrderedList(list_items));
+                continue;
+            }
+
             // 6. Table (| Col1 | Col2 |)
             if line.starts_with('|') && line.ends_with('|') {
                 let headers: Vec<String> = line.split('|')
@@ -119,8 +165,27 @@ impl MarkdownDocument {
                     .map(|s| s.to_string())
                     .collect();
                 i += 1; // Skip header delimiter (|---|---|)
+                let mut alignments = Vec::new();
                 if i < lines.len() && lines[i].contains("---") {
+                    let align_parts: Vec<&str> = lines[i].split('|')
+                        .map(|s| s.trim())
+                        .filter(|s| !s.is_empty())
+                        .collect();
+                    for p in align_parts {
+                        let left_colon = p.starts_with(':');
+                        let right_colon = p.ends_with(':');
+                        if left_colon && right_colon {
+                            alignments.push(ColumnAlignment::Center);
+                        } else if right_colon {
+                            alignments.push(ColumnAlignment::Right);
+                        } else {
+                            alignments.push(ColumnAlignment::Left);
+                        }
+                    }
                     i += 1;
+                }
+                while alignments.len() < headers.len() {
+                    alignments.push(ColumnAlignment::Left);
                 }
                 let mut rows = Vec::new();
                 while i < lines.len() && lines[i].trim().starts_with('|') {
@@ -132,7 +197,7 @@ impl MarkdownDocument {
                     rows.push(row);
                     i += 1;
                 }
-                blocks.push(MarkdownBlock::Table { headers, rows });
+                blocks.push(MarkdownBlock::Table { headers, alignments, rows });
                 continue;
             }
 
@@ -169,6 +234,11 @@ impl MarkdownDocument {
                     for it in items { html.push_str(&format!("  <li>{}</li>\n", parse_inline_styles(it))); }
                     html.push_str("</ul>\n");
                 }
+                MarkdownBlock::OrderedList(items) => {
+                    html.push_str("<ol>\n");
+                    for (_num, it) in items { html.push_str(&format!("  <li>{}</li>\n", parse_inline_styles(it))); }
+                    html.push_str("</ol>\n");
+                }
                 MarkdownBlock::Checklist(items) => {
                     html.push_str("<ul class='task-list'>\n");
                     for (checked, text) in items {
@@ -177,13 +247,27 @@ impl MarkdownDocument {
                     }
                     html.push_str("</ul>\n");
                 }
-                MarkdownBlock::Table { headers, rows } => {
+                MarkdownBlock::Table { headers, alignments, rows } => {
                     html.push_str("<table><thead><tr>\n");
-                    for h in headers { html.push_str(&format!("  <th>{}</th>\n", parse_inline_styles(h))); }
+                    for (idx, h) in headers.iter().enumerate() {
+                        let align_css = match alignments.get(idx) {
+                            Some(ColumnAlignment::Center) => " style='text-align: center;'",
+                            Some(ColumnAlignment::Right) => " style='text-align: right;'",
+                            _ => " style='text-align: left;'",
+                        };
+                        html.push_str(&format!("  <th{}>{}</th>\n", align_css, parse_inline_styles(h)));
+                    }
                     html.push_str("</tr></thead><tbody>\n");
                     for r in rows {
                         html.push_str("<tr>\n");
-                        for c in r { html.push_str(&format!("  <td>{}</td>\n", parse_inline_styles(c))); }
+                        for (idx, c) in r.iter().enumerate() {
+                            let align_css = match alignments.get(idx) {
+                                Some(ColumnAlignment::Center) => " style='text-align: center;'",
+                                Some(ColumnAlignment::Right) => " style='text-align: right;'",
+                                _ => " style='text-align: left;'",
+                            };
+                            html.push_str(&format!("  <td{}>{}</td>\n", align_css, parse_inline_styles(c)));
+                        }
                         html.push_str("</tr>\n");
                     }
                     html.push_str("</tbody></table>\n");

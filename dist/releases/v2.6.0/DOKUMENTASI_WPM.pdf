@@ -1,10 +1,10 @@
 %PDF-1.7
 %âãÏÓ
 1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
+<< /Type /Catalog /Pages 2 0 R /Outlines 20 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [ 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R ] /Count 7 /MediaBox [ 0 0 595.28 841.89 ] >>
+<< /Type /Pages /Kids [ 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R ] /Count 6 /MediaBox [ 0 0 595.28 841.89 ] >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
@@ -22,13 +22,13 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-BoldOblique /Encoding /WinAnsiEncoding >>
 endobj
 8 0 obj
-<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 9 0 R >>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Annots [ << /Type /Annot /Subtype /Link /Rect [ 68.00 596.39 247.41 608.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#1-pengenalan--filosofi-kedaulatan-digital) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 580.89 179.72 593.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#2-format-berkas-manifest-widyatoml--widyalock) >> >> << /Type /Annot /Subtype /Link /Rect [ 179.72 580.89 236.72 593.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#2-format-berkas-manifest-widyatoml--widyalock) >> >> << /Type /Annot /Subtype /Link /Rect [ 236.72 580.89 245.93 593.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#2-format-berkas-manifest-widyatoml--widyalock) >> >> << /Type /Annot /Subtype /Link /Rect [ 245.93 580.89 308.63 593.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#2-format-berkas-manifest-widyatoml--widyalock) >> >> << /Type /Annot /Subtype /Link /Rect [ 308.63 580.89 311.91 593.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#2-format-berkas-manifest-widyatoml--widyalock) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 565.39 297.47 577.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#3-daftar-perintah-cli-lengkap-dwibahasa--bilingual) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 549.89 312.20 562.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#4-katalog-21-pustaka-resmi-bawaan-10-mega-frontiers) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 534.39 208.60 546.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#5-audit-keamanan-rantai-pasok-wpmsecurityauditor) >> >> << /Type /Annot /Subtype /Link /Rect [ 208.60 534.39 311.20 546.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#5-audit-keamanan-rantai-pasok-wpmsecurityauditor) >> >> << /Type /Annot /Subtype /Link /Rect [ 311.20 534.39 314.48 546.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#5-audit-keamanan-rantai-pasok-wpmsecurityauditor) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 518.89 206.46 531.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#6-pemeriksa-dependensi-usang-wpmoutdatedchecker) >> >> << /Type /Annot /Subtype /Link /Rect [ 206.46 518.89 309.06 531.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#6-pemeriksa-dependensi-usang-wpmoutdatedchecker) >> >> << /Type /Annot /Subtype /Link /Rect [ 309.06 518.89 312.34 531.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#6-pemeriksa-dependensi-usang-wpmoutdatedchecker) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 503.39 183.00 515.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#7-inspeksi-metadata-paket-info--informasi) >> >> << /Type /Annot /Subtype /Link /Rect [ 183.00 503.39 205.80 515.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#7-inspeksi-metadata-paket-info--informasi) >> >> << /Type /Annot /Subtype /Link /Rect [ 205.80 503.39 211.21 515.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#7-inspeksi-metadata-paket-info--informasi) >> >> << /Type /Annot /Subtype /Link /Rect [ 211.21 503.39 268.21 515.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#7-inspeksi-metadata-paket-info--informasi) >> >> << /Type /Annot /Subtype /Link /Rect [ 268.21 503.39 271.49 515.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#7-inspeksi-metadata-paket-info--informasi) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 487.89 248.36 500.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#8-penyediaan-paket-offline--air-gapped-vendor--pasok) >> >> << /Type /Annot /Subtype /Link /Rect [ 248.36 487.89 282.56 500.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#8-penyediaan-paket-offline--air-gapped-vendor--pasok) >> >> << /Type /Annot /Subtype /Link /Rect [ 282.56 487.89 287.97 500.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#8-penyediaan-paket-offline--air-gapped-vendor--pasok) >> >> << /Type /Annot /Subtype /Link /Rect [ 287.97 487.89 322.17 500.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#8-penyediaan-paket-offline--air-gapped-vendor--pasok) >> >> << /Type /Annot /Subtype /Link /Rect [ 322.17 487.89 325.45 500.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#8-penyediaan-paket-offline--air-gapped-vendor--pasok) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 472.39 306.59 484.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#9-self-hosted-private-registry-server--web-hub-portal) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 456.89 201.85 469.39 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#10-spesifikasi-rest-api-registry) >> >> << /Type /Annot /Subtype /Link /Rect [ 68.00 441.39 320.22 453.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (#11-kriptografi-ed25519--standar-provenance-slsa-level-3) >> >> ]  /Contents 9 0 R >>
 endobj
 9 0 obj
-<< /Length 10806 >>
+<< /Length 11342 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 1 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
 BT /F2 16 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 741.89 Tm ([PKG] Panduan Komprehensif Ekosistem Paket Berdaulat) Tj ET
 BT /F2 16 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 719.89 Tm (WPM \(Widya Package Manager\)) Tj ET
 0.1 0.4 0.8 RG 1.2 w 50 715.89 m 530 715.89 l S
@@ -43,302 +43,318 @@ BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 114.350006 667.89 Tm ( Widya-Lang) Tj ET
 BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 177.20601 667.89 Tm (.) Tj ET
 0.8 0.85 0.9 RG 0.8 w 50 655.89 m 530 655.89 l S
 BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 617.89 Tm (Daftar Isi) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 597.89 Tm (1.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 597.89 Tm ( Pengenalan & Filosofi Kedaulatan Digital) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 596.39 m 250.30002 596.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 579.89 Tm (2.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 579.89 Tm ( Format Berkas Manifest \() Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 578.39 m 179.04999 578.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 179.04999 579.89 Tm (widya.toml) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 179.04999 578.39 m 239.04999 578.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 239.04999 579.89 Tm ( &) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 239.04999 578.39 m 248.74998 578.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 248.74998 579.89 Tm ( widya.lock) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 248.74998 578.39 m 314.75 578.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 314.75 579.89 Tm (\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 314.75 578.39 m 318.2 578.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 561.89 Tm (3.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 561.89 Tm ( Daftar Perintah CLI Lengkap \(Dwibahasa / Bilingual\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 560.39 m 303.00003 560.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 543.89 Tm (4.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 543.89 Tm ( Katalog 21 Pustaka Resmi Bawaan \(10 Mega Frontiers\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 542.39 m 318.50003 542.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 525.89 Tm (5.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 525.89 Tm ( Audit Keamanan Rantai Pasok \() Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 524.39 m 209.44998 524.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 209.44998 525.89 Tm (WpmSecurityAuditor) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 209.44998 524.39 m 317.44998 524.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 317.44998 525.89 Tm (\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 317.44998 524.39 m 320.9 524.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 507.89 Tm (6.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 507.89 Tm ( Pemeriksa Dependensi Usang \() Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 506.39 m 207.19998 506.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 207.19998 507.89 Tm (WpmOutdatedChecker) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 207.19998 506.39 m 315.19998 506.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 315.19998 507.89 Tm (\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 315.19998 506.39 m 318.65 506.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 489.89 Tm (7.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 489.89 Tm ( Inspeksi Metadata Paket \() Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 488.39 m 182.5 488.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 182.5 489.89 Tm (info) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 182.5 488.39 m 206.5 488.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 206.5 489.89 Tm ( /) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 206.5 488.39 m 212.2 488.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 212.2 489.89 Tm ( informasi) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 212.2 488.39 m 272.2 488.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 272.2 489.89 Tm (\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 272.2 488.39 m 275.65002 488.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 471.89 Tm (8.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 471.89 Tm ( Penyediaan Paket Offline & Air-Gapped \() Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 470.39 m 251.30002 470.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 251.30002 471.89 Tm (vendor) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 251.30002 470.39 m 287.30002 470.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 287.30002 471.89 Tm ( /) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 287.30002 470.39 m 293.00003 470.39 l S
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 293.00003 471.89 Tm ( pasok) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 293.00003 470.39 m 329.00003 470.39 l S
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 329.00003 471.89 Tm (\)) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 329.00003 470.39 m 332.45004 470.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 453.89 Tm (9.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 58.6 453.89 Tm ( Self-Hosted Private Registry Server & Web Hub Portal) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 58.6 452.39 m 312.6 452.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 435.89 Tm (10.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 64.35 435.89 Tm ( Spesifikasi REST API Registry) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 64.35 434.39 m 208.09998 434.39 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 417.89 Tm (11.) Tj ET
-BT /F1 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 64.35 417.89 Tm ( Kriptografi Ed25519 & Standar Provenance SLSA Level 3) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 64.35 416.39 m 332.7 416.39 l S
-0.8 0.85 0.9 RG 0.8 w 50 405.89 m 530 405.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 367.89 Tm (1. Pengenalan & Filosofi Kedaulatan Digital) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 347.89 Tm (Widya Package Manager \(WPM\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 212.21599 347.89 Tm ( dibangun untuk mengatasi kerentanan ekosistem paket modern) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 333.89 Tm (\(seperti) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 85.05 333.89 Tm ( typosquatting) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 151.1 333.89 Tm (,) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 153.95001 333.89 Tm ( dependency confusion) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 260.75 333.89 Tm (,) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 263.6 333.89 Tm ( malicious lockfile tampering) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 393.9 333.89 Tm (, dan ketergantungan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 319.89 Tm (sepihak pada infrastruktur asing\).) Tj ET
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 291.89 Tm (Karakteristik Kunci WPM:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 272.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 272.39 Tm (100% Native Rust/Widya Architecture) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 244.88315 272.39 Tm (: Bebas dari runtime eksternal \(Zero Python / Zero Node.js\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 256.89 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 256.89 Tm (PubGrub Dependency Resolver) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 215.5395 256.89 Tm (: Algoritma SAT-solver modern yang mampu menyelesaikan grafik) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 243.39001 Tm (dependensi berlian \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 154.9675 243.39001 Tm (diamond dependencies) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 256.475 243.39001 Tm (\) dengan penjelasan galat yang deterministik.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 227.89001 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 227.89001 Tm (Cryptographic Provenance) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 192.04408 227.89001 Tm (: Setiap rilis paket wajib memiliki checksum SHA-256 dan ditandatangani) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 214.39001 Tm (secara kriptografis menggunakan kunci kurva Edwards) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 305.35248 214.39001 Tm ( Ed25519) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 350.70166 214.39001 Tm (.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 198.89001 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 198.89001 Tm (Kedaulatan Dua Mode) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 172.0371 198.89001 Tm (: Mendukung Central Registry publik \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 337.24207 198.89001 Tm (wpm.widya-lang.org) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 439.84204 198.89001 Tm (\) dan Self-Hosted) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 185.39001 Tm (Private Registry lokal untuk lingkungan pemerintahan \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 305.9699 185.39001 Tm (B2G) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 325.53992 185.39001 Tm (\), perbankan, dan militer yang terisolasi \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 171.89001 Tm (Air-Gapped) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 116.16 171.89001 Tm (\).) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 161.89001 m 530 161.89001 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 123.890015 Tm (2. Format Berkas Manifest \(widya.toml & widya.lock\)) Tj ET
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 93.890015 Tm (A. Berkas Manifest Proyek \(widya.toml\)) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 598.39 Tm (1.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 598.39 Tm (Pengenalan & Filosofi Kedaulatan Digital) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 596.89 m 247.40746 596.89 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 582.89 Tm (2.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 582.89 Tm (Format Berkas Manifest \() Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 581.39 m 179.71999 581.39 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 179.71999 582.89 Tm (widya.toml) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 179.71999 581.39 m 236.71999 581.39 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 236.71999 582.89 Tm ( &) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 236.71999 581.39 m 245.93498 581.39 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 245.93498 582.89 Tm ( widya.lock) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 245.93498 581.39 m 308.63498 581.39 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 308.63498 582.89 Tm (\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 308.63498 581.39 m 311.91248 581.39 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 567.39 Tm (3.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 567.39 Tm (Daftar Perintah CLI Lengkap \(Dwibahasa / Bilingual\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 565.89 m 297.47244 565.89 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 551.89 Tm (4.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 551.89 Tm (Katalog 21 Pustaka Resmi Bawaan \(10 Mega Frontiers\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 550.39 m 312.19742 550.39 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 536.39 Tm (5.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 536.39 Tm (Audit Keamanan Rantai Pasok \() Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 534.89 m 208.6 534.89 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 208.6 536.39 Tm (WpmSecurityAuditor) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 208.6 534.89 m 311.19998 534.89 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 311.19998 536.39 Tm (\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 311.19998 534.89 m 314.47748 534.89 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 520.89 Tm (6.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 520.89 Tm (Pemeriksa Dependensi Usang \() Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 519.39 m 206.46251 519.39 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 206.46251 520.89 Tm (WpmOutdatedChecker) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 206.46251 519.39 m 309.0625 519.39 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 309.0625 520.89 Tm (\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 309.0625 519.39 m 312.34 519.39 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 505.39 Tm (7.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 505.39 Tm (Inspeksi Metadata Paket \() Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 503.89 m 182.9975 503.89 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 182.9975 505.39 Tm (info) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 182.9975 503.89 m 205.7975 503.89 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 205.7975 505.39 Tm ( /) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 205.7975 503.89 m 211.2125 503.89 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 211.2125 505.39 Tm ( informasi) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 211.2125 503.89 m 268.2125 503.89 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 268.2125 505.39 Tm (\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 268.2125 503.89 m 271.49 503.89 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 489.89 Tm (8.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 489.89 Tm (Penyediaan Paket Offline & Air-Gapped \() Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 488.39 m 248.35745 488.39 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 248.35745 489.89 Tm (vendor) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 248.35745 488.39 m 282.55746 488.39 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 282.55746 489.89 Tm ( /) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 282.55746 488.39 m 287.97247 488.39 l S
+BT /F4 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 287.97247 489.89 Tm ( pasok) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 287.97247 488.39 m 322.1725 488.39 l S
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 322.1725 489.89 Tm (\)) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 322.1725 488.39 m 325.44998 488.39 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 474.39 Tm (9.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 474.39 Tm (Self-Hosted Private Registry Server & Web Hub Portal) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 472.89 m 306.59247 472.89 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 458.89 Tm (10.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 458.89 Tm (Spesifikasi REST API Registry) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 457.39 m 201.855 457.39 l S
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 443.39 Tm (11.) Tj ET
+BT /F1 9.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 68 443.39 Tm (Kriptografi Ed25519 & Standar Provenance SLSA Level 3) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 68 441.89 m 320.22498 441.89 l S
+0.8 0.85 0.9 RG 0.8 w 50 433.39 m 530 433.39 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 395.39 Tm (1. Pengenalan & Filosofi Kedaulatan Digital) Tj ET
+BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 375.39 Tm (Widya Package Manager \(WPM\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 212.21599 375.39 Tm ( dibangun untuk mengatasi kerentanan ekosistem paket modern) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 361.39 Tm (\(seperti) Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 85.05 361.39 Tm ( typosquatting) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 151.1 361.39 Tm (,) Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 153.95001 361.39 Tm ( dependency confusion) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 260.75 361.39 Tm (,) Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 263.6 361.39 Tm ( malicious lockfile tampering) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 393.9 361.39 Tm (, dan ketergantungan) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 347.39 Tm (sepihak pada infrastruktur asing\).) Tj ET
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 319.39 Tm (Karakteristik Kunci WPM:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 299.89 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 299.89 Tm (100% Native Rust/Widya Architecture) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 244.88315 299.89 Tm (: Bebas dari runtime eksternal \(Zero Python / Zero Node.js\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 284.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 284.39 Tm (PubGrub Dependency Resolver) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 215.5395 284.39 Tm (: Algoritma SAT-solver modern yang mampu menyelesaikan grafik) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 270.89 Tm (dependensi berlian \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 154.9675 270.89 Tm (diamond dependencies) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 256.475 270.89 Tm (\) dengan penjelasan galat yang deterministik.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 255.39001 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 255.39001 Tm (Cryptographic Provenance) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 192.04408 255.39001 Tm (: Setiap rilis paket wajib memiliki checksum SHA-256 dan ditandatangani) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 241.89001 Tm (secara kriptografis menggunakan kunci kurva Edwards) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 305.35248 241.89001 Tm ( Ed25519) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 350.70166 241.89001 Tm (.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 226.39001 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 226.39001 Tm (Kedaulatan Dua Mode) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 172.0371 226.39001 Tm (: Mendukung Central Registry publik \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 337.24207 226.39001 Tm (wpm.widya-lang.org) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 439.84204 226.39001 Tm (\) dan Self-Hosted) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 212.89001 Tm (Private Registry lokal untuk lingkungan pemerintahan \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 305.9699 212.89001 Tm (B2G) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 325.53992 212.89001 Tm (\), perbankan, dan militer yang terisolasi \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 199.39001 Tm (Air-Gapped) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 116.16 199.39001 Tm (\).) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 189.39001 m 530 189.39001 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 151.39001 Tm (2. Format Berkas Manifest \(widya.toml & widya.lock\)) Tj ET
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 121.390015 Tm (A. Berkas Manifest Proyek \(widya.toml\)) Tj ET
+0.96 0.97 0.98 rg 50 89.390015 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 89.390015 m 50 107.390015 l S
+0.85 0.88 0.9 RG 0.5 w 50 107.390015 m 530 107.390015 l S
+0.85 0.88 0.9 RG 0.5 w 530 89.390015 m 530 107.390015 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 95.390015 Tm (KODE \(TOML\)) Tj ET
+0.96 0.97 0.98 rg 50 77.390015 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 77.390015 m 50 89.390015 l S
+0.85 0.88 0.9 RG 0.5 w 530 77.390015 m 530 89.390015 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 80.390015 Tm ([package]) Tj ET
 endstream
 endobj
 10 0 obj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 11 0 R >>
 endobj
 11 0 obj
-<< /Length 11641 >>
+<< /Length 12369 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
-0.96 0.97 0.98 rg 50 745.89 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 745.89 m 50 763.89 l S
-0.85 0.88 0.9 RG 0.5 w 50 763.89 m 530 763.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 745.89 m 530 763.89 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 751.89 Tm (KODE \(TOML\)) Tj ET
-0.96 0.97 0.98 rg 50 733.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 733.89 m 50 745.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 733.89 m 530 745.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 736.89 Tm ([package]) Tj ET
-0.96 0.97 0.98 rg 50 721.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 721.89 m 50 733.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 721.89 m 530 733.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 724.89 Tm (name = "aplikasi_keuangan") Tj ET
-0.96 0.97 0.98 rg 50 709.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 709.89 m 50 721.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 709.89 m 530 721.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 712.89 Tm (version = "1.0.0") Tj ET
-0.96 0.97 0.98 rg 50 697.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 697.89 m 50 709.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 697.89 m 530 709.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 700.89 Tm (authors = ["PT Solusi Digital Merah Putih"]) Tj ET
-0.96 0.97 0.98 rg 50 685.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 685.89 m 50 697.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 685.89 m 530 697.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 688.89 Tm (edition = "2026") Tj ET
-0.96 0.97 0.98 rg 50 673.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 673.89 m 50 685.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 673.89 m 530 685.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 676.89 Tm (license = "MIT") Tj ET
-0.96 0.97 0.98 rg 50 661.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 661.89 m 50 673.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 661.89 m 530 673.89 l S
-0.96 0.97 0.98 rg 50 649.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 649.89 m 50 661.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 649.89 m 530 661.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 652.89 Tm ([dependencies]) Tj ET
-0.96 0.97 0.98 rg 50 637.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 637.89 m 50 649.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 637.89 m 530 649.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 640.89 Tm (widya-office = "^2.5.0") Tj ET
-0.96 0.97 0.98 rg 50 625.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 625.89 m 50 637.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 625.89 m 530 637.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 628.89 Tm (widya-sql = ">= 1.0.0, < 2.0.0") Tj ET
-0.96 0.97 0.98 rg 50 613.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 613.89 m 50 625.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 613.89 m 530 625.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 616.89 Tm (widya-bifast = "= 1.0.0") Tj ET
-0.96 0.97 0.98 rg 50 601.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 601.89 m 50 613.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 601.89 m 530 613.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 604.89 Tm (widya-crypto = "~ 1.0.0") Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 601.89 m 530 601.89 l S
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 569.89 Tm (B. Berkas Pengunci Integritas \(widya.lock\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 549.89 Tm (Dihasilkan secara otomatis oleh perintah) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 237.75 549.89 Tm ( widya wpm lock) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 327.75 549.89 Tm ( atau) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 351.3 549.89 Tm ( widya wpm add) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 435.3 549.89 Tm (:) Tj ET
-0.96 0.97 0.98 rg 50 519.89 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 519.89 m 50 537.89 l S
-0.85 0.88 0.9 RG 0.5 w 50 537.89 m 530 537.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 519.89 m 530 537.89 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 525.89 Tm (KODE \(TOML\)) Tj ET
-0.96 0.97 0.98 rg 50 507.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 507.89 m 50 519.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 507.89 m 530 519.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 510.89 Tm ([[package]]) Tj ET
-0.96 0.97 0.98 rg 50 495.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 495.89 m 50 507.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 495.89 m 530 507.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 498.89 Tm (name = "widya-office") Tj ET
-0.96 0.97 0.98 rg 50 483.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 483.89 m 50 495.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 483.89 m 530 495.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 486.89 Tm (version = "2.5.0") Tj ET
-0.96 0.97 0.98 rg 50 471.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 471.89 m 50 483.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 471.89 m 530 483.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 474.89 Tm (source = "registry+https://registry.widya-lang.org/api/v1") Tj ET
-0.96 0.97 0.98 rg 50 459.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 459.89 m 50 471.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 459.89 m 530 471.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 462.89 Tm (checksum = "72b269431623bd8ee05b969c3a3bfa5b4b1a206a4b3d7b93b827e8d08cb5f867") Tj ET
-0.96 0.97 0.98 rg 50 447.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 447.89 m 50 459.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 447.89 m 530 459.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 450.89 Tm (signature = "3a88f0...64bytes") Tj ET
-0.96 0.97 0.98 rg 50 435.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 435.89 m 50 447.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 435.89 m 530 447.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 438.89 Tm (public_key = "a1b2c3...32bytes") Tj ET
-0.96 0.97 0.98 rg 50 423.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 423.89 m 50 435.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 423.89 m 530 435.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 426.89 Tm (dependencies = ["widya-sql"]) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 423.89 m 530 423.89 l S
-0.8 0.85 0.9 RG 0.8 w 50 407.89 m 530 407.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 369.89 Tm (3. Daftar Perintah CLI Lengkap \(Dwibahasa / Bilingual\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 349.89 Tm (WPM dapat diakses menggunakan perintah) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 251.45 349.89 Tm ( widya wpm) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 311.45 349.89 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 314.30002 349.89 Tm ( widya pkg) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 374.30002 349.89 Tm (, maupun) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 417.35 349.89 Tm ( widya package) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 501.35 349.89 Tm (:) Tj ET
-0.92 0.95 0.98 rg 50 310.39 480 21.5 re f
-0.22 0.42 0.72 RG 0.75 w 50 310.39 480 21.5 re S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 321.39 Tm (Perintah Internasional) Tj ET
-0.22 0.42 0.72 RG 0.75 w 172.22223 310.39 m 172.22223 331.89 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 177.22223 321.39 Tm (Alias Nusantara) Tj ET
-0.22 0.42 0.72 RG 0.75 w 332.77777 310.39 m 332.77777 331.89 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 337.77777 321.39 Tm (Deskripsi Penggunaan) Tj ET
-1 1 1 rg 50 280.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 280.39 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 300.89 Tm (widya wpm init <nama>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 280.39 m 172.22223 310.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 300.89 Tm (widya wpm new <nama>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 280.39 m 332.77777 310.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 300.89 Tm (Membuat proyek Widya baru dengan) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 337.77777 289.89 Tm (widya.toml) Tj ET
-0.97 0.98 0.99 rg 50 250.39001 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 250.39001 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 270.89 Tm (widya wpm add <paket>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 250.39001 m 172.22223 280.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 270.89 Tm (widya wpm add <paket> --versi) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 259.89 Tm (<v>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 250.39001 m 332.77777 280.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 270.89 Tm (Menambahkan dependensi paket dan merekam) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 259.89 Tm (di lockfile) Tj ET
-1 1 1 rg 50 220.39001 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 220.39001 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 240.89001 Tm (widya wpm lock) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 220.39001 m 172.22223 250.39001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 240.89001 Tm (widya wpm lock) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 220.39001 m 332.77777 250.39001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 240.89001 Tm (Menghitung SHA-256 dan membuat) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 337.77777 229.89001 Tm (widya.lock) Tj ET
-0.97 0.98 0.99 rg 50 190.39001 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 190.39001 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 210.89001 Tm (widya wpm verify) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 190.39001 m 172.22223 220.39001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 210.89001 Tm (widya wpm verify) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 190.39001 m 332.77777 220.39001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 210.89001 Tm (Memvalidasi seluruh checksum pustaka) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 199.89001 Tm (terhadap tampering) Tj ET
-1 1 1 rg 50 160.39001 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 160.39001 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 180.89001 Tm (widya wpm list) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 160.39001 m 172.22223 190.39001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 180.89001 Tm (widya wpm ls) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 160.39001 m 332.77777 190.39001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 180.89001 Tm (Menampilkan seluruh daftar dependensi yang) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 169.89001 Tm (terkunci) Tj ET
-0.97 0.98 0.99 rg 50 130.39001 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 130.39001 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 150.89001 Tm (widya wpm search) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 139.89001 Tm (<kueri>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 130.39001 m 172.22223 160.39001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 150.89001 Tm (widya wpm cari <kueri>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 130.39001 m 332.77777 160.39001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 150.89001 Tm (Mencari pustaka pada katalog registry) Tj ET
-1 1 1 rg 50 100.390015 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 100.390015 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 120.890015 Tm (widya wpm info <paket>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 100.390015 m 172.22223 130.39001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 120.890015 Tm (widya wpm informasi <paket>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 100.390015 m 332.77777 130.39001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 120.890015 Tm (Menampilkan metadata rinci dan tanda tangan) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 109.890015 Tm (digital) Tj ET
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+0.96 0.97 0.98 rg 50 759.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 759.89 m 50 771.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 759.89 m 530 771.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 762.89 Tm (name = "aplikasi_keuangan") Tj ET
+0.96 0.97 0.98 rg 50 747.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 747.89 m 50 759.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 747.89 m 530 759.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 750.89 Tm (version = "1.0.0") Tj ET
+0.96 0.97 0.98 rg 50 735.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 735.89 m 50 747.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 735.89 m 530 747.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 738.89 Tm (authors = ["PT Solusi Digital Merah Putih"]) Tj ET
+0.96 0.97 0.98 rg 50 723.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 723.89 m 50 735.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 723.89 m 530 735.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 726.89 Tm (edition = "2026") Tj ET
+0.96 0.97 0.98 rg 50 711.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 711.89 m 50 723.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 711.89 m 530 723.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 714.89 Tm (license = "MIT") Tj ET
+0.96 0.97 0.98 rg 50 699.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 699.89 m 50 711.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 699.89 m 530 711.89 l S
+0.96 0.97 0.98 rg 50 687.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 687.89 m 50 699.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 687.89 m 530 699.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 690.89 Tm ([dependencies]) Tj ET
+0.96 0.97 0.98 rg 50 675.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 675.89 m 50 687.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 675.89 m 530 687.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 678.89 Tm (widya-office = "^2.5.0") Tj ET
+0.96 0.97 0.98 rg 50 663.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 663.89 m 50 675.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 663.89 m 530 675.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 666.89 Tm (widya-sql = ">= 1.0.0, < 2.0.0") Tj ET
+0.96 0.97 0.98 rg 50 651.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 651.89 m 50 663.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 651.89 m 530 663.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 654.89 Tm (widya-bifast = "= 1.0.0") Tj ET
+0.96 0.97 0.98 rg 50 639.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 639.89 m 50 651.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 639.89 m 530 651.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 642.89 Tm (widya-crypto = "~ 1.0.0") Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 639.89 m 530 639.89 l S
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 607.89 Tm (B. Berkas Pengunci Integritas \(widya.lock\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 587.89 Tm (Dihasilkan secara otomatis oleh perintah) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 237.75 587.89 Tm ( widya wpm lock) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 327.75 587.89 Tm ( atau) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 351.3 587.89 Tm ( widya wpm add) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 435.3 587.89 Tm (:) Tj ET
+0.96 0.97 0.98 rg 50 557.89 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 557.89 m 50 575.89 l S
+0.85 0.88 0.9 RG 0.5 w 50 575.89 m 530 575.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 557.89 m 530 575.89 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 563.89 Tm (KODE \(TOML\)) Tj ET
+0.96 0.97 0.98 rg 50 545.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 545.89 m 50 557.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 545.89 m 530 557.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 548.89 Tm ([[package]]) Tj ET
+0.96 0.97 0.98 rg 50 533.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 533.89 m 50 545.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 533.89 m 530 545.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 536.89 Tm (name = "widya-office") Tj ET
+0.96 0.97 0.98 rg 50 521.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 521.89 m 50 533.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 521.89 m 530 533.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 524.89 Tm (version = "2.5.0") Tj ET
+0.96 0.97 0.98 rg 50 509.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 509.89 m 50 521.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 509.89 m 530 521.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 512.89 Tm (source = "registry+https://registry.widya-lang.org/api/v1") Tj ET
+0.96 0.97 0.98 rg 50 497.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 497.89 m 50 509.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 497.89 m 530 509.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 500.89 Tm (checksum = "72b269431623bd8ee05b969c3a3bfa5b4b1a206a4b3d7b93b827e8d08cb5f867") Tj ET
+0.96 0.97 0.98 rg 50 485.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 485.89 m 50 497.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 485.89 m 530 497.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 488.89 Tm (signature = "3a88f0...64bytes") Tj ET
+0.96 0.97 0.98 rg 50 473.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 473.89 m 50 485.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 473.89 m 530 485.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 476.89 Tm (public_key = "a1b2c3...32bytes") Tj ET
+0.96 0.97 0.98 rg 50 461.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 461.89 m 50 473.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 461.89 m 530 473.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 464.89 Tm (dependencies = ["widya-sql"]) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 461.89 m 530 461.89 l S
+0.8 0.85 0.9 RG 0.8 w 50 445.89 m 530 445.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 407.89 Tm (3. Daftar Perintah CLI Lengkap \(Dwibahasa / Bilingual\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 387.89 Tm (WPM dapat diakses menggunakan perintah) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 251.45 387.89 Tm ( widya wpm) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 311.45 387.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 314.30002 387.89 Tm ( widya pkg) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 374.30002 387.89 Tm (, maupun) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 417.35 387.89 Tm ( widya package) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 501.35 387.89 Tm (:) Tj ET
+0.92 0.95 0.98 rg 50 348.39 480 21.5 re f
+0.22 0.42 0.72 RG 0.75 w 50 348.39 480 21.5 re S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 359.39 Tm (Perintah Internasional) Tj ET
+0.22 0.42 0.72 RG 0.75 w 172.22223 348.39 m 172.22223 369.89 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 177.22223 359.39 Tm (Alias Nusantara) Tj ET
+0.22 0.42 0.72 RG 0.75 w 332.77777 348.39 m 332.77777 369.89 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 337.77777 359.39 Tm (Deskripsi Penggunaan) Tj ET
+1 1 1 rg 50 318.39 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 318.39 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 338.89 Tm (widya wpm init <nama>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 318.39 m 172.22223 348.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 338.89 Tm (widya wpm new <nama>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 318.39 m 332.77777 348.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 338.89 Tm (Membuat proyek Widya baru dengan) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 337.77777 327.89 Tm (widya.toml) Tj ET
+0.97 0.98 0.99 rg 50 288.39 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 288.39 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 308.89 Tm (widya wpm add <paket>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 288.39 m 172.22223 318.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 308.89 Tm (widya wpm add <paket> --versi) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 297.89 Tm (<v>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 288.39 m 332.77777 318.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 308.89 Tm (Menambahkan dependensi paket dan merekam) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 297.89 Tm (di lockfile) Tj ET
+1 1 1 rg 50 258.39 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 258.39 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 278.89 Tm (widya wpm lock) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 258.39 m 172.22223 288.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 278.89 Tm (widya wpm lock) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 258.39 m 332.77777 288.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 278.89 Tm (Menghitung SHA-256 dan membuat) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 337.77777 267.89 Tm (widya.lock) Tj ET
+0.97 0.98 0.99 rg 50 228.39001 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 228.39001 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 248.89001 Tm (widya wpm verify) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 228.39001 m 172.22223 258.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 248.89001 Tm (widya wpm verify) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 228.39001 m 332.77777 258.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 248.89001 Tm (Memvalidasi seluruh checksum pustaka) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 237.89001 Tm (terhadap tampering) Tj ET
+1 1 1 rg 50 198.39001 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 198.39001 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 218.89001 Tm (widya wpm list) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 198.39001 m 172.22223 228.39001 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 218.89001 Tm (widya wpm ls) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 198.39001 m 332.77777 228.39001 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 218.89001 Tm (Menampilkan seluruh daftar dependensi yang) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 207.89001 Tm (terkunci) Tj ET
+0.97 0.98 0.99 rg 50 168.39001 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 168.39001 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 188.89001 Tm (widya wpm search) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 177.89001 Tm (<kueri>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 168.39001 m 172.22223 198.39001 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 188.89001 Tm (widya wpm cari <kueri>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 168.39001 m 332.77777 198.39001 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 188.89001 Tm (Mencari pustaka pada katalog registry) Tj ET
+1 1 1 rg 50 138.39001 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 138.39001 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 158.89001 Tm (widya wpm info <paket>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 138.39001 m 172.22223 168.39001 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 158.89001 Tm (widya wpm informasi <paket>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 138.39001 m 332.77777 168.39001 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 158.89001 Tm (Menampilkan metadata rinci dan tanda tangan) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 147.89001 Tm (digital) Tj ET
+0.97 0.98 0.99 rg 50 108.390015 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 108.390015 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 128.89001 Tm (widya wpm audit) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 108.390015 m 172.22223 138.39001 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 128.89001 Tm (widya wpm periksa-keamanan) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 108.390015 m 332.77777 138.39001 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 128.89001 Tm (Audit Keamanan Rantai Pasok \(CVE/WSA,) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 117.890015 Tm (Checksum, Sig\)) Tj ET
+1 1 1 rg 50 78.390015 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 78.390015 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 98.890015 Tm (widya wpm outdated) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 78.390015 m 172.22223 108.390015 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 98.890015 Tm (widya wpm usang) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 78.390015 m 332.77777 108.390015 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 98.890015 Tm (Pemeriksa Versi Usang \(SemVer) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 87.890015 Tm (Major/Minor/Patch\)) Tj ET
 endstream
 endobj
 12 0 obj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 13 0 R >>
 endobj
 13 0 obj
-<< /Length 16325 >>
+<< /Length 17020 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
 0.92 0.95 0.98 rg 50 750.39 480 21.5 re f
 0.22 0.42 0.72 RG 0.75 w 50 750.39 480 21.5 re S
 BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 761.39 Tm (Perintah Internasional) Tj ET
@@ -348,730 +364,781 @@ BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 177.22223 761.39 Tm (Alias Nusantara) Tj ET
 BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 337.77777 761.39 Tm (Deskripsi Penggunaan) Tj ET
 0.97 0.98 0.99 rg 50 720.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 720.39 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 740.89 Tm (widya wpm audit) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 740.89 Tm (widya wpm vendor) Tj ET
 0.8 0.85 0.9 RG 0.5 w 172.22223 720.39 m 172.22223 750.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 740.89 Tm (widya wpm periksa-keamanan) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 740.89 Tm (widya wpm pasok) Tj ET
 0.8 0.85 0.9 RG 0.5 w 332.77777 720.39 m 332.77777 750.39 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 740.89 Tm (Audit Keamanan Rantai Pasok \(CVE/WSA,) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 729.89 Tm (Checksum, Sig\)) Tj ET
-1 1 1 rg 50 690.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 690.39 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 710.89 Tm (widya wpm outdated) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 690.39 m 172.22223 720.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 710.89 Tm (widya wpm usang) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 690.39 m 332.77777 720.39 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 710.89 Tm (Pemeriksa Versi Usang \(SemVer) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 699.89 Tm (Major/Minor/Patch\)) Tj ET
-0.97 0.98 0.99 rg 50 660.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 660.39 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 680.89 Tm (widya wpm vendor) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 660.39 m 172.22223 690.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 680.89 Tm (widya wpm pasok) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 660.39 m 332.77777 690.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 680.89 Tm (Memasok modul ke direktori lokal untuk mode) Tj ET
-BT /F3 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 669.89 Tm (Air-Gapped) Tj ET
-1 1 1 rg 50 641.39 480 19 re f
-0.8 0.85 0.9 RG 0.75 w 50 641.39 480 19 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 650.89 Tm (widya wpm publish) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 641.39 m 172.22223 660.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 650.89 Tm (widya wpm publish) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 641.39 m 332.77777 660.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 650.89 Tm (Publikasi pustaka ke Central Registry) Tj ET
-0.97 0.98 0.99 rg 50 611.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 611.39 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 631.89 Tm (widya wpm login) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 620.89 Tm (<token>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 611.39 m 172.22223 641.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 631.89 Tm (widya wpm masuk <token>) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 611.39 m 332.77777 641.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 631.89 Tm (Menyimpan token otentikasi API rilis) Tj ET
-1 1 1 rg 50 581.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 581.39 480 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 601.89 Tm (widya wpm) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 590.89 Tm (serve-registry) Tj ET
-0.8 0.85 0.9 RG 0.5 w 172.22223 581.39 m 172.22223 611.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 601.89 Tm (widya wpm layani-registry) Tj ET
-0.8 0.85 0.9 RG 0.5 w 332.77777 581.39 m 332.77777 611.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 601.89 Tm (Menjalankan server registry lokal & Web Portal) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 590.89 Tm (Hub) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 559.39 m 530 559.39 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 521.39 Tm (4. Katalog 21 Pustaka Resmi Bawaan \(10 Mega Frontiers\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 501.39 Tm (Central Registry WPM dilengkapi dengan 21 paket resmi yang mencakup seluruh spektrum industri) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 487.39 Tm (nasional:) Tj ET
-0.92 0.95 0.98 rg 50 447.89 480 21.5 re f
-0.22 0.42 0.72 RG 0.75 w 50 447.89 480 21.5 re S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 458.89 Tm (No) Tj ET
-0.22 0.42 0.72 RG 0.75 w 75 447.89 m 75 469.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 80 458.89 Tm (Nama Paket) Tj ET
-0.22 0.42 0.72 RG 0.75 w 157.09805 447.89 m 157.09805 469.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 162.09805 458.89 Tm (Versi) Tj ET
-0.22 0.42 0.72 RG 0.75 w 203.07297 447.89 m 203.07297 469.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 208.07297 458.89 Tm (Tag / Domain) Tj ET
-0.22 0.42 0.72 RG 0.75 w 323.48346 447.89 m 323.48346 469.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 328.48346 458.89 Tm (Deskripsi Fungsional) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 740.89 Tm (Memasok modul ke direktori lokal untuk mode) Tj ET
+BT /F3 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 729.89 Tm (Air-Gapped) Tj ET
+1 1 1 rg 50 701.39 480 19 re f
+0.8 0.85 0.9 RG 0.75 w 50 701.39 480 19 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 710.89 Tm (widya wpm publish) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 701.39 m 172.22223 720.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 710.89 Tm (widya wpm publish) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 701.39 m 332.77777 720.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 710.89 Tm (Publikasi pustaka ke Central Registry) Tj ET
+0.97 0.98 0.99 rg 50 671.39 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 671.39 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 691.89 Tm (widya wpm login) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 680.89 Tm (<token>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 671.39 m 172.22223 701.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 691.89 Tm (widya wpm masuk <token>) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 671.39 m 332.77777 701.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 691.89 Tm (Menyimpan token otentikasi API rilis) Tj ET
+1 1 1 rg 50 641.39 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 641.39 480 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 661.89 Tm (widya wpm) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 650.89 Tm (serve-registry) Tj ET
+0.8 0.85 0.9 RG 0.5 w 172.22223 641.39 m 172.22223 671.39 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 177.22223 661.89 Tm (widya wpm layani-registry) Tj ET
+0.8 0.85 0.9 RG 0.5 w 332.77777 641.39 m 332.77777 671.39 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 661.89 Tm (Menjalankan server registry lokal & Web Portal) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 337.77777 650.89 Tm (Hub) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 619.39 m 530 619.39 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 581.39 Tm (4. Katalog 21 Pustaka Resmi Bawaan \(10 Mega Frontiers\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 561.39 Tm (Central Registry WPM dilengkapi dengan 21 paket resmi yang mencakup seluruh spektrum industri) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 547.39 Tm (nasional:) Tj ET
+0.92 0.95 0.98 rg 50 507.89 480 21.5 re f
+0.22 0.42 0.72 RG 0.75 w 50 507.89 480 21.5 re S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 56.0848 518.89 Tm (No) Tj ET
+0.22 0.42 0.72 RG 0.75 w 75 507.89 m 75 529.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 80 518.89 Tm (Nama Paket) Tj ET
+0.22 0.42 0.72 RG 0.75 w 157.09805 507.89 m 157.09805 529.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 168.6645 518.89 Tm (Versi) Tj ET
+0.22 0.42 0.72 RG 0.75 w 203.07297 507.89 m 203.07297 529.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 208.07297 518.89 Tm (Tag / Domain) Tj ET
+0.22 0.42 0.72 RG 0.75 w 323.48346 507.89 m 323.48346 529.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 328.48346 518.89 Tm (Deskripsi Fungsional) Tj ET
+1 1 1 rg 50 477.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 477.89 480 30 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 498.39 Tm (1) Tj ET
+0.8 0.85 0.9 RG 0.5 w 75 477.89 m 75 507.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 498.39 Tm (widya-math) Tj ET
+0.8 0.85 0.9 RG 0.5 w 157.09805 477.89 m 157.09805 507.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 498.39 Tm (1.0.0) Tj ET
+0.8 0.85 0.9 RG 0.5 w 203.07297 477.89 m 203.07297 507.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 498.39 Tm (math, simd, algebra) Tj ET
+0.8 0.85 0.9 RG 0.5 w 323.48346 477.89 m 323.48346 507.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 498.39 Tm (Aljabar linier presisi tinggi terakselerasi) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 487.39 Tm (AVX-512/NEON) Tj ET
+0.97 0.98 0.99 rg 50 447.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 447.89 480 30 re S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 468.39 Tm (2) Tj ET
+0.8 0.85 0.9 RG 0.5 w 75 447.89 m 75 477.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 468.39 Tm (widya-http) Tj ET
+0.8 0.85 0.9 RG 0.5 w 157.09805 447.89 m 157.09805 477.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 468.39 Tm (1.2.0) Tj ET
+0.8 0.85 0.9 RG 0.5 w 203.07297 447.89 m 203.07297 477.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 468.39 Tm (web, http, rest,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 457.39 Tm (async) Tj ET
+0.8 0.85 0.9 RG 0.5 w 323.48346 447.89 m 323.48346 477.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 468.39 Tm (Klien/server HTTP/HTTPS asinkron berbasis) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 457.39 Tm (epoll/kqueue) Tj ET
 1 1 1 rg 50 417.89 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 417.89 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 438.39 Tm (1) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 438.39 Tm (3) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 417.89 m 75 447.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 438.39 Tm (widya-math) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 438.39 Tm (widya-crypto) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 417.89 m 157.09805 447.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 438.39 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 438.39 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 417.89 m 203.07297 447.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 438.39 Tm (math, simd, algebra) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 438.39 Tm (crypto, ed25519, pqc) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 417.89 m 323.48346 447.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 438.39 Tm (Aljabar linier presisi tinggi terakselerasi) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 427.39 Tm (AVX-512/NEON) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 438.39 Tm (Kriptografi PQC \(Kyber/Dilithium\), Ed25519 &) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 427.39 Tm (ChaCha20) Tj ET
 0.97 0.98 0.99 rg 50 387.89 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 387.89 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 408.39 Tm (2) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 408.39 Tm (4) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 387.89 m 75 417.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 408.39 Tm (widya-http) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 408.39 Tm (widya-ui) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 387.89 m 157.09805 417.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 408.39 Tm (1.2.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 408.39 Tm (0.2.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 387.89 m 203.07297 417.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 408.39 Tm (web, http, rest,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 397.39 Tm (async) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 408.39 Tm (ui, reactive, canvas) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 387.89 m 323.48346 417.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 408.39 Tm (Klien/server HTTP/HTTPS asinkron berbasis) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 397.39 Tm (epoll/kqueue) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 408.39 Tm (Kerangka kerja UI reaktif bergaya Flutter dengan) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 397.39 Tm (GPU canvas) Tj ET
 1 1 1 rg 50 357.89 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 357.89 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 378.39 Tm (3) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 378.39 Tm (5) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 357.89 m 75 387.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 378.39 Tm (widya-crypto) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 378.39 Tm (widya-ai) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 357.89 m 157.09805 387.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 378.39 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 378.39 Tm (0.9.5) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 357.89 m 203.07297 387.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 378.39 Tm (crypto, ed25519, pqc) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 378.39 Tm (ai, autograd, tensor) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 357.89 m 323.48346 387.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 378.39 Tm (Kriptografi PQC \(Kyber/Dilithium\), Ed25519 &) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 367.39 Tm (ChaCha20) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 378.39 Tm (Tensor autograd diferensial otomatis & jembatan) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 367.39 Tm (PyTorch/ONNX) Tj ET
 0.97 0.98 0.99 rg 50 327.89 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 327.89 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 348.39 Tm (4) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 348.39 Tm (6) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 327.89 m 75 357.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 348.39 Tm (widya-ui) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 348.39 Tm (widya-sql) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 327.89 m 157.09805 357.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 348.39 Tm (0.2.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 348.39 Tm (1.1.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 327.89 m 203.07297 357.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 348.39 Tm (ui, reactive, canvas) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 348.39 Tm (database, sql,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 337.39 Tm (widyabase) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 327.89 m 323.48346 357.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 348.39 Tm (Kerangka kerja UI reaktif bergaya Flutter dengan) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 337.39 Tm (GPU canvas) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 348.39 Tm (Driver & ORM WidyaBase \(B+Tree, WAL ACID,) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 337.39 Tm (Vector HNSW\)) Tj ET
 1 1 1 rg 50 297.89 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 297.89 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 318.39 Tm (5) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 318.39 Tm (7) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 297.89 m 75 327.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 318.39 Tm (widya-ai) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 318.39 Tm (widya-office) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 297.89 m 157.09805 327.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 318.39 Tm (0.9.5) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 318.39 Tm (2.5.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 297.89 m 203.07297 327.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 318.39 Tm (ai, autograd, tensor) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 318.39 Tm (office, pdf, docx) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 297.89 m 323.48346 327.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 318.39 Tm (Tensor autograd diferensial otomatis & jembatan) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 307.39 Tm (PyTorch/ONNX) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 318.39 Tm (Kompilator dokumen ISO 32000-1 PDF, DOCX) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 307.39 Tm (OpenXML, XLSX & TTE) Tj ET
 0.97 0.98 0.99 rg 50 267.89 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 267.89 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 288.39 Tm (6) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 288.39 Tm (8) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 267.89 m 75 297.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 288.39 Tm (widya-sql) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 288.39 Tm (widya-pqc) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 267.89 m 157.09805 297.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 288.39 Tm (1.1.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 288.39 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 267.89 m 203.07297 297.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 288.39 Tm (database, sql,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 277.39 Tm (widyabase) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 288.39 Tm (pqc, quantum, fips203) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 267.89 m 323.48346 297.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 288.39 Tm (Driver & ORM WidyaBase \(B+Tree, WAL ACID,) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 277.39 Tm (Vector HNSW\)) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 288.39 Tm (Kriptografi pasca-kuantum NIST FIPS 203) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 277.39 Tm (\(ML-KEM\) & FIPS 204) Tj ET
 1 1 1 rg 50 237.89001 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 237.89001 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 258.39 Tm (7) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 60.05625 258.39 Tm (9) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 237.89001 m 75 267.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 258.39 Tm (widya-office) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 258.39 Tm (widya-bifast) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 237.89001 m 157.09805 267.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 258.39 Tm (2.5.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 258.39 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 237.89001 m 203.07297 267.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 258.39 Tm (office, pdf, docx) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 258.39 Tm (fintech, bifast, qris) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 237.89001 m 323.48346 267.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 258.39 Tm (Kompilator dokumen ISO 32000-1 PDF, DOCX) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 247.39001 Tm (OpenXML, XLSX & TTE) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 258.39 Tm (Gateway transaksi perbankan nasional BI-FAST) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 247.39001 Tm (ISO 20022 & QRIS) Tj ET
 0.97 0.98 0.99 rg 50 207.89001 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 207.89001 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 228.39001 Tm (8) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 228.39001 Tm (10) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 207.89001 m 75 237.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 228.39001 Tm (widya-pqc) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 228.39001 Tm (widya-arkas) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 207.89001 m 157.09805 237.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 228.39001 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 228.39001 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 207.89001 m 203.07297 237.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 228.39001 Tm (pqc, quantum, fips203) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 228.39001 Tm (edutech, arkas, bos) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 207.89001 m 323.48346 237.89001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 228.39001 Tm (Kriptografi pasca-kuantum NIST FIPS 203) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 217.39001 Tm (\(ML-KEM\) & FIPS 204) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 228.39001 Tm (Tata kelola anggaran pendidikan BOS & BKU) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 217.39001 Tm (anti-fraud BPK) Tj ET
 1 1 1 rg 50 177.89001 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 177.89001 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 198.39001 Tm (9) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 198.39001 Tm (11) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 177.89001 m 75 207.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 198.39001 Tm (widya-bifast) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 198.39001 Tm (widya-siplah) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 177.89001 m 157.09805 207.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 198.39001 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 198.39001 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 177.89001 m 203.07297 207.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 198.39001 Tm (fintech, bifast, qris) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 198.39001 Tm (siplah, pbj, school) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 177.89001 m 323.48346 207.89001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 198.39001 Tm (Gateway transaksi perbankan nasional BI-FAST) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 187.39001 Tm (ISO 20022 & QRIS) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 198.39001 Tm (Integrasi pengadaan barang/jasa satuan) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 187.39001 Tm (pendidikan daring) Tj ET
 0.97 0.98 0.99 rg 50 147.89001 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 147.89001 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 168.39001 Tm (10) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 168.39001 Tm (12) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 147.89001 m 75 177.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 168.39001 Tm (widya-arkas) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 168.39001 Tm (widya-wasi) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 147.89001 m 157.09805 177.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 168.39001 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 168.39001 Tm (0.2.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 147.89001 m 203.07297 177.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 168.39001 Tm (edutech, arkas, bos) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 168.39001 Tm (wasm, wasi,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 157.39001 Tm (serverless) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 147.89001 m 323.48346 177.89001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 168.39001 Tm (Tata kelola anggaran pendidikan BOS & BKU) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 157.39001 Tm (anti-fraud BPK) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 168.39001 Tm (Eksekusi serverless WASI Preview 2 Component) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 157.39001 Tm (Model & WIT ABI) Tj ET
 1 1 1 rg 50 117.890015 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 117.890015 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 138.39001 Tm (11) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 138.39001 Tm (13) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 117.890015 m 75 147.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 138.39001 Tm (widya-siplah) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 138.39001 Tm (widya-canbus) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 117.890015 m 157.09805 147.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 138.39001 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 138.39001 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 117.890015 m 203.07297 147.89001 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 138.39001 Tm (siplah, pbj, school) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 138.39001 Tm (automotive, canbus,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 127.390015 Tm (obd2) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 117.890015 m 323.48346 147.89001 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 138.39001 Tm (Integrasi pengadaan barang/jasa satuan) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 127.390015 Tm (pendidikan daring) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 138.39001 Tm (Telemetri otomotif CAN Bus 2.0B / CAN-FD ISO) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 127.390015 Tm (26262 ASIL-D) Tj ET
 0.97 0.98 0.99 rg 50 87.890015 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 87.890015 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 108.390015 Tm (12) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 108.390015 Tm (14) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 87.890015 m 75 117.890015 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 108.390015 Tm (widya-wasi) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 108.390015 Tm (widya-scada) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 87.890015 m 157.09805 117.890015 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 108.390015 Tm (0.2.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 108.390015 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 87.890015 m 203.07297 117.890015 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 108.390015 Tm (wasm, wasi,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 97.390015 Tm (serverless) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 108.390015 Tm (iiot, scada, modbus) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 87.890015 m 323.48346 117.890015 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 108.390015 Tm (Eksekusi serverless WASI Preview 2 Component) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 97.390015 Tm (Model & WIT ABI) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 108.390015 Tm (Otomasi industri IIoT Modbus TCP/RTU, OPC-UA) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 97.390015 Tm (& TSN) Tj ET
 endstream
 endobj
 14 0 obj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 15 0 R >>
 endobj
 15 0 obj
-<< /Length 14021 >>
+<< /Length 12912 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
 0.92 0.95 0.98 rg 50 750.39 480 21.5 re f
 0.22 0.42 0.72 RG 0.75 w 50 750.39 480 21.5 re S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 761.39 Tm (No) Tj ET
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 56.0848 761.39 Tm (No) Tj ET
 0.22 0.42 0.72 RG 0.75 w 75 750.39 m 75 771.89 l S
 BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 80 761.39 Tm (Nama Paket) Tj ET
 0.22 0.42 0.72 RG 0.75 w 157.09805 750.39 m 157.09805 771.89 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 162.09805 761.39 Tm (Versi) Tj ET
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 168.6645 761.39 Tm (Versi) Tj ET
 0.22 0.42 0.72 RG 0.75 w 203.07297 750.39 m 203.07297 771.89 l S
 BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 208.07297 761.39 Tm (Tag / Domain) Tj ET
 0.22 0.42 0.72 RG 0.75 w 323.48346 750.39 m 323.48346 771.89 l S
 BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 328.48346 761.39 Tm (Deskripsi Fungsional) Tj ET
 1 1 1 rg 50 720.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 720.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 740.89 Tm (13) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 740.89 Tm (15) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 720.39 m 75 750.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 740.89 Tm (widya-canbus) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 740.89 Tm (widya-fhir) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 720.39 m 157.09805 750.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 740.89 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 740.89 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 720.39 m 203.07297 750.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 740.89 Tm (automotive, canbus,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 729.89 Tm (obd2) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 740.89 Tm (healthtech, fhir,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 729.89 Tm (dicom) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 720.39 m 323.48346 750.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 740.89 Tm (Telemetri otomotif CAN Bus 2.0B / CAN-FD ISO) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 729.89 Tm (26262 ASIL-D) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 740.89 Tm (Rekam medis SatuSehat HL7 FHIR v4, DICOM) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 729.89 Tm (v3 & DNA sekuens) Tj ET
 0.97 0.98 0.99 rg 50 690.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 690.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 710.89 Tm (14) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 710.89 Tm (16) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 690.39 m 75 720.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 710.89 Tm (widya-scada) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 710.89 Tm (widya-quantum) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 690.39 m 157.09805 720.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 710.89 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 710.89 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 690.39 m 203.07297 720.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 710.89 Tm (iiot, scada, modbus) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 710.89 Tm (quantum, openqasm,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 699.89 Tm (vqe) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 690.39 m 323.48346 720.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 710.89 Tm (Otomasi industri IIoT Modbus TCP/RTU, OPC-UA) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 699.89 Tm (& TSN) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 710.89 Tm (Simulator kuantum OpenQASM 3.0, QIR Alliance) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 699.89 Tm (& algoritma VQE) Tj ET
 1 1 1 rg 50 660.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 660.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 680.89 Tm (15) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 680.89 Tm (17) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 660.39 m 75 690.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 680.89 Tm (widya-fhir) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 680.89 Tm (widya-i18n) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 660.39 m 157.09805 690.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 680.89 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 680.89 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 660.39 m 203.07297 690.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 680.89 Tm (healthtech, fhir,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 669.89 Tm (dicom) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 680.89 Tm (i18n, nusantara,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 669.89 Tm (aksara) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 660.39 m 323.48346 690.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 680.89 Tm (Rekam medis SatuSehat HL7 FHIR v4, DICOM) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 669.89 Tm (v3 & DNA sekuens) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 680.89 Tm (Lokalisasi 12 Aksara Nusantara & perender Arab) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 669.89 Tm (RTL) Tj ET
 0.97 0.98 0.99 rg 50 630.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 630.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 650.89 Tm (16) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 650.89 Tm (18) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 630.39 m 75 660.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 650.89 Tm (widya-quantum) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 650.89 Tm (widya-test) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 630.39 m 157.09805 660.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 650.89 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 650.89 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 630.39 m 203.07297 660.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 650.89 Tm (quantum, openqasm,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 639.89 Tm (vqe) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 650.89 Tm (test, fuzzing,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 639.89 Tm (quickcheck) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 630.39 m 323.48346 660.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 650.89 Tm (Simulator kuantum OpenQASM 3.0, QIR Alliance) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 639.89 Tm (& algoritma VQE) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 650.89 Tm (Framework pengujian berbasis properti) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 639.89 Tm (QuickCheck & benchmark) Tj ET
 1 1 1 rg 50 600.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 600.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 620.89 Tm (17) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 620.89 Tm (19) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 600.39 m 75 630.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 620.89 Tm (widya-i18n) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 620.89 Tm (widya-json) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 600.39 m 157.09805 630.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 620.89 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 620.89 Tm (1.3.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 600.39 m 203.07297 630.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 620.89 Tm (i18n, nusantara,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 609.89 Tm (aksara) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 620.89 Tm (json, simd, parser) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 600.39 m 323.48346 630.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 620.89 Tm (Lokalisasi 12 Aksara Nusantara & perender Arab) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 609.89 Tm (RTL) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 620.89 Tm (Parser & serialisasi JSON terakselerasi SIMD) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 609.89 Tm (dengan validator) Tj ET
 0.97 0.98 0.99 rg 50 570.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 570.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 590.89 Tm (18) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 590.89 Tm (20) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 570.39 m 75 600.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 590.89 Tm (widya-test) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 590.89 Tm (widya-grpc) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 570.39 m 157.09805 600.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 590.89 Tm (1.0.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 590.89 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 570.39 m 203.07297 600.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 590.89 Tm (test, fuzzing,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 579.89 Tm (quickcheck) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 590.89 Tm (grpc, protobuf, http2) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 570.39 m 323.48346 600.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 590.89 Tm (Framework pengujian berbasis properti) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 579.89 Tm (QuickCheck & benchmark) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 590.89 Tm (RPC terdistribusi berkinerja tinggi berbasis) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 579.89 Tm (Protobuf & HTTP/2) Tj ET
 1 1 1 rg 50 540.39 480 30 re f
 0.8 0.85 0.9 RG 0.75 w 50 540.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 560.89 Tm (19) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 57.6125 560.89 Tm (21) Tj ET
 0.8 0.85 0.9 RG 0.5 w 75 540.39 m 75 570.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 560.89 Tm (widya-json) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 560.89 Tm (widya-log) Tj ET
 0.8 0.85 0.9 RG 0.5 w 157.09805 540.39 m 157.09805 570.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 560.89 Tm (1.3.0) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.33551 560.89 Tm (1.0.0) Tj ET
 0.8 0.85 0.9 RG 0.5 w 203.07297 540.39 m 203.07297 570.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 560.89 Tm (json, simd, parser) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 560.89 Tm (logging,) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 549.89 Tm (opentelemetry) Tj ET
 0.8 0.85 0.9 RG 0.5 w 323.48346 540.39 m 323.48346 570.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 560.89 Tm (Parser & serialisasi JSON terakselerasi SIMD) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 549.89 Tm (dengan validator) Tj ET
-0.97 0.98 0.99 rg 50 510.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 510.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 530.89 Tm (20) Tj ET
-0.8 0.85 0.9 RG 0.5 w 75 510.39 m 75 540.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 530.89 Tm (widya-grpc) Tj ET
-0.8 0.85 0.9 RG 0.5 w 157.09805 510.39 m 157.09805 540.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 530.89 Tm (1.0.0) Tj ET
-0.8 0.85 0.9 RG 0.5 w 203.07297 510.39 m 203.07297 540.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 530.89 Tm (grpc, protobuf, http2) Tj ET
-0.8 0.85 0.9 RG 0.5 w 323.48346 510.39 m 323.48346 540.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 530.89 Tm (RPC terdistribusi berkinerja tinggi berbasis) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 519.89 Tm (Protobuf & HTTP/2) Tj ET
-1 1 1 rg 50 480.39 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 480.39 480 30 re S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 500.89 Tm (21) Tj ET
-0.8 0.85 0.9 RG 0.5 w 75 480.39 m 75 510.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 80 500.89 Tm (widya-log) Tj ET
-0.8 0.85 0.9 RG 0.5 w 157.09805 480.39 m 157.09805 510.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 162.09805 500.89 Tm (1.0.0) Tj ET
-0.8 0.85 0.9 RG 0.5 w 203.07297 480.39 m 203.07297 510.39 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 500.89 Tm (logging,) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 208.07297 489.89 Tm (opentelemetry) Tj ET
-0.8 0.85 0.9 RG 0.5 w 323.48346 480.39 m 323.48346 510.39 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 500.89 Tm (Logging terstruktur asinkron dengan integrasi) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 489.89 Tm (OpenTelemetry APM) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 458.39 m 530 458.39 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 420.39 Tm (5. Audit Keamanan Rantai Pasok \(WpmSecurityAuditor\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 400.39 Tm (Jalankan perintah audit keamanan untuk memindai pohon dependensi:) Tj ET
-0.96 0.97 0.98 rg 50 370.39 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 370.39 m 50 388.39 l S
-0.85 0.88 0.9 RG 0.5 w 50 388.39 m 530 388.39 l S
-0.85 0.88 0.9 RG 0.5 w 530 370.39 m 530 388.39 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 376.39 Tm (KODE \(BASH\)) Tj ET
-0.96 0.97 0.98 rg 50 358.39 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 358.39 m 50 370.39 l S
-0.85 0.88 0.9 RG 0.5 w 530 358.39 m 530 370.39 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 361.39 Tm (widya wpm audit) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 358.39 m 530 358.39 l S
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 326.39 Tm (Mekanisme Validasi:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 306.39 Tm (1.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 306.39 Tm ( Basis Data Widya Security Advisories \(WSA\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 284.42798 306.39 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 288.89 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 288.89 Tm (WSA-2026-001) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 134.4 288.89 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 140.385 288.89 Tm (widya-http) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 197.385 288.89 Tm ( < 1.1.0\): Potensi Denial of Service pada chunked stream header \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 486.5174 288.89 Tm (Medium) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 521.4299 288.89 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 273.39 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 273.39 Tm (WSA-2026-002) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 134.4 273.39 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 140.385 273.39 Tm (widya-crypto) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 208.785 273.39 Tm ( < 0.9.0\): Timing side-channel pada non-constant-time poly1305 lawas \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 259.89 Tm (High) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 86.1875 259.89 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 244.39001 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 244.39001 Tm (WSA-2026-003) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 134.4 244.39001 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 140.385 244.39001 Tm (widya-sql) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 191.685 244.39001 Tm ( < 1.0.1\): Galat parsing tanda kurung bersarang pada kueri JOIN \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 479.2024 244.39001 Tm (Low) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 497.44238 244.39001 Tm (\).) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 228.39001 Tm (2.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 228.39001 Tm ( Validasi Checksum SHA-256) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 204.724 228.39001 Tm (: Memastikan biner lokal cocok persis dengan rekaman rilis di registry.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 214.39001 Tm (Bila ada berkas yang dimodifikasi tanpa izin \() Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 257.75 214.39001 Tm (tampered) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 302 214.39001 Tm (\), audit akan langsung memblokir rilis.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 196.39001 Tm (3.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 196.39001 Tm ( Verifikasi Kriptografis Ed25519) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 216.01004 196.39001 Tm (: Memastikan seluruh paket ditandatangani oleh pembuat \() Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 487.6101 196.39001 Tm (author) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 517.51013 196.39001 Tm (\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 182.39001 Tm (yang sah.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 170.39001 m 530 170.39001 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 132.39001 Tm (6. Pemeriksa Dependensi Usang \(WpmOutdatedChecker\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 112.390015 Tm (Jalankan perintah berikut untuk memeriksa apakah ada pustaka lokal yang tertinggal dari versi rilis) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 98.390015 Tm (terbaru:) Tj ET
-0.96 0.97 0.98 rg 50 68.390015 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 68.390015 m 50 86.390015 l S
-0.85 0.88 0.9 RG 0.5 w 50 86.390015 m 530 86.390015 l S
-0.85 0.88 0.9 RG 0.5 w 530 68.390015 m 530 86.390015 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 74.390015 Tm (KODE \(BASH\)) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 560.89 Tm (Logging terstruktur asinkron dengan integrasi) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 328.48346 549.89 Tm (OpenTelemetry APM) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 518.39 m 530 518.39 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 480.39 Tm (5. Audit Keamanan Rantai Pasok \(WpmSecurityAuditor\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 460.39 Tm (Jalankan perintah audit keamanan untuk memindai pohon dependensi:) Tj ET
+0.96 0.97 0.98 rg 50 430.39 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 430.39 m 50 448.39 l S
+0.85 0.88 0.9 RG 0.5 w 50 448.39 m 530 448.39 l S
+0.85 0.88 0.9 RG 0.5 w 530 430.39 m 530 448.39 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 436.39 Tm (KODE \(BASH\)) Tj ET
+0.96 0.97 0.98 rg 50 418.39 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 418.39 m 50 430.39 l S
+0.85 0.88 0.9 RG 0.5 w 530 418.39 m 530 430.39 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 421.39 Tm (widya wpm audit) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 418.39 m 530 418.39 l S
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 386.39 Tm (Mekanisme Validasi:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 366.89 Tm (1.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 366.89 Tm (Basis Data Widya Security Advisories \(WSA\)) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 279.61255 366.89 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 351.39 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 351.39 Tm (WSA-2026-001) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 134.4 351.39 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 140.385 351.39 Tm (widya-http) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 197.385 351.39 Tm ( < 1.1.0\): Potensi Denial of Service pada chunked stream header \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 486.5174 351.39 Tm (Medium) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 521.4299 351.39 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 335.89 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 335.89 Tm (WSA-2026-002) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 134.4 335.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 140.385 335.89 Tm (widya-crypto) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 208.785 335.89 Tm ( < 0.9.0\): Timing side-channel pada non-constant-time poly1305 lawas \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 322.39 Tm (High) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 86.1875 322.39 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 306.89 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 306.89 Tm (WSA-2026-003) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 134.4 306.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 140.385 306.89 Tm (widya-sql) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 191.685 306.89 Tm ( < 1.0.1\): Galat parsing tanda kurung bersarang pada kueri JOIN \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 479.2024 306.89 Tm (Low) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 497.44238 306.89 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 291.39 Tm (2.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 291.39 Tm (Validasi Checksum SHA-256) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 203.89369 291.39 Tm (: Memastikan biner lokal cocok persis dengan rekaman rilis di registry. Bila) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 277.89 Tm (ada berkas yang dimodifikasi tanpa izin \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 246.31497 277.89 Tm (tampered) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 288.35248 277.89 Tm (\), audit akan langsung memblokir rilis.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 262.39 Tm (3.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 262.39 Tm (Verifikasi Kriptografis Ed25519) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 214.61542 262.39 Tm (: Memastikan seluruh paket ditandatangani oleh pembuat \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 472.6353 262.39 Tm (author) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 501.0403 262.39 Tm (\) yang) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 248.89001 Tm (sah.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 238.89001 m 530 238.89001 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 200.89001 Tm (6. Pemeriksa Dependensi Usang \(WpmOutdatedChecker\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 180.89001 Tm (Jalankan perintah berikut untuk memeriksa apakah ada pustaka lokal yang tertinggal dari versi rilis) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 166.89001 Tm (terbaru:) Tj ET
+0.96 0.97 0.98 rg 50 136.89001 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 136.89001 m 50 154.89001 l S
+0.85 0.88 0.9 RG 0.5 w 50 154.89001 m 530 154.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 136.89001 m 530 154.89001 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 142.89001 Tm (KODE \(BASH\)) Tj ET
+0.96 0.97 0.98 rg 50 124.890015 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 124.890015 m 50 136.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 124.890015 m 530 136.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 127.890015 Tm (widya wpm outdated) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 124.890015 m 530 124.890015 l S
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 102.890015 Tm (Output menampilkan tabel komparasi SemVer:) Tj ET
+0.96 0.97 0.98 rg 50 72.890015 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 72.890015 m 50 90.890015 l S
+0.85 0.88 0.9 RG 0.5 w 50 90.890015 m 530 90.890015 l S
+0.85 0.88 0.9 RG 0.5 w 530 72.890015 m 530 90.890015 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 78.890015 Tm (KODE \(TEXT\)) Tj ET
 endstream
 endobj
 16 0 obj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 17 0 R >>
 endobj
 17 0 obj
-<< /Length 8324 >>
+<< /Length 8370 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 5 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
 0.96 0.97 0.98 rg 50 759.89 480 12 re f
 0.35 0.4 0.48 RG 3.5 w 50 759.89 m 50 771.89 l S
 0.85 0.88 0.9 RG 0.5 w 530 759.89 m 530 771.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 762.89 Tm (widya wpm outdated) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 759.89 m 530 759.89 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 737.89 Tm (Output menampilkan tabel komparasi SemVer:) Tj ET
-0.96 0.97 0.98 rg 50 707.89 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 707.89 m 50 725.89 l S
-0.85 0.88 0.9 RG 0.5 w 50 725.89 m 530 725.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 707.89 m 530 725.89 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 713.89 Tm (KODE \(TEXT\)) Tj ET
-0.96 0.97 0.98 rg 50 695.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 695.89 m 50 707.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 695.89 m 530 707.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 698.89 Tm (================================================================================) Tj ET
-0.96 0.97 0.98 rg 50 683.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 683.89 m 50 695.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 683.89 m 530 695.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 686.89 Tm ([PKG] PEMERIKSAAN VERSI PAKET USANG \(WPM OUTDATED CHECKER\)) Tj ET
-0.96 0.97 0.98 rg 50 671.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 671.89 m 50 683.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 671.89 m 530 683.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 674.89 Tm (================================================================================) Tj ET
-0.96 0.97 0.98 rg 50 659.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 659.89 m 50 671.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 659.89 m 530 671.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 662.89 Tm (Ditemukan 2 paket dengan pembaruan versi yang tersedia:) Tj ET
-0.96 0.97 0.98 rg 50 647.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 647.89 m 50 659.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 647.89 m 530 659.89 l S
-0.96 0.97 0.98 rg 50 635.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 635.89 m 50 647.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 635.89 m 530 647.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 638.89 Tm (Paket Terpasang Terbaru Tipe Update) Tj ET
-0.96 0.97 0.98 rg 50 623.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 623.89 m 50 635.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 623.89 m 530 635.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 626.89 Tm (------------------------- --------------- --------------- ----------) Tj ET
-0.96 0.97 0.98 rg 50 611.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 611.89 m 50 623.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 611.89 m 530 623.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 614.89 Tm (widya-office 1.9.0 2.5.0 Major) Tj ET
-0.96 0.97 0.98 rg 50 599.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 599.89 m 50 611.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 599.89 m 530 611.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 602.89 Tm (widya-http 1.0.0 1.2.0 Minor) Tj ET
-0.96 0.97 0.98 rg 50 587.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 587.89 m 50 599.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 587.89 m 530 599.89 l S
-0.96 0.97 0.98 rg 50 575.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 575.89 m 50 587.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 575.89 m 530 587.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 578.89 Tm (Jalankan 'widya wpm add <paket> --versi <terbaru>' untuk memperbarui.) Tj ET
-0.96 0.97 0.98 rg 50 563.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 563.89 m 50 575.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 563.89 m 530 575.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 566.89 Tm (================================================================================) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 563.89 m 530 563.89 l S
-0.8 0.85 0.9 RG 0.8 w 50 547.89 m 530 547.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 509.89 Tm (7. Inspeksi Metadata Paket \(info / informasi\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 489.89 Tm (Untuk memeriksa metadata paket sebelum menginstalnya:) Tj ET
-0.96 0.97 0.98 rg 50 459.89 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 459.89 m 50 477.89 l S
-0.85 0.88 0.9 RG 0.5 w 50 477.89 m 530 477.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 459.89 m 530 477.89 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 465.89 Tm (KODE \(BASH\)) Tj ET
-0.96 0.97 0.98 rg 50 447.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 447.89 m 50 459.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 447.89 m 530 459.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 450.89 Tm (widya wpm info widya-office) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 447.89 m 530 447.89 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 425.89 Tm (Menampilkan:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 408.39 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 408.39 Tm (Nama paket, versi rilis mutakhir, pembuat, dan lisensi.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 392.89 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 392.89 Tm (Deskripsi dan tag klasifikasi.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 377.39 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 377.39 Tm (Total unduhan ekosistem.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 361.89 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 361.89 Tm (Riwayat seluruh versi yang tersedia beserta status tanda tangan Ed25519 dan hash SHA-256.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 351.89 m 530 351.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 313.89 Tm (8. Penyediaan Paket Offline & Air-Gapped \(vendor / pasok\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 293.89 Tm (Untuk lingkungan pusat data terisolasi tanpa akses internet \() Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 330.75003 293.89 Tm (Air-Gapped / Military / Banking) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 471.25003 293.89 Tm (\), gunakan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 279.89 Tm (perintah vendor:) Tj ET
-0.96 0.97 0.98 rg 50 249.89001 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 249.89001 m 50 267.89 l S
-0.85 0.88 0.9 RG 0.5 w 50 267.89 m 530 267.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 249.89001 m 530 267.89 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 255.89001 Tm (KODE \(BASH\)) Tj ET
-0.96 0.97 0.98 rg 50 237.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 237.89001 m 50 249.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 237.89001 m 530 249.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 240.89001 Tm (# Memasok dependensi ke direktori ./vendor) Tj ET
-0.96 0.97 0.98 rg 50 225.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 225.89001 m 50 237.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 225.89001 m 530 237.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 228.89001 Tm (widya wpm vendor) Tj ET
-0.96 0.97 0.98 rg 50 213.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 213.89001 m 50 225.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 213.89001 m 530 225.89001 l S
-0.96 0.97 0.98 rg 50 201.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 201.89001 m 50 213.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 201.89001 m 530 213.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 204.89001 Tm (# Atau dengan alias Nusantara) Tj ET
-0.96 0.97 0.98 rg 50 189.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 189.89001 m 50 201.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 189.89001 m 530 201.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 192.89001 Tm (widya wpm pasok --output /opt/widya/vendor) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 189.89001 m 530 189.89001 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 167.89001 Tm (Perintah ini akan:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 149.89001 Tm (1. Menyalin kode sumber seluruh dependensi ke sub-direktori lokal.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 131.89001 Tm (2. Membentuk berkas manifest) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 192.9 131.89001 Tm ( modules.json) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 270.9 131.89001 Tm ( berisikan ringkasan hash SHA-256 setiap paket.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 113.890015 Tm (3. Runtime Widya dapat langsung mengeksekusi proyek secara mandiri tanpa memerlukan koneksi) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 99.890015 Tm (jaringan internet.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 87.890015 m 530 87.890015 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 762.89 Tm (================================================================================) Tj ET
+0.96 0.97 0.98 rg 50 747.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 747.89 m 50 759.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 747.89 m 530 759.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 750.89 Tm ([PKG] PEMERIKSAAN VERSI PAKET USANG \(WPM OUTDATED CHECKER\)) Tj ET
+0.96 0.97 0.98 rg 50 735.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 735.89 m 50 747.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 735.89 m 530 747.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 738.89 Tm (================================================================================) Tj ET
+0.96 0.97 0.98 rg 50 723.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 723.89 m 50 735.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 723.89 m 530 735.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 726.89 Tm (Ditemukan 2 paket dengan pembaruan versi yang tersedia:) Tj ET
+0.96 0.97 0.98 rg 50 711.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 711.89 m 50 723.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 711.89 m 530 723.89 l S
+0.96 0.97 0.98 rg 50 699.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 699.89 m 50 711.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 699.89 m 530 711.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 702.89 Tm (Paket Terpasang Terbaru Tipe Update) Tj ET
+0.96 0.97 0.98 rg 50 687.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 687.89 m 50 699.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 687.89 m 530 699.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 690.89 Tm (------------------------- --------------- --------------- ----------) Tj ET
+0.96 0.97 0.98 rg 50 675.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 675.89 m 50 687.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 675.89 m 530 687.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 678.89 Tm (widya-office 1.9.0 2.5.0 Major) Tj ET
+0.96 0.97 0.98 rg 50 663.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 663.89 m 50 675.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 663.89 m 530 675.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 666.89 Tm (widya-http 1.0.0 1.2.0 Minor) Tj ET
+0.96 0.97 0.98 rg 50 651.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 651.89 m 50 663.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 651.89 m 530 663.89 l S
+0.96 0.97 0.98 rg 50 639.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 639.89 m 50 651.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 639.89 m 530 651.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 642.89 Tm (Jalankan 'widya wpm add <paket> --versi <terbaru>' untuk memperbarui.) Tj ET
+0.96 0.97 0.98 rg 50 627.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 627.89 m 50 639.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 627.89 m 530 639.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 630.89 Tm (================================================================================) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 627.89 m 530 627.89 l S
+0.8 0.85 0.9 RG 0.8 w 50 611.89 m 530 611.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 573.89 Tm (7. Inspeksi Metadata Paket \(info / informasi\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 553.89 Tm (Untuk memeriksa metadata paket sebelum menginstalnya:) Tj ET
+0.96 0.97 0.98 rg 50 523.89 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 523.89 m 50 541.89 l S
+0.85 0.88 0.9 RG 0.5 w 50 541.89 m 530 541.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 523.89 m 530 541.89 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 529.89 Tm (KODE \(BASH\)) Tj ET
+0.96 0.97 0.98 rg 50 511.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 511.89 m 50 523.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 511.89 m 530 523.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 514.89 Tm (widya wpm info widya-office) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 511.89 m 530 511.89 l S
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 489.89 Tm (Menampilkan:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 472.39 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 472.39 Tm (Nama paket, versi rilis mutakhir, pembuat, dan lisensi.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 456.89 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 456.89 Tm (Deskripsi dan tag klasifikasi.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 441.39 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 441.39 Tm (Total unduhan ekosistem.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 425.89 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 425.89 Tm (Riwayat seluruh versi yang tersedia beserta status tanda tangan Ed25519 dan hash SHA-256.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 415.89 m 530 415.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 377.89 Tm (8. Penyediaan Paket Offline & Air-Gapped \(vendor / pasok\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 357.89 Tm (Untuk lingkungan pusat data terisolasi tanpa akses internet \() Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 330.75003 357.89 Tm (Air-Gapped / Military / Banking) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 471.25003 357.89 Tm (\), gunakan) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 343.89 Tm (perintah vendor:) Tj ET
+0.96 0.97 0.98 rg 50 313.89 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 313.89 m 50 331.89 l S
+0.85 0.88 0.9 RG 0.5 w 50 331.89 m 530 331.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 313.89 m 530 331.89 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 319.89 Tm (KODE \(BASH\)) Tj ET
+0.96 0.97 0.98 rg 50 301.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 301.89 m 50 313.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 301.89 m 530 313.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 304.89 Tm (# Memasok dependensi ke direktori ./vendor) Tj ET
+0.96 0.97 0.98 rg 50 289.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 289.89 m 50 301.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 289.89 m 530 301.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 292.89 Tm (widya wpm vendor) Tj ET
+0.96 0.97 0.98 rg 50 277.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 277.89 m 50 289.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 277.89 m 530 289.89 l S
+0.96 0.97 0.98 rg 50 265.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 265.89 m 50 277.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 265.89 m 530 277.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 268.89 Tm (# Atau dengan alias Nusantara) Tj ET
+0.96 0.97 0.98 rg 50 253.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 253.89001 m 50 265.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 253.89001 m 530 265.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 256.89 Tm (widya wpm pasok --output /opt/widya/vendor) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 253.89001 m 530 253.89001 l S
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 231.89001 Tm (Perintah ini akan:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 214.39001 Tm (1.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 214.39001 Tm (Menyalin kode sumber seluruh dependensi ke sub-direktori lokal.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 198.89001 Tm (2.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 198.89001 Tm (Membentuk berkas manifest) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 192.8775 198.89001 Tm ( modules.json) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 266.9775 198.89001 Tm ( berisikan ringkasan hash SHA-256 setiap paket.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 183.39001 Tm (3.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 183.39001 Tm (Runtime Widya dapat langsung mengeksekusi proyek secara mandiri tanpa memerlukan koneksi jaringan) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 169.89001 Tm (internet.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 159.89001 m 530 159.89001 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 121.890015 Tm (9. Self-Hosted Private Registry Server & Web Hub Portal) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 101.890015 Tm (Organisasi atau institusi pemerintah dapat meluncurkan server registry internal mandiri:) Tj ET
+0.96 0.97 0.98 rg 50 71.890015 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 71.890015 m 50 89.890015 l S
+0.85 0.88 0.9 RG 0.5 w 50 89.890015 m 530 89.890015 l S
+0.85 0.88 0.9 RG 0.5 w 530 71.890015 m 530 89.890015 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 77.890015 Tm (KODE \(BASH\)) Tj ET
 endstream
 endobj
 18 0 obj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 19 0 R >>
 endobj
 19 0 obj
-<< /Length 11381 >>
+<< /Length 11104 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 745.89 Tm (9. Self-Hosted Private Registry Server & Web Hub Portal) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 725.89 Tm (Organisasi atau institusi pemerintah dapat meluncurkan server registry internal mandiri:) Tj ET
-0.96 0.97 0.98 rg 50 695.89 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 695.89 m 50 713.89 l S
-0.85 0.88 0.9 RG 0.5 w 50 713.89 m 530 713.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 695.89 m 530 713.89 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 701.89 Tm (KODE \(BASH\)) Tj ET
-0.96 0.97 0.98 rg 50 683.89 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 683.89 m 50 695.89 l S
-0.85 0.88 0.9 RG 0.5 w 530 683.89 m 530 695.89 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 686.89 Tm (widya wpm serve-registry --port 8090) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 683.89 m 530 683.89 l S
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 651.89 Tm (Fitur Registry Mandiri:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 632.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 632.39 Tm (Port Kompatibel) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 142.5396 632.39 Tm (: Dapat diatur sesuai port organisasi \(default: 8090\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 616.89 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 616.89 Tm (Web Portal Hub \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 147.7722 616.89 Tm (/hub) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 170.5722 616.89 Tm (\)) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 174.11191 616.89 Tm (: Antarmuka web modern dengan pencarian langsung \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 414.08182 616.89 Tm (live search) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 460.96432 616.89 Tm (\), filter tag,) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 603.39 Tm (kartu metadata paket, tombol salin perintah instalasi, dan lencana validasi Ed25519.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 587.89 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 587.89 Tm (Dukungan Bearer Token) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 181.42499 587.89 Tm (: Mengamankan publikasi paket internal menggunakan token API.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 577.89 m 530 577.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 539.89 Tm (10. Spesifikasi REST API Registry) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 519.89 Tm (Server Registry WPM menyediakan endpoint REST API standar:) Tj ET
-0.92 0.95 0.98 rg 50 468.89 480.00003 33 re f
-0.22 0.42 0.72 RG 0.75 w 50 468.89 480.00003 33 re S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 491.39 Tm (Metod) Tj ET
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 479.89 Tm (e) Tj ET
-0.22 0.42 0.72 RG 0.75 w 90.85106 468.89 m 90.85106 501.89 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 95.85106 491.39 Tm (Endpoint) Tj ET
-0.22 0.42 0.72 RG 0.75 w 229.93921 468.89 m 229.93921 501.89 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 234.93921 491.39 Tm (Deskripsi) Tj ET
-0.22 0.42 0.72 RG 0.75 w 382.15808 468.89 m 382.15808 501.89 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 387.15808 491.39 Tm (Respons) Tj ET
-1 1 1 rg 50 438.89 480.00003 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 438.89 480.00003 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 459.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 438.89 m 90.85106 468.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 459.39 Tm (/health) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 438.89 m 229.93921 468.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 459.39 Tm (Memeriksa kesehatan server) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 448.39 Tm (registry) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 438.89 m 382.15808 468.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 459.39 Tm ({"status":"healthy","versio) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 448.39 Tm (n":"1.0.0"}) Tj ET
-0.97 0.98 0.99 rg 50 408.89 480.00003 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 408.89 480.00003 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 429.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 408.89 m 90.85106 438.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 429.39 Tm (/hub) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 408.89 m 229.93921 438.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 429.39 Tm (Antarmuka web Package Hub) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 418.39 Tm (Portal) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 408.89 m 382.15808 438.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 429.39 Tm (HTML Web Interface) Tj ET
-1 1 1 rg 50 389.89 480.00003 19 re f
-0.8 0.85 0.9 RG 0.75 w 50 389.89 480.00003 19 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 399.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 389.89 m 90.85106 408.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 399.39 Tm (/api/v1/packages) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 389.89 m 229.93921 408.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 399.39 Tm (Mengambil seluruh katalog paket) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 389.89 m 382.15808 408.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 399.39 Tm (JSON Array Paket) Tj ET
-0.97 0.98 0.99 rg 50 370.89 480.00003 19 re f
-0.8 0.85 0.9 RG 0.75 w 50 370.89 480.00003 19 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 380.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 370.89 m 90.85106 389.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 380.39 Tm (/api/v1/packages/:name) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 370.89 m 229.93921 389.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 380.39 Tm (Mengambil metadata paket spesifik) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 370.89 m 382.15808 389.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 380.39 Tm (JSON Object Paket) Tj ET
-1 1 1 rg 50 351.89 480.00003 19 re f
-0.8 0.85 0.9 RG 0.75 w 50 351.89 480.00003 19 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 361.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 351.89 m 90.85106 370.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 361.39 Tm (/api/v1/search?q=:query) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 351.89 m 229.93921 370.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 361.39 Tm (Mencari paket berdasarkan kueri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 351.89 m 382.15808 370.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 361.39 Tm (JSON Array Hasil) Tj ET
-0.97 0.98 0.99 rg 50 321.89 480.00003 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 321.89 480.00003 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 342.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 321.89 m 90.85106 351.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 342.39 Tm (/api/v1/security/advisori) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 331.39 Tm (es) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 321.89 m 229.93921 351.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 342.39 Tm (Mengambil daftar kerentanan WSA) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 321.89 m 382.15808 351.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 342.39 Tm (JSON Array Advisories) Tj ET
-1 1 1 rg 50 291.89 480.00003 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 291.89 480.00003 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 312.39 Tm (GET) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 291.89 m 90.85106 321.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 312.39 Tm (/api/v1/security/advisori) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 301.39 Tm (es/:pkg) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 291.89 m 229.93921 321.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 312.39 Tm (Mengambil kerentanan paket) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 301.39 Tm (spesifik) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 291.89 m 382.15808 321.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 312.39 Tm (JSON Array Advisories) Tj ET
-0.97 0.98 0.99 rg 50 261.89 480.00003 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 261.89 480.00003 30 re S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 282.39 Tm (POST) Tj ET
-0.8 0.85 0.9 RG 0.5 w 90.85106 261.89 m 90.85106 291.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 282.39 Tm (/api/v1/packages/publish) Tj ET
-0.8 0.85 0.9 RG 0.5 w 229.93921 261.89 m 229.93921 291.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 282.39 Tm (Mempublikasikan paket baru) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 271.39 Tm (\(Bearer Token\)) Tj ET
-0.8 0.85 0.9 RG 0.5 w 382.15808 261.89 m 382.15808 291.89 l S
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 282.39 Tm (201 Created) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 443.2581 282.39 Tm ( /) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 448.1031 282.39 Tm ( 401) Tj ET
-BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 271.39 Tm (Unauthorized) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 239.89001 m 530 239.89001 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 201.89001 Tm (11. Kriptografi Ed25519 & Standar Provenance SLSA Level 3) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 181.89001 Tm (Setiap paket yang didistribusikan melalui WPM memenuhi standar) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 355.30005 181.89001 Tm ( SLSA Level 3 \(Supply-chain) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 167.89001 Tm (Levels for Software Artifacts\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 196.50198 167.89001 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 150.39001 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 150.39001 Tm (Asal Usul Build Tervalidasi) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 191.3259 150.39001 Tm (: Metadata build mencakup commit hash Git resmi dan identitas pembuat.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 134.89001 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 134.89001 Tm (Log Transparansi Merkle Tree) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 208.20361 134.89001 Tm (: Setiap rilis dicatat dalam log transparansi yang tidak dapat diubah \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 121.390015 Tm (append-only) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 120.05501 121.390015 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 105.890015 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 105.890015 Tm (Kunci Publik Kurva Edwards) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 198.91829 105.890015 Tm (: Menggunakan algoritma penandatanganan kurva Ed25519 berkecepatan) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 92.390015 Tm (tinggi yang aman terhadap serangan) Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 226.97746 92.390015 Tm ( side-channel) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 285.35498 92.390015 Tm (.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 82.390015 m 530 82.390015 l S
+q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 6 dari 6) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
+0.96 0.97 0.98 rg 50 759.89 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 759.89 m 50 771.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 759.89 m 530 771.89 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 762.89 Tm (widya wpm serve-registry --port 8090) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 759.89 m 530 759.89 l S
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 727.89 Tm (Fitur Registry Mandiri:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 708.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 708.39 Tm (Port Kompatibel) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 142.5396 708.39 Tm (: Dapat diatur sesuai port organisasi \(default: 8090\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 692.89 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 692.89 Tm (Web Portal Hub \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 147.7722 692.89 Tm (/hub) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 170.5722 692.89 Tm (\)) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 174.11191 692.89 Tm (: Antarmuka web modern dengan pencarian langsung \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 414.08182 692.89 Tm (live search) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 460.96432 692.89 Tm (\), filter tag,) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 679.39 Tm (kartu metadata paket, tombol salin perintah instalasi, dan lencana validasi Ed25519.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 663.89 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 663.89 Tm (Dukungan Bearer Token) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 181.42499 663.89 Tm (: Mengamankan publikasi paket internal menggunakan token API.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 653.89 m 530 653.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 615.89 Tm (10. Spesifikasi REST API Registry) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 595.89 Tm (Server Registry WPM menyediakan endpoint REST API standar:) Tj ET
+0.92 0.95 0.98 rg 50 544.89 480.00003 33 re f
+0.22 0.42 0.72 RG 0.75 w 50 544.89 480.00003 33 re S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 567.39 Tm (Metod) Tj ET
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 555.89 Tm (e) Tj ET
+0.22 0.42 0.72 RG 0.75 w 90.85106 544.89 m 90.85106 577.89 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 95.85106 567.39 Tm (Endpoint) Tj ET
+0.22 0.42 0.72 RG 0.75 w 229.93921 544.89 m 229.93921 577.89 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 234.93921 567.39 Tm (Deskripsi) Tj ET
+0.22 0.42 0.72 RG 0.75 w 382.15808 544.89 m 382.15808 577.89 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 387.15808 567.39 Tm (Respons) Tj ET
+1 1 1 rg 50 514.89 480.00003 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 514.89 480.00003 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 535.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 514.89 m 90.85106 544.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 535.39 Tm (/health) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 514.89 m 229.93921 544.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 535.39 Tm (Memeriksa kesehatan server) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 524.39 Tm (registry) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 514.89 m 382.15808 544.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 535.39 Tm ({"status":"healthy","versio) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 524.39 Tm (n":"1.0.0"}) Tj ET
+0.97 0.98 0.99 rg 50 484.89 480.00003 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 484.89 480.00003 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 505.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 484.89 m 90.85106 514.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 505.39 Tm (/hub) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 484.89 m 229.93921 514.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 505.39 Tm (Antarmuka web Package Hub) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 494.39 Tm (Portal) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 484.89 m 382.15808 514.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 505.39 Tm (HTML Web Interface) Tj ET
+1 1 1 rg 50 465.89 480.00003 19 re f
+0.8 0.85 0.9 RG 0.75 w 50 465.89 480.00003 19 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 475.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 465.89 m 90.85106 484.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 475.39 Tm (/api/v1/packages) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 465.89 m 229.93921 484.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 475.39 Tm (Mengambil seluruh katalog paket) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 465.89 m 382.15808 484.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 475.39 Tm (JSON Array Paket) Tj ET
+0.97 0.98 0.99 rg 50 446.89 480.00003 19 re f
+0.8 0.85 0.9 RG 0.75 w 50 446.89 480.00003 19 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 456.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 446.89 m 90.85106 465.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 456.39 Tm (/api/v1/packages/:name) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 446.89 m 229.93921 465.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 456.39 Tm (Mengambil metadata paket spesifik) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 446.89 m 382.15808 465.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 456.39 Tm (JSON Object Paket) Tj ET
+1 1 1 rg 50 427.89 480.00003 19 re f
+0.8 0.85 0.9 RG 0.75 w 50 427.89 480.00003 19 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 437.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 427.89 m 90.85106 446.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 437.39 Tm (/api/v1/search?q=:query) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 427.89 m 229.93921 446.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 437.39 Tm (Mencari paket berdasarkan kueri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 427.89 m 382.15808 446.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 437.39 Tm (JSON Array Hasil) Tj ET
+0.97 0.98 0.99 rg 50 397.89 480.00003 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 397.89 480.00003 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 418.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 397.89 m 90.85106 427.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 418.39 Tm (/api/v1/security/advisori) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 407.39 Tm (es) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 397.89 m 229.93921 427.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 418.39 Tm (Mengambil daftar kerentanan WSA) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 397.89 m 382.15808 427.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 418.39 Tm (JSON Array Advisories) Tj ET
+1 1 1 rg 50 367.89 480.00003 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 367.89 480.00003 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 388.39 Tm (GET) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 367.89 m 90.85106 397.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 388.39 Tm (/api/v1/security/advisori) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 377.39 Tm (es/:pkg) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 367.89 m 229.93921 397.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 388.39 Tm (Mengambil kerentanan paket) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 377.39 Tm (spesifik) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 367.89 m 382.15808 397.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 387.15808 388.39 Tm (JSON Array Advisories) Tj ET
+0.97 0.98 0.99 rg 50 337.89 480.00003 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 337.89 480.00003 30 re S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 55 358.39 Tm (POST) Tj ET
+0.8 0.85 0.9 RG 0.5 w 90.85106 337.89 m 90.85106 367.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 95.85106 358.39 Tm (/api/v1/packages/publish) Tj ET
+0.8 0.85 0.9 RG 0.5 w 229.93921 337.89 m 229.93921 367.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 358.39 Tm (Mempublikasikan paket baru) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.93921 347.39 Tm (\(Bearer Token\)) Tj ET
+0.8 0.85 0.9 RG 0.5 w 382.15808 337.89 m 382.15808 367.89 l S
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 358.39 Tm (201 Created) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 443.2581 358.39 Tm ( /) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 448.1031 358.39 Tm ( 401) Tj ET
+BT /F4 8.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 387.15808 347.39 Tm (Unauthorized) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 315.89 m 530 315.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 277.89 Tm (11. Kriptografi Ed25519 & Standar Provenance SLSA Level 3) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 257.89 Tm (Setiap paket yang didistribusikan melalui WPM memenuhi standar) Tj ET
+BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 355.30005 257.89 Tm ( SLSA Level 3 \(Supply-chain) Tj ET
+BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 243.89001 Tm (Levels for Software Artifacts\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 196.50198 243.89001 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 226.39001 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 226.39001 Tm (Asal Usul Build Tervalidasi) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 191.3259 226.39001 Tm (: Metadata build mencakup commit hash Git resmi dan identitas pembuat.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 210.89001 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 210.89001 Tm (Log Transparansi Merkle Tree) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 208.20361 210.89001 Tm (: Setiap rilis dicatat dalam log transparansi yang tidak dapat diubah \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 197.39001 Tm (append-only) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 120.05501 197.39001 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 181.89001 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 181.89001 Tm (Kunci Publik Kurva Edwards) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 198.91829 181.89001 Tm (: Menggunakan algoritma penandatanganan kurva Ed25519 berkecepatan) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 168.39001 Tm (tinggi yang aman terhadap serangan) Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 226.97746 168.39001 Tm ( side-channel) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 285.35498 168.39001 Tm (.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 158.39001 m 530 158.39001 l S
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 132.39001 Tm (Hak Cipta Â© 2026 Tim Pengembang Widya-Lang \(Bakulcoding\). Dilisensikan di bawah Lisensi MIT.) Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 118.390015 Tm (Repositori Berdaulat Indonesia.) Tj ET
 endstream
 endobj
 20 0 obj
-<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 21 0 R >>
+<< /Type /Outlines /First 21 0 R /Last 38 0 R /Count 18 >>
 endobj
 21 0 obj
-<< /Length 637 >>
-stream
-q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Mana...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
-q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 7 dari 7) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 757.89 Tm (Hak Cipta Â© 2026 Tim Pengembang Widya-Lang \(Bakulcoding\). Dilisensikan di bawah Lisensi MIT.) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 743.89 Tm (Repositori Berdaulat Indonesia.) Tj ET
-endstream
+<< /Title ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Manager\)) /Parent 20 0 R /Next 22 0 R /Dest [ 8 0 R /XYZ 0 771.89 null ] >>
+endobj
+22 0 obj
+<< /Title (Daftar Isi) /Parent 20 0 R /Prev 21 0 R /Next 23 0 R /Dest [ 8 0 R /XYZ 0 643.89 null ] >>
+endobj
+23 0 obj
+<< /Title (1. Pengenalan & Filosofi Kedaulatan Digital) /Parent 20 0 R /Prev 22 0 R /Next 24 0 R /Dest [ 8 0 R /XYZ 0 421.39 null ] >>
+endobj
+24 0 obj
+<< /Title (Karakteristik Kunci WPM:) /Parent 20 0 R /Prev 23 0 R /Next 25 0 R /Dest [ 8 0 R /XYZ 0 343.39 null ] >>
+endobj
+25 0 obj
+<< /Title (2. Format Berkas Manifest \(widya.toml & widya.lock\)) /Parent 20 0 R /Prev 24 0 R /Next 26 0 R /Dest [ 8 0 R /XYZ 0 177.39 null ] >>
+endobj
+26 0 obj
+<< /Title (A. Berkas Manifest Proyek \(widya.toml\)) /Parent 20 0 R /Prev 25 0 R /Next 27 0 R /Dest [ 8 0 R /XYZ 0 145.39 null ] >>
+endobj
+27 0 obj
+<< /Title (B. Berkas Pengunci Integritas \(widya.lock\)) /Parent 20 0 R /Prev 26 0 R /Next 28 0 R /Dest [ 10 0 R /XYZ 0 631.89 null ] >>
+endobj
+28 0 obj
+<< /Title (3. Daftar Perintah CLI Lengkap \(Dwibahasa / Bilingual\)) /Parent 20 0 R /Prev 27 0 R /Next 29 0 R /Dest [ 10 0 R /XYZ 0 433.89 null ] >>
+endobj
+29 0 obj
+<< /Title (4. Katalog 21 Pustaka Resmi Bawaan \(10 Mega Frontiers\)) /Parent 20 0 R /Prev 28 0 R /Next 30 0 R /Dest [ 12 0 R /XYZ 0 607.39 null ] >>
+endobj
+30 0 obj
+<< /Title (5. Audit Keamanan Rantai Pasok \(WpmSecurityAuditor\)) /Parent 20 0 R /Prev 29 0 R /Next 31 0 R /Dest [ 14 0 R /XYZ 0 506.39 null ] >>
+endobj
+31 0 obj
+<< /Title (Mekanisme Validasi:) /Parent 20 0 R /Prev 30 0 R /Next 32 0 R /Dest [ 14 0 R /XYZ 0 410.39 null ] >>
+endobj
+32 0 obj
+<< /Title (6. Pemeriksa Dependensi Usang \(WpmOutdatedChecker\)) /Parent 20 0 R /Prev 31 0 R /Next 33 0 R /Dest [ 14 0 R /XYZ 0 226.89 null ] >>
+endobj
+33 0 obj
+<< /Title (7. Inspeksi Metadata Paket \(info / informasi\)) /Parent 20 0 R /Prev 32 0 R /Next 34 0 R /Dest [ 16 0 R /XYZ 0 599.89 null ] >>
+endobj
+34 0 obj
+<< /Title (8. Penyediaan Paket Offline & Air-Gapped \(vendor / pasok\)) /Parent 20 0 R /Prev 33 0 R /Next 35 0 R /Dest [ 16 0 R /XYZ 0 403.89 null ] >>
+endobj
+35 0 obj
+<< /Title (9. Self-Hosted Private Registry Server & Web Hub Portal) /Parent 20 0 R /Prev 34 0 R /Next 36 0 R /Dest [ 16 0 R /XYZ 0 147.89 null ] >>
+endobj
+36 0 obj
+<< /Title (Fitur Registry Mandiri:) /Parent 20 0 R /Prev 35 0 R /Next 37 0 R /Dest [ 18 0 R /XYZ 0 751.89 null ] >>
+endobj
+37 0 obj
+<< /Title (10. Spesifikasi REST API Registry) /Parent 20 0 R /Prev 36 0 R /Next 38 0 R /Dest [ 18 0 R /XYZ 0 641.89 null ] >>
+endobj
+38 0 obj
+<< /Title (11. Kriptografi Ed25519 & Standar Provenance SLSA Level 3) /Parent 20 0 R /Prev 37 0 R /Dest [ 18 0 R /XYZ 0 303.89 null ] >>
 endobj
 xref
-0 22
+0 39
 0000000000 65535 f 
 0000000015 00000 n 
-0000000064 00000 n 
-0000000197 00000 n 
-0000000294 00000 n 
-0000000396 00000 n 
-0000000501 00000 n 
-0000000596 00000 n 
-0000000705 00000 n 
-0000000847 00000 n 
-0000011705 00000 n 
-0000011849 00000 n 
-0000023543 00000 n 
-0000023687 00000 n 
-0000040065 00000 n 
-0000040209 00000 n 
-0000054283 00000 n 
-0000054427 00000 n 
-0000062803 00000 n 
-0000062947 00000 n 
-0000074381 00000 n 
-0000074525 00000 n 
+0000000081 00000 n 
+0000000207 00000 n 
+0000000304 00000 n 
+0000000406 00000 n 
+0000000511 00000 n 
+0000000606 00000 n 
+0000000715 00000 n 
+0000005248 00000 n 
+0000016642 00000 n 
+0000016786 00000 n 
+0000029208 00000 n 
+0000029352 00000 n 
+0000046425 00000 n 
+0000046569 00000 n 
+0000059534 00000 n 
+0000059678 00000 n 
+0000068100 00000 n 
+0000068244 00000 n 
+0000079401 00000 n 
+0000079476 00000 n 
+0000079654 00000 n 
+0000079772 00000 n 
+0000079923 00000 n 
+0000080055 00000 n 
+0000080216 00000 n 
+0000080364 00000 n 
+0000080517 00000 n 
+0000080682 00000 n 
+0000080847 00000 n 
+0000081009 00000 n 
+0000081137 00000 n 
+0000081298 00000 n 
+0000081454 00000 n 
+0000081622 00000 n 
+0000081786 00000 n 
+0000081918 00000 n 
+0000082060 00000 n 
 trailer
-<< /Size 22 /Root 1 0 R /Info << /Title ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Manager\)) /Author (Widya Office Suite) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008151844Z) >> >>
+<< /Size 39 /Root 1 0 R /Info << /Title ([PKG]  Panduan Komprehensif Ekosistem Paket Berdaulat WPM \(Widya Package Manager\)) /Author (Widya Office Suite) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008173246Z) >> >>
 startxref
-75213
+82213
 %%EOF

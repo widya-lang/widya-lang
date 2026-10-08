@@ -1,7 +1,7 @@
 %PDF-1.7
 %‚„œ”
 1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
+<< /Type /Catalog /Pages 2 0 R /Outlines 16 0 R >>
 endobj
 2 0 obj
 << /Type /Pages /Kids [ 8 0 R 10 0 R 12 0 R 14 0 R ] /Count 4 /MediaBox [ 0 0 595.28 841.89 ] >>
@@ -118,7 +118,7 @@ endobj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 11 0 R >>
 endobj
 11 0 obj
-<< /Length 11906 >>
+<< /Length 12283 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
 q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 2 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
@@ -142,468 +142,542 @@ BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 196.85 624.89 Tm (\) untuk menghasilkan bi
 BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 610.89 Tm (menyertakan pemancar format biner) Tj ET
 BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 218.25 610.89 Tm ( ELF-64 murni) Tj ET
 BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 289.152 610.89 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 593.39 Tm (*) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 593.39 Tm (\225) Tj ET
 BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 593.39 Tm (Spesifikasi ELF-64) Tj ET
 BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 155.1081 593.39 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 577.89 Tm (*) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 577.89 Tm (\225) Tj ET
 BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 577.89 Tm (Elf64Header) Tj ET
 BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 128.70001 577.89 Tm (: Identifikasi System V ABI 64-bit, Little Endian, Entry Point terpetakan pada) Tj ET
 BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 462.90985 577.89 Tm ( 0x401000) Tj ET
 BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 514.20984 577.89 Tm (.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 562.39 Tm (*) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 562.39 Tm (\225) Tj ET
 BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 562.39 Tm (Elf64Phdr) Tj ET
 BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 117.3 562.39 Tm (: Dua segmen) Tj ET
 BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 178.33751 562.39 Tm ( PT_LOAD) Tj ET
 BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 223.93752 562.39 Tm (:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 546.39 Tm (1. Segmen Kode) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 126.85 546.39 Tm ( .text) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 162.85 546.39 Tm ( \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 169.15001 546.39 Tm (PF_R | PF_X) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 235.15001 546.39 Tm (\) selaras dengan halaman 4096 byte.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 528.39 Tm (2. Segmen Data Konstan) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 166.44998 528.39 Tm ( .rodata) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 214.44998 528.39 Tm ( \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 220.74998 528.39 Tm (PF_R | PF_W) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 286.75 528.39 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 510.89 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 510.89 Tm (Pembangkit Kode Mesin x86_64) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 219.07921 510.89 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 495.39 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 495.39 Tm (Menghasilkan urutan opcode langsung:) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 237.85498 495.39 Tm ( mov rax, imm32) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 323.35498 495.39 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 329.33997 495.39 Tm (0xB8) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 352.13995 495.39 Tm (\),) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 358.12494 495.39 Tm ( mov rdi, imm32) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 443.62494 495.39 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 449.60992 495.39 Tm (0xBF) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 472.4099 495.39 Tm (\),) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 478.3949 495.39 Tm ( mov rsi,) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 481.89 Tm (imm64) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 94.5 481.89 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 100.485 481.89 Tm (0x48 0xBE) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 151.785 481.89 Tm (\),) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 157.77 481.89 Tm ( mov rdx, imm32) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 243.26999 481.89 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 249.25499 481.89 Tm (0xBA) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 272.055 481.89 Tm (\),) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 278.03998 481.89 Tm ( syscall) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 323.63998 481.89 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 329.62497 481.89 Tm (0x0F 0x05) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 380.925 481.89 Tm (\), dan) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 406.00497 481.89 Tm ( sys_exit) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 457.305 481.89 Tm ( \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 463.28998 481.89 Tm (60) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 474.68997 481.89 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 466.39 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 466.39 Tm (Menghasilkan biner mandiri yang dapat langsung dieksekusi sistem Linux tanpa bantuan compiler) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 452.89 Tm (eksternal.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 442.89 m 530 442.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 404.89 Tm (2. Pilar II: Pustaka Standar Murni \(In-House Sovereign Stdlib\)) Tj ET
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 374.89 Tm (A. Kriptografi Murni \(src/kripto/pure_crypto.rs\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 354.89 Tm (Menghapus dependensi pada crates) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 217.69998 354.89 Tm ( sha2) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 247.69998 354.89 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 250.54999 354.89 Tm ( hex) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 274.55 354.89 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 277.4 354.89 Tm ( base64) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 319.4 354.89 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 322.25 354.89 Tm ( ed25519-dalek) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 406.25 354.89 Tm (, dan) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 50 340.89 Tm (chacha20poly1305) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 146 340.89 Tm (:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 322.89 Tm (1.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 322.89 Tm ( FIPS 180-4 SHA-256 & SHA-512) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 225.02802 322.89 Tm (: Implementasi transformasi bitwise murni, tabel konstanta K, dan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 308.89 Tm (padding pesan.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 290.89 Tm (2.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 290.89 Tm ( RFC 2104 HMAC-SHA256) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 193.54602 290.89 Tm (: Otentikasi pesan kriptografis berbasis kunci rahasia.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 272.89 Tm (3.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 272.89 Tm ( RFC 4648 Hex & Base64) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 186.742 272.89 Tm (: Encoder dan decoder streaming tanpa alokasi tak perlu.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 254.89001 Tm (4.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 254.89001 Tm ( RFC 8439 ChaCha20-Poly1305 AEAD) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 252.45999 254.89001 Tm (: Enkripsi terotentikasi 256-bit dengan 128-bit MAC tag.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 236.89001 Tm (5.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 236.89001 Tm ( RFC 8032 Ed25519) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 160.228 236.89001 Tm (: Penandatanganan digital berkecepatan tinggi pada kurva Edwards twisted.) Tj ET
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 208.89001 Tm (B. Format Serialisasi Murni \(src/stdlib/pure_format.rs\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 188.89001 Tm (Menghapus dependensi pada crates) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 217.69998 188.89001 Tm ( serde) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 253.69998 188.89001 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 256.55 188.89001 Tm ( serde_json) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 322.55 188.89001 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 325.4 188.89001 Tm ( toml) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 355.4 188.89001 Tm (, dan) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 378.35 188.89001 Tm ( csv) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 402.35 188.89001 Tm (:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 170.89001 Tm (1.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 170.89001 Tm ( RFC 8259 JSON Parser & Serializer) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 241.17398 170.89001 Tm (: Tokenizer rekursif murni yang mendukung Objek, Array,) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 156.89001 Tm (String ber-escape, Angka floating-point/integer, Boolean, dan Null. Dilengkapi formatter) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 453.00006 156.89001 Tm ( pretty-print) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 507.00006 156.89001 Tm (.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 138.89001 Tm (2.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 138.89001 Tm ( RFC 4180 CSV Parser & Serializer) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 234.37 138.89001 Tm (: Parser tabel berbasis delimiter kustom dengan dukungan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 124.890015 Tm (kutipan berulang \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 133.29999 124.890015 Tm ("") Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 145.29999 124.890015 Tm (\) dan karakter baris baru dalam sel.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 106.890015 Tm (3.) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 58.6 106.890015 Tm ( INI Configuration Parser) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 182.53 106.890015 Tm (: Parser konfigurasi hierarki per-seksi \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 359.83 106.890015 Tm ([section] key = value) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 485.83 106.890015 Tm (\).) Tj ET
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 78.890015 Tm (C. Engine Argumen Baris Perintah Murni \(src/cli/pure_args.rs\)) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 546.89 Tm (1.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 546.89 Tm (Segmen Kode) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 130.13 546.89 Tm ( .text) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 164.33 546.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 170.315 546.89 Tm (PF_R | PF_X) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 233.01501 546.89 Tm (\) selaras dengan halaman 4096 byte.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 531.39 Tm (2.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 531.39 Tm (Segmen Data Konstan) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.75 531.39 Tm ( .rodata) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 213.35 531.39 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 219.335 531.39 Tm (PF_R | PF_W) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 282.035 531.39 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 515.89 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 515.89 Tm (Pembangkit Kode Mesin x86_64) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 219.07921 515.89 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 500.39 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 500.39 Tm (Menghasilkan urutan opcode langsung:) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 237.85498 500.39 Tm ( mov rax, imm32) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 323.35498 500.39 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 329.33997 500.39 Tm (0xB8) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 352.13995 500.39 Tm (\),) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 358.12494 500.39 Tm ( mov rdi, imm32) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 443.62494 500.39 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 449.60992 500.39 Tm (0xBF) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 472.4099 500.39 Tm (\),) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 478.3949 500.39 Tm ( mov rsi,) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 486.89 Tm (imm64) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 94.5 486.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 100.485 486.89 Tm (0x48 0xBE) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 151.785 486.89 Tm (\),) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 157.77 486.89 Tm ( mov rdx, imm32) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 243.26999 486.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 249.25499 486.89 Tm (0xBA) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 272.055 486.89 Tm (\),) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 278.03998 486.89 Tm ( syscall) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 323.63998 486.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 329.62497 486.89 Tm (0x0F 0x05) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 380.925 486.89 Tm (\), dan) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 406.00497 486.89 Tm ( sys_exit) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 457.305 486.89 Tm ( \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 463.28998 486.89 Tm (60) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 474.68997 486.89 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 471.39 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 471.39 Tm (Menghasilkan biner mandiri yang dapat langsung dieksekusi sistem Linux tanpa bantuan compiler) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 457.89 Tm (eksternal.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 447.89 m 530 447.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 409.89 Tm (2. Pilar II: Pustaka Standar Murni \(In-House Sovereign Stdlib\)) Tj ET
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 379.89 Tm (A. Kriptografi Murni \(src/kripto/pure_crypto.rs\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 359.89 Tm (Menghapus dependensi pada crates) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 217.69998 359.89 Tm ( sha2) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 247.69998 359.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 250.54999 359.89 Tm ( hex) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 274.55 359.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 277.4 359.89 Tm ( base64) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 319.4 359.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 322.25 359.89 Tm ( ed25519-dalek) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 406.25 359.89 Tm (, dan) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 50 345.89 Tm (chacha20poly1305) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 146 345.89 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 328.39 Tm (1.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 328.39 Tm (FIPS 180-4 SHA-256 & SHA-512) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 223.18253 328.39 Tm (: Implementasi transformasi bitwise murni, tabel konstanta K, dan) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 314.89 Tm (padding pesan.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 299.39 Tm (2.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 299.39 Tm (RFC 2104 HMAC-SHA256) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 193.2746 299.39 Tm (: Otentikasi pesan kriptografis berbasis kunci rahasia.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 283.89 Tm (3.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 283.89 Tm (RFC 4648 Hex & Base64) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 186.81079 283.89 Tm (: Encoder dan decoder streaming tanpa alokasi tak perlu.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 268.39 Tm (4.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 268.39 Tm (RFC 8439 ChaCha20-Poly1305 AEAD) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 249.24294 268.39 Tm (: Enkripsi terotentikasi 256-bit dengan 128-bit MAC tag.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 252.89001 Tm (5.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 252.89001 Tm (RFC 8032 Ed25519) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 161.6225 252.89001 Tm (: Penandatanganan digital berkecepatan tinggi pada kurva Edwards twisted.) Tj ET
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 226.89001 Tm (B. Format Serialisasi Murni \(src/stdlib/pure_format.rs\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 206.89001 Tm (Menghapus dependensi pada crates) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 217.69998 206.89001 Tm ( serde) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 253.69998 206.89001 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 256.55 206.89001 Tm ( serde_json) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 322.55 206.89001 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 325.4 206.89001 Tm ( toml) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 355.4 206.89001 Tm (, dan) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 378.35 206.89001 Tm ( csv) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 402.35 206.89001 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 189.39001 Tm (1.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 189.39001 Tm (RFC 8259 JSON Parser & Serializer) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 238.52124 189.39001 Tm (: Tokenizer rekursif murni yang mendukung Objek, Array, String) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 175.89001 Tm (ber-escape, Angka floating-point/integer, Boolean, dan Null. Dilengkapi formatter) Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 421.96985 175.89001 Tm ( pretty-print) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 473.26984 175.89001 Tm (.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 160.39001 Tm (2.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 160.39001 Tm (RFC 4180 CSV Parser & Serializer) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 232.05743 160.39001 Tm (: Parser tabel berbasis delimiter kustom dengan dukungan kutipan) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 146.89001 Tm (berulang \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 112.2225 146.89001 Tm ("") Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 123.622505 146.89001 Tm (\) dan karakter baris baru dalam sel.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 131.39001 Tm (3.) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 131.39001 Tm (INI Configuration Parser) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 182.8094 131.39001 Tm (: Parser konfigurasi hierarki per-seksi \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 351.2444 131.39001 Tm ([section] key = value) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 470.94437 131.39001 Tm (\).) Tj ET
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 105.390015 Tm (C. Engine Argumen Baris Perintah Murni \(src/cli/pure_args.rs\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 85.390015 Tm (Menghapus ketergantungan pada crate) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 232.09999 85.390015 Tm ( clap) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 262.09998 85.390015 Tm (:) Tj ET
 endstream
 endobj
 12 0 obj
 << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 13 0 R >>
 endobj
 13 0 obj
-<< /Length 11719 >>
+<< /Length 12817 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
 q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 3 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 757.89 Tm (Menghapus ketergantungan pada crate) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 232.09999 757.89 Tm ( clap) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 262.09998 757.89 Tm (:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 739.89 Tm (1. Penanganan Subcommand berjenjang \(misal:) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 271.00003 739.89 Tm ( widya wpm install <pkg>) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 415.00003 739.89 Tm (\).) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 721.89 Tm (2. Opsi pendek \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 125.7 721.89 Tm (-v) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 137.7 721.89 Tm (\), opsi panjang \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 211.75 721.89 Tm (--version) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 265.75 721.89 Tm (\), opsi bernilai \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 336.34998 721.89 Tm (--port 8080) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 402.34998 721.89 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 405.19998 721.89 Tm ( --port=8080) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 477.19998 721.89 Tm (\), dan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 707.89 Tm (argumen posisi.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 689.89 Tm (3. Generator teks panduan \() Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 180.3 689.89 Tm (bilingual help generator) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 288.34998 689.89 Tm (\) dalam Bahasa Indonesia dan Bahasa Inggris.) Tj ET
-BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 661.89 Tm (D. Engine Jaringan HTTP/1.1 Murni \(src/web/pure_http.rs\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 641.89 Tm (Menghapus ketergantungan pada crate) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 232.09999 641.89 Tm ( ureq) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 262.09998 641.89 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 264.94998 641.89 Tm ( hyper) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 300.94998 641.89 Tm (, dan) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 323.9 641.89 Tm ( tokio) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 359.9 641.89 Tm (:) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 623.89 Tm (1. Klien HTTP/1.1 murni \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 166.34999 623.89 Tm (PureHttpClient) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 250.34999 623.89 Tm (\) berbasis raw) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 315.19998 623.89 Tm ( std::net::TcpStream) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 435.19998 623.89 Tm ( dengan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 609.89 Tm (penanganan timeout, header) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 183.29999 609.89 Tm ( Host) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 213.29999 609.89 Tm (, dan parsing respons.) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 591.89 Tm (2. Server HTTP/1.1 murni \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 173.79999 591.89 Tm (PureHttpServer) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 257.8 591.89 Tm (\) berbasis multi-threaded) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 373.24997 591.89 Tm ( std::net::TcpListener) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 577.89 Tm (yang memproses permintaan secara paralel.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 565.89 m 530 565.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 527.89 Tm (3. Pilar III: Direct Kernel Syscalls & Sovereign Allocator \(src/sys/\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 507.89 Tm (Menghapus ketergantungan pada C-Runtime Library \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 299.5 507.89 Tm (glibc) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 329.5 507.89 Tm ( /) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 335.2 507.89 Tm ( musl) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 365.2 507.89 Tm ( /) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 370.90002 507.89 Tm ( malloc) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 412.90002 507.89 Tm (\):) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 490.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 490.39 Tm (Direct Linux Syscalls \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 170.9598 490.39 Tm (src/sys/syscall.rs) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 273.55978 490.39 Tm (\)) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 277.0995 490.39 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 474.89 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 474.89 Tm (Menggunakan instruksi assembly) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 211.5875 474.89 Tm ( syscall) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 257.1875 474.89 Tm ( x86_64 langsung:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 459.39 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 459.39 Tm (sys_write) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 117.3 459.39 Tm ( \(1\): Menulis langsung ke deskriptor berkas \(FD 1 stdout, FD 2 stderr\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 443.89 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 443.89 Tm (sys_read) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 111.600006 443.89 Tm ( \(0\): Membaca langsung dari deskriptor berkas.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 428.39 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 428.39 Tm (sys_mmap) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 111.600006 428.39 Tm ( \(9\): Mengalokasikan halaman memori virtual anonim \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 348.81494 428.39 Tm (MAP_PRIVATE | MAP_ANONYMOUS) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 502.7149 428.39 Tm (\)) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 414.89 Tm (langsung dari kernel.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 399.39 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 399.39 Tm (sys_munmap) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 123 399.39 Tm ( \(11\): Mengembalikan halaman memori ke kernel.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 383.89 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 383.89 Tm (sys_getpid) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 123 383.89 Tm ( \(39\): Mengambil ID proses berjalan.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 368.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 368.39 Tm (Sovereign Slab Memory Allocator \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 230.21133 368.39 Tm (src/sys/allocator.rs) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 344.2113 368.39 Tm (\)) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 347.751 368.39 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 352.89 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 352.89 Tm (Mengelola heap mandiri menggunakan blok berukuran tetap \() Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 334.99237 352.89 Tm (Slab Classes) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 392.18237 352.89 Tm (: 32B, 64B, 128B, 256B, 512B,) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 339.39 Tm (1024B, 2048B\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 323.89 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 323.89 Tm (Alokasi dan dealokasi instan $O\(1\)$ dengan) Tj ET
-BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 259.03995 323.89 Tm ( freelist chaining) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 331.04996 323.89 Tm ( tanpa fragmentasi heap.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 313.89 m 530 313.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 275.89 Tm (4. Pilar IV: Basis Data Berdaulat Murni \(src/widyabase/wire.rs\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 255.89001 Tm (Mempensiunkan kebutuhan driver pihak ketiga \() Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 271.05 255.89001 Tm (rusqlite) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 319.05 255.89001 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 321.9 255.89001 Tm ( postgres) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 375.9 255.89001 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 378.75 255.89001 Tm ( mysql) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 414.75 255.89001 Tm (,) Tj ET
-BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 417.6 255.89001 Tm ( duckdb) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 459.6 255.89001 Tm (\):) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 238.39001 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 238.39001 Tm (Protokol Wire Biner Klien-Server) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 218.97662 238.39001 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 222.89001 Tm (*) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 222.89001 Tm (WidyaWireClient) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 151.5 222.89001 Tm ( terhubung ke server WidyaBase via raw socket TCP.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 207.39001 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 207.39001 Tm (Mengirim) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 106.375 207.39001 Tm ( StartupMessage) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 191.875 207.39001 Tm ( dan membaca frame handshake \() Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 341.8325 207.39001 Tm (ReadyForQuery) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 415.9325 207.39001 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 191.89001 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 191.89001 Tm (Mengirim) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 106.375 191.89001 Tm ( Query) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 140.575 191.89001 Tm ( SQL dan mem-parsing frame) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 270.53497 191.89001 Tm ( RowDescription) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 356.03497 191.89001 Tm ( \('T'\),) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 378.36 191.89001 Tm ( DataRow) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 423.96 191.89001 Tm ( \('D'\), dan) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 178.39001 Tm (CommandComplete) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 151.5 178.39001 Tm ( \('C'\) langsung menjadi struktur data tabel native.) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 168.39001 m 530 168.39001 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 130.39001 Tm (5. Pilar V: Target Bare-Metal & Unikernel OS \(src/compiler/unikernel.rs\)) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 110.390015 Tm (Puncak kedaulatan perangkat lunak: kemampuan kode untuk berjalan tanpa sistem operasi \() Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 96.390015 Tm (freestanding microVM) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 151.6 96.390015 Tm (\):) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 78.890015 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 78.890015 Tm (Protokol Boot Langsung) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 180.50159 78.890015 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 758.39 Tm (1.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 758.39 Tm (Penanganan Subcommand berjenjang \(misal:) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 267.07245 758.39 Tm ( widya wpm install <pkg>) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 403.87244 758.39 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 742.89 Tm (2.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 742.89 Tm (Opsi pendek \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 129.0375 742.89 Tm (-v) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 140.4375 742.89 Tm (\), opsi panjang \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 210.785 742.89 Tm (--version) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 262.08502 742.89 Tm (\), opsi bernilai \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 329.15503 742.89 Tm (--port 8080) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 391.85504 742.89 Tm (,) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 394.56253 742.89 Tm ( --port=8080) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 462.96252 742.89 Tm (\), dan argumen) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 729.39 Tm (posisi.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 713.89 Tm (3.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 713.89 Tm (Generator teks panduan \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 180.9075 713.89 Tm (bilingual help generator) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 283.555 713.89 Tm (\) dalam Bahasa Indonesia dan Bahasa Inggris.) Tj ET
+BT /F2 11.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 687.89 Tm (D. Engine Jaringan HTTP/1.1 Murni \(src/web/pure_http.rs\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 667.89 Tm (Menghapus ketergantungan pada crate) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 232.09999 667.89 Tm ( ureq) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 262.09998 667.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 264.94998 667.89 Tm ( hyper) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 300.94998 667.89 Tm (, dan) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 323.9 667.89 Tm ( tokio) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 359.9 667.89 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 650.39 Tm (1.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 650.39 Tm (Klien HTTP/1.1 murni \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 167.65498 650.39 Tm (PureHttpClient) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 247.45499 650.39 Tm (\) berbasis raw) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 309.0625 650.39 Tm ( std::net::TcpStream) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 423.06247 650.39 Tm ( dengan penanganan) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 636.89 Tm (timeout, header) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 137.30249 636.89 Tm ( Host) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 165.80249 636.89 Tm (, dan parsing respons.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 54 621.39 Tm (2.) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 621.39 Tm (Server HTTP/1.1 murni \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 174.73248 621.39 Tm (PureHttpServer) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 254.53247 621.39 Tm (\) berbasis multi-threaded) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 364.20996 621.39 Tm ( std::net::TcpListener) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 489.60992 621.39 Tm ( yang) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 68 607.89 Tm (memproses permintaan secara paralel.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 597.89 m 530 597.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 559.89 Tm (3. Pilar III: Direct Kernel Syscalls & Sovereign Allocator \(src/sys/\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 539.89 Tm (Menghapus ketergantungan pada C-Runtime Library \() Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 299.5 539.89 Tm (glibc) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 329.5 539.89 Tm ( /) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 335.2 539.89 Tm ( musl) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 365.2 539.89 Tm ( /) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 370.90002 539.89 Tm ( malloc) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 412.90002 539.89 Tm (\):) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 522.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 522.39 Tm (Direct Linux Syscalls \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 170.9598 522.39 Tm (src/sys/syscall.rs) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 273.55978 522.39 Tm (\)) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 277.0995 522.39 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 506.89 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 506.89 Tm (Menggunakan instruksi assembly) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 211.5875 506.89 Tm ( syscall) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 257.1875 506.89 Tm ( x86_64 langsung:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 491.39 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 491.39 Tm (sys_write) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 117.3 491.39 Tm ( \(1\): Menulis langsung ke deskriptor berkas \(FD 1 stdout, FD 2 stderr\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 475.89 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 475.89 Tm (sys_read) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 111.600006 475.89 Tm ( \(0\): Membaca langsung dari deskriptor berkas.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 460.39 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 460.39 Tm (sys_mmap) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 111.600006 460.39 Tm ( \(9\): Mengalokasikan halaman memori virtual anonim \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 348.81494 460.39 Tm (MAP_PRIVATE | MAP_ANONYMOUS) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 502.7149 460.39 Tm (\)) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 446.89 Tm (langsung dari kernel.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 431.39 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 431.39 Tm (sys_munmap) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 123 431.39 Tm ( \(11\): Mengembalikan halaman memori ke kernel.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 415.89 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 415.89 Tm (sys_getpid) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 123 415.89 Tm ( \(39\): Mengambil ID proses berjalan.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 400.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 400.39 Tm (Sovereign Slab Memory Allocator \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 230.21133 400.39 Tm (src/sys/allocator.rs) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 344.2113 400.39 Tm (\)) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 347.751 400.39 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 384.89 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 384.89 Tm (Mengelola heap mandiri menggunakan blok berukuran tetap \() Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 334.99237 384.89 Tm (Slab Classes) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 392.18237 384.89 Tm (: 32B, 64B, 128B, 256B, 512B,) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 371.39 Tm (1024B, 2048B\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 355.89 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 355.89 Tm (Alokasi dan dealokasi instan $O\(1\)$ dengan) Tj ET
+BT /F3 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 259.03995 355.89 Tm ( freelist chaining) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 331.04996 355.89 Tm ( tanpa fragmentasi heap.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 345.89 m 530 345.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 307.89 Tm (4. Pilar IV: Basis Data Berdaulat Murni \(src/widyabase/wire.rs\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 287.89 Tm (Mempensiunkan kebutuhan driver pihak ketiga \() Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 271.05 287.89 Tm (rusqlite) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 319.05 287.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 321.9 287.89 Tm ( postgres) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 375.9 287.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 378.75 287.89 Tm ( mysql) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 414.75 287.89 Tm (,) Tj ET
+BT /F4 10 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 417.6 287.89 Tm ( duckdb) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 459.6 287.89 Tm (\):) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 270.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 270.39 Tm (Protokol Wire Biner Klien-Server) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 218.97662 270.39 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 254.89001 Tm (\225) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 254.89001 Tm (WidyaWireClient) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 151.5 254.89001 Tm ( terhubung ke server WidyaBase via raw socket TCP.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 239.39001 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 239.39001 Tm (Mengirim) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 106.375 239.39001 Tm ( StartupMessage) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 191.875 239.39001 Tm ( dan membaca frame handshake \() Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 341.8325 239.39001 Tm (ReadyForQuery) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 415.9325 239.39001 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 223.89001 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 223.89001 Tm (Mengirim) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 106.375 223.89001 Tm ( Query) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 140.575 223.89001 Tm ( SQL dan mem-parsing frame) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 270.53497 223.89001 Tm ( RowDescription) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 356.03497 223.89001 Tm ( \('T'\),) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 378.36 223.89001 Tm ( DataRow) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 423.96 223.89001 Tm ( \('D'\), dan) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 210.39001 Tm (CommandComplete) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 151.5 210.39001 Tm ( \('C'\) langsung menjadi struktur data tabel native.) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 200.39001 m 530 200.39001 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 162.39001 Tm (5. Pilar V: Target Bare-Metal & Unikernel OS \(src/compiler/unikernel.rs\)) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 142.39001 Tm (Puncak kedaulatan perangkat lunak: kemampuan kode untuk berjalan tanpa sistem operasi \() Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 128.39001 Tm (freestanding microVM) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 151.6 128.39001 Tm (\):) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 110.890015 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 110.890015 Tm (Protokol Boot Langsung) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 180.50159 110.890015 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 95.390015 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 95.390015 Tm (Linux 64-bit Direct Kernel Boot) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 211.69203 95.390015 Tm (: Header 1024-byte dengan magic) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 360.60452 95.390015 Tm ( 0x53726448) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 423.30453 95.390015 Tm ( \("HdrS"\) dan boot flag) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 81.890015 Tm (0xAA55) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 100.2 81.890015 Tm ( untuk boot langsung di bawah) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 234.3875 81.890015 Tm ( AWS Firecracker) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 317.237 81.890015 Tm ( dan) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 336.332 81.890015 Tm ( QEMU -kernel) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 406.3052 81.890015 Tm (.) Tj ET
 endstream
 endobj
 14 0 obj
-<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents 15 0 R >>
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Annots [ << /Type /Annot /Subtype /Link /Rect [ 163.31 595.39 290.81 606.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/compiler/pure_emitter.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 584.39 178.61 595.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/compiler/pure_emitter.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 565.39 290.81 576.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/kripto/pure_crypto.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 535.39 290.81 546.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/stdlib/pure_format.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 505.39 265.31 516.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/cli/pure_args.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 486.39 265.31 497.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/web/pure_http.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 456.39 255.11 467.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/sys/syscall.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 445.39 224.51 456.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/sys/allocator.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 426.39 270.41 437.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/widyabase/wire.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 163.31 396.39 290.81 407.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/src/compiler/unikernel.rs) >> >> << /Type /Annot /Subtype /Link /Rect [ 50.00 281.89 236.00 294.89 ] /Border [ 0 0 0 ] /A << /S /URI /URI (file:///home/devops/widya-lang/tests/pilar_kemandirian_test.rs) >> >> ]  /Contents 15 0 R >>
 endobj
 15 0 obj
-<< /Length 13137 >>
+<< /Length 13019 >>
 stream
 q 0.4 0.5 0.6 rg BT /F1 8 Tf 1 0 0 1 50 806.89 Tm ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO...) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 799.89 m 545.28 799.89 l S Q
 q 0.5 0.5 0.5 rg BT /F1 8 Tf 1 0 0 1 50 35 Tm (Dokumen Resmi WidyaOffice - Kedaulatan Data Lokal) Tj ET 1 0 0 1 445.28003 35 Tm (Halaman 4 dari 4) Tj ET 0.5 w 0.8 0.8 0.8 RG 50 45 m 545.28 45 l S Q
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 758.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 758.39 Tm (Linux 64-bit Direct Kernel Boot) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 211.69203 758.39 Tm (: Header 1024-byte dengan magic) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 360.60452 758.39 Tm ( 0x53726448) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 423.30453 758.39 Tm ( \("HdrS"\) dan boot flag) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 66 744.89 Tm (0xAA55) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 100.2 744.89 Tm ( untuk boot langsung di bawah) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 234.3875 744.89 Tm ( AWS Firecracker) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 317.237 744.89 Tm ( dan) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 336.332 744.89 Tm ( QEMU -kernel) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 406.3052 744.89 Tm (.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 729.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 729.39 Tm (Multiboot2 Specification) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 180.2964 729.39 Tm (: Magic) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 211.8839 729.39 Tm ( 0xE85250D6) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 274.5839 729.39 Tm ( untuk GRUB2 dan hypervisor modern.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 713.89 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 713.89 Tm (PVH Direct Boot) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 144.1812 713.89 Tm (: Header minimal untuk Cloud Hypervisor.) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 698.39 Tm (*) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 698.39 Tm (Inisialisasi Perangkat Keras) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 196.6611 698.39 Tm (:) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 682.89 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 682.89 Tm (Stub booting Long Mode 64-bit dengan inisialisasi port serial COM1 \(UART 16550 pada port I/O) Tj ET
-BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 484.9498 682.89 Tm ( 0x3F8) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 519.1498 682.89 Tm (\).) Tj ET
-BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 667.39 Tm (*) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 667.39 Tm (Waktu boot terukur) Tj ET
-BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 150.5025 667.39 Tm ( sub-5 milidetik) Tj ET
-BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 221.7582 667.39 Tm ( \(Firecracker: ~3.2 ms\).) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 657.39 m 530 657.39 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 619.39 Tm (Matriks Status 5 Pilar Kemandirian) Tj ET
-0.92 0.95 0.98 rg 50 577.89 480 21.5 re f
-0.22 0.42 0.72 RG 0.75 w 50 577.89 480 21.5 re S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 588.89 Tm (Pilar Kedaulatan) Tj ET
-0.22 0.42 0.72 RG 0.75 w 158.3077 577.89 m 158.3077 599.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 163.3077 588.89 Tm (Modul Implementasi) Tj ET
-0.22 0.42 0.72 RG 0.75 w 300.58463 577.89 m 300.58463 599.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 305.58463 588.89 Tm (Status) Tj ET
-0.22 0.42 0.72 RG 0.75 w 374.4308 577.89 m 374.4308 599.39 l S
-BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 379.4308 588.89 Tm (Crate yang Digantikan) Tj ET
-1 1 1 rg 50 547.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 547.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 568.39 Tm (Pilar I: Kompiler &) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 557.39 Tm (Linker) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 547.89 m 158.3077 577.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 568.39 Tm (src/compiler/pure_emitter) Tj ET
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 557.39 Tm (.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 547.89 m 300.58463 577.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 568.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 547.89 m 374.4308 577.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 568.39 Tm (GCC, Clang, GNU ld, LLVM-sys) Tj ET
-0.97 0.98 0.99 rg 50 517.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 517.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 538.39 Tm (Pilar II-A: Kriptografi) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 527.39 Tm (Murni) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 517.89 m 158.3077 547.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 538.39 Tm (src/kripto/pure_crypto.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 517.89 m 300.58463 547.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 538.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 517.89 m 374.4308 547.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 538.39 Tm (sha2, hex, base64, ed25519-dalek,) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 527.39 Tm (chacha20) Tj ET
-1 1 1 rg 50 487.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 487.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 508.39 Tm (Pilar II-B: Format) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 497.39 Tm (Serialisasi) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 487.89 m 158.3077 517.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 508.39 Tm (src/stdlib/pure_format.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 487.89 m 300.58463 517.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 508.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 487.89 m 374.4308 517.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 508.39 Tm (serde, serde_json, toml, csv) Tj ET
-0.97 0.98 0.99 rg 50 468.89 480 19 re f
-0.8 0.85 0.9 RG 0.75 w 50 468.89 480 19 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 478.39 Tm (Pilar II-C: Engine CLI) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 468.89 m 158.3077 487.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 478.39 Tm (src/cli/pure_args.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 468.89 m 300.58463 487.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 478.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 468.89 m 374.4308 487.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 478.39 Tm (clap, structopt, argh) Tj ET
-1 1 1 rg 50 438.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 438.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 459.39 Tm (Pilar II-D: Pure) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 448.39 Tm (HTTP/1.1) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 438.89 m 158.3077 468.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 459.39 Tm (src/web/pure_http.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 438.89 m 300.58463 468.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 459.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 438.89 m 374.4308 468.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 459.39 Tm (ureq, reqwest, hyper, tokio) Tj ET
-0.97 0.98 0.99 rg 50 408.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 408.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 429.39 Tm (Pilar III: Syscall &) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 418.39 Tm (Allocator) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 408.89 m 158.3077 438.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 429.39 Tm (src/sys/syscall.rs) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 255.10768 429.39 Tm ( &) Tj ET
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 418.39 Tm (allocator.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 408.89 m 300.58463 438.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 429.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 408.89 m 374.4308 438.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 429.39 Tm (glibc, musl, libc, jemalloc) Tj ET
-1 1 1 rg 50 378.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 378.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 399.39 Tm (Pilar IV: Basis Data) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 388.39 Tm (WidyaWire) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 378.89 m 158.3077 408.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 399.39 Tm (src/widyabase/wire.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 378.89 m 300.58463 408.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 399.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 378.89 m 374.4308 408.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 399.39 Tm (postgres, rusqlite, mysql, duckdb) Tj ET
-0.97 0.98 0.99 rg 50 348.89 480 30 re f
-0.8 0.85 0.9 RG 0.75 w 50 348.89 480 30 re S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 369.39 Tm (Pilar V: Bare-Metal) Tj ET
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 358.39 Tm (Unikernel) Tj ET
-0.8 0.85 0.9 RG 0.5 w 158.3077 348.89 m 158.3077 378.89 l S
-BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 369.39 Tm (src/compiler/unikernel.rs) Tj ET
-0.8 0.85 0.9 RG 0.5 w 300.58463 348.89 m 300.58463 378.89 l S
-BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 305.58463 369.39 Tm (100% Mandiri) Tj ET
-0.8 0.85 0.9 RG 0.5 w 374.4308 348.89 m 374.4308 378.89 l S
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 369.39 Tm (OS kernel dependencies) Tj ET
-BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 358.39 Tm (\(Linux/Windows\)) Tj ET
-0.8 0.85 0.9 RG 0.8 w 50 326.89 m 530 326.89 l S
-BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 288.89 Tm ([TEST] Hasil Verifikasi Suite Pengujian) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 268.89 Tm (Seluruh pilar diuji secara otomatis melalui suite pengujian integrasi terpadu pada) Tj ET
-BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 50 254.89001 Tm (tests/pilar_kemandirian_test.rs) Tj ET
-0.007843138 0.5176471 0.78039217 RG 0.6 w 50 253.39001 m 236 253.39001 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 236 254.89001 Tm (:) Tj ET
-0.96 0.97 0.98 rg 50 224.89001 480 18 re f
-0.35 0.4 0.48 RG 3.5 w 50 224.89001 m 50 242.89001 l S
-0.85 0.88 0.9 RG 0.5 w 50 242.89001 m 530 242.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 224.89001 m 530 242.89001 l S
-BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 230.89001 Tm (KODE \(TEXT\)) Tj ET
-0.96 0.97 0.98 rg 50 212.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 212.89001 m 50 224.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 212.89001 m 530 224.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 215.89001 Tm (running 5 tests) Tj ET
-0.96 0.97 0.98 rg 50 200.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 200.89001 m 50 212.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 200.89001 m 530 212.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 203.89001 Tm (test test_pilar_1_kompiler_dan_linker_mandiri ... ok) Tj ET
-0.96 0.97 0.98 rg 50 188.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 188.89001 m 50 200.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 188.89001 m 530 200.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 191.89001 Tm (test test_pilar_2_pustaka_standar_murni ... ok) Tj ET
-0.96 0.97 0.98 rg 50 176.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 176.89001 m 50 188.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 176.89001 m 530 188.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 179.89001 Tm (test test_pilar_3_direct_syscall_dan_alokator_murni ... ok) Tj ET
-0.96 0.97 0.98 rg 50 164.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 164.89001 m 50 176.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 164.89001 m 530 176.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 167.89001 Tm (test test_pilar_4_basis_data_murni_widyawire ... ok) Tj ET
-0.96 0.97 0.98 rg 50 152.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 152.89001 m 50 164.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 152.89001 m 530 164.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 155.89001 Tm (test test_pilar_5_baremetal_dan_unikernel ... ok) Tj ET
-0.96 0.97 0.98 rg 50 140.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 140.89001 m 50 152.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 140.89001 m 530 152.89001 l S
-0.96 0.97 0.98 rg 50 128.89001 480 12 re f
-0.35 0.4 0.48 RG 3.5 w 50 128.89001 m 50 140.89001 l S
-0.85 0.88 0.9 RG 0.5 w 530 128.89001 m 530 140.89001 l S
-BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 131.89001 Tm (test result: ok. 5 passed; 0 failed; 0 ignored; finished in 0.04s) Tj ET
-0.85 0.88 0.9 RG 0.5 w 50 128.89001 m 530 128.89001 l S
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 106.890015 Tm (Dengan tuntasnya kelima pilar ini, ekosistem) Tj ET
-BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 256.05002 106.890015 Tm ( Widya-Lang) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 318.906 106.890015 Tm ( kini memiliki kedaulatan teknologi sejati \() Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 510.056 106.890015 Tm (true) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 92.890015 Tm (technological sovereignty) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 167.15 92.890015 Tm (\), terbebas dari jeratan dependensi pustaka asing, dan siap diimplementasikan) Tj ET
-BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 78.890015 Tm (untuk infrastruktur nasional skala misi kritis.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 758.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 758.39 Tm (Multiboot2 Specification) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 180.2964 758.39 Tm (: Magic) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 211.8839 758.39 Tm ( 0xE85250D6) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 274.5839 758.39 Tm ( untuk GRUB2 dan hypervisor modern.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 742.89 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 742.89 Tm (PVH Direct Boot) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 144.1812 742.89 Tm (: Header minimal untuk Cloud Hypervisor.) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 727.39 Tm (\225) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 727.39 Tm (Inisialisasi Perangkat Keras) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 196.6611 727.39 Tm (:) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 711.89 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 711.89 Tm (Stub booting Long Mode 64-bit dengan inisialisasi port serial COM1 \(UART 16550 pada port I/O) Tj ET
+BT /F4 9.5 Tf 0.05882353 0.4627451 0.43137255 rg 1 0 0 1 484.9498 711.89 Tm ( 0x3F8) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 519.1498 711.89 Tm (\).) Tj ET
+BT /F2 9.5 Tf 0.15 0.35 0.7 rg 1 0 0 1 56 696.39 Tm (\225) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 66 696.39 Tm (Waktu boot terukur) Tj ET
+BT /F2 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 150.5025 696.39 Tm ( sub-5 milidetik) Tj ET
+BT /F1 9.5 Tf 0.2 0.25 0.3 rg 1 0 0 1 221.7582 696.39 Tm ( \(Firecracker: ~3.2 ms\).) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 686.39 m 530 686.39 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 648.39 Tm (Matriks Status 5 Pilar Kemandirian) Tj ET
+0.92 0.95 0.98 rg 50 606.89 480 21.5 re f
+0.22 0.42 0.72 RG 0.75 w 50 606.89 480 21.5 re S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 55 617.89 Tm (Pilar Kedaulatan) Tj ET
+0.22 0.42 0.72 RG 0.75 w 158.3077 606.89 m 158.3077 628.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 163.3077 617.89 Tm (Modul Implementasi) Tj ET
+0.22 0.42 0.72 RG 0.75 w 300.58463 606.89 m 300.58463 628.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 322.7333 617.89 Tm (Status) Tj ET
+0.22 0.42 0.72 RG 0.75 w 374.4308 606.89 m 374.4308 628.39 l S
+BT /F2 9 Tf 0.05 0.2 0.45 rg 1 0 0 1 379.4308 617.89 Tm (Crate yang Digantikan) Tj ET
+1 1 1 rg 50 576.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 576.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 597.39 Tm (Pilar I: Kompiler &) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 586.39 Tm (Linker) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 576.89 m 158.3077 606.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 597.39 Tm (src/compiler/pure_emitter) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 595.89 m 290.80768 595.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 586.39 Tm (.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 584.89 m 178.6077 584.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 576.89 m 300.58463 606.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 597.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 576.89 m 374.4308 606.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 597.39 Tm (GCC, Clang, GNU ld, LLVM-sys) Tj ET
+0.97 0.98 0.99 rg 50 546.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 546.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 567.39 Tm (Pilar II-A: Kriptografi) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 556.39 Tm (Murni) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 546.89 m 158.3077 576.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 567.39 Tm (src/kripto/pure_crypto.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 565.89 m 290.80768 565.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 546.89 m 300.58463 576.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 567.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 546.89 m 374.4308 576.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 567.39 Tm (sha2, hex, base64, ed25519-dalek,) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 556.39 Tm (chacha20) Tj ET
+1 1 1 rg 50 516.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 516.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 537.39 Tm (Pilar II-B: Format) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 526.39 Tm (Serialisasi) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 516.89 m 158.3077 546.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 537.39 Tm (src/stdlib/pure_format.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 535.89 m 290.80768 535.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 516.89 m 300.58463 546.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 537.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 516.89 m 374.4308 546.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 537.39 Tm (serde, serde_json, toml, csv) Tj ET
+0.97 0.98 0.99 rg 50 497.89 480 19 re f
+0.8 0.85 0.9 RG 0.75 w 50 497.89 480 19 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 507.39 Tm (Pilar II-C: Engine CLI) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 497.89 m 158.3077 516.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 507.39 Tm (src/cli/pure_args.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 505.89 m 265.30768 505.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 497.89 m 300.58463 516.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 507.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 497.89 m 374.4308 516.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 507.39 Tm (clap, structopt, argh) Tj ET
+1 1 1 rg 50 467.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 467.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 488.39 Tm (Pilar II-D: Pure) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 477.39 Tm (HTTP/1.1) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 467.89 m 158.3077 497.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 488.39 Tm (src/web/pure_http.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 486.89 m 265.30768 486.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 467.89 m 300.58463 497.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 488.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 467.89 m 374.4308 497.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 488.39 Tm (ureq, reqwest, hyper, tokio) Tj ET
+0.97 0.98 0.99 rg 50 437.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 437.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 458.39 Tm (Pilar III: Syscall &) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 447.39 Tm (Allocator) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 437.89 m 158.3077 467.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 458.39 Tm (src/sys/syscall.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 456.89 m 255.10768 456.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 255.10768 458.39 Tm ( &) Tj ET
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 447.39 Tm (allocator.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 445.89 m 224.50769 445.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 437.89 m 300.58463 467.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 458.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 437.89 m 374.4308 467.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 458.39 Tm (glibc, musl, libc, jemalloc) Tj ET
+1 1 1 rg 50 407.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 407.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 428.39 Tm (Pilar IV: Basis Data) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 417.39 Tm (WidyaWire) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 407.89 m 158.3077 437.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 428.39 Tm (src/widyabase/wire.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 426.89 m 270.40768 426.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 407.89 m 300.58463 437.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 428.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 407.89 m 374.4308 437.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 428.39 Tm (postgres, rusqlite, mysql, duckdb) Tj ET
+0.97 0.98 0.99 rg 50 377.89 480 30 re f
+0.8 0.85 0.9 RG 0.75 w 50 377.89 480 30 re S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 398.39 Tm (Pilar V: Bare-Metal) Tj ET
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 55 387.39 Tm (Unikernel) Tj ET
+0.8 0.85 0.9 RG 0.5 w 158.3077 377.89 m 158.3077 407.89 l S
+BT /F4 8.5 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 163.3077 398.39 Tm (src/compiler/unikernel.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 163.3077 396.89 m 290.80768 396.89 l S
+0.8 0.85 0.9 RG 0.5 w 300.58463 377.89 m 300.58463 407.89 l S
+BT /F2 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 308.52185 398.39 Tm (100% Mandiri) Tj ET
+0.8 0.85 0.9 RG 0.5 w 374.4308 377.89 m 374.4308 407.89 l S
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 398.39 Tm (OS kernel dependencies) Tj ET
+BT /F1 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 379.4308 387.39 Tm (\(Linux/Windows\)) Tj ET
+0.8 0.85 0.9 RG 0.8 w 50 355.89 m 530 355.89 l S
+BT /F2 13.5 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 317.89 Tm ([TEST] Hasil Verifikasi Suite Pengujian) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 297.89 Tm (Seluruh pilar diuji secara otomatis melalui suite pengujian integrasi terpadu pada) Tj ET
+BT /F4 10 Tf 0.007843138 0.5176471 0.78039217 rg 1 0 0 1 50 283.89 Tm (tests/pilar_kemandirian_test.rs) Tj ET
+0.007843138 0.5176471 0.78039217 RG 0.6 w 50 282.39 m 236 282.39 l S
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 236 283.89 Tm (:) Tj ET
+0.96 0.97 0.98 rg 50 253.89001 480 18 re f
+0.35 0.4 0.48 RG 3.5 w 50 253.89001 m 50 271.89 l S
+0.85 0.88 0.9 RG 0.5 w 50 271.89 m 530 271.89 l S
+0.85 0.88 0.9 RG 0.5 w 530 253.89001 m 530 271.89 l S
+BT /F2 9 Tf 0.1 0.25 0.45 rg 1 0 0 1 60 259.89 Tm (KODE \(TEXT\)) Tj ET
+0.96 0.97 0.98 rg 50 241.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 241.89001 m 50 253.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 241.89001 m 530 253.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 244.89001 Tm (running 5 tests) Tj ET
+0.96 0.97 0.98 rg 50 229.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 229.89001 m 50 241.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 229.89001 m 530 241.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 232.89001 Tm (test test_pilar_1_kompiler_dan_linker_mandiri ... ok) Tj ET
+0.96 0.97 0.98 rg 50 217.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 217.89001 m 50 229.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 217.89001 m 530 229.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 220.89001 Tm (test test_pilar_2_pustaka_standar_murni ... ok) Tj ET
+0.96 0.97 0.98 rg 50 205.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 205.89001 m 50 217.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 205.89001 m 530 217.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 208.89001 Tm (test test_pilar_3_direct_syscall_dan_alokator_murni ... ok) Tj ET
+0.96 0.97 0.98 rg 50 193.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 193.89001 m 50 205.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 193.89001 m 530 205.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 196.89001 Tm (test test_pilar_4_basis_data_murni_widyawire ... ok) Tj ET
+0.96 0.97 0.98 rg 50 181.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 181.89001 m 50 193.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 181.89001 m 530 193.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 184.89001 Tm (test test_pilar_5_baremetal_dan_unikernel ... ok) Tj ET
+0.96 0.97 0.98 rg 50 169.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 169.89001 m 50 181.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 169.89001 m 530 181.89001 l S
+0.96 0.97 0.98 rg 50 157.89001 480 12 re f
+0.35 0.4 0.48 RG 3.5 w 50 157.89001 m 50 169.89001 l S
+0.85 0.88 0.9 RG 0.5 w 530 157.89001 m 530 169.89001 l S
+BT /F4 8.5 Tf 0.1 0.2 0.3 rg 1 0 0 1 60 160.89001 Tm (test result: ok. 5 passed; 0 failed; 0 ignored; finished in 0.04s) Tj ET
+0.85 0.88 0.9 RG 0.5 w 50 157.89001 m 530 157.89001 l S
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 135.89001 Tm (Dengan tuntasnya kelima pilar ini, ekosistem) Tj ET
+BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 256.05002 135.89001 Tm ( Widya-Lang) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 318.906 135.89001 Tm ( kini memiliki kedaulatan teknologi sejati \() Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 510.056 135.89001 Tm (true) Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 121.890015 Tm (technological sovereignty) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 167.15 121.890015 Tm (\), terbebas dari jeratan dependensi pustaka asing, dan siap diimplementasikan) Tj ET
+BT /F1 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 107.890015 Tm (untuk infrastruktur nasional skala misi kritis.) Tj ET
 endstream
 endobj
+16 0 obj
+<< /Type /Outlines /First 17 0 R /Last 29 0 R /Count 13 >>
+endobj
+17 0 obj
+<< /Title ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) /Parent 16 0 R /Next 18 0 R /Dest [ 8 0 R /XYZ 0 771.89 null ] >>
+endobj
+18 0 obj
+<< /Title ([INFO]  Ringkasan Eksekutif) /Parent 16 0 R /Prev 17 0 R /Next 19 0 R /Dest [ 8 0 R /XYZ 0 617.89 null ] >>
+endobj
+19 0 obj
+<< /Title (1. Pilar I: Kompiler & Linker Mandiri \(src/compiler/pure_emitter.rs\)) /Parent 16 0 R /Prev 18 0 R /Next 20 0 R /Dest [ 10 0 R /XYZ 0 684.89 null ] >>
+endobj
+20 0 obj
+<< /Title (2. Pilar II: Pustaka Standar Murni \(In-House Sovereign Stdlib\)) /Parent 16 0 R /Prev 19 0 R /Next 21 0 R /Dest [ 10 0 R /XYZ 0 435.89 null ] >>
+endobj
+21 0 obj
+<< /Title (A. Kriptografi Murni \(src/kripto/pure_crypto.rs\)) /Parent 16 0 R /Prev 20 0 R /Next 22 0 R /Dest [ 10 0 R /XYZ 0 403.89 null ] >>
+endobj
+22 0 obj
+<< /Title (B. Format Serialisasi Murni \(src/stdlib/pure_format.rs\)) /Parent 16 0 R /Prev 21 0 R /Next 23 0 R /Dest [ 10 0 R /XYZ 0 250.89 null ] >>
+endobj
+23 0 obj
+<< /Title (C. Engine Argumen Baris Perintah Murni \(src/cli/pure_args.rs\)) /Parent 16 0 R /Prev 22 0 R /Next 24 0 R /Dest [ 10 0 R /XYZ 0 129.39 null ] >>
+endobj
+24 0 obj
+<< /Title (D. Engine Jaringan HTTP/1.1 Murni \(src/web/pure_http.rs\)) /Parent 16 0 R /Prev 23 0 R /Next 25 0 R /Dest [ 12 0 R /XYZ 0 711.89 null ] >>
+endobj
+25 0 obj
+<< /Title (3. Pilar III: Direct Kernel Syscalls & Sovereign Allocator \(src/sys/\)) /Parent 16 0 R /Prev 24 0 R /Next 26 0 R /Dest [ 12 0 R /XYZ 0 585.89 null ] >>
+endobj
+26 0 obj
+<< /Title (4. Pilar IV: Basis Data Berdaulat Murni \(src/widyabase/wire.rs\)) /Parent 16 0 R /Prev 25 0 R /Next 27 0 R /Dest [ 12 0 R /XYZ 0 333.89 null ] >>
+endobj
+27 0 obj
+<< /Title (5. Pilar V: Target Bare-Metal & Unikernel OS \(src/compiler/unikernel.rs\)) /Parent 16 0 R /Prev 26 0 R /Next 28 0 R /Dest [ 12 0 R /XYZ 0 188.39 null ] >>
+endobj
+28 0 obj
+<< /Title (Matriks Status 5 Pilar Kemandirian) /Parent 16 0 R /Prev 27 0 R /Next 29 0 R /Dest [ 14 0 R /XYZ 0 674.39 null ] >>
+endobj
+29 0 obj
+<< /Title ([TEST]  Hasil Verifikasi Suite Pengujian) /Parent 16 0 R /Prev 28 0 R /Dest [ 14 0 R /XYZ 0 343.89 null ] >>
+endobj
 xref
-0 16
+0 30
 0000000000 65535 f 
 0000000015 00000 n 
-0000000064 00000 n 
-0000000176 00000 n 
-0000000273 00000 n 
-0000000375 00000 n 
-0000000480 00000 n 
-0000000575 00000 n 
-0000000684 00000 n 
-0000000826 00000 n 
-0000008027 00000 n 
-0000008171 00000 n 
-0000020130 00000 n 
-0000020274 00000 n 
-0000032046 00000 n 
-0000032190 00000 n 
+0000000081 00000 n 
+0000000193 00000 n 
+0000000290 00000 n 
+0000000392 00000 n 
+0000000497 00000 n 
+0000000592 00000 n 
+0000000701 00000 n 
+0000000843 00000 n 
+0000008044 00000 n 
+0000008188 00000 n 
+0000020524 00000 n 
+0000020668 00000 n 
+0000033538 00000 n 
+0000035561 00000 n 
+0000048633 00000 n 
+0000048708 00000 n 
+0000048900 00000 n 
+0000049035 00000 n 
+0000049214 00000 n 
+0000049387 00000 n 
+0000049546 00000 n 
+0000049712 00000 n 
+0000049884 00000 n 
+0000050051 00000 n 
+0000050231 00000 n 
+0000050405 00000 n 
+0000050588 00000 n 
+0000050731 00000 n 
 trailer
-<< /Size 16 /Root 1 0 R /Info << /Title ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) /Author (Widya Office Suite) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008151726Z) >> >>
+<< /Size 30 /Root 1 0 R /Info << /Title ([SEC]  DOKUMENTASI ARSITEKTUR: LIMA PILAR KEMANDIRIAN DARI PUSTAKA LUAR \(ZERO-DEPENDENCY STACK\)) /Author (Widya Office Suite) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261008173246Z) >> >>
 startxref
-45380
+50867
 %%EOF

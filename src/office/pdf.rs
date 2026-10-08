@@ -58,15 +58,44 @@ pub enum PdfElement {
     },
 }
 
+/// Anotasi Hyperlink Interaktif PDF (ISO 32000-1 Subtype /Link)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PdfLinkAnnotation {
+    pub rect: [f32; 4], // [llx, lly, urx, ury]
+    pub uri: String,
+}
+
+/// Item Bookmark / Outline Navigasi PDF (ISO 32000-1 /Outlines)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PdfBookmark {
+    pub title: String,
+    pub page_index: usize,
+    pub y_pos: f32,
+    pub level: u8,
+}
+
 /// Halaman Tunggal PDF
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PdfPage {
     pub elements: Vec<PdfElement>,
+    pub links: Vec<PdfLinkAnnotation>,
 }
 
 impl PdfPage {
     pub fn new() -> Self {
-        Self { elements: Vec::new() }
+        Self {
+            elements: Vec::new(),
+            links: Vec::new(),
+        }
+    }
+
+    pub fn add_link(&mut self, llx: f32, lly: f32, urx: f32, ury: f32, uri: &str) {
+        if !uri.trim().is_empty() {
+            self.links.push(PdfLinkAnnotation {
+                rect: [llx, lly, urx, ury],
+                uri: uri.trim().to_string(),
+            });
+        }
     }
 
     pub fn add_text(&mut self, text: &str, x: f32, y: f32, font_size: f32, bold: bool) {
@@ -204,6 +233,7 @@ pub struct PdfDocument {
     pub pages: Vec<PdfPage>,
     pub enable_auto_header_footer: bool,
     pub watermark_text: Option<String>,
+    pub bookmarks: Vec<PdfBookmark>,
 }
 
 impl PdfDocument {
@@ -216,11 +246,24 @@ impl PdfDocument {
             pages: vec![PdfPage::new()],
             enable_auto_header_footer: true,
             watermark_text: None,
+            bookmarks: Vec::new(),
         }
     }
 
     pub fn set_watermark(&mut self, text: &str) {
         self.watermark_text = Some(text.to_string());
+    }
+
+    pub fn add_bookmark(&mut self, title: &str, page_index: usize, y_pos: f32, level: u8) {
+        let clean = sanitize_pdf_text(title);
+        if !clean.trim().is_empty() {
+            self.bookmarks.push(PdfBookmark {
+                title: clean.trim().to_string(),
+                page_index,
+                y_pos,
+                level,
+            });
+        }
     }
 
     pub fn current_page_mut(&mut self) -> &mut PdfPage {
@@ -241,8 +284,21 @@ impl PdfDocument {
         headers: &[&str],
         rows: &[Vec<String>],
         margin_x: f32,
+        start_y: f32,
+        col_widths: &[f32],
+    ) -> f32 {
+        self.add_table_aligned(headers, rows, margin_x, start_y, col_widths, &[])
+    }
+
+    /// Gambar Tabel Bergaris Resmi Tingkat Penerbitan dengan Perataan Kolom (Left, Center, Right) & Dukungan Hyperlink
+    pub fn add_table_aligned(
+        &mut self,
+        headers: &[&str],
+        rows: &[Vec<String>],
+        margin_x: f32,
         mut start_y: f32,
         col_widths: &[f32],
+        alignments: &[crate::office::markdown::ColumnAlignment],
     ) -> f32 {
         let total_width: f32 = col_widths.iter().sum();
         let (_, page_height) = self.page_size.dimensions_points();
@@ -255,6 +311,7 @@ impl PdfDocument {
             margin_x: f32,
             top_y: f32,
             total_width: f32,
+            alignments: &[crate::office::markdown::ColumnAlignment],
         ) -> f32 {
             let header_cells: Vec<Vec<Vec<StyledFragment>>> = headers
                 .iter()
@@ -292,9 +349,18 @@ impl PdfDocument {
                 if i > 0 {
                     page.add_styled_line(curr_x, top_y - header_h, curr_x, top_y, 0.75, (0.22, 0.42, 0.72));
                 }
+                let align = alignments.get(i).copied().unwrap_or(crate::office::markdown::ColumnAlignment::Left);
                 for (l_idx, line) in lines.iter().enumerate() {
                     let text_y = top_y - 10.5 - (l_idx as f32 * h_line_height);
-                    let mut frag_x = curr_x + 5.0;
+                    let line_w: f32 = line.iter().map(|f| styled_string_width(&f.text, f.font_size, f.bold, f.monospace)).sum();
+                    let padding = 5.0;
+                    let avail_w = (w - (padding * 2.0)).max(0.0);
+                    let start_offset = match align {
+                        crate::office::markdown::ColumnAlignment::Left => padding,
+                        crate::office::markdown::ColumnAlignment::Center => padding + ((avail_w - line_w).max(0.0) / 2.0),
+                        crate::office::markdown::ColumnAlignment::Right => padding + (avail_w - line_w).max(0.0),
+                    };
+                    let mut frag_x = curr_x + start_offset;
                     for frag in line {
                         if !frag.text.is_empty() {
                             page.add_formatted_text(
@@ -307,7 +373,11 @@ impl PdfDocument {
                                 frag.monospace,
                                 frag.color_rgb,
                             );
-                            frag_x += styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                            let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                            if let Some(ref url) = frag.link_url {
+                                page.add_link(frag_x, text_y - 2.0, frag_x + frag_w, text_y + frag.font_size + 1.0, url);
+                            }
+                            frag_x += frag_w;
                         }
                     }
                 }
@@ -318,7 +388,7 @@ impl PdfDocument {
         }
 
         // 1. Header Bar Pertama
-        start_y = draw_header(self.current_page_mut(), headers, col_widths, margin_x, start_y, total_width);
+        start_y = draw_header(self.current_page_mut(), headers, col_widths, margin_x, start_y, total_width, alignments);
 
         // 2. Data Rows
         for (row_idx, row) in rows.iter().enumerate() {
@@ -342,7 +412,7 @@ impl PdfDocument {
             if start_y - row_height < 75.0 {
                 self.add_page();
                 start_y = page_height - 70.0;
-                start_y = draw_header(self.current_page_mut(), headers, col_widths, margin_x, start_y, total_width);
+                start_y = draw_header(self.current_page_mut(), headers, col_widths, margin_x, start_y, total_width, alignments);
             }
 
             let page = self.current_page_mut();
@@ -359,9 +429,18 @@ impl PdfDocument {
                 if c_idx > 0 {
                     page.add_styled_line(curr_x, start_y - row_height, curr_x, start_y, 0.5, (0.80, 0.85, 0.90));
                 }
+                let align = alignments.get(c_idx).copied().unwrap_or(crate::office::markdown::ColumnAlignment::Left);
                 for (l_idx, line) in lines.iter().enumerate() {
                     let text_y = start_y - 9.5 - (l_idx as f32 * line_height);
-                    let mut frag_x = curr_x + 5.0;
+                    let line_w: f32 = line.iter().map(|f| styled_string_width(&f.text, f.font_size, f.bold, f.monospace)).sum();
+                    let padding = 5.0;
+                    let avail_w = (w - (padding * 2.0)).max(0.0);
+                    let start_offset = match align {
+                        crate::office::markdown::ColumnAlignment::Left => padding,
+                        crate::office::markdown::ColumnAlignment::Center => padding + ((avail_w - line_w).max(0.0) / 2.0),
+                        crate::office::markdown::ColumnAlignment::Right => padding + (avail_w - line_w).max(0.0),
+                    };
+                    let mut frag_x = curr_x + start_offset;
                     for frag in line {
                         if !frag.text.is_empty() {
                             page.add_formatted_text(
@@ -374,7 +453,21 @@ impl PdfDocument {
                                 frag.monospace,
                                 frag.color_rgb,
                             );
-                            frag_x += styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                            let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                            if let Some(ref url) = frag.link_url {
+                                page.add_link(frag_x, text_y - 2.0, frag_x + frag_w, text_y + frag.font_size + 1.0, url);
+                            }
+                            if frag.underline {
+                                page.add_styled_line(
+                                    frag_x,
+                                    text_y - 1.5,
+                                    frag_x + frag_w,
+                                    text_y - 1.5,
+                                    0.6,
+                                    frag.color_rgb,
+                                );
+                            }
+                            frag_x += frag_w;
                         }
                     }
                 }
@@ -398,11 +491,17 @@ impl PdfDocument {
 
         // Objek 1: Catalog
         xref_offsets.push(out.len());
-        out.extend_from_slice(b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+        let total_pages = self.pages.len();
+        let outlines_obj_id = 8 + total_pages * 2;
+        let catalog_obj = if !self.bookmarks.is_empty() {
+            format!("1 0 obj\n<< /Type /Catalog /Pages 2 0 R /Outlines {} 0 R >>\nendobj\n", outlines_obj_id)
+        } else {
+            "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n".to_string()
+        };
+        out.extend_from_slice(catalog_obj.as_bytes());
 
         // Hitung ID halaman: Objek 1 (Catalog), Objek 2 (Pages), Objek 3..7 (Fonts)
         // Jadi halaman dimulai dari objek 8: page_obj_id = 8 + i * 2
-        let total_pages = self.pages.len();
         let kids_refs: Vec<String> = (0..total_pages).map(|i| format!("{} 0 R", 8 + i * 2)).collect();
 
         // Objek 2: Pages Root
@@ -548,9 +647,22 @@ impl PdfDocument {
 
             // Objek Page
             xref_offsets.push(out.len());
+            let mut annots_str = String::new();
+            if !page.links.is_empty() {
+                annots_str.push_str(" /Annots [ ");
+                for link in &page.links {
+                    let safe_uri = escape_pdf_string(&link.uri);
+                    annots_str.push_str(&format!(
+                        "<< /Type /Annot /Subtype /Link /Rect [ {:.2} {:.2} {:.2} {:.2} ] /Border [ 0 0 0 ] /A << /S /URI /URI ({}) >> >> ",
+                        link.rect[0], link.rect[1], link.rect[2], link.rect[3], safe_uri
+                    ));
+                }
+                annots_str.push_str("] ");
+            }
+
             let page_def = format!(
-                "{} 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents {} 0 R >>\nendobj\n",
-                page_obj_id, stream_obj_id
+                "{} 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >>{} /Contents {} 0 R >>\nendobj\n",
+                page_obj_id, annots_str, stream_obj_id
             );
             out.extend_from_slice(page_def.as_bytes());
 
@@ -561,6 +673,46 @@ impl PdfDocument {
                 stream_obj_id, stream_data.len(), stream_data
             );
             out.extend_from_slice(stream_obj.as_bytes());
+        }
+
+        // Objek Outlines (Daftar Isi / PDF Bookmarks) jika ada
+        if !self.bookmarks.is_empty() {
+            let count = self.bookmarks.len();
+            let first_item_id = outlines_obj_id + 1;
+            let last_item_id = outlines_obj_id + count;
+
+            xref_offsets.push(out.len());
+            let outlines_obj = format!(
+                "{} 0 obj\n<< /Type /Outlines /First {} 0 R /Last {} 0 R /Count {} >>\nendobj\n",
+                outlines_obj_id, first_item_id, last_item_id, count
+            );
+            out.extend_from_slice(outlines_obj.as_bytes());
+
+            for (idx, b) in self.bookmarks.iter().enumerate() {
+                let item_id = outlines_obj_id + 1 + idx;
+                let target_page_idx = b.page_index.min(total_pages.saturating_sub(1));
+                let target_page_obj_id = 8 + target_page_idx * 2;
+                let safe_title = escape_pdf_string(&sanitize_pdf_text(&b.title));
+
+                let prev_entry = if idx > 0 {
+                    format!(" /Prev {} 0 R", item_id - 1)
+                } else {
+                    String::new()
+                };
+
+                let next_entry = if idx + 1 < count {
+                    format!(" /Next {} 0 R", item_id + 1)
+                } else {
+                    String::new()
+                };
+
+                xref_offsets.push(out.len());
+                let item_obj = format!(
+                    "{} 0 obj\n<< /Title ({}) /Parent {} 0 R{}{} /Dest [ {} 0 R /XYZ 0 {:.2} null ] >>\nendobj\n",
+                    item_id, safe_title, outlines_obj_id, prev_entry, next_entry, target_page_obj_id, b.y_pos
+                );
+                out.extend_from_slice(item_obj.as_bytes());
+            }
         }
 
         // XREF Table
@@ -599,7 +751,7 @@ pub fn sanitize_pdf_text(s: &str) -> String {
     while let Some(c) = chars.next() {
         match c {
             '—' | '–' => result.push_str(" - "),
-            '•' => result.push_str("* "),
+            '•' => result.push('•'),
             '“' | '”' => result.push('"'),
             '‘' | '’' => result.push('\''),
             '🔒' => result.push_str("[TTE] "),
@@ -673,9 +825,17 @@ pub fn sanitize_pdf_text(s: &str) -> String {
 }
 
 pub fn escape_pdf_string(s: &str) -> String {
-    s.replace('\\', "\\\\")
-        .replace('(', "\\(")
-        .replace(')', "\\)")
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '\\' => out.push_str("\\\\"),
+            '(' => out.push_str("\\("),
+            ')' => out.push_str("\\)"),
+            '•' => out.push_str("\\225"), // WinAnsi Typographic Bullet (•)
+            _ => out.push(c),
+        }
+    }
+    out
 }
 
 /// Estimasi lebar karakter pada font Helvetica (PDF Type 1) per unit font_size
@@ -688,7 +848,7 @@ pub fn helvetica_char_width(c: char, bold: bool) -> f32 {
         'f' | 't' | 'r' => 0.345,
         '(' | ')' | '{' | '}' | '-' => 0.345,
         '"' => 0.365,
-        '*' => 0.400,
+        '*' | '•' => 0.400,
         'c' | 'k' | 's' | 'v' | 'x' | 'y' | 'z' | 'J' => 0.515,
         'a' | 'b' | 'd' | 'e' | 'g' | 'h' | 'n' | 'o' | 'p' | 'q' | 'u' => 0.575,
         '0'..='9' | '$' | '#' | '?' | '_' => 0.575,
@@ -745,6 +905,7 @@ pub struct StyledFragment {
     pub underline: bool,
     pub color_rgb: (f32, f32, f32),
     pub font_size: f32,
+    pub link_url: Option<String>,
 }
 
 /// Konversi warna hex CSS (#rrggbb atau #rgb) ke triplet f32 RGB (0.0 .. 1.0)
@@ -781,6 +942,7 @@ pub fn wrap_runs_to_styled_lines(
         underline: bool,
         color_rgb: (f32, f32, f32),
         font_size: f32,
+        link_url: Option<String>,
     }
 
     let mut tokens: Vec<WordToken> = Vec::new();
@@ -798,6 +960,7 @@ pub fn wrap_runs_to_styled_lines(
             || r.style.font_family.contains("Courier")
             || r.style.font_family.contains("Consolas");
         let underline = r.style.underline;
+        let link_url = r.style.link_url.clone();
         let font_size = if r.style.font_size_pt > 0.0 && r.style.font_size_pt != 10.0 && r.style.font_size_pt != 11.0 {
             r.style.font_size_pt
         } else {
@@ -839,6 +1002,7 @@ pub fn wrap_runs_to_styled_lines(
                 underline,
                 color_rgb,
                 font_size,
+                link_url: link_url.clone(),
             });
         }
 
@@ -882,6 +1046,7 @@ pub fn wrap_runs_to_styled_lines(
                         underline: tok.underline,
                         color_rgb: tok.color_rgb,
                         font_size: tok.font_size,
+                        link_url: tok.link_url.clone(),
                     }]);
                     chunk_w = 0.0;
                 }
@@ -897,6 +1062,7 @@ pub fn wrap_runs_to_styled_lines(
                     underline: tok.underline,
                     color_rgb: tok.color_rgb,
                     font_size: tok.font_size,
+                    link_url: tok.link_url.clone(),
                 });
                 cur_w = chunk_w;
             }
@@ -912,6 +1078,7 @@ pub fn wrap_runs_to_styled_lines(
                 underline: tok.underline,
                 color_rgb: tok.color_rgb,
                 font_size: tok.font_size,
+                link_url: tok.link_url.clone(),
             });
             cur_w = word_w;
         } else if cur_w + space_w + word_w <= max_width {
@@ -922,6 +1089,7 @@ pub fn wrap_runs_to_styled_lines(
                 && last.underline == tok.underline
                 && last.color_rgb == tok.color_rgb
                 && last.font_size == tok.font_size
+                && last.link_url == tok.link_url
             {
                 if tok.has_leading_space {
                     last.text.push(' ');
@@ -941,6 +1109,7 @@ pub fn wrap_runs_to_styled_lines(
                     underline: tok.underline,
                     color_rgb: tok.color_rgb,
                     font_size: tok.font_size,
+                    link_url: tok.link_url.clone(),
                 });
             }
             cur_w += space_w + word_w;
@@ -954,6 +1123,7 @@ pub fn wrap_runs_to_styled_lines(
                 underline: tok.underline,
                 color_rgb: tok.color_rgb,
                 font_size: tok.font_size,
+                link_url: tok.link_url,
             });
             cur_w = word_w;
         }

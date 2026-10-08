@@ -22,8 +22,8 @@ pub use crdt::{
 };
 pub use docx::{DocxDocument, DocxElement, TextStyle, TextRun, parse_markdown_runs};
 pub use latex::{LatexDocument, LatexElement};
-pub use markdown::{MarkdownBlock, MarkdownDocument};
-pub use pdf::{PageSize, PdfDocument, PdfElement, PdfPage, sanitize_pdf_text};
+pub use markdown::{ColumnAlignment, MarkdownBlock, MarkdownDocument};
+pub use pdf::{PageSize, PdfBookmark, PdfDocument, PdfElement, PdfLinkAnnotation, PdfPage, sanitize_pdf_text};
 pub use pptx::{MetricKpiCard, PptxPresentation, PptxSlide, SlideLayout, SlideTheme};
 pub use security::{DigitalSignature, DocumentAuditEvent, DocumentWatermark, OfficeSecurity};
 pub use widyadrive::{DriveFile, DriveRole, WidyaDrive};

@@ -1,9 +1,35 @@
 use std::fs;
 use std::path::Path;
 use widya::desktop::{buat_tanda_tangan_ed25519, verifikasi_tanda_tangan_ed25519};
+use widya::office::{DocumentConverter, MarkdownDocument};
 
 #[test]
-fn generate_official_release_signature() {
+fn generate_documentation_pdfs_and_sign_official_release() {
+    // 1. Render DOKUMENTASI_PILAR_KEMANDIRIAN.md ke PDF dengan mesin baru
+    if Path::new("DOKUMENTASI_PILAR_KEMANDIRIAN.md").exists() {
+        let md_str = fs::read_to_string("DOKUMENTASI_PILAR_KEMANDIRIAN.md").expect("Baca pilar md");
+        let md = MarkdownDocument::parse(&md_str);
+        let pdf = DocumentConverter::markdown_to_pdf(&md);
+        let bytes = pdf.generate_pdf_bytes();
+        fs::write("DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
+        fs::write("dist/releases/v2.6.0/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
+        fs::write("www/downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
+        println!("✅ Sukses menghasilkan DOKUMENTASI_PILAR_KEMANDIRIAN.pdf ({:.1} KB)", bytes.len() as f32 / 1024.0);
+    }
+
+    // 2. Render DOKUMENTASI_WPM.md ke PDF dengan mesin baru
+    if Path::new("DOKUMENTASI_WPM.md").exists() {
+        let md_str = fs::read_to_string("DOKUMENTASI_WPM.md").expect("Baca wpm md");
+        let md = MarkdownDocument::parse(&md_str);
+        let pdf = DocumentConverter::markdown_to_pdf(&md);
+        let bytes = pdf.generate_pdf_bytes();
+        fs::write("DOKUMENTASI_WPM.pdf", &bytes).unwrap();
+        fs::write("dist/releases/v2.6.0/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
+        fs::write("www/downloads/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
+        println!("✅ Sukses menghasilkan DOKUMENTASI_WPM.pdf ({:.1} KB)", bytes.len() as f32 / 1024.0);
+    }
+
+    // 3. Tanda tangani Ed25519
     let targets = vec![
         ("dist/releases/v1.0.0/SHA256SUMS.txt", "dist/releases/v1.0.0/SHA256SUMS.sig", "dist/releases/v1.0.0/widya_vendor_pubkey.hex"),
         ("dist/releases/v2.6.0/SHA256SUMS.txt", "dist/releases/v2.6.0/SHA256SUMS.sig", "dist/releases/v2.6.0/widya_vendor_pubkey.hex"),

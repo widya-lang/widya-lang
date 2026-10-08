@@ -386,3 +386,119 @@ Pilar utama mencakup **Kompiler Mandiri** dan *Sistem Operasi*.
     assert!(pdf_str.contains("/F4"), "PDF harus menggunakan /F4 untuk teks inline code");
 }
 
+#[test]
+fn test_pdf_bookmarks_links_and_typographic_bullet() {
+    let md_content = r#"# Panduan Penggunaan Widya
+
+Bab ini menjelaskan cara mengunduh pustaka.
+
+- Poin satu: Menggunakan standar WinAnsi.
+- Poin dua: Silakan kunjungi [Portal Resmi Widya](https://widya-lang.org).
+
+## Sub-Bab 1.1: Arsitektur
+
+Berikut rincian teknis.
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let pdf = DocumentConverter::markdown_to_pdf(&md);
+    let bytes = pdf.generate_pdf_bytes();
+    let pdf_str = String::from_utf8_lossy(&bytes);
+
+    // 1. Verifikasi Interactive PDF Bookmarks (/Outlines & Outline Item)
+    assert!(pdf_str.contains("/Outlines"), "PDF harus memiliki dictionary /Outlines di Catalog");
+    assert!(pdf_str.contains("/Title (Panduan Penggunaan Widya)"), "PDF harus memiliki bookmark judul");
+    assert!(pdf_str.contains("/Title (Sub-Bab 1.1: Arsitektur)"), "PDF harus memiliki bookmark sub-bab");
+
+    // 2. Verifikasi Clickable Link Annotation (/Annots, /Subtype /Link, /URI)
+    assert!(pdf_str.contains("/Annots"), "PDF Page harus memiliki array /Annots");
+    assert!(pdf_str.contains("/Subtype /Link"), "PDF harus memiliki annotation tipe Link");
+    assert!(pdf_str.contains("/URI (https://widya-lang.org)"), "PDF harus memiliki target URI tautan");
+
+    // 3. Verifikasi Typographic Bullet Glyph (\225 WinAnsi bullet)
+    assert!(pdf_str.contains(r"\225"), "PDF harus merender simbol bullet tipografis WinAnsi standar");
+}
+
+#[test]
+fn test_ordered_list_and_table_column_alignment() {
+    let md_content = r#"# Prosedur Rilis
+
+1. Kompilasi biner dengan `cargo build --release`.
+2. Uji suite dengan tautan [Dokumentasi](https://widya-lang.org/docs).
+3. Tandatangani segel rilis.
+
+| Nomor | Nama Komponen | Status | Skor |
+| :--- | :---: | :---: | ---: |
+| 1 | Kompiler ELF-64 | Aktif | 100 |
+| 2 | Pure Crypto | Stabil | 98 |
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+
+    // 1. Verifikasi Markdown Parsing
+    assert!(md.blocks.iter().any(|b| matches!(b, MarkdownBlock::OrderedList(_))));
+    if let Some(MarkdownBlock::Table { alignments, .. }) = md.blocks.iter().find(|b| matches!(b, MarkdownBlock::Table { .. })) {
+        assert_eq!(alignments.len(), 4);
+        assert_eq!(alignments[0], ColumnAlignment::Left);
+        assert_eq!(alignments[1], ColumnAlignment::Center);
+        assert_eq!(alignments[2], ColumnAlignment::Center);
+        assert_eq!(alignments[3], ColumnAlignment::Right);
+    } else {
+        panic!("Tabel markdown harus terdeteksi dengan alignments");
+    }
+
+    // 2. Verifikasi Konversi ke HTML
+    let html = md.to_html();
+    assert!(html.contains("<ol>"), "HTML harus memuat tag <ol>");
+    assert!(html.contains("text-align: center"), "HTML harus memuat text-align: center");
+    assert!(html.contains("text-align: right"), "HTML harus memuat text-align: right");
+
+    // 3. Verifikasi Konversi ke DOCX
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let docx_xml = docx.generate_document_xml();
+    assert!(docx_xml.contains("<w:numPr>"), "DOCX harus memuat format list bernomor");
+    assert!(docx_xml.contains(r#"<w:jc w:val="center"/>"#), "DOCX harus memuat alignment kolom tabel tengah");
+    assert!(docx_xml.contains(r#"<w:jc w:val="right"/>"#), "DOCX harus memuat alignment kolom tabel kanan");
+
+    // 4. Verifikasi Konversi ke PDF
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let bytes = pdf.generate_pdf_bytes();
+    assert!(!bytes.is_empty(), "PDF harus ter-generate tanpa error");
+    let pdf_str = String::from_utf8_lossy(&bytes);
+    assert!(pdf_str.contains("1."), "PDF harus memuat nomor urut '1.'");
+    assert!(pdf_str.contains("Kompiler ELF-64"), "PDF harus memuat teks tabel");
+}
+
+#[test]
+fn test_mermaid_sequence_diagram_in_markdown_to_pdf() {
+    let md_content = r#"# Alur Interaksi Layanan
+
+Berikut adalah diagram urutan:
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Gateway as API Gateway
+    participant DB as Postgres DB
+
+    Browser->>Gateway: GET /status
+    Gateway->>DB: SELECT health
+    DB-->>Gateway: OK
+    Gateway-->>Browser: 200 Health OK
+```
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let bytes = pdf.generate_pdf_bytes();
+
+    assert!(!bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&bytes);
+    assert!(pdf_str.contains("API Gateway"), "PDF harus memuat nama partisipan sequence diagram");
+    assert!(pdf_str.contains("Postgres DB"), "PDF harus memuat label partisipan DB");
+    assert!(pdf_str.contains("GET /status"), "PDF harus memuat pesan urutan request");
+    assert!(pdf_str.contains("200 Health OK"), "PDF harus memuat pesan urutan response");
+}
+
+
