@@ -64,6 +64,7 @@ pub enum DocxElement {
     Divider,
     BulletItem { text: String, indent_level: u8 },
     Callout { title: String, text: String, border_color: String },
+    Diagram { raw_mermaid: String },
 }
 
 /// Dokumen Microsoft Word (.docx / OpenXML Document) Kelas Industri
@@ -207,6 +208,12 @@ impl DocxDocument {
         self.elements.push(DocxElement::Divider);
     }
 
+    pub fn add_diagram(&mut self, raw_mermaid: &str) {
+        self.elements.push(DocxElement::Diagram {
+            raw_mermaid: raw_mermaid.to_string(),
+        });
+    }
+
     /// Template Engine & Mail Merge: Ganti Placeholder `{{kunci}}` dengan Nilai Nyata
     pub fn apply_template(&mut self, variables: &HashMap<String, String>) {
         for el in &mut self.elements {
@@ -318,6 +325,9 @@ impl DocxDocument {
                 DocxElement::Divider => {
                     out.push_str("\n--------------------\n\n");
                 }
+                DocxElement::Diagram { raw_mermaid } => {
+                    out.push_str(&format!("\n[DIAGRAM ARSITEKTUR]\n{}\n\n", raw_mermaid));
+                }
             }
         }
         out
@@ -401,6 +411,12 @@ impl DocxDocument {
                 }
                 DocxElement::Divider => {
                     xml.push_str(r#"<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="CBD5E1"/></w:pBdr></w:pPr></w:p>"#);
+                }
+                DocxElement::Diagram { raw_mermaid } => {
+                    xml.push_str(&format!(
+                        r#"<w:p><w:pPr><w:pBdr><w:left w:val="single" w:sz="24" w:space="15" w:color="0284C7"/></w:pBdr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>[DIAGRAM ARSITEKTUR MERMAID]: </w:t></w:r><w:r><w:t>{}</w:t></w:r></w:p>"#,
+                        html_escape(raw_mermaid)
+                    ));
                 }
             }
         }
@@ -582,6 +598,12 @@ impl DocxDocument {
                 }
                 DocxElement::Divider => {
                     html.push_str("<hr style='margin: 20px 0; border: none; border-top: 1px solid #cbd5e1;' />");
+                }
+                DocxElement::Diagram { raw_mermaid } => {
+                    html.push_str(&format!(
+                        "<div class='mermaid-container' style='margin: 20px 0; text-align: center;'><pre class='mermaid'>\n{}\n</pre></div>",
+                        html_escape(raw_mermaid)
+                    ));
                 }
             }
         }

@@ -48,6 +48,11 @@ pub enum PdfElement {
         fill: bool,
         color_rgb: (f32, f32, f32),
     },
+    Polygon {
+        points: Vec<(f32, f32)>,
+        fill: bool,
+        color_rgb: (f32, f32, f32),
+    },
 }
 
 /// Halaman Tunggal PDF
@@ -138,6 +143,40 @@ impl PdfPage {
         self.elements.push(PdfElement::Rectangle {
             x, y, w, h, fill, color_rgb,
         });
+    }
+
+    pub fn add_polygon(&mut self, points: Vec<(f32, f32)>, fill: bool, color_rgb: (f32, f32, f32)) {
+        self.elements.push(PdfElement::Polygon { points, fill, color_rgb });
+    }
+
+    /// Gambar panah vektor berarah dari (x1, y1) ke (x2, y2) dengan mata panah segitiga terisi
+    pub fn add_arrow(
+        &mut self,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        width: f32,
+        color_rgb: (f32, f32, f32),
+    ) {
+        self.add_styled_line(x1, y1, x2, y2, width, color_rgb);
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let len = (dx * dx + dy * dy).sqrt();
+        if len > 1.0 {
+            let u_x = dx / len;
+            let u_y = dy / len;
+            let arrow_len = 6.0;
+            let arrow_width = 3.5;
+
+            let tip = (x2, y2);
+            let base_x = x2 - arrow_len * u_x;
+            let base_y = y2 - arrow_len * u_y;
+            let left_wing = (base_x - arrow_width * u_y, base_y + arrow_width * u_x);
+            let right_wing = (base_x + arrow_width * u_y, base_y - arrow_width * u_x);
+
+            self.add_polygon(vec![tip, left_wing, right_wing], true, color_rgb);
+        }
     }
 }
 
@@ -392,6 +431,26 @@ impl PdfDocument {
                                 "{} {} {} RG 0.75 w {} {} {} {} re S\n",
                                 color_rgb.0, color_rgb.1, color_rgb.2, x, y, w, h
                             ));
+                        }
+                    }
+                    PdfElement::Polygon { points, fill, color_rgb } => {
+                        if !points.is_empty() {
+                            let mut poly_str = String::new();
+                            if *fill {
+                                poly_str.push_str(&format!("{} {} {} rg ", color_rgb.0, color_rgb.1, color_rgb.2));
+                            } else {
+                                poly_str.push_str(&format!("{} {} {} RG 0.75 w ", color_rgb.0, color_rgb.1, color_rgb.2));
+                            }
+                            poly_str.push_str(&format!("{:.2} {:.2} m ", points[0].0, points[0].1));
+                            for pt in &points[1..] {
+                                poly_str.push_str(&format!("{:.2} {:.2} l ", pt.0, pt.1));
+                            }
+                            if *fill {
+                                poly_str.push_str("f\n");
+                            } else {
+                                poly_str.push_str("s\n");
+                            }
+                            stream_data.push_str(&poly_str);
                         }
                     }
                 }

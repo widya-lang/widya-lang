@@ -1,3 +1,4 @@
+use crate::office::diagram::WidyaDiagramEngine;
 use crate::office::docx::{DocxDocument, DocxElement};
 use crate::office::latex::{LatexDocument, LatexElement};
 use crate::office::markdown::{MarkdownBlock, MarkdownDocument};
@@ -257,6 +258,11 @@ impl DocumentConverter {
                     pdf.add_page();
                     current_y = page_height - 70.0;
                 }
+                DocxElement::Diagram { raw_mermaid } => {
+                    current_y -= 8.0;
+                    current_y = WidyaDiagramEngine::render_to_pdf(&mut pdf, raw_mermaid, margin_x, current_y, content_width);
+                    current_y -= 12.0;
+                }
             }
         }
 
@@ -371,7 +377,11 @@ impl DocumentConverter {
                     }
                 }
                 MarkdownBlock::CodeBlock { lang, code } => {
-                    doc.add_callout(&format!("KODE ({})", lang.to_uppercase()), code, "#64748b");
+                    if lang.trim().to_lowercase() == "mermaid" {
+                        doc.add_diagram(code);
+                    } else {
+                        doc.add_callout(&format!("KODE ({})", lang.to_uppercase()), code, "#64748b");
+                    }
                 }
                 MarkdownBlock::Table { headers, rows } => {
                     let cleaned_headers: Vec<String> = headers.iter().map(|h| clean_markdown_inline(h)).collect();

@@ -1,6 +1,7 @@
 pub mod batch;
 pub mod converter;
 pub mod crdt;
+pub mod diagram;
 pub mod docx;
 pub mod latex;
 pub mod markdown;
@@ -14,6 +15,7 @@ pub mod zip;
 
 pub use batch::{BatchDocumentEngine, BatchGenerationMetrics};
 pub use converter::DocumentConverter;
+pub use diagram::WidyaDiagramEngine;
 pub use crdt::{
     ChangeType, ClientId, CollabSession, CollabUser, CrdtChar, DocumentReviewSession,
     FractionalIndex, LogicalClock, LwwRegister, TextCrdt, ThreadedComment, TrackChange,
