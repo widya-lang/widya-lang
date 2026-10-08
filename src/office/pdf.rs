@@ -1,3 +1,4 @@
+use crate::office::docx::{parse_markdown_runs, TextRun};
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{self, Write};
@@ -30,6 +31,8 @@ pub enum PdfElement {
         x: f32,
         y: f32,
         bold: bool,
+        italic: bool,
+        monospace: bool,
         color_rgb: (f32, f32, f32),
     },
     Line {
@@ -67,23 +70,32 @@ impl PdfPage {
     }
 
     pub fn add_text(&mut self, text: &str, x: f32, y: f32, font_size: f32, bold: bool) {
-        self.elements.push(PdfElement::Text {
-            text: text.to_string(),
-            font_size,
-            x,
-            y,
-            bold,
-            color_rgb: (0.1, 0.1, 0.1),
-        });
+        self.add_formatted_text(text, x, y, font_size, bold, false, false, (0.1, 0.1, 0.1));
     }
 
     pub fn add_styled_text(&mut self, text: &str, x: f32, y: f32, font_size: f32, bold: bool, color_rgb: (f32, f32, f32)) {
+        self.add_formatted_text(text, x, y, font_size, bold, false, false, color_rgb);
+    }
+
+    pub fn add_formatted_text(
+        &mut self,
+        text: &str,
+        x: f32,
+        y: f32,
+        font_size: f32,
+        bold: bool,
+        italic: bool,
+        monospace: bool,
+        color_rgb: (f32, f32, f32),
+    ) {
         self.elements.push(PdfElement::Text {
             text: text.to_string(),
             font_size,
             x,
             y,
             bold,
+            italic,
+            monospace,
             color_rgb,
         });
     }
@@ -100,6 +112,8 @@ impl PdfPage {
             x: calculated_x,
             y,
             bold,
+            italic: false,
+            monospace: false,
             color_rgb: (0.1, 0.1, 0.1),
         });
     }
@@ -242,12 +256,24 @@ impl PdfDocument {
             top_y: f32,
             total_width: f32,
         ) -> f32 {
-            let header_cells: Vec<Vec<String>> = headers
+            let header_cells: Vec<Vec<Vec<StyledFragment>>> = headers
                 .iter()
                 .enumerate()
                 .map(|(i, &h)| {
                     let w = col_widths.get(i).copied().unwrap_or(80.0);
-                    wrap_text(h, (w - 10.0).max(15.0), 9.0, true)
+                    let cell_w = (w - 10.0).max(15.0);
+                    let mut runs = parse_markdown_runs(h);
+                    if runs.is_empty() {
+                        runs.push(TextRun {
+                            text: h.to_string(),
+                            style: crate::office::docx::TextStyle::bold(),
+                        });
+                    } else {
+                        for r in &mut runs {
+                            r.style.bold = true;
+                        }
+                    }
+                    wrap_runs_to_styled_lines(&runs, cell_w, 9.0, (0.05, 0.20, 0.45))
                 })
                 .collect();
 
@@ -267,9 +293,22 @@ impl PdfDocument {
                     page.add_styled_line(curr_x, top_y - header_h, curr_x, top_y, 0.75, (0.22, 0.42, 0.72));
                 }
                 for (l_idx, line) in lines.iter().enumerate() {
-                    if !line.is_empty() {
-                        let text_y = top_y - 10.5 - (l_idx as f32 * h_line_height);
-                        page.add_styled_text(line, curr_x + 5.0, text_y, 9.0, true, (0.05, 0.20, 0.45));
+                    let text_y = top_y - 10.5 - (l_idx as f32 * h_line_height);
+                    let mut frag_x = curr_x + 5.0;
+                    for frag in line {
+                        if !frag.text.is_empty() {
+                            page.add_formatted_text(
+                                &frag.text,
+                                frag_x,
+                                text_y,
+                                frag.font_size,
+                                frag.bold,
+                                frag.italic,
+                                frag.monospace,
+                                frag.color_rgb,
+                            );
+                            frag_x += styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                        }
                     }
                 }
                 curr_x += w;
@@ -283,13 +322,15 @@ impl PdfDocument {
 
         // 2. Data Rows
         for (row_idx, row) in rows.iter().enumerate() {
-            // Hitung teks terbungkus untuk tiap sel
-            let cell_lines: Vec<Vec<String>> = row
+            // Hitung teks terbungkus dengan parsing Markdown styled runs untuk tiap sel
+            let cell_lines: Vec<Vec<Vec<StyledFragment>>> = row
                 .iter()
                 .enumerate()
                 .map(|(c_idx, cell)| {
                     let w = col_widths.get(c_idx).copied().unwrap_or(80.0);
-                    wrap_text(cell, (w - 10.0).max(15.0), 8.5, false)
+                    let cell_w = (w - 10.0).max(15.0);
+                    let runs = parse_markdown_runs(cell);
+                    wrap_runs_to_styled_lines(&runs, cell_w, 8.5, (0.15, 0.20, 0.25))
                 })
                 .collect();
 
@@ -319,9 +360,22 @@ impl PdfDocument {
                     page.add_styled_line(curr_x, start_y - row_height, curr_x, start_y, 0.5, (0.80, 0.85, 0.90));
                 }
                 for (l_idx, line) in lines.iter().enumerate() {
-                    if !line.is_empty() {
-                        let text_y = start_y - 9.5 - (l_idx as f32 * line_height);
-                        page.add_styled_text(line, curr_x + 5.0, text_y, 8.5, false, (0.15, 0.20, 0.25));
+                    let text_y = start_y - 9.5 - (l_idx as f32 * line_height);
+                    let mut frag_x = curr_x + 5.0;
+                    for frag in line {
+                        if !frag.text.is_empty() {
+                            page.add_formatted_text(
+                                &frag.text,
+                                frag_x,
+                                text_y,
+                                frag.font_size,
+                                frag.bold,
+                                frag.italic,
+                                frag.monospace,
+                                frag.color_rgb,
+                            );
+                            frag_x += styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                        }
                     }
                 }
                 curr_x += w;
@@ -346,9 +400,10 @@ impl PdfDocument {
         xref_offsets.push(out.len());
         out.extend_from_slice(b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
 
-        // Hitung ID halaman
+        // Hitung ID halaman: Objek 1 (Catalog), Objek 2 (Pages), Objek 3..7 (Fonts)
+        // Jadi halaman dimulai dari objek 8: page_obj_id = 8 + i * 2
         let total_pages = self.pages.len();
-        let kids_refs: Vec<String> = (0..total_pages).map(|i| format!("{} 0 R", 4 + i * 2)).collect();
+        let kids_refs: Vec<String> = (0..total_pages).map(|i| format!("{} 0 R", 8 + i * 2)).collect();
 
         // Objek 2: Pages Root
         xref_offsets.push(out.len());
@@ -358,15 +413,39 @@ impl PdfDocument {
         );
         out.extend_from_slice(pages_obj.as_bytes());
 
-        // Objek 3: Font Helvetica & Helvetica-Bold
+        // Objek 3: Font Helvetica (/F1 - Regular)
         xref_offsets.push(out.len());
         out.extend_from_slice(
             b"3 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n",
         );
 
+        // Objek 4: Font Helvetica-Bold (/F2 - Tebal)
+        xref_offsets.push(out.len());
+        out.extend_from_slice(
+            b"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj\n",
+        );
+
+        // Objek 5: Font Helvetica-Oblique (/F3 - Miring)
+        xref_offsets.push(out.len());
+        out.extend_from_slice(
+            b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>\nendobj\n",
+        );
+
+        // Objek 6: Font Courier (/F4 - Monospace / Kode)
+        xref_offsets.push(out.len());
+        out.extend_from_slice(
+            b"6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>\nendobj\n",
+        );
+
+        // Objek 7: Font Helvetica-BoldOblique (/F5 - Tebal & Miring)
+        xref_offsets.push(out.len());
+        out.extend_from_slice(
+            b"7 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-BoldOblique /Encoding /WinAnsiEncoding >>\nendobj\n",
+        );
+
         // Objek Halaman & Stream Konten
         for (i, page) in self.pages.iter().enumerate() {
-            let page_obj_id = 4 + i * 2;
+            let page_obj_id = 8 + i * 2;
             let stream_obj_id = page_obj_id + 1;
 
             let mut stream_data = String::new();
@@ -406,12 +485,23 @@ impl PdfDocument {
             // Elemen halaman
             for el in &page.elements {
                 match el {
-                    PdfElement::Text { text, font_size, x, y, bold: _, color_rgb } => {
+                    PdfElement::Text { text, font_size, x, y, bold, italic, monospace, color_rgb } => {
                         let clean = sanitize_pdf_text(text).replace('\n', " ");
                         let safe_text = escape_pdf_string(&clean);
+                        let font_id = if *monospace {
+                            "/F4"
+                        } else if *bold && *italic {
+                            "/F5"
+                        } else if *bold {
+                            "/F2"
+                        } else if *italic {
+                            "/F3"
+                        } else {
+                            "/F1"
+                        };
                         stream_data.push_str(&format!(
-                            "BT /F1 {} Tf {} {} {} rg 1 0 0 1 {} {} Tm ({}) Tj ET\n",
-                            font_size, color_rgb.0, color_rgb.1, color_rgb.2, x, y, safe_text
+                            "BT {} {} Tf {} {} {} rg 1 0 0 1 {} {} Tm ({}) Tj ET\n",
+                            font_id, font_size, color_rgb.0, color_rgb.1, color_rgb.2, x, y, safe_text
                         ));
                     }
                     PdfElement::Line { x1, y1, x2, y2, width, color_rgb } => {
@@ -459,7 +549,7 @@ impl PdfDocument {
             // Objek Page
             xref_offsets.push(out.len());
             let page_def = format!(
-                "{} 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R >> >> /Contents {} 0 R >>\nendobj\n",
+                "{} 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents {} 0 R >>\nendobj\n",
                 page_obj_id, stream_obj_id
             );
             out.extend_from_slice(page_def.as_bytes());
@@ -622,13 +712,258 @@ pub fn helvetica_char_width(c: char, bold: bool) -> f32 {
     }
 }
 
-/// Menghitung lebar string dalam satuan points (1/72 inci)
-pub fn string_width(s: &str, font_size: f32, bold: bool) -> f32 {
+/// Estimasi lebar karakter terformat (Helvetica, Helvetica-Bold, Helvetica-Oblique, Courier)
+pub fn styled_char_width(c: char, bold: bool, monospace: bool) -> f32 {
+    if monospace {
+        0.600 // Standar Courier Type 1 (advance width konstan 600/1000)
+    } else {
+        helvetica_char_width(c, bold)
+    }
+}
+
+/// Menghitung lebar string terformat dalam satuan points (1/72 inci)
+pub fn styled_string_width(s: &str, font_size: f32, bold: bool, monospace: bool) -> f32 {
     let mut total = 0.0;
     for c in s.chars() {
-        total += helvetica_char_width(c, bold) * font_size;
+        total += styled_char_width(c, bold, monospace) * font_size;
     }
     total
+}
+
+/// Menghitung lebar string dalam satuan points (1/72 inci)
+pub fn string_width(s: &str, font_size: f32, bold: bool) -> f32 {
+    styled_string_width(s, font_size, bold, false)
+}
+
+/// Fragmen teks terformat untuk perataan & pembungkusan multi-run pada baris PDF
+#[derive(Debug, Clone)]
+pub struct StyledFragment {
+    pub text: String,
+    pub bold: bool,
+    pub italic: bool,
+    pub monospace: bool,
+    pub underline: bool,
+    pub color_rgb: (f32, f32, f32),
+    pub font_size: f32,
+}
+
+/// Konversi warna hex CSS (#rrggbb atau #rgb) ke triplet f32 RGB (0.0 .. 1.0)
+pub fn parse_hex_color(hex: &str) -> Option<(f32, f32, f32)> {
+    let clean = hex.trim_start_matches('#');
+    if clean.len() == 6 {
+        let r = u8::from_str_radix(&clean[0..2], 16).ok()? as f32 / 255.0;
+        let g = u8::from_str_radix(&clean[2..4], 16).ok()? as f32 / 255.0;
+        let b = u8::from_str_radix(&clean[4..6], 16).ok()? as f32 / 255.0;
+        Some((r, g, b))
+    } else if clean.len() == 3 {
+        let r = u8::from_str_radix(&clean[0..1], 16).ok()? as f32 / 15.0;
+        let g = u8::from_str_radix(&clean[1..2], 16).ok()? as f32 / 15.0;
+        let b = u8::from_str_radix(&clean[2..3], 16).ok()? as f32 / 15.0;
+        Some((r, g, b))
+    } else {
+        None
+    }
+}
+
+/// Membungkus kumpulan TextRun menjadi baris-baris terformat (StyledFragment) tanpa melewati `max_width`
+pub fn wrap_runs_to_styled_lines(
+    runs: &[TextRun],
+    max_width: f32,
+    base_font_size: f32,
+    default_color: (f32, f32, f32),
+) -> Vec<Vec<StyledFragment>> {
+    struct WordToken {
+        text: String,
+        has_leading_space: bool,
+        bold: bool,
+        italic: bool,
+        monospace: bool,
+        underline: bool,
+        color_rgb: (f32, f32, f32),
+        font_size: f32,
+    }
+
+    let mut tokens: Vec<WordToken> = Vec::new();
+    let mut pending_space = false;
+
+    for r in runs {
+        let clean = sanitize_pdf_text(&r.text);
+        if clean.is_empty() {
+            continue;
+        }
+
+        let bold = r.style.bold;
+        let italic = r.style.italic;
+        let monospace = r.style.is_monospace
+            || r.style.font_family.contains("Courier")
+            || r.style.font_family.contains("Consolas");
+        let underline = r.style.underline;
+        let font_size = if r.style.font_size_pt > 0.0 && r.style.font_size_pt != 10.0 && r.style.font_size_pt != 11.0 {
+            r.style.font_size_pt
+        } else {
+            base_font_size
+        };
+
+        let color_rgb = if let Some(ref hex) = r.style.color_hex {
+            parse_hex_color(hex).unwrap_or(default_color)
+        } else {
+            default_color
+        };
+
+        let words: Vec<&str> = clean.split_whitespace().collect();
+        if words.is_empty() {
+            if clean.chars().any(|c| c.is_whitespace()) {
+                pending_space = true;
+            }
+            continue;
+        }
+
+        let starts_with_space = clean.chars().next().map(|c| c.is_whitespace()).unwrap_or(false);
+        let ends_with_space = clean.chars().last().map(|c| c.is_whitespace()).unwrap_or(false);
+
+        for (w_idx, word) in words.into_iter().enumerate() {
+            let is_first = w_idx == 0;
+            let lead_space = if is_first {
+                pending_space || starts_with_space
+            } else {
+                true
+            };
+            pending_space = false;
+
+            tokens.push(WordToken {
+                text: word.to_string(),
+                has_leading_space: lead_space && !tokens.is_empty(),
+                bold,
+                italic,
+                monospace,
+                underline,
+                color_rgb,
+                font_size,
+            });
+        }
+
+        if ends_with_space {
+            pending_space = true;
+        }
+    }
+
+    if tokens.is_empty() {
+        return Vec::new();
+    }
+
+    let mut lines: Vec<Vec<StyledFragment>> = Vec::new();
+    let mut cur_line: Vec<StyledFragment> = Vec::new();
+    let mut cur_w = 0.0;
+
+    for tok in tokens {
+        let space_w = if tok.has_leading_space {
+            styled_char_width(' ', tok.bold, tok.monospace) * tok.font_size
+        } else {
+            0.0
+        };
+        let word_w = styled_string_width(&tok.text, tok.font_size, tok.bold, tok.monospace);
+
+        // Jika satu kata melebihi seluruh max_width, potong karakter per karakter
+        if word_w > max_width {
+            if !cur_line.is_empty() {
+                lines.push(std::mem::take(&mut cur_line));
+                cur_w = 0.0;
+            }
+            let mut cur_chunk = String::new();
+            let mut chunk_w = 0.0;
+            for ch in tok.text.chars() {
+                let ch_w = styled_char_width(ch, tok.bold, tok.monospace) * tok.font_size;
+                if chunk_w + ch_w > max_width && !cur_chunk.is_empty() {
+                    lines.push(vec![StyledFragment {
+                        text: std::mem::take(&mut cur_chunk),
+                        bold: tok.bold,
+                        italic: tok.italic,
+                        monospace: tok.monospace,
+                        underline: tok.underline,
+                        color_rgb: tok.color_rgb,
+                        font_size: tok.font_size,
+                    }]);
+                    chunk_w = 0.0;
+                }
+                cur_chunk.push(ch);
+                chunk_w += ch_w;
+            }
+            if !cur_chunk.is_empty() {
+                cur_line.push(StyledFragment {
+                    text: cur_chunk,
+                    bold: tok.bold,
+                    italic: tok.italic,
+                    monospace: tok.monospace,
+                    underline: tok.underline,
+                    color_rgb: tok.color_rgb,
+                    font_size: tok.font_size,
+                });
+                cur_w = chunk_w;
+            }
+            continue;
+        }
+
+        if cur_line.is_empty() {
+            cur_line.push(StyledFragment {
+                text: tok.text,
+                bold: tok.bold,
+                italic: tok.italic,
+                monospace: tok.monospace,
+                underline: tok.underline,
+                color_rgb: tok.color_rgb,
+                font_size: tok.font_size,
+            });
+            cur_w = word_w;
+        } else if cur_w + space_w + word_w <= max_width {
+            let last = cur_line.last_mut().unwrap();
+            if last.bold == tok.bold
+                && last.italic == tok.italic
+                && last.monospace == tok.monospace
+                && last.underline == tok.underline
+                && last.color_rgb == tok.color_rgb
+                && last.font_size == tok.font_size
+            {
+                if tok.has_leading_space {
+                    last.text.push(' ');
+                }
+                last.text.push_str(&tok.text);
+            } else {
+                let mut frag_text = String::new();
+                if tok.has_leading_space {
+                    frag_text.push(' ');
+                }
+                frag_text.push_str(&tok.text);
+                cur_line.push(StyledFragment {
+                    text: frag_text,
+                    bold: tok.bold,
+                    italic: tok.italic,
+                    monospace: tok.monospace,
+                    underline: tok.underline,
+                    color_rgb: tok.color_rgb,
+                    font_size: tok.font_size,
+                });
+            }
+            cur_w += space_w + word_w;
+        } else {
+            lines.push(std::mem::take(&mut cur_line));
+            cur_line.push(StyledFragment {
+                text: tok.text,
+                bold: tok.bold,
+                italic: tok.italic,
+                monospace: tok.monospace,
+                underline: tok.underline,
+                color_rgb: tok.color_rgb,
+                font_size: tok.font_size,
+            });
+            cur_w = word_w;
+        }
+    }
+
+    if !cur_line.is_empty() {
+        lines.push(cur_line);
+    }
+
+    lines
 }
 
 /// Memecah teks menjadi baris-baris yang tidak melampaui `max_width` (Word Wrapping)

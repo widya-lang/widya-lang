@@ -335,3 +335,54 @@ fn test_batch_document_generation_engine() {
     assert_eq!(&zip_bytes[0..4], b"PK\x03\x04");
 }
 
+#[test]
+fn test_markdown_inline_runs_parsing_and_styling() {
+    let text = "Ini **tebal**, ini *miring*, dan ini ***tebal miring*** serta `kode_fungsi()`. Underscore seperti pure_emitter.rs tetap aman.";
+    let runs = parse_markdown_runs(text);
+
+    assert!(runs.iter().any(|r| r.text == "tebal" && r.style.bold && !r.style.italic));
+    assert!(runs.iter().any(|r| r.text == "miring" && r.style.italic && !r.style.bold));
+    assert!(runs.iter().any(|r| r.text == "tebal miring" && r.style.bold && r.style.italic));
+    assert!(runs.iter().any(|r| r.text == "kode_fungsi()" && r.style.is_monospace));
+    assert!(runs.iter().any(|r| r.text.contains("pure_emitter.rs") && !r.style.italic));
+}
+
+#[test]
+fn test_markdown_to_docx_and_pdf_with_styled_fonts() {
+    let md_content = r#"# Laporan Arsitektur Berdaulat
+
+Pilar utama mencakup **Kompiler Mandiri** dan *Sistem Operasi*.
+
+- Gunakan `widya wpm init` untuk inisialisasi.
+- Kunjungi [`Dokumentasi Resmi`](https://widya-lang.org) untuk panduan.
+
+| Komponen | Status | Perintah |
+|---|---|---|
+| **Pilar I** | *Stabil* | `widya build` |
+| **Pilar II** | *Aktif* | `widya run` |
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let docx = DocumentConverter::markdown_to_docx(&md);
+
+    // 1. Verifikasi XML DOCX memiliki tag <w:b/> dan <w:rFonts>
+    let docx_xml = docx.generate_document_xml();
+    assert!(docx_xml.contains("<w:b/>"), "DOCX harus memuat tag bold untuk teks tebal");
+    assert!(docx_xml.contains("<w:i/>"), "DOCX harus memuat tag italic untuk teks miring");
+    assert!(docx_xml.contains("Courier New"), "DOCX harus memuat font monospace untuk kode inline");
+
+    // 2. Verifikasi PDF Vektor Asli memuat Type 1 font references (/F1, /F2, /F3, /F4)
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let pdf_bytes = pdf.generate_pdf_bytes();
+    let pdf_str = String::from_utf8_lossy(&pdf_bytes);
+
+    assert!(pdf_str.contains("/BaseFont /Helvetica"), "PDF harus mendefinisikan font Helvetica");
+    assert!(pdf_str.contains("/BaseFont /Helvetica-Bold"), "PDF harus mendefinisikan font Helvetica-Bold");
+    assert!(pdf_str.contains("/BaseFont /Helvetica-Oblique"), "PDF harus mendefinisikan font Helvetica-Oblique");
+    assert!(pdf_str.contains("/BaseFont /Courier"), "PDF harus mendefinisikan font Courier");
+
+    // Periksa bahwa stream teks benar-benar memanggil /F2 (bold) dan /F4 (code)
+    assert!(pdf_str.contains("/F2"), "PDF harus menggunakan /F2 untuk teks bold");
+    assert!(pdf_str.contains("/F4"), "PDF harus menggunakan /F4 untuk teks inline code");
+}
+

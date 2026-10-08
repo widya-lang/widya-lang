@@ -17,6 +17,7 @@ pub struct TextStyle {
     pub color_hex: Option<String>,
     pub font_family: String,
     pub is_rtl: bool,
+    pub is_monospace: bool,
 }
 
 impl TextStyle {
@@ -30,12 +31,41 @@ impl TextStyle {
             color_hex: None,
             font_family: "Calibri".to_string(),
             is_rtl: false,
+            is_monospace: false,
         }
     }
 
     pub fn bold() -> Self {
         let mut s = Self::new();
         s.bold = true;
+        s
+    }
+
+    pub fn italic() -> Self {
+        let mut s = Self::new();
+        s.italic = true;
+        s
+    }
+
+    pub fn bold_italic() -> Self {
+        let mut s = Self::new();
+        s.bold = true;
+        s.italic = true;
+        s
+    }
+
+    pub fn code() -> Self {
+        let mut s = Self::new();
+        s.is_monospace = true;
+        s.font_family = "Courier New".to_string();
+        s.color_hex = Some("#0f766e".to_string());
+        s
+    }
+
+    pub fn link() -> Self {
+        let mut s = Self::new();
+        s.underline = true;
+        s.color_hex = Some("#0284c7".to_string());
         s
     }
 
@@ -62,7 +92,7 @@ pub enum DocxElement {
     Table { rows: Vec<Vec<String>>, has_header: bool },
     PageBreak,
     Divider,
-    BulletItem { text: String, indent_level: u8 },
+    BulletItem { runs: Vec<TextRun>, indent_level: u8 },
     Callout { title: String, text: String, border_color: String },
     Diagram { raw_mermaid: String },
 }
@@ -119,6 +149,14 @@ impl DocxDocument {
         });
     }
 
+    pub fn add_paragraph_runs(&mut self, runs: Vec<TextRun>) {
+        self.elements.push(DocxElement::Paragraph {
+            runs,
+            align: "left".to_string(),
+            is_rtl: false,
+        });
+    }
+
     pub fn add_styled_paragraph(&mut self, text: &str, bold: bool, italic: bool, font_size_pt: f32, color_hex: Option<&str>) {
         self.elements.push(DocxElement::Paragraph {
             runs: vec![TextRun {
@@ -132,6 +170,7 @@ impl DocxDocument {
                     color_hex: color_hex.map(|s| s.to_string()),
                     font_family: "Calibri".to_string(),
                     is_rtl: false,
+                    is_monospace: false,
                 },
             }],
             align: "left".to_string(),
@@ -153,6 +192,7 @@ impl DocxDocument {
                     color_hex: None,
                     font_family: "Amiri".to_string(),
                     is_rtl: true,
+                    is_monospace: false,
                 },
             }],
             align: "right".to_string(),
@@ -174,6 +214,7 @@ impl DocxDocument {
                     color_hex: color_hex.map(|s| s.to_string()),
                     font_family: font_family.unwrap_or("Amiri").to_string(),
                     is_rtl: true,
+                    is_monospace: false,
                 },
             }],
             align: "right".to_string(),
@@ -187,8 +228,18 @@ impl DocxDocument {
 
     pub fn add_bullet(&mut self, text: &str) {
         self.elements.push(DocxElement::BulletItem {
-            text: text.to_string(),
+            runs: vec![TextRun {
+                text: text.to_string(),
+                style: TextStyle::new(),
+            }],
             indent_level: 0,
+        });
+    }
+
+    pub fn add_bullet_runs(&mut self, runs: Vec<TextRun>, indent_level: u8) {
+        self.elements.push(DocxElement::BulletItem {
+            runs,
+            indent_level,
         });
     }
 
@@ -233,8 +284,10 @@ impl DocxDocument {
                         }
                     }
                 }
-                DocxElement::BulletItem { text, .. } => {
-                    *text = replace_placeholders(text, variables);
+                DocxElement::BulletItem { runs, .. } => {
+                    for r in runs {
+                        r.text = replace_placeholders(&r.text, variables);
+                    }
                 }
                 DocxElement::Callout { title, text, .. } => {
                     *title = replace_placeholders(title, variables);
@@ -264,8 +317,10 @@ impl DocxDocument {
                         }
                     }
                 }
-                DocxElement::BulletItem { text, .. } => {
-                    *text = OfficeSecurity::redact_pdp_sensitive_text(text);
+                DocxElement::BulletItem { runs, .. } => {
+                    for r in runs {
+                        r.text = OfficeSecurity::redact_pdp_sensitive_text(&r.text);
+                    }
                 }
                 DocxElement::Callout { text, .. } => {
                     *text = OfficeSecurity::redact_pdp_sensitive_text(text);
@@ -311,9 +366,11 @@ impl DocxDocument {
                     }
                     out.push('\n');
                 }
-                DocxElement::BulletItem { text, .. } => {
+                DocxElement::BulletItem { runs, .. } => {
                     out.push_str("• ");
-                    out.push_str(text);
+                    for r in runs {
+                        out.push_str(&r.text);
+                    }
                     out.push('\n');
                 }
                 DocxElement::Callout { title, text, .. } => {
@@ -367,6 +424,7 @@ impl DocxDocument {
                         if r.style.bold { rpr.push_str("<w:b/>"); }
                         if r.style.italic { rpr.push_str("<w:i/>"); }
                         if r.style.underline { rpr.push_str(r#"<w:u w:val="single"/>"#); }
+                        if r.style.strikethrough { rpr.push_str(r#"<w:strike/>"#); }
                         if r.style.font_size_pt > 0.0 {
                             rpr.push_str(&format!(r#"<w:sz w:val="{}"/>"#, (r.style.font_size_pt * 2.0) as u32));
                         }
@@ -388,17 +446,60 @@ impl DocxDocument {
                     for row in rows {
                         xml.push_str("<w:tr>");
                         for cell in row {
-                            xml.push_str(&format!("<w:tc><w:p><w:r><w:t>{}</w:t></w:r></w:p></w:tc>", html_escape(cell)));
+                            xml.push_str("<w:tc><w:p>");
+                            let runs = parse_markdown_runs(cell);
+                            for r in runs {
+                                xml.push_str("<w:r>");
+                                let mut rpr = String::new();
+                                if r.style.bold { rpr.push_str("<w:b/>"); }
+                                if r.style.italic { rpr.push_str("<w:i/>"); }
+                                if r.style.underline { rpr.push_str(r#"<w:u w:val="single"/>"#); }
+                                if r.style.strikethrough { rpr.push_str(r#"<w:strike/>"#); }
+                                if let Some(ref c) = r.style.color_hex {
+                                    rpr.push_str(&format!(r#"<w:color w:val="{}"/>"#, c.trim_start_matches('#')));
+                                }
+                                if !r.style.font_family.is_empty() {
+                                    rpr.push_str(&format!(r#"<w:rFonts w:ascii="{0}" w:hAnsi="{0}" w:cs="{0}"/>"#, r.style.font_family));
+                                }
+                                if !rpr.is_empty() {
+                                    xml.push_str(&format!("<w:rPr>{}</w:rPr>", rpr));
+                                }
+                                xml.push_str(&format!("<w:t>{}</w:t></w:r>", html_escape(&r.text)));
+                            }
+                            xml.push_str("</w:p></w:tc>");
                         }
                         xml.push_str("</w:tr>");
                     }
                     xml.push_str("</w:tbl>");
                 }
-                DocxElement::BulletItem { text, .. } => {
+                DocxElement::BulletItem { runs, indent_level } => {
                     xml.push_str(&format!(
-                        r#"<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>{}</w:t></w:r></w:p>"#,
-                        html_escape(text)
+                        r#"<w:p><w:pPr><w:numPr><w:ilvl w:val="{}"/><w:numId w:val="1"/></w:numPr></w:pPr>"#,
+                        indent_level
                     ));
+                    for r in runs {
+                        xml.push_str("<w:r>");
+                        let mut rpr = String::new();
+                        if r.style.is_rtl { rpr.push_str("<w:rtl/>"); }
+                        if r.style.bold { rpr.push_str("<w:b/>"); }
+                        if r.style.italic { rpr.push_str("<w:i/>"); }
+                        if r.style.underline { rpr.push_str(r#"<w:u w:val="single"/>"#); }
+                        if r.style.strikethrough { rpr.push_str(r#"<w:strike/>"#); }
+                        if r.style.font_size_pt > 0.0 {
+                            rpr.push_str(&format!(r#"<w:sz w:val="{}"/>"#, (r.style.font_size_pt * 2.0) as u32));
+                        }
+                        if let Some(ref c) = r.style.color_hex {
+                            rpr.push_str(&format!(r#"<w:color w:val="{}"/>"#, c.trim_start_matches('#')));
+                        }
+                        if !r.style.font_family.is_empty() {
+                            rpr.push_str(&format!(r#"<w:rFonts w:ascii="{0}" w:hAnsi="{0}" w:cs="{0}"/>"#, r.style.font_family));
+                        }
+                        if !rpr.is_empty() {
+                            xml.push_str(&format!("<w:rPr>{}</w:rPr>", rpr));
+                        }
+                        xml.push_str(&format!("<w:t>{}</w:t></w:r>", html_escape(&r.text)));
+                    }
+                    xml.push_str("</w:p>");
                 }
                 DocxElement::Callout { title, text, .. } => {
                     xml.push_str(&format!(
@@ -574,18 +675,34 @@ impl DocxDocument {
                     for (i, row) in rows.iter().enumerate() {
                         html.push_str("<tr>");
                         for cell in row {
-                            if i == 0 && *has_header {
-                                html.push_str(&format!("<th>{}</th>", cell));
-                            } else {
-                                html.push_str(&format!("<td>{}</td>", cell));
+                            let tag = if i == 0 && *has_header { "th" } else { "td" };
+                            html.push_str(&format!("<{}>", tag));
+                            let runs = parse_markdown_runs(cell);
+                            for r in runs {
+                                let mut style = String::new();
+                                if r.style.bold { style.push_str("font-weight:bold;"); }
+                                if r.style.italic { style.push_str("font-style:italic;"); }
+                                if r.style.is_monospace { style.push_str("font-family:'Courier New', monospace;"); }
+                                if let Some(ref c) = r.style.color_hex { style.push_str(&format!("color:{};", c)); }
+                                html.push_str(&format!("<span style='{}'>{}</span>", style, html_escape(&r.text)));
                             }
+                            html.push_str(&format!("</{}>", tag));
                         }
                         html.push_str("</tr>");
                     }
                     html.push_str("</table>");
                 }
-                DocxElement::BulletItem { text, .. } => {
-                    html.push_str(&format!("<ul><li>{}</li></ul>", text));
+                DocxElement::BulletItem { runs, .. } => {
+                    html.push_str("<ul><li>");
+                    for r in runs {
+                        let mut style = String::new();
+                        if r.style.bold { style.push_str("font-weight:bold;"); }
+                        if r.style.italic { style.push_str("font-style:italic;"); }
+                        if r.style.is_monospace { style.push_str("font-family:'Courier New', monospace;"); }
+                        if let Some(ref c) = r.style.color_hex { style.push_str(&format!("color:{};", c)); }
+                        html.push_str(&format!("<span style='{}'>{}</span>", style, html_escape(&r.text)));
+                    }
+                    html.push_str("</li></ul>");
                 }
                 DocxElement::Callout { title, text, border_color } => {
                     html.push_str(&format!(
@@ -646,4 +763,338 @@ fn html_escape(s: &str) -> String {
         .replace('>', "&gt;")
         .replace('"', "&quot;")
         .replace('\'', "&apos;")
+}
+
+/// Mengurai sintaks inline Markdown (**bold**, *italic*, ***bold italic***, `code`, [link](url), ~~strike~~)
+/// menjadi struktur `Vec<TextRun>` berformat nyata untuk dokumen Word & PDF
+pub fn parse_markdown_runs(text: &str) -> Vec<TextRun> {
+    if text.is_empty() {
+        return Vec::new();
+    }
+    parse_spans_internal(text, InlineSpanStyle::default())
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+struct InlineSpanStyle {
+    bold: bool,
+    italic: bool,
+    underline: bool,
+    strikethrough: bool,
+    monospace: bool,
+    is_link: bool,
+}
+
+impl InlineSpanStyle {
+    fn to_text_style(&self) -> TextStyle {
+        TextStyle {
+            bold: self.bold,
+            italic: self.italic,
+            underline: self.underline || self.is_link,
+            strikethrough: self.strikethrough,
+            font_size_pt: 10.0,
+            color_hex: if self.is_link {
+                Some("#0284c7".to_string())
+            } else if self.monospace {
+                Some("#0f766e".to_string())
+            } else {
+                None
+            },
+            font_family: if self.monospace {
+                "Courier New".to_string()
+            } else {
+                "Calibri".to_string()
+            },
+            is_rtl: false,
+            is_monospace: self.monospace,
+        }
+    }
+}
+
+fn parse_spans_internal(input: &str, current_style: InlineSpanStyle) -> Vec<TextRun> {
+    let mut runs: Vec<TextRun> = Vec::new();
+    let mut plain_buf = String::new();
+    let chars: Vec<char> = input.chars().collect();
+    let len = chars.len();
+    let mut i = 0;
+
+    let flush_buf = |buf: &mut String, runs: &mut Vec<TextRun>, style: &InlineSpanStyle| {
+        if !buf.is_empty() {
+            runs.push(TextRun {
+                text: std::mem::take(buf),
+                style: style.to_text_style(),
+            });
+        }
+    };
+
+    while i < len {
+        // 1. Gambar Markdown: ![alt](url) -> [Gambar: alt]
+        if chars[i] == '!' && i + 1 < len && chars[i + 1] == '[' {
+            if let Some(bracket_end) = chars[i + 2..].iter().position(|&c| c == ']') {
+                let abs_b = i + 2 + bracket_end;
+                if abs_b + 1 < len && chars[abs_b + 1] == '(' {
+                    if let Some(paren_end) = chars[abs_b + 2..].iter().position(|&c| c == ')') {
+                        let abs_p = abs_b + 2 + paren_end;
+                        flush_buf(&mut plain_buf, &mut runs, &current_style);
+                        let alt: String = chars[i + 2..abs_b].iter().collect();
+                        let label = if alt.trim().is_empty() {
+                            "[Gambar]".to_string()
+                        } else {
+                            format!("[Gambar: {}]", alt.trim())
+                        };
+                        runs.push(TextRun {
+                            text: label,
+                            style: current_style.to_text_style(),
+                        });
+                        i = abs_p + 1;
+                        continue;
+                    }
+                }
+            }
+        }
+
+        // 2. Tautan Markdown: [text](url) -> text dengan style link
+        if chars[i] == '[' {
+            if let Some(bracket_end) = chars[i + 1..].iter().position(|&c| c == ']') {
+                let abs_b = i + 1 + bracket_end;
+                if abs_b + 1 < len && chars[abs_b + 1] == '(' {
+                    if let Some(paren_end) = chars[abs_b + 2..].iter().position(|&c| c == ')') {
+                        let abs_p = abs_b + 2 + paren_end;
+                        flush_buf(&mut plain_buf, &mut runs, &current_style);
+                        let link_text: String = chars[i + 1..abs_b].iter().collect();
+                        let mut sub_style = current_style;
+                        sub_style.is_link = true;
+                        let sub_runs = parse_spans_internal(&link_text, sub_style);
+                        runs.extend(sub_runs);
+                        i = abs_p + 1;
+                        continue;
+                    }
+                }
+            }
+        }
+
+        // 3. Inline Code: `code`
+        if chars[i] == '`' {
+            if let Some(end) = chars[i + 1..].iter().position(|&c| c == '`') {
+                let abs_end = i + 1 + end;
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let code_text: String = chars[i + 1..abs_end].iter().collect();
+                let mut code_style = current_style;
+                code_style.monospace = true;
+                runs.push(TextRun {
+                    text: code_text,
+                    style: code_style.to_text_style(),
+                });
+                i = abs_end + 1;
+                continue;
+            }
+        }
+
+        // 4. Bold + Italic: ***text***
+        if chars[i] == '*' && i + 2 < len && chars[i + 1] == '*' && chars[i + 2] == '*' {
+            let mut found_end = None;
+            for j in (i + 3)..len {
+                if chars[j] == '*' && j + 2 < len && chars[j + 1] == '*' && chars[j + 2] == '*' {
+                    found_end = Some(j);
+                    break;
+                }
+            }
+            if let Some(end_idx) = found_end {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner: String = chars[i + 3..end_idx].iter().collect();
+                let mut next_style = current_style;
+                next_style.bold = true;
+                next_style.italic = true;
+                runs.extend(parse_spans_internal(&inner, next_style));
+                i = end_idx + 3;
+                continue;
+            }
+        }
+
+        // 5. Bold: **text**
+        if chars[i] == '*' && i + 1 < len && chars[i + 1] == '*' {
+            let mut found_end = None;
+            for j in (i + 2)..len {
+                if chars[j] == '*' && j + 1 < len && chars[j + 1] == '*' {
+                    found_end = Some(j);
+                    break;
+                }
+            }
+            if let Some(end_idx) = found_end {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner: String = chars[i + 2..end_idx].iter().collect();
+                let mut next_style = current_style;
+                next_style.bold = true;
+                runs.extend(parse_spans_internal(&inner, next_style));
+                i = end_idx + 2;
+                continue;
+            }
+        }
+
+        // 6. Bold Underscore: __text__
+        if chars[i] == '_' && i + 1 < len && chars[i + 1] == '_' {
+            let mut found_end = None;
+            for j in (i + 2)..len {
+                if chars[j] == '_' && j + 1 < len && chars[j + 1] == '_' {
+                    found_end = Some(j);
+                    break;
+                }
+            }
+            if let Some(end_idx) = found_end {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner: String = chars[i + 2..end_idx].iter().collect();
+                let mut next_style = current_style;
+                next_style.bold = true;
+                runs.extend(parse_spans_internal(&inner, next_style));
+                i = end_idx + 2;
+                continue;
+            }
+        }
+
+        // 7. Strikethrough: ~~text~~
+        if chars[i] == '~' && i + 1 < len && chars[i + 1] == '~' {
+            let mut found_end = None;
+            for j in (i + 2)..len {
+                if chars[j] == '~' && j + 1 < len && chars[j + 1] == '~' {
+                    found_end = Some(j);
+                    break;
+                }
+            }
+            if let Some(end_idx) = found_end {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner: String = chars[i + 2..end_idx].iter().collect();
+                let mut next_style = current_style;
+                next_style.strikethrough = true;
+                runs.extend(parse_spans_internal(&inner, next_style));
+                i = end_idx + 2;
+                continue;
+            }
+        }
+
+        // 8. Italic Asterisk: *text* (tidak diawali/diakhiri spasi, bukan '*')
+        if chars[i] == '*' && i + 1 < len && chars[i + 1] != ' ' && chars[i + 1] != '*' {
+            let mut found_end = None;
+            for j in (i + 2)..len {
+                if chars[j] == '*' && chars[j - 1] != ' ' {
+                    if j + 1 < len && chars[j + 1] == '*' {
+                        continue;
+                    }
+                    found_end = Some(j);
+                    break;
+                }
+            }
+            if let Some(end_idx) = found_end {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner: String = chars[i + 1..end_idx].iter().collect();
+                let mut next_style = current_style;
+                next_style.italic = true;
+                runs.extend(parse_spans_internal(&inner, next_style));
+                i = end_idx + 1;
+                continue;
+            }
+        }
+
+        // 9. Italic Underscore: _text_ (hindari identifier variabel seperti pure_emitter)
+        let prev_is_alnum = if i > 0 { chars[i - 1].is_alphanumeric() } else { false };
+        if !prev_is_alnum && chars[i] == '_' && i + 1 < len && chars[i + 1] != ' ' && chars[i + 1] != '_' {
+            let mut found_end = None;
+            for j in (i + 2)..len {
+                if chars[j] == '_' && chars[j - 1] != ' ' {
+                    let next_is_alnum = if j + 1 < len { chars[j + 1].is_alphanumeric() } else { false };
+                    if !next_is_alnum {
+                        found_end = Some(j);
+                        break;
+                    }
+                }
+            }
+            if let Some(end_idx) = found_end {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner: String = chars[i + 1..end_idx].iter().collect();
+                let mut next_style = current_style;
+                next_style.italic = true;
+                runs.extend(parse_spans_internal(&inner, next_style));
+                i = end_idx + 1;
+                continue;
+            }
+        }
+
+        // 10. Tag HTML format: <b>, <strong>, <i>, <em>, <code>
+        let remaining: String = chars[i..].iter().collect();
+        if remaining.starts_with("<b>") || remaining.starts_with("<strong>") {
+            let tag_len = if remaining.starts_with("<b>") { 3 } else { 8 };
+            let close_tag = if remaining.starts_with("<b>") { "</b>" } else { "</strong>" };
+            if let Some(end_pos) = remaining[tag_len..].find(close_tag) {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner = &remaining[tag_len..tag_len + end_pos];
+                let mut next_style = current_style;
+                next_style.bold = true;
+                runs.extend(parse_spans_internal(inner, next_style));
+                let advance = tag_len + end_pos + close_tag.len();
+                i += advance;
+                continue;
+            }
+        }
+        if remaining.starts_with("<i>") || remaining.starts_with("<em>") {
+            let tag_len = if remaining.starts_with("<i>") { 3 } else { 4 };
+            let close_tag = if remaining.starts_with("<i>") { "</i>" } else { "</em>" };
+            if let Some(end_pos) = remaining[tag_len..].find(close_tag) {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner = &remaining[tag_len..tag_len + end_pos];
+                let mut next_style = current_style;
+                next_style.italic = true;
+                runs.extend(parse_spans_internal(inner, next_style));
+                let advance = tag_len + end_pos + close_tag.len();
+                i += advance;
+                continue;
+            }
+        }
+        if remaining.starts_with("<code>") {
+            if let Some(end_pos) = remaining[6..].find("</code>") {
+                flush_buf(&mut plain_buf, &mut runs, &current_style);
+                let inner = &remaining[6..6 + end_pos];
+                let mut code_style = current_style;
+                code_style.monospace = true;
+                runs.push(TextRun {
+                    text: inner.to_string(),
+                    style: code_style.to_text_style(),
+                });
+                let advance = 6 + end_pos + 7;
+                i += advance;
+                continue;
+            }
+        }
+
+        // Karakter biasa
+        plain_buf.push(chars[i]);
+        i += 1;
+    }
+
+    flush_buf(&mut plain_buf, &mut runs, &current_style);
+
+    // Gabungkan run berurutan dengan style persis sama
+    merge_adjacent_runs(runs)
+}
+
+fn merge_adjacent_runs(runs: Vec<TextRun>) -> Vec<TextRun> {
+    let mut merged: Vec<TextRun> = Vec::with_capacity(runs.len());
+    for r in runs {
+        if r.text.is_empty() {
+            continue;
+        }
+        if let Some(last) = merged.last_mut() {
+            if last.style.bold == r.style.bold
+                && last.style.italic == r.style.italic
+                && last.style.underline == r.style.underline
+                && last.style.strikethrough == r.style.strikethrough
+                && last.style.is_monospace == r.style.is_monospace
+                && last.style.color_hex == r.style.color_hex
+                && last.style.font_family == r.style.font_family
+                && last.style.font_size_pt == r.style.font_size_pt
+            {
+                last.text.push_str(&r.text);
+                continue;
+            }
+        }
+        merged.push(r);
+    }
+    merged
 }

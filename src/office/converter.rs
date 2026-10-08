@@ -1,8 +1,8 @@
 use crate::office::diagram::WidyaDiagramEngine;
-use crate::office::docx::{DocxDocument, DocxElement};
+use crate::office::docx::{parse_markdown_runs, DocxDocument, DocxElement, TextStyle, TextRun};
 use crate::office::latex::{LatexDocument, LatexElement};
 use crate::office::markdown::{MarkdownBlock, MarkdownDocument};
-use crate::office::pdf::{wrap_text, PdfDocument};
+use crate::office::pdf::{styled_string_width, wrap_runs_to_styled_lines, wrap_text, PdfDocument, StyledFragment};
 use crate::office::xlsx::XlsxWorkbook;
 
 /// Mesin Pipeline Konversi Dokumen Universal Lintas Format
@@ -76,54 +76,83 @@ impl DocumentConverter {
                     current_y -= 6.0;
                 }
                 DocxElement::Paragraph { runs, is_rtl, .. } => {
-                    let mut line_text = String::new();
-                    for r in runs {
-                        line_text.push_str(&r.text);
-                    }
-                    let cleaned = clean_markdown_inline(&line_text);
-                    if cleaned.trim().is_empty() {
+                    let total_text: String = runs.iter().map(|r| r.text.as_str()).collect();
+                    if total_text.trim().is_empty() {
                         current_y -= 6.0;
                         continue;
                     }
 
                     let font_size = 10.0;
                     let line_height = 14.0;
-                    let wrapped = wrap_text(&cleaned, content_width, font_size, false);
+                    let default_color = (0.15, 0.2, 0.25);
 
-                    for line in wrapped {
-                        if line.is_empty() {
-                            current_y -= 4.0;
-                            continue;
-                        }
-                        if current_y < 80.0 {
-                            pdf.add_page();
-                            current_y = page_height - 70.0;
-                        }
-                        current_y -= line_height;
-                        if *is_rtl {
+                    if *is_rtl {
+                        let cleaned = clean_markdown_inline(&total_text);
+                        let wrapped = wrap_text(&cleaned, content_width, font_size, false);
+                        for line in wrapped {
+                            if line.is_empty() {
+                                current_y -= 4.0;
+                                continue;
+                            }
+                            if current_y < 80.0 {
+                                pdf.add_page();
+                                current_y = page_height - 70.0;
+                            }
+                            current_y -= line_height;
                             pdf.current_page_mut().add_rtl_text(&line, margin_x + content_width, current_y, font_size, false);
-                        } else {
-                            pdf.current_page_mut().add_styled_text(
-                                &line,
-                                margin_x,
-                                current_y,
-                                font_size,
-                                false,
-                                (0.15, 0.2, 0.25),
-                            );
+                        }
+                    } else {
+                        let lines = wrap_runs_to_styled_lines(runs, content_width, font_size, default_color);
+                        for line in lines {
+                            if line.is_empty() {
+                                current_y -= 4.0;
+                                continue;
+                            }
+                            if current_y < 80.0 {
+                                pdf.add_page();
+                                current_y = page_height - 70.0;
+                            }
+                            current_y -= line_height;
+                            let mut curr_x = margin_x;
+                            for frag in &line {
+                                if !frag.text.is_empty() {
+                                    pdf.current_page_mut().add_formatted_text(
+                                        &frag.text,
+                                        curr_x,
+                                        current_y,
+                                        frag.font_size,
+                                        frag.bold,
+                                        frag.italic,
+                                        frag.monospace,
+                                        frag.color_rgb,
+                                    );
+                                    let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                    if frag.underline {
+                                        pdf.current_page_mut().add_styled_line(
+                                            curr_x,
+                                            current_y - 1.5,
+                                            curr_x + frag_w,
+                                            current_y - 1.5,
+                                            0.6,
+                                            frag.color_rgb,
+                                        );
+                                    }
+                                    curr_x += frag_w;
+                                }
+                            }
                         }
                     }
                     current_y -= 4.0;
                 }
-                DocxElement::BulletItem { text, indent_level } => {
-                    let cleaned = clean_markdown_inline(text);
+                DocxElement::BulletItem { runs, indent_level } => {
                     let font_size = 9.5;
                     let line_height = 13.5;
                     let indent_px = 16.0 + (*indent_level as f32 * 12.0);
                     let bullet_content_w = (content_width - indent_px).max(100.0);
-                    let wrapped = wrap_text(&cleaned, bullet_content_w, font_size, false);
+                    let default_color = (0.2, 0.25, 0.3);
+                    let lines = wrap_runs_to_styled_lines(runs, bullet_content_w, font_size, default_color);
 
-                    for (idx, line) in wrapped.iter().enumerate() {
+                    for (idx, line) in lines.iter().enumerate() {
                         if line.is_empty() {
                             continue;
                         }
@@ -142,14 +171,33 @@ impl DocumentConverter {
                                 (0.15, 0.35, 0.7),
                             );
                         }
-                        pdf.current_page_mut().add_styled_text(
-                            line,
-                            margin_x + indent_px,
-                            current_y,
-                            font_size,
-                            false,
-                            (0.2, 0.25, 0.3),
-                        );
+                        let mut curr_x = margin_x + indent_px;
+                        for frag in line {
+                            if !frag.text.is_empty() {
+                                pdf.current_page_mut().add_formatted_text(
+                                    &frag.text,
+                                    curr_x,
+                                    current_y,
+                                    frag.font_size,
+                                    frag.bold,
+                                    frag.italic,
+                                    frag.monospace,
+                                    frag.color_rgb,
+                                );
+                                let frag_w = styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                                if frag.underline {
+                                    pdf.current_page_mut().add_styled_line(
+                                        curr_x,
+                                        current_y - 1.5,
+                                        curr_x + frag_w,
+                                        current_y - 1.5,
+                                        0.6,
+                                        frag.color_rgb,
+                                    );
+                                }
+                                curr_x += frag_w;
+                            }
+                        }
                     }
                     current_y -= 2.0;
                 }
@@ -157,7 +205,7 @@ impl DocumentConverter {
                     if !rows.is_empty() {
                         let col_count = rows[0].len().max(1);
                         let header_slice: Vec<String> = if *has_header {
-                            rows[0].iter().map(|s| clean_markdown_inline(s)).collect()
+                            rows[0].clone()
                         } else {
                             (1..=col_count).map(|i| format!("Kolom {}", i)).collect()
                         };
@@ -169,30 +217,37 @@ impl DocumentConverter {
                             &rows[..]
                         };
 
-                        let cleaned_data_rows: Vec<Vec<String>> = data_rows_raw
-                            .iter()
-                            .map(|row| row.iter().map(|c| clean_markdown_inline(c)).collect())
-                            .collect();
-
-                        let widths = calculate_table_col_widths(&header_refs, &cleaned_data_rows, content_width);
+                        let widths = calculate_table_col_widths(&header_refs, data_rows_raw, content_width);
 
                         // Beri jarak atas sebelum tabel agar tidak menimpa teks paragraf sebelumnya
                         current_y -= 14.0;
-                        current_y = pdf.add_table(&header_refs, &cleaned_data_rows, margin_x, current_y, &widths);
+                        current_y = pdf.add_table(&header_refs, data_rows_raw, margin_x, current_y, &widths);
                         current_y -= 14.0;
                     }
                 }
                 DocxElement::Callout { title, text, border_color } => {
                     let clean_title = clean_markdown_inline(title);
-                    let clean_text = if title.starts_with("KODE") {
-                        text.clone()
-                    } else {
-                        clean_markdown_inline(text)
-                    };
+                    let is_code = title.starts_with("KODE");
                     let font_size = 8.5;
                     let line_height = 12.0;
                     let inner_w = content_width - 24.0;
-                    let lines = wrap_text(&clean_text, inner_w, font_size, false);
+                    let default_color = (0.15, 0.2, 0.25);
+
+                    let lines: Vec<Vec<StyledFragment>> = if is_code {
+                        let lines_raw = wrap_text(text, inner_w, font_size, false);
+                        lines_raw.into_iter().map(|l| vec![StyledFragment {
+                            text: l,
+                            bold: false,
+                            italic: false,
+                            monospace: true,
+                            underline: false,
+                            color_rgb: (0.1, 0.2, 0.3),
+                            font_size,
+                        }]).collect()
+                    } else {
+                        let runs = parse_markdown_runs(text);
+                        wrap_runs_to_styled_lines(&runs, inner_w, font_size, default_color)
+                    };
 
                     let (border_rgb, bg_rgb) = if border_color.contains("3b82f6") || border_color.contains("blue") {
                         ((0.15, 0.45, 0.85), (0.94, 0.97, 1.0))
@@ -227,8 +282,21 @@ impl DocumentConverter {
                         page.add_rect(margin_x, current_y - line_height, content_width, line_height, true, bg_rgb);
                         page.add_styled_line(margin_x, current_y - line_height, margin_x, current_y, 3.5, border_rgb);
                         page.add_styled_line(margin_x + content_width, current_y - line_height, margin_x + content_width, current_y, 0.5, (0.85, 0.88, 0.9));
-                        if !line.is_empty() {
-                            page.add_styled_text(line, margin_x + 10.0, current_y - 9.0, font_size, false, (0.15, 0.2, 0.25));
+                        let mut curr_x = margin_x + 10.0;
+                        for frag in line {
+                            if !frag.text.is_empty() {
+                                page.add_formatted_text(
+                                    &frag.text,
+                                    curr_x,
+                                    current_y - 9.0,
+                                    frag.font_size,
+                                    frag.bold,
+                                    frag.italic,
+                                    frag.monospace,
+                                    frag.color_rgb,
+                                );
+                                curr_x += styled_string_width(&frag.text, frag.font_size, frag.bold, frag.monospace);
+                            }
                         }
                         current_y -= line_height;
                     }
@@ -363,17 +431,24 @@ impl DocumentConverter {
                     doc.add_heading(&clean_markdown_inline(text), *level);
                 }
                 MarkdownBlock::Paragraph(text) => {
-                    doc.add_paragraph(&clean_markdown_inline(text));
+                    let runs = parse_markdown_runs(text);
+                    doc.add_paragraph_runs(runs);
                 }
                 MarkdownBlock::UnorderedList(items) => {
                     for item in items {
-                        doc.add_bullet(&clean_markdown_inline(item));
+                        let runs = parse_markdown_runs(item);
+                        doc.add_bullet_runs(runs, 0);
                     }
                 }
                 MarkdownBlock::Checklist(items) => {
                     for (checked, item) in items {
                         let prefix = if *checked { "[x] " } else { "[ ] " };
-                        doc.add_bullet(&format!("{}{}", prefix, clean_markdown_inline(item)));
+                        let mut runs = vec![TextRun {
+                            text: prefix.to_string(),
+                            style: TextStyle::bold(),
+                        }];
+                        runs.extend(parse_markdown_runs(item));
+                        doc.add_bullet_runs(runs, 0);
                     }
                 }
                 MarkdownBlock::CodeBlock { lang, code } => {
@@ -384,15 +459,13 @@ impl DocumentConverter {
                     }
                 }
                 MarkdownBlock::Table { headers, rows } => {
-                    let cleaned_headers: Vec<String> = headers.iter().map(|h| clean_markdown_inline(h)).collect();
-                    let cleaned_rows: Vec<Vec<String>> = rows.iter().map(|r| r.iter().map(|c| clean_markdown_inline(c)).collect()).collect();
                     let mut all_rows = Vec::new();
-                    all_rows.push(cleaned_headers);
-                    all_rows.extend(cleaned_rows);
+                    all_rows.push(headers.clone());
+                    all_rows.extend(rows.clone());
                     doc.add_table(all_rows, true);
                 }
                 MarkdownBlock::Blockquote(text) => {
-                    doc.add_callout("KUTIPAN", &clean_markdown_inline(text), "#3b82f6");
+                    doc.add_callout("KUTIPAN", text, "#3b82f6");
                 }
                 MarkdownBlock::HorizontalRule => {
                     doc.add_divider();
@@ -439,7 +512,8 @@ impl DocumentConverter {
                 }
                 LatexElement::Itemize(items) => {
                     for it in items {
-                        doc.add_bullet(it);
+                        let runs = parse_markdown_runs(it);
+                        doc.add_bullet_runs(runs, 0);
                     }
                 }
             }
@@ -460,14 +534,14 @@ pub fn calculate_table_col_widths(
         return vec![total_width];
     }
 
-    // Hitung perkiraan panjang karakter maksimum tiap kolom
+    // Hitung perkiraan panjang karakter maksimum tiap kolom (menggunakan panjang teks bersih tanpa format markup)
     let mut col_max_lens: Vec<usize> = Vec::with_capacity(col_count);
     for i in 0..col_count {
-        let h_len = headers.get(i).map(|h| h.chars().count()).unwrap_or(4);
+        let h_len = headers.get(i).map(|h| clean_markdown_inline(h).chars().count()).unwrap_or(4);
         let max_data_len = rows
             .iter()
             .filter_map(|r| r.get(i))
-            .map(|cell| cell.chars().count())
+            .map(|cell| clean_markdown_inline(cell).chars().count())
             .max()
             .unwrap_or(0);
         col_max_lens.push(h_len.max(max_data_len));

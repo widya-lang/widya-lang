@@ -199,28 +199,37 @@ impl MarkdownDocument {
 }
 
 fn parse_inline_styles(text: &str) -> String {
-    let mut s = html_escape(text);
-    // Bold **text**
-    while let Some(start) = s.find("**") {
-        if let Some(end_offset) = s[start + 2..].find("**") {
-            let real_end = start + 2 + end_offset;
-            let inner = s[start + 2..real_end].to_string();
-            s = format!("{}<strong>{}</strong>{}", &s[..start], inner, &s[real_end + 2..]);
-        } else {
-            break;
-        }
+    use crate::office::docx::parse_markdown_runs;
+    let runs = parse_markdown_runs(text);
+    if runs.is_empty() {
+        return html_escape(text);
     }
-    // Inline Code `code`
-    while let Some(start) = s.find('`') {
-        if let Some(end_offset) = s[start + 1..].find('`') {
-            let real_end = start + 1 + end_offset;
-            let inner = s[start + 1..real_end].to_string();
-            s = format!("{}<code>{}</code>{}", &s[..start], inner, &s[real_end + 1..]);
-        } else {
-            break;
+    let mut html = String::new();
+    for r in runs {
+        let escaped = html_escape(&r.text);
+        let mut styled = escaped;
+        if r.style.is_monospace {
+            styled = format!("<code>{}</code>", styled);
         }
+        if r.style.bold && r.style.italic {
+            styled = format!("<strong><em>{}</em></strong>", styled);
+        } else if r.style.bold {
+            styled = format!("<strong>{}</strong>", styled);
+        } else if r.style.italic {
+            styled = format!("<em>{}</em>", styled);
+        }
+        if r.style.strikethrough {
+            styled = format!("<del>{}</del>", styled);
+        }
+        if r.style.underline && !r.style.bold {
+            styled = format!("<u>{}</u>", styled);
+        }
+        if let Some(ref color) = r.style.color_hex {
+            styled = format!(r#"<span style="color: {};">{}</span>"#, color, styled);
+        }
+        html.push_str(&styled);
     }
-    s
+    html
 }
 
 fn html_escape(s: &str) -> String {

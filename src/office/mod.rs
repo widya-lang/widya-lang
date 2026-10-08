@@ -20,7 +20,7 @@ pub use crdt::{
     ChangeType, ClientId, CollabSession, CollabUser, CrdtChar, DocumentReviewSession,
     FractionalIndex, LogicalClock, LwwRegister, TextCrdt, ThreadedComment, TrackChange,
 };
-pub use docx::{DocxDocument, DocxElement, TextStyle, TextRun};
+pub use docx::{DocxDocument, DocxElement, TextStyle, TextRun, parse_markdown_runs};
 pub use latex::{LatexDocument, LatexElement};
 pub use markdown::{MarkdownBlock, MarkdownDocument};
 pub use pdf::{PageSize, PdfDocument, PdfElement, PdfPage, sanitize_pdf_text};
