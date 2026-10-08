@@ -29,6 +29,11 @@ pub struct EpubDocument {
     pub identifier: String,
     pub modified_date: String,
     pub custom_css: Option<String>,
+    pub isbn: Option<String>,
+    pub description: Option<String>,
+    pub subject: Option<String>,
+    pub rights: Option<String>,
+    pub cover_image: Option<(Vec<u8>, String)>,
     pub chapters: Vec<EpubChapter>,
 }
 
@@ -50,6 +55,11 @@ impl EpubDocument {
             identifier: uuid,
             modified_date: now,
             custom_css: None,
+            isbn: None,
+            description: None,
+            subject: None,
+            rights: None,
+            cover_image: None,
             chapters: Vec::new(),
         }
     }
@@ -71,6 +81,31 @@ impl EpubDocument {
 
     pub fn set_custom_css(&mut self, css: &str) -> &mut Self {
         self.custom_css = Some(css.to_string());
+        self
+    }
+
+    pub fn set_isbn(&mut self, isbn: &str) -> &mut Self {
+        self.isbn = Some(isbn.to_string());
+        self
+    }
+
+    pub fn set_description(&mut self, desc: &str) -> &mut Self {
+        self.description = Some(desc.to_string());
+        self
+    }
+
+    pub fn set_subject(&mut self, subj: &str) -> &mut Self {
+        self.subject = Some(subj.to_string());
+        self
+    }
+
+    pub fn set_rights(&mut self, rights: &str) -> &mut Self {
+        self.rights = Some(rights.to_string());
+        self
+    }
+
+    pub fn set_cover_image(&mut self, bytes: &[u8], media_type: &str) -> &mut Self {
+        self.cover_image = Some((bytes.to_vec(), media_type.to_string()));
         self
     }
 
@@ -275,18 +310,44 @@ hr.section-divider {
         };
         pkg.add_file_str("OEBPS/style.css", css_content);
 
-        // 4. OEBPS/toc.xhtml (Navigasi EPUB 3 Navigation Document)
+        // 4. Jika ada cover image, tambahkan file gambar dan cover.xhtml
+        if let Some((ref img_bytes, ref mime)) = self.cover_image {
+            let img_filename = if mime.contains("png") { "cover.png" } else { "cover.jpg" };
+            pkg.add_file(&format!("OEBPS/{}", img_filename), img_bytes);
+
+            let cover_xhtml = format!(
+                r#"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{}">
+<head>
+  <meta charset="utf-8" />
+  <title>Sampul</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body style="margin: 0; padding: 0; text-align: center; background-color: #ffffff;">
+  <div style="height: 100vh; display: flex; justify-content: center; align-items: center;">
+    <img src="{}" alt="Sampul Buku" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+  </div>
+</body>
+</html>
+"#,
+                self.language, img_filename
+            );
+            pkg.add_file_str("OEBPS/cover.xhtml", &cover_xhtml);
+        }
+
+        // 5. OEBPS/toc.xhtml (Navigasi EPUB 3 Navigation Document)
         let toc_xhtml = self.generate_toc_xhtml();
         pkg.add_file_str("OEBPS/toc.xhtml", &toc_xhtml);
 
-        // 5. OEBPS/chapter_{i}.xhtml
+        // 6. OEBPS/chapter_{i}.xhtml
         for (idx, chapter) in self.chapters.iter().enumerate() {
             let filename = format!("OEBPS/{}.xhtml", chapter.id);
             let chapter_xhtml = self.generate_chapter_xhtml(chapter, idx + 1);
             pkg.add_file_str(&filename, &chapter_xhtml);
         }
 
-        // 6. OEBPS/content.opf (Package metadata, manifest, dan spine)
+        // 7. OEBPS/content.opf (Package metadata, manifest, dan spine)
         let content_opf = self.generate_content_opf();
         pkg.add_file_str("OEBPS/content.opf", &content_opf);
 
@@ -302,10 +363,22 @@ hr.section-divider {
 "#);
 
         opf.push_str(&format!("    <dc:identifier id=\"pub-id\">{}</dc:identifier>\n", xml_escape(&self.identifier)));
+        if let Some(ref isbn) = self.isbn {
+            opf.push_str(&format!("    <dc:identifier id=\"isbn\">urn:isbn:{}</dc:identifier>\n", xml_escape(isbn)));
+        }
         opf.push_str(&format!("    <dc:title>{}</dc:title>\n", xml_escape(&self.title)));
         opf.push_str(&format!("    <dc:creator>{}</dc:creator>\n", xml_escape(&self.author)));
         opf.push_str(&format!("    <dc:language>{}</dc:language>\n", xml_escape(&self.language)));
         opf.push_str(&format!("    <dc:publisher>{}</dc:publisher>\n", xml_escape(&self.publisher)));
+        if let Some(ref desc) = self.description {
+            opf.push_str(&format!("    <dc:description>{}</dc:description>\n", xml_escape(desc)));
+        }
+        if let Some(ref subj) = self.subject {
+            opf.push_str(&format!("    <dc:subject>{}</dc:subject>\n", xml_escape(subj)));
+        }
+        if let Some(ref rights) = self.rights {
+            opf.push_str(&format!("    <dc:rights>{}</dc:rights>\n", xml_escape(rights)));
+        }
         opf.push_str(&format!("    <meta property=\"dcterms:modified\">{}</meta>\n", self.modified_date));
         opf.push_str("  </metadata>\n");
 
@@ -313,6 +386,11 @@ hr.section-divider {
         opf.push_str("  <manifest>\n");
         opf.push_str("    <item id=\"nav\" href=\"toc.xhtml\" media-type=\"application/xhtml+xml\" properties=\"nav\"/>\n");
         opf.push_str("    <item id=\"style\" href=\"style.css\" media-type=\"text/css\"/>\n");
+        if let Some((_, ref mime)) = self.cover_image {
+            let img_filename = if mime.contains("png") { "cover.png" } else { "cover.jpg" };
+            opf.push_str(&format!("    <item id=\"cover-img\" href=\"{}\" media-type=\"{}\" properties=\"cover-image\"/>\n", img_filename, mime));
+            opf.push_str("    <item id=\"cover\" href=\"cover.xhtml\" media-type=\"application/xhtml+xml\"/>\n");
+        }
         for chapter in &self.chapters {
             opf.push_str(&format!(
                 "    <item id=\"{}\" href=\"{}.xhtml\" media-type=\"application/xhtml+xml\"/>\n",
@@ -323,6 +401,9 @@ hr.section-divider {
 
         // Spine
         opf.push_str("  <spine>\n");
+        if self.cover_image.is_some() {
+            opf.push_str("    <itemref idref=\"cover\"/>\n");
+        }
         for chapter in &self.chapters {
             opf.push_str(&format!("    <itemref idref=\"{}\"/>\n", chapter.id));
         }
@@ -573,6 +654,15 @@ pub fn markdown_to_epub_doc(
                     current_chapter_html.push_str("      </tr>\n");
                 }
                 current_chapter_html.push_str("    </tbody>\n  </table>\n");
+            }
+            MarkdownBlock::FootnoteDefinition { label, content } => {
+                let inner = inline_markdown_to_xhtml(content);
+                current_chapter_html.push_str(&format!(
+                    "  <aside id=\"fn_{}\" class=\"footnote\"><p><sup>[{}]</sup> {}</p></aside>\n",
+                    xml_escape(label),
+                    xml_escape(label),
+                    inner
+                ));
             }
             MarkdownBlock::HorizontalRule => {
                 current_chapter_html.push_str("  <hr class=\"section-divider\" />\n");

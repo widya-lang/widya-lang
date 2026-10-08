@@ -320,6 +320,11 @@ enum Commands {
         #[command(subcommand)]
         aksi: OfficeSubcommands,
     },
+    /// Alias Office: dokumen
+    Dokumen {
+        #[command(subcommand)]
+        aksi: OfficeSubcommands,
+    },
     /// WidyaDrive - Penyimpanan Berkas Cloud Sovereign Terenkripsi AES-256
     Drive {
         #[command(subcommand)]
@@ -836,7 +841,7 @@ fn run_main() {
         Some(Commands::Game3d { aksi }) => handle_game3d_command(&aksi),
         Some(Commands::Web3 { aksi }) => handle_web3_command(&aksi),
         Some(Commands::Health { aksi }) | Some(Commands::Fhir { aksi }) => handle_health_command(&aksi),
-        Some(Commands::Office { aksi }) => handle_office_command(&aksi),
+        Some(Commands::Office { aksi }) | Some(Commands::Dokumen { aksi }) => handle_office_command(&aksi),
         Some(Commands::Drive { aksi }) => handle_drive_command(&aksi),
         Some(Commands::Workspace { aksi }) => handle_workspace_command(&aksi),
         Some(Commands::Smartcity { aksi }) => handle_smartcity_command(&aksi),

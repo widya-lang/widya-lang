@@ -103,6 +103,7 @@ pub enum DocxElement {
     NumberedItem { number: usize, runs: Vec<TextRun>, indent_level: u8 },
     Callout { title: String, text: String, border_color: String },
     Diagram { raw_mermaid: String },
+    Footnote { label: String, text: String },
 }
 
 /// Dokumen Microsoft Word (.docx / OpenXML Document) Kelas Industri
@@ -297,6 +298,13 @@ impl DocxDocument {
         });
     }
 
+    pub fn add_footnote(&mut self, label: &str, text: &str) {
+        self.elements.push(DocxElement::Footnote {
+            label: label.to_string(),
+            text: text.to_string(),
+        });
+    }
+
     /// Template Engine & Mail Merge: Ganti Placeholder `{{kunci}}` dengan Nilai Nyata
     pub fn apply_template(&mut self, variables: &HashMap<String, String>) {
         for el in &mut self.elements {
@@ -428,6 +436,9 @@ impl DocxDocument {
                 }
                 DocxElement::Diagram { raw_mermaid } => {
                     out.push_str(&format!("\n[DIAGRAM ARSITEKTUR]\n{}\n\n", raw_mermaid));
+                }
+                DocxElement::Footnote { label, text } => {
+                    out.push_str(&format!("[{}] {}\n", label, text));
                 }
             }
         }
@@ -596,6 +607,12 @@ impl DocxDocument {
                     xml.push_str(&format!(
                         r#"<w:p><w:pPr><w:pBdr><w:left w:val="single" w:sz="24" w:space="15" w:color="0284C7"/></w:pBdr></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>[DIAGRAM ARSITEKTUR MERMAID]: </w:t></w:r><w:r><w:t>{}</w:t></w:r></w:p>"#,
                         html_escape(raw_mermaid)
+                    ));
+                }
+                DocxElement::Footnote { label, text } => {
+                    xml.push_str(&format!(
+                        r#"<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="1" w:color="CBD5E1"/></w:pBdr></w:pPr><w:r><w:rPr><w:vertAlign w:val="superscript"/><w:b/><w:color w:val="0369A1"/></w:rPr><w:t>[{}] </w:t></w:r><w:r><w:rPr><w:sz w:val="18"/><w:color w:val="475569"/></w:rPr><w:t>{}</w:t></w:r></w:p>"#,
+                        html_escape(label), html_escape(text)
                     ));
                 }
             }
@@ -817,6 +834,12 @@ impl DocxDocument {
                     html.push_str(&format!(
                         "<div class='mermaid-container' style='margin: 20px 0; text-align: center;'><pre class='mermaid'>\n{}\n</pre></div>",
                         html_escape(raw_mermaid)
+                    ));
+                }
+                DocxElement::Footnote { label, text } => {
+                    html.push_str(&format!(
+                        "<div class='footnote' style='border-top: 1px solid #cbd5e1; margin-top: 12px; padding-top: 4px; font-size: 8.5pt; color: #475569;'><sup style='color: #0369a1;'>[{}]</sup> {}</div>",
+                        html_escape(label), html_escape(text)
                     ));
                 }
             }

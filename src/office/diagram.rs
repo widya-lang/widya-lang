@@ -671,6 +671,182 @@ impl WidyaClassDiagram {
     }
 }
 
+// ============================================================================
+// MERMAID ENTITY-RELATIONSHIP (ER) DIAGRAM PARSER & DATA STRUCTURES
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct ErAttribute {
+    pub data_type: String,
+    pub name: String,
+    pub keys: Vec<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ErEntity {
+    pub name: String,
+    pub attributes: Vec<ErAttribute>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ErRelation {
+    pub from: String,
+    pub to: String,
+    pub card_left: String,
+    pub card_right: String,
+    pub label: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct WidyaErDiagram {
+    pub title: Option<String>,
+    pub entities: Vec<ErEntity>,
+    pub relations: Vec<ErRelation>,
+}
+
+impl WidyaErDiagram {
+    pub fn parse(source: &str) -> Option<Self> {
+        let mut is_er = false;
+        let mut title = None;
+        let mut entities_map: HashMap<String, ErEntity> = HashMap::new();
+        let mut entities_order: Vec<String> = Vec::new();
+        let mut relations: Vec<ErRelation> = Vec::new();
+
+        let mut inside_entity: Option<String> = None;
+
+        for raw_line in source.lines() {
+            let line = raw_line.trim();
+            if line.is_empty() || line.starts_with("%%") {
+                continue;
+            }
+
+            if line.starts_with("erDiagram") {
+                is_er = true;
+                continue;
+            }
+
+            if !is_er {
+                continue;
+            }
+
+            if line.starts_with("title:") || line.starts_with("title ") {
+                let t = line.trim_start_matches("title:").trim_start_matches("title").trim();
+                title = Some(clean_markdown_inline(t));
+                continue;
+            }
+
+            // Penutup blok entitas
+            if line == "}" {
+                inside_entity = None;
+                continue;
+            }
+
+            // Di dalam blok entitas: atribut
+            if let Some(ref ent_name) = inside_entity {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() >= 2 {
+                    let data_type = parts[0].to_string();
+                    let name = parts[1].to_string();
+                    let mut keys = Vec::new();
+                    for &p in &parts[2..] {
+                        let up = p.to_uppercase();
+                        if up == "PK" || up == "FK" || up == "UK" {
+                            keys.push(up);
+                        }
+                    }
+                    if let Some(ent) = entities_map.get_mut(ent_name) {
+                        ent.attributes.push(ErAttribute {
+                            data_type,
+                            name,
+                            keys,
+                        });
+                    }
+                }
+                continue;
+            }
+
+            // Pembuka blok entitas: ENTITY {
+            if line.ends_with('{') {
+                let name = line.trim_end_matches('{').trim().to_string();
+                if !entities_map.contains_key(&name) {
+                    entities_order.push(name.clone());
+                    entities_map.insert(name.clone(), ErEntity {
+                        name: name.clone(),
+                        attributes: Vec::new(),
+                    });
+                }
+                inside_entity = Some(name);
+                continue;
+            }
+
+            // Relasi: ENTITY1 op ENTITY2 : label
+            if line.contains(':') && (line.contains("--") || line.contains("..")) {
+                let colon_parts: Vec<&str> = line.splitn(2, ':').collect();
+                let left = colon_parts[0].trim();
+                let label = if colon_parts.len() > 1 {
+                    colon_parts[1].trim().trim_matches('"').to_string()
+                } else {
+                    String::new()
+                };
+
+                let tokens: Vec<&str> = left.split_whitespace().collect();
+                if tokens.len() >= 3 {
+                    let from = tokens[0].to_string();
+                    let op = tokens[1];
+                    let to = tokens[2].to_string();
+
+                    if !entities_map.contains_key(&from) {
+                        entities_order.push(from.clone());
+                        entities_map.insert(from.clone(), ErEntity {
+                            name: from.clone(),
+                            attributes: Vec::new(),
+                        });
+                    }
+                    if !entities_map.contains_key(&to) {
+                        entities_order.push(to.clone());
+                        entities_map.insert(to.clone(), ErEntity {
+                            name: to.clone(),
+                            attributes: Vec::new(),
+                        });
+                    }
+
+                    relations.push(ErRelation {
+                        from,
+                        to,
+                        card_left: op.chars().take(2).collect(),
+                        card_right: op.chars().rev().take(2).collect(),
+                        label,
+                    });
+                }
+                continue;
+            }
+
+            // Entitas mandiri tanpa atribut: ENTITY
+            if !line.contains(' ') && !line.is_empty() {
+                let name = line.to_string();
+                if !entities_map.contains_key(&name) {
+                    entities_order.push(name.clone());
+                    entities_map.insert(name.clone(), ErEntity {
+                        name,
+                        attributes: Vec::new(),
+                    });
+                }
+            }
+        }
+
+        if is_er {
+            let entities = entities_order.into_iter().filter_map(|n| entities_map.remove(&n)).collect();
+            Some(Self {
+                title,
+                entities,
+                relations,
+            })
+        } else {
+            None
+        }
+    }
+}
+
 /// Mesin Pembangkit Diagram Vektor Mandiri Widya-Lang (Zero Dependency)
 pub struct WidyaDiagramEngine;
 
@@ -714,6 +890,18 @@ impl WidyaDiagramEngine {
             return Self::render_class_diagram(
                 pdf,
                 &class_diag,
+                margin_x,
+                current_y,
+                content_width,
+                page_height,
+            );
+        }
+
+        // 4. Cek apakah ini Mermaid Entity-Relationship (ER) Diagram
+        if let Some(er_diag) = WidyaErDiagram::parse(source) {
+            return Self::render_er_diagram(
+                pdf,
+                &er_diag,
                 margin_x,
                 current_y,
                 content_width,
@@ -1403,6 +1591,134 @@ impl WidyaDiagramEngine {
 
         current_y
     }
+
+    /// Render Diagram Entitas-Relasi (Mermaid erDiagram) Vektor Asli PDF
+    fn render_er_diagram(
+        pdf: &mut PdfDocument,
+        diag: &WidyaErDiagram,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+        page_height: f32,
+    ) -> f32 {
+        if diag.entities.is_empty() {
+            return current_y;
+        }
+
+        let banner_h = 22.0;
+        let mut total_diag_h = banner_h + 20.0;
+        for ent in &diag.entities {
+            total_diag_h += 24.0 + (ent.attributes.len() as f32 * 13.0) + 16.0;
+        }
+
+        if current_y - total_diag_h.min(320.0) < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        // 1. Banner Judul
+        let page = pdf.current_page_mut();
+        let title_text = diag.title.as_ref().map(|t| format!("DIAGRAM ENTITAS-RELASI: {}", t)).unwrap_or_else(|| "DIAGRAM ENTITAS-RELASI BASIS DATA (ER DIAGRAM)".to_string());
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
+        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
+        page.add_styled_text(&title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
+        current_y -= banner_h + 14.0;
+
+        let num_entities = diag.entities.len();
+        let col_count = if num_entities >= 2 { 2 } else { 1 };
+        let col_w = (content_width - (col_count as f32 - 1.0) * 16.0) / col_count as f32;
+
+        let mut entity_positions: HashMap<String, (f32, f32, f32, f32)> = HashMap::new();
+        let mut row_start_y = current_y;
+        let mut max_row_h = 0.0f32;
+
+        for (idx, ent) in diag.entities.iter().enumerate() {
+            let col_idx = idx % col_count;
+            if col_idx == 0 && idx > 0 {
+                row_start_y -= max_row_h + 16.0;
+                max_row_h = 0.0;
+            }
+
+            let bx = margin_x + col_idx as f32 * (col_w + 16.0);
+            let header_h = 22.0;
+            let attr_h = 13.0;
+            let body_h = (ent.attributes.len() as f32 * attr_h).max(18.0) + 8.0;
+            let total_box_h = header_h + body_h;
+
+            if total_box_h > max_row_h {
+                max_row_h = total_box_h;
+            }
+
+            if row_start_y - total_box_h < 75.0 {
+                pdf.add_page();
+                row_start_y = page_height - 70.0;
+            }
+
+            let page = pdf.current_page_mut();
+
+            // Header Tabel Entitas
+            page.add_rect(bx, row_start_y - header_h, col_w, header_h, true, (0.10, 0.22, 0.45));
+            page.add_rect(bx, row_start_y - total_box_h, col_w, total_box_h, false, (0.18, 0.35, 0.65));
+
+            let name_text = format!("[TABEL] {}", ent.name);
+            let name_w = crate::office::pdf::styled_string_width(&name_text, 9.0, true, false);
+            let name_x = bx + (col_w - name_w) / 2.0;
+            page.add_styled_text(&name_text, name_x, row_start_y - 14.5, 9.0, true, (1.0, 1.0, 1.0));
+
+            // Badan Kotak Atribut
+            page.add_rect(bx, row_start_y - total_box_h, col_w, body_h, true, (0.98, 0.99, 1.0));
+            page.add_styled_line(bx, row_start_y - header_h, bx + col_w, row_start_y - header_h, 1.0, (0.18, 0.35, 0.65));
+
+            let mut attr_y = row_start_y - header_h - 11.0;
+            for attr in &ent.attributes {
+                // Kolom 1: Tipe data
+                page.add_formatted_text(&attr.data_type, bx + 6.0, attr_y, 7.5, false, true, true, (0.25, 0.45, 0.55));
+
+                // Kolom 2: Nama field
+                let name_offset = 60.0;
+                page.add_formatted_text(&attr.name, bx + name_offset, attr_y, 8.0, true, false, false, (0.12, 0.16, 0.22));
+
+                // Kolom 3: Key badges (PK, FK, UK)
+                let mut badge_x = bx + col_w - 24.0;
+                for k in &attr.keys {
+                    let badge_color = match k.as_str() {
+                        "PK" => (0.85, 0.60, 0.10),
+                        "FK" => (0.15, 0.45, 0.85),
+                        _ => (0.10, 0.60, 0.35),
+                    };
+                    page.add_rect(badge_x, attr_y - 2.0, 18.0, 9.0, true, (0.92, 0.94, 0.98));
+                    page.add_styled_text(k, badge_x + 2.0, attr_y, 6.5, true, badge_color);
+                    badge_x -= 22.0;
+                }
+
+                attr_y -= attr_h;
+            }
+
+            entity_positions.insert(ent.name.clone(), (bx, row_start_y, col_w, total_box_h));
+        }
+
+        current_y = row_start_y - max_row_h - 14.0;
+
+        // 3. Garis Relasi Antar Entitas
+        let page = pdf.current_page_mut();
+        for rel in &diag.relations {
+            if let (Some(&(x1, y1, w1, h1)), Some(&(x2, y2, w2, h2))) = (entity_positions.get(&rel.from), entity_positions.get(&rel.to)) {
+                let p1 = (x1 + w1 / 2.0, y1 - h1);
+                let p2 = (x2 + w2 / 2.0, y2);
+                page.add_arrow(p1.0, p1.1, p2.0, p2.1, 1.2, (0.15, 0.45, 0.80));
+
+                if !rel.label.is_empty() {
+                    let mid_x = (p1.0 + p2.0) / 2.0;
+                    let mid_y = (p1.1 + p2.1) / 2.0;
+                    page.add_rect(mid_x - 22.0, mid_y - 5.0, 44.0, 10.0, true, (1.0, 1.0, 1.0));
+                    page.add_styled_text(&rel.label, mid_x - 18.0, mid_y - 2.0, 7.0, false, (0.2, 0.3, 0.4));
+                }
+            }
+        }
+
+        current_y
+    }
 }
 
 #[cfg(test)]
@@ -1486,5 +1802,50 @@ mod tests {
         assert!(final_y < 750.0, "Y position harus berkurang setelah render");
         let bytes = pdf.generate_pdf_bytes();
         assert!(!bytes.is_empty(), "Bytes PDF hasil render sequence diagram harus valid");
+    }
+
+    #[test]
+    fn test_parse_and_render_er_diagram() {
+        let code = r#"
+        erDiagram
+            title: Skema Basis Data Transaksi
+            PELANGGAN ||--o{ PESANAN : "membuat"
+            PESANAN ||--|{ DETAIL_PESANAN : "memuat"
+
+            PELANGGAN {
+                string id_pelanggan PK
+                string nama
+                string email UK
+            }
+
+            PESANAN {
+                string id_pesanan PK
+                string id_pelanggan FK
+                float total_harga
+            }
+        "#;
+
+        let er = WidyaErDiagram::parse(code);
+        assert!(er.is_some(), "ER Diagram harus berhasil di-parse");
+        let diag = er.unwrap();
+        assert_eq!(diag.title.as_deref(), Some("Skema Basis Data Transaksi"));
+        assert_eq!(diag.entities.len(), 3);
+        assert_eq!(diag.entities[0].name, "PELANGGAN");
+        assert_eq!(diag.entities[0].attributes.len(), 3);
+        assert_eq!(diag.entities[0].attributes[0].keys, vec!["PK"]);
+        assert_eq!(diag.relations.len(), 2);
+        assert_eq!(diag.relations[0].from, "PELANGGAN");
+        assert_eq!(diag.relations[0].to, "PESANAN");
+        assert_eq!(diag.relations[0].label, "membuat");
+
+        let mut pdf = PdfDocument::new("Uji ER Diagram");
+        let final_y = WidyaDiagramEngine::render_to_pdf(&mut pdf, code, 50.0, 750.0, 480.0);
+        assert!(final_y < 750.0);
+        let bytes = pdf.generate_pdf_bytes();
+        assert!(!bytes.is_empty());
+        let text = String::from_utf8_lossy(&bytes);
+        assert!(text.contains("PELANGGAN"));
+        assert!(text.contains("PESANAN"));
+        assert!(text.contains("membuat"));
     }
 }

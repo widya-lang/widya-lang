@@ -23,6 +23,7 @@ pub enum MarkdownBlock {
         alignments: Vec<ColumnAlignment>,
         rows: Vec<Vec<String>>,
     },
+    FootnoteDefinition { label: String, content: String },
     HorizontalRule,
 }
 
@@ -201,6 +202,17 @@ impl MarkdownDocument {
                 continue;
             }
 
+            // 6b. Catatan Kaki ([^label]: Isi catatan kaki)
+            if line.starts_with("[^") && line.contains("]:") {
+                if let Some(colon_pos) = line.find("]:") {
+                    let label = line[2..colon_pos].trim().to_string();
+                    let content = line[colon_pos + 2..].trim().to_string();
+                    blocks.push(MarkdownBlock::FootnoteDefinition { label, content });
+                    i += 1;
+                    continue;
+                }
+            }
+
             // 7. Regular Paragraph
             blocks.push(MarkdownBlock::Paragraph(line.to_string()));
             i += 1;
@@ -271,6 +283,14 @@ impl MarkdownDocument {
                         html.push_str("</tr>\n");
                     }
                     html.push_str("</tbody></table>\n");
+                }
+                MarkdownBlock::FootnoteDefinition { label, content } => {
+                    html.push_str(&format!(
+                        "<div class='footnote-def' id='fn-{}'><sup>[{}]</sup> {}</div>\n",
+                        html_escape(label),
+                        html_escape(label),
+                        parse_inline_styles(content)
+                    ));
                 }
                 MarkdownBlock::HorizontalRule => {
                     html.push_str("<hr />\n");

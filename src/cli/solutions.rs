@@ -129,8 +129,26 @@ pub enum HealthSubcommands {
     },
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Clone, Debug)]
 pub enum OfficeSubcommands {
+    /// Konversi dokumen universal lintas format (.md, .docx -> .pdf, .epub, .docx, .html)
+    Convert {
+        /// Berkas sumber yang ingin dikonversi
+        #[arg(value_name = "BERKAS_MASUKAN")]
+        input: PathBuf,
+
+        /// Jalur berkas keluaran (.pdf, .epub, .docx, .html)
+        #[arg(short, long, value_name = "BERKAS_KELUARAN")]
+        output: Option<PathBuf>,
+
+        /// Judul dokumen (opsional)
+        #[arg(short, long)]
+        title: Option<String>,
+
+        /// Nama penulis atau organisasi (opsional)
+        #[arg(short, long)]
+        author: Option<String>,
+    },
     /// Buat dokumen Word (.docx biner OpenXML asli / .html pratinjau)
     BuatDocx {
         #[arg(short, long, default_value = "Dokumen Baru")]
@@ -619,7 +637,10 @@ pub fn handle_health_command(aksi: &HealthSubcommands) {
 
 pub fn handle_office_command(aksi: &OfficeSubcommands) {
     match aksi {
-            OfficeSubcommands::BuatDocx { nama, output, watermark } => {
+        OfficeSubcommands::Convert { input, output, title, author } => {
+            crate::cli::office::konversi_dokumen(input, output.as_deref(), title.as_deref(), author.as_deref());
+        }
+        OfficeSubcommands::BuatDocx { nama, output, watermark } => {
                 let mut doc = widya::office::DocxDocument::new(&nama);
                 doc.add_heading(&nama, 1);
                 doc.add_styled_paragraph("Dokumen ini dibuat secara otomatis dengan WidyaOffice Enterprise Suite.", false, false, 11.0, None);
@@ -986,18 +1007,7 @@ pub fn handle_office_command(aksi: &OfficeSubcommands) {
                 println!("{}", "============================================================\n".bright_blue());
             }
             OfficeSubcommands::Status => {
-                println!("{}", "============================================================".bright_blue());
-                println!("{}", "  🏢 STATUS WIDYAOFFICE ENTERPRISE SUITE v2.5.0".bright_cyan().bold());
-                println!("{}", "============================================================".bright_blue());
-                println!("  Microsoft Word (.docx)   : {}", "AKTIF (OpenXML ZIP, Template & TTE)".bright_green().bold());
-                println!("  Microsoft Excel (.xlsx)  : {}", "AKTIF (15+ Rumus, Grid & ZIP Package)".bright_green().bold());
-                println!("  PowerPoint (.pptx)       : {}", "AKTIF (KPI Cards, Web Deck & ZIP Package)".bright_green().bold());
-                println!("  TTE & Kepatuhan UU PDP   : {}", "AKTIF (SHA-256 BSrE & Auto Redaction)".bright_green().bold());
-                println!("  Native ISO 32000-1 PDF   : {}", "AKTIF (%PDF-1.7 Vector & Text Stream)".bright_green().bold());
-                println!("  LaTeX / TeX Math Engine  : {}", "AKTIF (Equations, KaTeX Preview)".bright_green().bold());
-                println!("  GFM Markdown Transpiler  : {}", "AKTIF (AST, Checklists, Codeblock)".bright_green().bold());
-                println!("  Kedaulatan Data Dokumen  : {}", "100% OFFLINE & ZERO CLOUD LEAK".bright_green().bold());
-                println!("{}", "============================================================\n".bright_blue());
+                crate::cli::office::tampilkan_status_office();
             }
     }
 }

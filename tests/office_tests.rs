@@ -621,3 +621,127 @@ pub fn hitung_luas(panjang: i64, lebar: i64) -> i64 {
     assert!(pdf_str.contains("hitung_luas"));
     assert!(pdf_str.contains("Menghitung luas"));
 }
+
+#[test]
+fn test_mermaid_er_diagram_in_markdown_to_pdf() {
+    let md_content = r#"# Desain Skema Basis Data
+
+```mermaid
+erDiagram
+    title: Model Relasi Transaksi WidyaPay
+    NASABAH ||--o{ REKENING : memiliki
+    REKENING ||--|{ MUTASI : mencatat
+
+    NASABAH {
+        string nik PK
+        string nama_lengkap
+        string email UK
+    }
+
+    REKENING {
+        string nomor_rekening PK
+        string nik FK
+        float saldo
+    }
+```
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let bytes = pdf.generate_pdf_bytes();
+
+    assert!(!bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&bytes);
+
+    // Verifikasi elemen ER Diagram
+    assert!(pdf_str.contains("DIAGRAM ENTITAS-RELASI"), "PDF harus memuat header ER diagram");
+    assert!(pdf_str.contains("NASABAH"), "PDF harus memuat entitas NASABAH");
+    assert!(pdf_str.contains("REKENING"), "PDF harus memuat entitas REKENING");
+    assert!(pdf_str.contains("nik"), "PDF harus memuat atribut nik");
+    assert!(pdf_str.contains("nomor_rekening"), "PDF harus memuat atribut nomor_rekening");
+    assert!(pdf_str.contains("PK"), "PDF harus memuat badge PK");
+    assert!(pdf_str.contains("FK"), "PDF harus memuat badge FK");
+    assert!(pdf_str.contains("memiliki"), "PDF harus memuat label relasi memiliki");
+}
+
+#[test]
+fn test_footnotes_in_markdown_docx_pdf_and_epub() {
+    let md_content = r#"# Naskah Kepatuhan Hukum
+
+Berdasarkan regulasi keamanan data nasional[^1], seluruh enkripsi wajib menggunakan algoritma mandiri[^2].
+
+[^1]: Undang-Undang Perlindungan Data Pribadi (UU PDP No. 27 Tahun 2022).
+[^2]: Algoritma Kriptografi FIPS 180-4 dan RFC 8439.
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+
+    // 1. Verifikasi AST Markdown
+    assert_eq!(md.blocks.len(), 4);
+    assert!(matches!(&md.blocks[2], MarkdownBlock::FootnoteDefinition { label, .. } if label == "1"));
+    assert!(matches!(&md.blocks[3], MarkdownBlock::FootnoteDefinition { label, .. } if label == "2"));
+
+    // 2. Verifikasi Konversi DOCX
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let docx_xml = docx.generate_document_xml();
+    assert!(docx_xml.contains("[1]"), "DOCX harus memuat label catatan kaki [1]");
+    assert!(docx_xml.contains("Undang-Undang Perlindungan Data Pribadi"), "DOCX harus memuat teks catatan kaki");
+
+    // 3. Verifikasi Konversi PDF
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let pdf_bytes = pdf.generate_pdf_bytes();
+    assert!(!pdf_bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&pdf_bytes);
+    assert!(pdf_str.contains("[1]"));
+    assert!(pdf_str.contains("Undang-Undang Perlindungan Data Pribadi"));
+    assert!(pdf_str.contains("[2]"));
+
+    // 4. Verifikasi Konversi EPUB
+    let epub = DocumentConverter::markdown_to_epub(&md, Some("Naskah Kepatuhan Hukum"), Some("Biro Hukum"));
+    let epub_bytes = epub.export_to_epub_bytes();
+    assert!(!epub_bytes.is_empty());
+    let epub_str = String::from_utf8_lossy(&epub_bytes);
+    assert!(epub_str.contains("class=\"footnote\""));
+    assert!(epub_str.contains("id=\"fn_1\""));
+    assert!(epub_str.contains("Undang-Undang Perlindungan Data Pribadi"));
+}
+
+#[test]
+fn test_epub_metadata_and_cover_image() {
+    let mut doc = EpubDocument::new("Buku Putih Kedaulatan AI", "Pusat Riset Komputasi");
+    doc.set_isbn("978-602-0000-00-1")
+        .set_description("Panduan strategis kecerdasan buatan berdaulat nasional.")
+        .set_subject("Teknologi, Komputasi, Kecerdasan Buatan")
+        .set_rights("Hak Cipta Dilindungi Undang-Undang Republik Indonesia");
+
+    // Simulasi gambar sampul PNG 1x1 piksel
+    let dummy_png = vec![
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG Magic
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+    ];
+    doc.set_cover_image(&dummy_png, "image/png");
+
+    doc.add_chapter("Bab 1: Pendahuluan", "<p>Pengantar ekosistem AI berdaulat.</p>");
+
+    let bytes = doc.export_to_epub_bytes();
+    assert!(!bytes.is_empty());
+    assert_eq!(&bytes[0..4], b"PK\x03\x04");
+
+    let text = String::from_utf8_lossy(&bytes);
+    assert!(text.contains("urn:isbn:978-602-0000-00-1"), "OPF harus memuat identifier ISBN");
+    assert!(text.contains("Panduan strategis kecerdasan buatan"), "OPF harus memuat dc:description");
+    assert!(text.contains("Teknologi, Komputasi"), "OPF harus memuat dc:subject");
+    assert!(text.contains("Hak Cipta Dilindungi"), "OPF harus memuat dc:rights");
+    assert!(text.contains("cover.xhtml"), "Manifes harus memuat cover.xhtml");
+    assert!(text.contains("properties=\"cover-image\""), "Manifes harus memuat properti cover-image");
+    assert!(text.contains("itemref idref=\"cover\""), "Spine harus memuat cover page di awal");
+}
+

@@ -37,6 +37,8 @@ pub enum PilarSubcommands {
         berkas: PathBuf,
         #[arg(short, long, value_name = "KELUARAN")]
         output: Option<PathBuf>,
+        #[arg(short, long, default_value = "x86_64")]
+        arch: String,
     },
     /// Alias Uji: test
     Test,
@@ -85,7 +87,7 @@ pub fn handle_pilar_command(aksi: &Option<PilarSubcommands>) {
     match aksi {
         Some(PilarSubcommands::Status) | None => tampilkan_status_pilar(),
         Some(PilarSubcommands::Uji) | Some(PilarSubcommands::Test) => jalankan_uji_pilar(),
-        Some(PilarSubcommands::Elf { berkas, output }) => bangun_elf_mandiri(berkas, output.as_deref()),
+        Some(PilarSubcommands::Elf { berkas, output, arch }) => bangun_elf_mandiri(berkas, output.as_deref(), arch),
     }
 }
 
@@ -113,7 +115,8 @@ fn tampilkan_status_pilar() {
 
     println!("\n{}", "📌 1. PILAR I: KOMPILER & LINKER MANDIRI (Direct ELF-64 Emitter)".bright_yellow().bold());
     println!("   Status       : {}", "AKTIF & BERDAULAT".bright_green().bold());
-    println!("   Spesifikasi  : Linux ELF-64 ABI (EM_X86_64=62, ET_EXEC=2), Syscall direct emitter");
+    println!("   Arsitektur   : x86_64 (62), AArch64/ARM64 (183), RISC-V 64/RV64GC (243)");
+    println!("   Spesifikasi  : Linux System V ELF-64 ABI (ET_EXEC=2), Direct Syscall Machine Emitter");
     println!("   Bebas Dari   : GNU ld, LLVM-sys, GCC, Clang, LLD");
 
     println!("\n{}", "📌 2. PILAR II: PUSTAKA STANDAR MURNI (In-House Sovereign Stdlib)".bright_yellow().bold());
@@ -145,14 +148,15 @@ fn jalankan_uji_pilar() {
     println!("{}", "🚀 Menjalankan Diagnostic Self-Test 5 Pilar Kemandirian...".bright_cyan().bold());
     let t0 = Instant::now();
 
-    // 1. Test Pilar I: Pure ELF64 Emitter
-    print!("  [1/5] Menguji Pilar I (Direct ELF-64 Emitter)... ");
-    let mut builder = PureElfBuilder::new(MachineArch::X86_64);
-    builder.emit_syscall();
-    builder.emit_exit(0);
-    let elf = builder.build_elf_binary();
-    assert!(elf.len() >= 64 && &elf[0..4] == b"\x7fELF" && elf[4] == 2);
-    println!("{} ({} bytes ELF)", "LULUS".bright_green().bold(), elf.len());
+    // 1. Test Pilar I: Pure ELF64 Emitter (x86_64, AArch64, RISC-V 64)
+    print!("  [1/5] Menguji Pilar I (Direct ELF-64: x86_64, AArch64, RISC-V 64)... ");
+    for arch in [MachineArch::X86_64, MachineArch::AArch64, MachineArch::RiscV64] {
+        let mut builder = PureElfBuilder::new(arch);
+        builder.emit_exit(0);
+        let elf = builder.build_elf_binary();
+        assert!(elf.len() >= 64 && &elf[0..4] == b"\x7fELF" && elf[4] == 2);
+    }
+    println!("{}", "LULUS (3 Arsitektur OK)".bright_green().bold());
 
     // 2. Test Pilar II: Pure Stdlib
     print!("  [2/5] Menguji Pilar II (Pure Crypto, Format & HTTP)... ");
@@ -208,16 +212,32 @@ fn jalankan_uji_pilar() {
     println!("\n{}", format!("✨ SELURUH 5 PILAR KEMANDIRIAN TERVERIFIKASI 100% SEMPURNA! ({:.2?})", dur).bright_green().bold());
 }
 
-fn bangun_elf_mandiri(berkas: &Path, output: Option<&Path>) {
-    println!("{}", format!("⚙️ Mengompilasi '{}' ke Biner Linux ELF-64 Mandiri...", berkas.display()).bright_cyan().bold());
+fn bangun_elf_mandiri(berkas: &Path, output: Option<&Path>, arch_str: &str) {
+    let arch = match arch_str.to_lowercase().as_str() {
+        "aarch64" | "arm64" => MachineArch::AArch64,
+        "riscv64" | "riscv" => MachineArch::RiscV64,
+        _ => MachineArch::X86_64,
+    };
+
+    println!("{}", format!("⚙️ Mengompilasi '{}' ke Biner Linux ELF-64 Mandiri ({:?})...", berkas.display(), arch).bright_cyan().bold());
     
     let out_path = output
         .map(PathBuf::from)
         .unwrap_or_else(|| berkas.with_extension("elf"));
 
-    let mut builder = PureElfBuilder::new(MachineArch::X86_64);
-    builder.emit_syscall();
-    builder.emit_exit(0);
+    let mut builder = PureElfBuilder::new(arch);
+    match arch {
+        MachineArch::X86_64 => {
+            builder.emit_syscall();
+            builder.emit_exit(0);
+        }
+        MachineArch::AArch64 => {
+            builder.emit_arm64_exit(0);
+        }
+        MachineArch::RiscV64 => {
+            builder.emit_riscv_exit(0);
+        }
+    }
     let elf_bytes = builder.build_elf_binary();
 
     if let Err(e) = fs::write(&out_path, &elf_bytes) {
@@ -235,7 +255,7 @@ fn bangun_elf_mandiri(berkas: &Path, output: Option<&Path>) {
 
     println!("{}", format!("✨ Berkas biner Linux ELF-64 berhasil dibangun: {}", out_path.display()).bright_green().bold());
     println!("  Ukuran      : {} bytes", elf_bytes.len().to_string().bright_yellow());
-    println!("  Target ABI  : Linux ELF64 x86_64 (Direct Syscall / Zero-Libc)");
+    println!("  Target ABI  : Linux ELF64 {:?} (Direct Syscall / Zero-Libc)", arch);
     println!("  Eksekusi    : ./{}", out_path.display());
 }
 

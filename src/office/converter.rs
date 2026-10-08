@@ -430,6 +430,32 @@ impl DocumentConverter {
                     current_y = WidyaDiagramEngine::render_to_pdf(&mut pdf, raw_mermaid, margin_x, current_y, content_width);
                     current_y -= 12.0;
                 }
+                DocxElement::Footnote { label, text } => {
+                    current_y -= 8.0;
+                    if current_y < 70.0 {
+                        pdf.add_page();
+                        current_y = page_height - 70.0;
+                    }
+                    let page = pdf.current_page_mut();
+                    // Garis pemisah tipis catatan kaki (lebar 120 pt)
+                    page.add_styled_line(margin_x, current_y, margin_x + 120.0, current_y, 0.5, (0.7, 0.75, 0.8));
+                    current_y -= 10.0;
+
+                    let fn_label = format!("[{}]", label);
+                    page.add_styled_text(&fn_label, margin_x, current_y, 7.5, true, (0.15, 0.35, 0.7));
+
+                    let clean_text = clean_markdown_inline(text);
+                    let wrapped = wrap_text(&clean_text, content_width - 24.0, 7.5, false);
+                    for line in wrapped {
+                        if current_y < 70.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+                        pdf.current_page_mut().add_styled_text(&line, margin_x + 20.0, current_y, 7.5, false, (0.35, 0.40, 0.45));
+                        current_y -= 10.0;
+                    }
+                    current_y -= 4.0;
+                }
             }
         }
 
@@ -571,6 +597,9 @@ impl DocumentConverter {
                 }
                 MarkdownBlock::Blockquote(text) => {
                     doc.add_callout("KUTIPAN", text, "#3b82f6");
+                }
+                MarkdownBlock::FootnoteDefinition { label, content } => {
+                    doc.add_footnote(label, content);
                 }
                 MarkdownBlock::HorizontalRule => {
                     doc.add_divider();
