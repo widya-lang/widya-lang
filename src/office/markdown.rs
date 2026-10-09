@@ -24,6 +24,7 @@ pub enum MarkdownBlock {
         rows: Vec<Vec<String>>,
     },
     FootnoteDefinition { label: String, content: String },
+    TableOfContents,
     HorizontalRule,
 }
 
@@ -56,7 +57,14 @@ impl MarkdownDocument {
                 continue;
             }
 
-            // 2. Horizontal Rule (--- atau ***)
+            // 2. Table of Contents ([TOC] / [toc] / [[toc]])
+            if line == "[TOC]" || line == "[toc]" || line == "[[toc]]" || line == "[[TOC]]" {
+                blocks.push(MarkdownBlock::TableOfContents);
+                i += 1;
+                continue;
+            }
+
+            // 3. Horizontal Rule (--- atau ***)
             if line == "---" || line == "***" || line == "___" {
                 blocks.push(MarkdownBlock::HorizontalRule);
                 i += 1;
@@ -291,6 +299,9 @@ impl MarkdownDocument {
                         html_escape(label),
                         parse_inline_styles(content)
                     ));
+                }
+                MarkdownBlock::TableOfContents => {
+                    html.push_str("<nav class='table-of-contents'><div class='toc-title'>Daftar Isi</div></nav>\n");
                 }
                 MarkdownBlock::HorizontalRule => {
                     html.push_str("<hr />\n");

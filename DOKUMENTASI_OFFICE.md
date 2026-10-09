@@ -1,14 +1,15 @@
-# 🏢 DOKUMENTASI RESMI WIDYAOFFICE ENTERPRISE SUITE (v2.5.0)
+# 🏢 DOKUMENTASI RESMI WIDYAOFFICE ENTERPRISE SUITE (v2.6.0)
 
-**WidyaOffice** adalah modul aplikasi pemrosesan dokumen produktivitas kantor berstandar industri internasional (ECMA-376 / OpenXML) yang terintegrasi secara *native* di dalam Widya-Lang. Modul ini memungkinkan pembuatan, manipulasi, kalkulasi rumus, digital signature (TTE), dan penyajian presentasi secara mandiri (*zero external cloud dependency* & 100% kedaulatan data lokal).
+**WidyaOffice** adalah modul aplikasi pemrosesan dokumen produktivitas kantor berstandar industri internasional (ECMA-376 / OpenXML, ISO 32000-1 PDF, EPUB 3.2) yang terintegrasi secara *native* di dalam Widya-Lang. Seluruh fungsionalitas diimplementasikan menggunakan 100% kode murni Rust (*Zero External Cloud & Binary Dependency*) demi menjamin kedaulatan data dan kepatuhan penuh terhadap regulasi nasional.
 
 ---
 
 ## 📑 1. Modul Dokumen Microsoft Word (`.docx`) — `src/office/docx.rs`
 
 Menyediakan pembuatan, templating, dan enkapsulasi dokumen OpenXML biner:
-- **Heading & Paragraf Berjenjang**: Penataan hierarki dokumen (H1-H6) dan atribut tipografi (*Bold*, *Italic*, *Underline*, *Font Size pt*, *Color Hex*, *Callout Box*).
-- **Tabel Enterprise Multi-Kolom**: Pembuatan tabel data bergaris batas resmi dengan *header row*.
+- **Heading & Paragraf Berjenjang**: Penataan hierarki dokumen (H1-H6) dan atribut tipografi (*Bold*, *Italic*, *Underline*, *Monospace*, *Font Size pt*, *Color Hex*, *Callout Box*).
+- **Tabel Enterprise Multi-Kolom**: Pembuatan tabel data bergaris batas resmi dengan *header row* dan alignment kolom (kiri, tengah, kanan).
+- **Daftar Isi Otomatis (*Table of Contents*)**: Penataan blok `DocxElement::TableOfContents` yang secara otomatis mengompilasi seluruh judul bab beserta nomor halamannya.
 - **Template & Mail Merge Engine**: Pengisian otomatis placeholder `{{kunci_variabel}}` untuk penerbitan dokumen massal (Faktur, Slip Gaji, Ijazah, Surat Keputusan).
 - **Watermarking & Cap Resmi**: Cap air dinamis (*"RAHASIA"*, *"DRAF"*, *"SALINAN"*) dengan sudut rotasi dan transparansi adaptif.
 - **Tanda Tangan Elektronik (TTE)**: Penyematan sertifikat TTE berstandar BSrE / X.509 PKI berbasis ringkasan SHA-256 dan kunci rahasia HMAC.
@@ -28,7 +29,7 @@ widya office sensor-pdp data_pegawai.txt --output data_pegawai_terlindungi.txt
 
 ---
 
-## 📊 2. Modul Spreadsheet Microsoft Excel (`.xlsx`) — `src/office/xlsx.rs`
+## 📊 2. Modul Spreadsheet Microsoft Excel (`.xlsx` & `.csv`) — `src/office/xlsx.rs`
 
 Menyediakan lembar kerja multi-dimensi, format sel, dan mesin kalkulasi matematika komprehensif:
 - **Format Sel & Tampilan Finansial**:
@@ -44,7 +45,8 @@ Menyediakan lembar kerja multi-dimensi, format sel, dan mesin kalkulasi matemati
   - **Finansial & Fintech**: `=PMT(rate, nper, pv)` (Kalkulasi cicilan pinjaman koperasi/kredit)
   - **Tanggal & Waktu**: `=TODAY()`, `=NOW()`
   - **Aritmatika Langsung**: `=A1 + B1 * C1`
-- **Ekspor Biner Asli (`.xlsx`) & Impor/Ekspor CSV**: Menghasilkan biner ZIP OpenXML (`.xlsx`) murni yang dapat dibuka langsung di Microsoft Excel, LibreOffice, atau Google Sheets.
+- **Konversi Langsung ke PDF Laporan**: Konversi berkas `.xlsx` atau `.csv` menjadi dokumen tabel PDF resmi berpaginasi rapi.
+- **Ekspor Biner Asli (`.xlsx`) & Impor/Ekspor CSV**: Menghasilkan biner ZIP OpenXML (`.xlsx`) murni yang kompatibel dengan Microsoft Excel, LibreOffice, atau Google Sheets.
 
 ```bash
 # Membuat berkas biner .xlsx asli
@@ -53,6 +55,10 @@ widya office buat-xlsx --nama "Laporan Keuangan Q3" --output laporan_keuangan.xl
 # Evaluasi rumus spreadsheet dari CLI
 widya office hitung-rumus "=IF(A1>=1000000, 150000, 50000)" --data "1500000"
 widya office hitung-rumus "=SUM(A1:A3)" --data "1000000\n2500000\n1500000"
+
+# Konversi langsung spreadsheet / CSV ke PDF Laporan
+widya office convert data_keuangan.xlsx laporan_keuangan.pdf
+widya office convert data_proyek.csv laporan_proyek.pdf
 ```
 
 ---
@@ -70,16 +76,88 @@ Menyediakan perancangan tayangan slide eksekutif dan deck presentasi kelas korpo
   - `TitleAndContent`: Judul slide dan poin-poin penjelasan
   - `TwoColumns`: Perbandingan dua kolom konten berdampingan
   - `KpiDashboard`: Grid kartu metrik KPI eksekutif (Nilai, Label, Tren MoM, Indikator Positif/Negatif)
+- **Konversi Slide Lanskap ke PDF**: Konversi deck slide presentasi menjadi berkas PDF berorientasi lanskap (842 x 595 pt) lengkap dengan kartu KPI dan gaya tema aktif.
 - **Ekspor Biner Asli (`.pptx`) & Web Deck HTML5**: Menghasilkan berkas biner PowerPoint OpenXML (`.pptx`) dan penampil slide HTML5 interaktif lengkap dengan navigasi keyboard (`Spasi` / `Panah Kanan` / `Panah Kiri`).
 
 ```bash
 # Membuat berkas biner .pptx asli
 widya office buat-pptx --nama "Briefing Transformasi Digital 2026" --output presentasi.pptx
+
+# Mengonversi slide presentasi .pptx menjadi PDF Lanskap presentasi
+widya office convert presentasi.pptx slide_deck.pdf
 ```
 
 ---
 
-## 🔒 4. Keamanan Siber & Kepatuhan Regulasi (UU PDP No. 27/2022) — `src/office/security.rs`
+## 🎨 4. Mesin Diagram Vektor Asli (Mermaid Vector Engine) — `src/office/diagram.rs`
+
+Merender diagram berbasis teks Mermaid langsung menjadi elemen grafis vektor PDF asli (tanpa browser headless, Chromium, atau pustaka eksternal):
+- **Alur & Arsitektur (*Flowchart*)**: Subgraph, arah `TD` / `LR`, node persegi, rounded, dan belah ketupat keputusan.
+- **Interaksi Layanan (*Sequence Diagram*)**: Partisipan, pesan sinkron/asinkron, lifeline, dan blok aktivasi.
+- **Siklus Hidup (*State Diagram*)**: State, transisi berlabel, dan penanda start/end.
+- **Desain Perangkat Lunak (*Class Diagram*)**: Kelas, method, tipe data, dan relasi pewarisan.
+- **Basis Data (*Entity-Relationship / ER Diagram*)**: Entitas, atribut bertipe, kunci relasi (`PK`, `FK`, `UK`), dan kardinalitas.
+- **Diagram Lingkaran (*Pie Chart*)**: Irisan proporsional (*pie slices*), persentase terhitung otomatis, legenda warna terkoordinasi, dan banner judul.
+- **Linimasa Proyek (*Gantt Chart*)**: Balok jadwal tugas horizontal, status (`done`, `active`, normal), seksi proyek, dan grid waktu terukur (*H+0 s.d H+N*).
+
+Contoh Mermaid dalam Markdown:
+````markdown
+```mermaid
+pie title Alokasi Riset 2026
+    "Kompiler ELF-64" : 45
+    "Mesin Office Native" : 35
+    "Kriptografi" : 20
+```
+
+```mermaid
+gantt
+    title Jadwal Peluncuran Versi 2.6
+    section Inti Kompiler
+    Parsing AST             :done, 2026-01-01, 2026-01-15
+    Penyusunan Kode Mesin   :active, 2026-01-16, 2026-02-15
+    section Suite Office
+    Konverter PDF & ToC     :done, 2026-02-01, 2026-02-28
+    Pengujian Integrasi     :2026-03-01, 2026-03-15
+```
+````
+
+---
+
+## 📖 5. Format Buku Digital Standar EPUB 3.2 — `src/office/epub.rs`
+
+Generator berkas buku elektronik `.epub` mandiri berstandar IDPF/W3C OCF 3.2:
+- Struktur arsip ZIP murni: `mimetype` tanpa kompresi, `META-INF/container.xml`, `OEBPS/content.opf`, dan Navigation Document `OEBPS/toc.xhtml`.
+- Dukungan sampul buku digital (*Cover Image* JPEG/PNG) via properti `cover-image`.
+- Pemisahan bab otomatis berdasarkan Heading Level 1 (`#`) dokumen Markdown.
+- Kompatibel dengan seluruh aplikasi e-reader modern (Apple Books, Calibre, Kobo, Thorium Reader).
+
+---
+
+## 🔄 6. Pipeline Konversi Dokumen Universal — `src/office/converter.rs`
+
+Subkomando CLI `widya office convert` menyediakan konversi universal lintas format:
+- `Markdown (.md) -> PDF`: Mendukung tipografi penuh, sintaks highlight kode, tabel aligned, catatan kaki, bookmark interaktif, dan diagram vektor.
+- `Markdown (.md) -> DOCX`: Menghasilkan dokumen Word biner lengkap dengan heading, daftar bernomor, tabel, dan diagram.
+- `Markdown (.md) -> EPUB`: Menghasilkan buku digital EPUB 3.2 multi-bab.
+- `DOCX (.docx) -> PDF`: Konverter dokumen Word ke PDF asli.
+- `XLSX / CSV -> PDF`: Laporan tabel spreadsheet berorientasi dokumen.
+- `PPTX (.pptx) -> PDF`: Konversi deck slide ke PDF berorientasi lanskap.
+- **Opsi `--toc`**: Otomatis menyisipkan halaman Daftar Isi (*Table of Contents*) bergaris titik (*dot leaders*) dan nomor halaman di awal dokumen PDF.
+
+```bash
+# Konversi Markdown ke PDF dengan Daftar Isi otomatis
+widya office convert naskah_kebijakan.md naskah_kebijakan.pdf --toc
+
+# Konversi Markdown ke Word (.docx)
+widya office convert dokumen.md dokumen.docx
+
+# Konversi Markdown ke Buku Digital EPUB
+widya office convert buku.md buku.epub
+```
+
+---
+
+## 🔒 7. Keamanan Siber & Kepatuhan Regulasi (UU PDP No. 27/2022) — `src/office/security.rs`
 
 - **TTE Kriptografis (BSrE Ready)**: Setiap dokumen dapat disegel dengan tanda tangan digital SHA-256 berstempel waktu ISO 8601.
 - **Redaksi Data Pribadi Otomatis**:
@@ -91,7 +169,7 @@ widya office buat-pptx --nama "Briefing Transformasi Digital 2026" --output pres
 
 ---
 
-## 🧪 5. Status Modul & Perintah CLI
+## 🧪 8. Status Modul & Perintah CLI
 
 ```bash
 widya office status
@@ -100,35 +178,18 @@ widya office status
 Output:
 ```text
 ============================================================
-  🏢 STATUS WIDYAOFFICE ENTERPRISE SUITE v2.5.0
+  🏢 STATUS WIDYAOFFICE ENTERPRISE SUITE v2.6.0
 ============================================================
   Microsoft Word (.docx)   : AKTIF (OpenXML ZIP, Template & TTE)
-  Microsoft Excel (.xlsx)  : AKTIF (15+ Rumus, Grid & ZIP Package)
-  PowerPoint (.pptx)       : AKTIF (KPI Cards, Web Deck & ZIP Package)
+  Microsoft Excel (.xlsx)  : AKTIF (15+ Rumus, Grid, CSV & PDF)
+  PowerPoint (.pptx)       : AKTIF (KPI Cards, Web Deck & PDF Lanskap)
+  Buku Digital (EPUB 3.2)  : AKTIF (IDPF OCF, Cover Image & Navigation)
+  Diagram Vektor (Mermaid) : AKTIF (Flow, Seq, State, Class, ER, Pie, Gantt)
+  Daftar Isi Otomatis      : AKTIF ([TOC] & CLI --toc Dot Leaders)
   TTE & Kepatuhan UU PDP   : AKTIF (SHA-256 BSrE & Auto Redaction)
-  Native ISO 32000-1 PDF   : AKTIF (%PDF-1.7 Vector & Text Stream)
+  Native ISO 32000-1 PDF   : AKTIF (%PDF-1.7 Vector, Outlines & Links)
   LaTeX / TeX Math Engine  : AKTIF (Equations, KaTeX Preview)
   GFM Markdown Transpiler  : AKTIF (AST, Checklists, Codeblock)
   Kedaulatan Data Dokumen  : 100% OFFLINE & ZERO CLOUD LEAK
 ============================================================
-```
-
----
-
-## 💻 6. Contoh Penggunaan dalam Bahasa Widya-Lang
-
-```widya
-// 1. Membuat dokumen Word berstandar industri
-biar doc = office_buat_docx("Surat Perjanjian Kerja Sama")
-biar doc_update = office_docx_tambah_paragraf(doc, "Perjanjian ini tunduk pada UU PDP No. 27/2022.", benar, salah, 12.0)
-biar teks = office_docx_ekstrak_teks(doc_update)
-
-// 2. Evaluasi rumus spreadsheet kompleks
-biar data_csv = "15000000\n25000000\n10000000"
-biar total_anggaran = office_xlsx_evaluasi_rumus(data_csv, "=SUM(A1:A3)")
-tulis("Total Anggaran: " + teks(total_anggaran))
-
-// 3. Membuat slide presentasi eksekutif
-biar pptx = office_buat_pptx("Laporan Tahunan Korporasi 2026")
-biar html_deck = office_pptx_render_slideshow(pptx)
 ```

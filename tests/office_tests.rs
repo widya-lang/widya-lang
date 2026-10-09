@@ -745,3 +745,195 @@ fn test_epub_metadata_and_cover_image() {
     assert!(text.contains("itemref idref=\"cover\""), "Spine harus memuat cover page di awal");
 }
 
+#[test]
+fn test_auto_toc_in_markdown_to_pdf() {
+    let md_content = r#"# Naskah Kebijakan Satu Data Indonesia
+
+[TOC]
+
+## Bab 1: Tata Kelola Data
+Regulasi arsitektur interoperabilitas basis data lintas kementerian.
+
+### 1.1 Standar Meta Data
+Penetapan kamus data seragam.
+
+## Bab 2: Infrastruktur Pusat Data
+Implementasi komputasi awan berdaulat nasional.
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    assert!(md.blocks.iter().any(|b| matches!(b, MarkdownBlock::TableOfContents)));
+
+    // Konversi langsung dengan TOC eksplisit dari markdown
+    let pdf1 = DocumentConverter::markdown_to_pdf(&md);
+    let bytes1 = pdf1.generate_pdf_bytes();
+    assert!(!bytes1.is_empty());
+    let pdf_str1 = String::from_utf8_lossy(&bytes1);
+    assert!(pdf_str1.contains("DAFTAR ISI"), "PDF harus memuat blok header DAFTAR ISI");
+    assert!(pdf_str1.contains("Bab 1: Tata Kelola Data"), "TOC harus memuat judul Bab 1");
+    assert!(pdf_str1.contains("Infrastruktur Pusat Data"), "TOC harus memuat judul Bab 2");
+
+    // Konversi dengan markdown_to_pdf_with_toc pada markdown tanpa tag [TOC]
+    let md_no_toc = MarkdownDocument::parse(r#"# Panduan Teknis Kompiler
+## Spesifikasi Arsitektur
+Arsitektur target x86-64 murni tanpa libc.
+"#);
+    let pdf2 = DocumentConverter::markdown_to_pdf_with_toc(&md_no_toc);
+    let bytes2 = pdf2.generate_pdf_bytes();
+    assert!(!bytes2.is_empty());
+    let pdf_str2 = String::from_utf8_lossy(&bytes2);
+    assert!(pdf_str2.contains("DAFTAR ISI"), "markdown_to_pdf_with_toc harus otomatis menyisipkan DAFTAR ISI");
+    assert!(pdf_str2.contains("Spesifikasi Arsitektur"), "TOC harus memuat subjudul");
+}
+
+#[test]
+fn test_pptx_to_pdf_landscape_conversion() {
+    let mut pres = PptxPresentation::new("Paparan Kedaulatan Digital");
+    pres.set_theme(SlideTheme::DarkModern);
+
+    // Slide 1: Judul
+    pres.add_slide(PptxSlide::title_slide(
+        "Kedaulatan Digital 2045",
+        "Kemandirian Penuh Komputasi & Perangkat Lunak Indonesia",
+    ));
+
+    // Slide 2: Bullet points
+    pres.add_slide(PptxSlide::content_slide(
+        "Pilar Kemandirian",
+        &[
+            "Zero Dependency Toolchain Kompiler",
+            "Mesin Dokumen & Desain Vektor Murni",
+            "Algoritma Kriptografi Nasional",
+        ],
+    ));
+
+    // Slide 3: KPI Dashboard
+    pres.add_slide(PptxSlide::kpi_slide(
+        "Capaian Indikator Kunci",
+        vec![
+            MetricKpiCard {
+                label: "Kecepatan Kompilasi".to_string(),
+                value: "0.012s".to_string(),
+                subtext: "10x lebih gesit dari C/C++".to_string(),
+                is_positive: true,
+            },
+            MetricKpiCard {
+                label: "Ukuran Runtime Biner".to_string(),
+                value: "14 KB".to_string(),
+                subtext: "Tanpa overhead libc/glibc".to_string(),
+                is_positive: true,
+            },
+        ],
+    ));
+
+    let pdf = DocumentConverter::pptx_to_pdf(&pres);
+    let bytes = pdf.generate_pdf_bytes();
+    assert!(!bytes.is_empty());
+    assert_eq!(&bytes[0..4], b"%PDF");
+
+    // Periksa dimensi MediaBox lanskap (842 x 595 pt)
+    let pdf_str = String::from_utf8_lossy(&bytes);
+    assert!(pdf_str.contains("/MediaBox [ 0 0 842 595 ]"), "PDF presentasi harus berorientasi lanskap 842x595 pt");
+    assert!(pdf_str.contains("Kedaulatan Digital 2045"), "PDF harus memuat judul presentasi");
+    assert!(pdf_str.contains("Pilar Kemandirian"), "PDF harus memuat judul slide 2");
+    assert!(pdf_str.contains("Zero Dependency"), "PDF harus memuat isi slide 2");
+    assert!(pdf_str.contains("Capaian Indikator Kunci"), "PDF harus memuat judul dashboard KPI");
+    assert!(pdf_str.contains("Kecepatan Kompilasi"), "PDF harus memuat label KPI");
+    assert!(pdf_str.contains("0.012s"), "PDF harus memuat nilai metrik KPI");
+}
+
+#[test]
+fn test_xlsx_and_csv_to_pdf_conversion() {
+    // 1. Uji XlsxWorkbook ke PDF
+    let mut wb = XlsxWorkbook::new("Laporan Neraca Keuangan");
+    let sheet = wb.get_sheet_mut("Sheet1").unwrap();
+    sheet.set_cell(1, 1, CellValue::Text("Komponen Biaya".to_string()));
+    sheet.set_cell(1, 2, CellValue::Text("Kuartal 1".to_string()));
+    sheet.set_cell(1, 3, CellValue::Text("Kuartal 2".to_string()));
+
+    sheet.set_cell(2, 1, CellValue::Text("Server Mandiri".to_string()));
+    sheet.set_cell(2, 2, CellValue::Number(12500000.0));
+    sheet.set_cell(2, 3, CellValue::Number(14000000.0));
+
+    sheet.set_cell(3, 1, CellValue::Text("Riset Enkripsi".to_string()));
+    sheet.set_cell(3, 2, CellValue::Number(8500000.0));
+    sheet.set_cell(3, 3, CellValue::Number(9000000.0));
+
+    let pdf = DocumentConverter::workbook_to_pdf(&wb);
+    let bytes = pdf.generate_pdf_bytes();
+    assert!(!bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&bytes);
+    assert!(pdf_str.contains("Laporan Neraca Keuangan"), "PDF harus memuat judul buku kerja");
+    assert!(pdf_str.contains("Server Mandiri"), "PDF harus memuat baris data spreadsheet");
+    assert!(pdf_str.contains("Riset Enkripsi"), "PDF harus memuat data kedua");
+
+    // 2. Uji CSV ke PDF via Worksheet CSV loader
+    let csv_content = r#"ID,Nama Proyek,Anggaran,Status
+101,Widya Kernel,50000000,Selesai
+102,Widya Office,35000000,Produksi
+103,Widya Crypto,20000000,Audit
+"#;
+    let mut csv_wb = XlsxWorkbook::new("Daftar Proyek Strategis");
+    csv_wb.get_sheet_mut("Sheet1").unwrap().from_csv(csv_content);
+
+    let csv_pdf = DocumentConverter::workbook_to_pdf(&csv_wb);
+    let csv_pdf_bytes = csv_pdf.generate_pdf_bytes();
+    assert!(!csv_pdf_bytes.is_empty());
+    let csv_pdf_str = String::from_utf8_lossy(&csv_pdf_bytes);
+    assert!(csv_pdf_str.contains("Nama Proyek"), "PDF dari CSV harus memuat header");
+    assert!(csv_pdf_str.contains("Widya Kernel"), "PDF dari CSV harus memuat record 1");
+    assert!(csv_pdf_str.contains("Widya Office"), "PDF dari CSV harus memuat record 2");
+    assert!(csv_pdf_str.contains("Widya Crypto"), "PDF dari CSV harus memuat record 3");
+}
+
+#[test]
+fn test_mermaid_pie_and_gantt_diagrams_in_markdown() {
+    let md_content = r#"# Analisis Portfolio & Linimasa Proyek
+
+## Distribusi Anggaran Riset
+```mermaid
+pie title Alokasi Dana Riset 2026
+    "Kompiler ELF-64" : 45
+    "Mesin Office Native" : 30
+    "Kriptografi Nusantara" : 15
+    "Edukasi Komunitas" : 10
+```
+
+## Jadwal Implementasi Rilis
+```mermaid
+gantt
+    title Jadwal Peluncuran Versi 2.6
+    dateFormat YYYY-MM-DD
+    section Inti Kompiler
+    Parsing AST             :done, 2026-01-01, 2026-01-15
+    Penyusunan Kode Mesin   :active, 2026-01-16, 2026-02-15
+    section Suite Office
+    Konverter PDF & ToC     :done, 2026-02-01, 2026-02-28
+    Pengujian Integrasi     :2026-03-01, 2026-03-15
+```
+"#;
+
+    let md = MarkdownDocument::parse(md_content);
+    let docx = DocumentConverter::markdown_to_docx(&md);
+    let pdf = DocumentConverter::docx_to_pdf(&docx);
+    let bytes = pdf.generate_pdf_bytes();
+
+    assert!(!bytes.is_empty(), "PDF hasil konversi Pie & Gantt harus ter-generate");
+    let pdf_str = String::from_utf8_lossy(&bytes);
+
+    // Verifikasi Pie Chart
+    assert!(pdf_str.contains("DIAGRAM LINGKARAN"), "PDF harus memuat header Pie Chart");
+    assert!(pdf_str.contains("Alokasi Dana Riset 2026"), "PDF harus memuat judul Pie Chart");
+    assert!(pdf_str.contains("Kompiler ELF-64"), "PDF harus memuat label irisan 1");
+    assert!(pdf_str.contains("Mesin Office Native"), "PDF harus memuat label irisan 2");
+    assert!(pdf_str.contains("Kriptografi Nusantara"), "PDF harus memuat label irisan 3");
+
+    // Verifikasi Gantt Chart
+    assert!(pdf_str.contains("DIAGRAM JADWAL & LINIMASA"), "PDF harus memuat header Gantt Chart");
+    assert!(pdf_str.contains("Jadwal Peluncuran Versi 2.6"), "PDF harus memuat judul Gantt Chart");
+    assert!(pdf_str.contains("Parsing AST"), "PDF harus memuat tugas 1 gantt");
+    assert!(pdf_str.contains("Penyusunan Kode Mesin"), "PDF harus memuat tugas 2 gantt");
+    assert!(pdf_str.contains("Konverter PDF & ToC"), "PDF harus memuat tugas 3 gantt");
+    assert!(pdf_str.contains("Pengujian Integrasi"), "PDF harus memuat tugas 4 gantt");
+}
+

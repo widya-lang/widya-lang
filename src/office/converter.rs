@@ -3,7 +3,8 @@ use crate::office::docx::{parse_markdown_runs, DocxDocument, DocxElement, TextSt
 use crate::office::epub::{markdown_to_epub_doc, EpubDocument};
 use crate::office::latex::{LatexDocument, LatexElement};
 use crate::office::markdown::{MarkdownBlock, MarkdownDocument};
-use crate::office::pdf::{styled_string_width, wrap_runs_to_styled_lines, wrap_text, PdfDocument, StyledFragment};
+use crate::office::pdf::{styled_string_width, wrap_runs_to_styled_lines, wrap_text, PageSize, PdfDocument, StyledFragment};
+use crate::office::pptx::{PptxPresentation, SlideLayout, SlideTheme};
 use crate::office::xlsx::XlsxWorkbook;
 
 /// Mesin Pipeline Konversi Dokumen Universal Lintas Format
@@ -456,6 +457,71 @@ impl DocumentConverter {
                     }
                     current_y -= 4.0;
                 }
+                DocxElement::TableOfContents => {
+                    let mut toc_entries = Vec::new();
+                    for el in &doc.elements {
+                        if let DocxElement::Heading { level, text } = el {
+                            toc_entries.push((*level, clean_markdown_inline(text)));
+                        }
+                    }
+
+                    if !toc_entries.is_empty() {
+                        if current_y < page_height - 180.0 {
+                            pdf.add_page();
+                            current_y = page_height - 70.0;
+                        }
+
+                        let page = pdf.current_page_mut();
+                        page.add_styled_text("DAFTAR ISI", margin_x, current_y, 16.0, true, (0.05, 0.15, 0.35));
+                        current_y -= 6.0;
+                        page.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 1.2, (0.1, 0.4, 0.8));
+                        current_y -= 18.0;
+
+                        for (idx, (lvl, h_text)) in toc_entries.iter().enumerate() {
+                            if current_y < 75.0 {
+                                pdf.add_page();
+                                current_y = page_height - 70.0;
+                            }
+
+                            let indent = match lvl {
+                                1 => 0.0f32,
+                                2 => 14.0f32,
+                                _ => 28.0f32,
+                            };
+
+                            let (font_size, is_bold, text_color) = match lvl {
+                                1 => (9.5f32, true, (0.10, 0.15, 0.25)),
+                                2 => (8.5f32, false, (0.20, 0.25, 0.35)),
+                                _ => (8.0f32, false, (0.35, 0.40, 0.45)),
+                            };
+
+                            let text_x = margin_x + indent;
+                            let title_w = styled_string_width(h_text, font_size, is_bold, false);
+                            let page = pdf.current_page_mut();
+                            page.add_styled_text(h_text, text_x, current_y, font_size, is_bold, text_color);
+
+                            let page_num_str = format!("{}", (idx + 1).max(1));
+                            let page_num_w = styled_string_width(&page_num_str, font_size, is_bold, false);
+                            let page_num_x = margin_x + content_width - page_num_w;
+
+                            let dots_start = text_x + title_w + 6.0;
+                            let dots_end = page_num_x - 6.0;
+
+                            if dots_end > dots_start {
+                                let mut dot_x = dots_start;
+                                while dot_x < dots_end {
+                                    page.add_styled_text(".", dot_x, current_y, 8.0, false, (0.55, 0.60, 0.65));
+                                    dot_x += 5.0;
+                                }
+                            }
+
+                            page.add_styled_text(&page_num_str, page_num_x, current_y, font_size, is_bold, (0.1, 0.35, 0.7));
+                            current_y -= 15.0;
+                        }
+
+                        current_y -= 12.0;
+                    }
+                }
             }
         }
 
@@ -538,6 +604,11 @@ impl DocumentConverter {
         pdf
     }
 
+    /// Alias konversi workbook ke PDF
+    pub fn workbook_to_pdf(wb: &XlsxWorkbook) -> PdfDocument {
+        Self::xlsx_to_pdf(wb)
+    }
+
     /// Konversi Dokumen Markdown ke Dokumen Word (.docx)
     pub fn markdown_to_docx(md: &MarkdownDocument) -> DocxDocument {
         let first_heading = md.blocks.iter().find_map(|b| {
@@ -601,6 +672,9 @@ impl DocumentConverter {
                 MarkdownBlock::FootnoteDefinition { label, content } => {
                     doc.add_footnote(label, content);
                 }
+                MarkdownBlock::TableOfContents => {
+                    doc.add_table_of_contents();
+                }
                 MarkdownBlock::HorizontalRule => {
                     doc.add_divider();
                 }
@@ -614,6 +688,160 @@ impl DocumentConverter {
     pub fn markdown_to_pdf(md: &MarkdownDocument) -> PdfDocument {
         let docx = Self::markdown_to_docx(md);
         Self::docx_to_pdf(&docx)
+    }
+
+    /// Konversi Dokumen Markdown ke PDF dengan Penyisipan Daftar Isi Otomatis di Awal
+    pub fn markdown_to_pdf_with_toc(md: &MarkdownDocument) -> PdfDocument {
+        let mut doc = Self::markdown_to_docx(md);
+        let has_toc = doc.elements.iter().any(|e| matches!(e, DocxElement::TableOfContents));
+        if !has_toc {
+            let insert_idx = if !doc.elements.is_empty() && matches!(doc.elements[0], DocxElement::Heading { level: 1, .. }) {
+                1
+            } else {
+                0
+            };
+            doc.elements.insert(insert_idx, DocxElement::TableOfContents);
+        }
+        Self::docx_to_pdf(&doc)
+    }
+
+    /// Konversi Presentasi PowerPoint (.pptx) menjadi Berkas Slide PDF Lanskap Premium
+    pub fn pptx_to_pdf(pres: &PptxPresentation) -> PdfDocument {
+        let mut pdf = PdfDocument::new(&pres.title);
+        pdf.author = "Widya Office Deck Engine".to_string();
+        pdf.organization = "Sovereign Enterprise".to_string();
+        pdf.page_size = PageSize::Custom(842.0, 595.0);
+
+        let (width, height) = (842.0f32, 595.0f32);
+        let total_slides = pres.slides.len().max(1);
+
+        for (slide_idx, slide) in pres.slides.iter().enumerate() {
+            if slide_idx > 0 {
+                pdf.add_page();
+            }
+
+            let page = pdf.current_page_mut();
+
+            // 1. Tema Visual Slide
+            let (bg_color, text_color, accent_color, card_bg) = match pres.theme {
+                SlideTheme::DarkModern => (
+                    (0.06, 0.09, 0.15),
+                    (0.95, 0.98, 1.0),
+                    (0.22, 0.65, 0.95),
+                    (0.11, 0.16, 0.25),
+                ),
+                SlideTheme::ExecutiveNavy => (
+                    (0.04, 0.10, 0.22),
+                    (0.95, 0.98, 1.0),
+                    (0.35, 0.65, 1.0),
+                    (0.08, 0.18, 0.35),
+                ),
+                SlideTheme::EmeraldFintech => (
+                    (0.03, 0.14, 0.10),
+                    (0.95, 1.0, 0.98),
+                    (0.20, 0.85, 0.55),
+                    (0.06, 0.22, 0.16),
+                ),
+                SlideTheme::SovereignGold => (
+                    (0.10, 0.08, 0.04),
+                    (1.0, 0.98, 0.92),
+                    (0.95, 0.75, 0.20),
+                    (0.18, 0.15, 0.08),
+                ),
+            };
+
+            // Latar Belakang Slide Penuh
+            page.add_rect(0.0, 0.0, width, height, true, bg_color);
+            page.add_rect(0.0, height - 6.0, width, 6.0, true, accent_color);
+
+            match slide.layout {
+                SlideLayout::TitleSlide => {
+                    let title_text = &slide.title;
+                    let title_w = styled_string_width(title_text, 28.0, true, false);
+                    let tx = (width - title_w) / 2.0;
+                    page.add_styled_text(title_text, tx.max(60.0), 320.0, 28.0, true, accent_color);
+
+                    page.add_styled_line((width - 240.0) / 2.0, 295.0, (width + 240.0) / 2.0, 295.0, 2.0, accent_color);
+
+                    if let Some(ref sub) = slide.subtitle {
+                        let sub_w = styled_string_width(sub, 13.0, false, false);
+                        let sx = (width - sub_w) / 2.0;
+                        page.add_styled_text(sub, sx.max(60.0), 265.0, 13.0, false, (0.80, 0.85, 0.92));
+                    }
+                }
+                SlideLayout::KpiDashboard => {
+                    page.add_styled_text(&slide.title, 60.0, 520.0, 18.0, true, accent_color);
+                    page.add_styled_line(60.0, 505.0, width - 60.0, 505.0, 1.0, (0.25, 0.35, 0.50));
+
+                    if let Some(ref metrics) = slide.kpi_metrics {
+                        let num_cards = metrics.len();
+                        let card_w = ((width - 120.0 - (num_cards.saturating_sub(1) as f32 * 20.0)) / num_cards.max(1) as f32).min(200.0);
+                        let card_h = 130.0f32;
+                        let card_y = 330.0f32;
+
+                        for (c_idx, m) in metrics.iter().enumerate() {
+                            let cx = 60.0 + c_idx as f32 * (card_w + 20.0);
+                            page.add_rect(cx, card_y, card_w, card_h, true, card_bg);
+                            page.add_rect(cx, card_y, card_w, card_h, false, (0.25, 0.40, 0.60));
+
+                            page.add_styled_text(&m.label, cx + 16.0, card_y + card_h - 28.0, 8.5, true, (0.7, 0.75, 0.85));
+                            page.add_styled_text(&m.value, cx + 16.0, card_y + card_h - 68.0, 22.0, true, accent_color);
+
+                            let sub_col = if m.is_positive { (0.2, 0.85, 0.45) } else { (0.9, 0.3, 0.3) };
+                            page.add_styled_text(&m.subtext, cx + 16.0, card_y + 20.0, 8.0, false, sub_col);
+                        }
+                    }
+                }
+                SlideLayout::TwoColumns => {
+                    page.add_styled_text(&slide.title, 60.0, 520.0, 18.0, true, accent_color);
+                    page.add_styled_line(60.0, 505.0, width - 60.0, 505.0, 1.0, (0.25, 0.35, 0.50));
+
+                    let col_w = (width - 150.0) / 2.0;
+
+                    let col1_x = 60.0;
+                    page.add_rect(col1_x, 100.0, col_w, 380.0, true, card_bg);
+                    page.add_rect(col1_x, 100.0, col_w, 380.0, false, (0.2, 0.3, 0.45));
+
+                    let mut by1 = 440.0f32;
+                    for b in &slide.bullets {
+                        page.add_styled_text("•", col1_x + 16.0, by1, 11.0, true, accent_color);
+                        page.add_styled_text(b, col1_x + 32.0, by1, 10.0, false, text_color);
+                        by1 -= 28.0;
+                    }
+
+                    let col2_x = 60.0 + col_w + 30.0;
+                    page.add_rect(col2_x, 100.0, col_w, 380.0, true, card_bg);
+                    page.add_rect(col2_x, 100.0, col_w, 380.0, false, (0.2, 0.3, 0.45));
+
+                    let mut by2 = 440.0f32;
+                    if let Some(ref r_bullets) = slide.right_bullets {
+                        for b in r_bullets {
+                            page.add_styled_text("•", col2_x + 16.0, by2, 11.0, true, accent_color);
+                            page.add_styled_text(b, col2_x + 32.0, by2, 10.0, false, text_color);
+                            by2 -= 28.0;
+                        }
+                    }
+                }
+                _ => {
+                    page.add_styled_text(&slide.title, 60.0, 520.0, 18.0, true, accent_color);
+                    page.add_styled_line(60.0, 505.0, width - 60.0, 505.0, 1.0, (0.25, 0.35, 0.50));
+
+                    let mut by = 460.0f32;
+                    for b in &slide.bullets {
+                        page.add_styled_text("•", 70.0, by, 12.0, true, accent_color);
+                        page.add_styled_text(b, 90.0, by, 11.0, false, text_color);
+                        by -= 28.0;
+                    }
+                }
+            }
+
+            // Footer Slide
+            page.add_styled_text(&pres.title, 60.0, 30.0, 8.0, false, (0.45, 0.55, 0.65));
+            let slide_info = format!("Slide {} dari {}", slide_idx + 1, total_slides);
+            page.add_styled_text(&slide_info, width - 140.0, 30.0, 8.0, true, (0.45, 0.55, 0.65));
+        }
+
+        pdf
     }
 
     /// Konversi Dokumen Markdown ke Buku Digital EPUB 3.2 Mandiri

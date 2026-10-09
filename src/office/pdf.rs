@@ -7,17 +7,21 @@ use std::path::Path;
 /// Dimensi Halaman PDF Standar (Points: 1/72 inch)
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum PageSize {
-    A4,     // 595.28 x 841.89 points
-    Letter, // 612.0 x 792.0 points
-    Legal,  // 612.0 x 1008.0 points
+    A4,          // 595.28 x 841.89 points
+    A4Landscape, // 841.89 x 595.28 points
+    Letter,      // 612.0 x 792.0 points
+    Legal,       // 612.0 x 1008.0 points
+    Custom(f32, f32),
 }
 
 impl PageSize {
     pub fn dimensions_points(&self) -> (f32, f32) {
         match self {
             PageSize::A4 => (595.28, 841.89),
+            PageSize::A4Landscape => (841.89, 595.28),
             PageSize::Letter => (612.0, 792.0),
             PageSize::Legal => (612.0, 1008.0),
+            PageSize::Custom(w, h) => (*w, *h),
         }
     }
 }

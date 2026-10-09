@@ -664,6 +664,9 @@ pub fn markdown_to_epub_doc(
                     inner
                 ));
             }
+            MarkdownBlock::TableOfContents => {
+                // Di EPUB 3.2, navigasi daftar isi dikelola langsung oleh toc.xhtml
+            }
             MarkdownBlock::HorizontalRule => {
                 current_chapter_html.push_str("  <hr class=\"section-divider\" />\n");
             }

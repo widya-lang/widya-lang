@@ -148,6 +148,10 @@ pub enum OfficeSubcommands {
         /// Nama penulis atau organisasi (opsional)
         #[arg(short, long)]
         author: Option<String>,
+
+        /// Sisipkan daftar isi otomatis (Table of Contents) di awal PDF
+        #[arg(long)]
+        toc: bool,
     },
     /// Buat dokumen Word (.docx biner OpenXML asli / .html pratinjau)
     BuatDocx {
@@ -637,8 +641,8 @@ pub fn handle_health_command(aksi: &HealthSubcommands) {
 
 pub fn handle_office_command(aksi: &OfficeSubcommands) {
     match aksi {
-        OfficeSubcommands::Convert { input, output, title, author } => {
-            crate::cli::office::konversi_dokumen(input, output.as_deref(), title.as_deref(), author.as_deref());
+        OfficeSubcommands::Convert { input, output, title, author, toc } => {
+            crate::cli::office::konversi_dokumen(input, output.as_deref(), title.as_deref(), author.as_deref(), *toc);
         }
         OfficeSubcommands::BuatDocx { nama, output, watermark } => {
                 let mut doc = widya::office::DocxDocument::new(&nama);

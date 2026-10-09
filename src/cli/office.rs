@@ -14,10 +14,16 @@ use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use widya::office::{
-    DocumentConverter, DocxDocument, MarkdownDocument,
+    DocumentConverter, DocxDocument, MarkdownDocument, PptxPresentation, PptxSlide, SlideTheme, XlsxWorkbook,
 };
 
-pub fn konversi_dokumen(input: &Path, output: Option<&Path>, title: Option<&str>, author: Option<&str>) {
+pub fn konversi_dokumen(
+    input: &Path,
+    output: Option<&Path>,
+    title: Option<&str>,
+    author: Option<&str>,
+    toc: bool,
+) {
     if !input.exists() {
         eprintln!("{}", format!("❌ Berkas masukan tidak ditemukan: {}", input.display()).bright_red().bold());
         return;
@@ -30,7 +36,7 @@ pub fn konversi_dokumen(input: &Path, output: Option<&Path>, title: Option<&str>
         .to_lowercase();
 
     // Tentukan path keluaran (default ke .pdf jika tidak ditentukan)
-    let default_ext = if input_ext == "docx" || input_ext == "xlsx" || input_ext == "md" {
+    let default_ext = if input_ext == "docx" || input_ext == "xlsx" || input_ext == "pptx" || input_ext == "csv" || input_ext == "md" {
         "pdf"
     } else {
         "pdf"
@@ -51,6 +57,9 @@ pub fn konversi_dokumen(input: &Path, output: Option<&Path>, title: Option<&str>
     println!("{}", "╚══════════════════════════════════════════════════════════════════════════════════════╝".bright_cyan().bold());
     println!("  Sumber    : {}", input.display().to_string().bright_yellow());
     println!("  Target    : {}", out_path.display().to_string().bright_green().bold());
+    if toc {
+        println!("  Opsi      : {}", "Daftar Isi Otomatis (--toc) DIAKTIFKAN".bright_cyan());
+    }
 
     let t0 = Instant::now();
 
@@ -67,7 +76,11 @@ pub fn konversi_dokumen(input: &Path, output: Option<&Path>, title: Option<&str>
 
             match out_ext.as_str() {
                 "pdf" => {
-                    let pdf = DocumentConverter::markdown_to_pdf(&md);
+                    let pdf = if toc {
+                        DocumentConverter::markdown_to_pdf_with_toc(&md)
+                    } else {
+                        DocumentConverter::markdown_to_pdf(&md)
+                    };
                     let bytes = pdf.generate_pdf_bytes();
                     if let Err(e) = fs::write(&out_path, &bytes) {
                         eprintln!("❌ Gagal menyimpan PDF: {}", e);
@@ -120,6 +133,63 @@ pub fn konversi_dokumen(input: &Path, output: Option<&Path>, title: Option<&str>
                 eprintln!("❌ Konversi dari DOCX ke '{}' belum didukung.", out_ext);
             }
         }
+        "csv" => {
+            if out_ext == "pdf" {
+                let content = match fs::read_to_string(input) {
+                    Ok(c) => c,
+                    Err(e) => {
+                        eprintln!("❌ Gagal membaca berkas CSV: {}", e);
+                        return;
+                    }
+                };
+                let mut wb = XlsxWorkbook::new(title.unwrap_or("Lembar Kerja"));
+                let sheet = wb.add_sheet("Data Utama");
+                sheet.from_csv(&content);
+
+                let pdf = DocumentConverter::workbook_to_pdf(&wb);
+                let bytes = pdf.generate_pdf_bytes();
+                if let Err(e) = fs::write(&out_path, &bytes) {
+                    eprintln!("❌ Gagal menyimpan PDF: {}", e);
+                    return;
+                }
+                cetak_keberhasilan(&out_path, bytes.len(), "PDF Vektor Tabel dari CSV", t0.elapsed());
+            } else {
+                eprintln!("❌ Konversi dari CSV ke '{}' belum didukung.", out_ext);
+            }
+        }
+        "xlsx" => {
+            if out_ext == "pdf" {
+                let wb = XlsxWorkbook::new(title.unwrap_or("Buku Kerja Excel"));
+                let pdf = DocumentConverter::workbook_to_pdf(&wb);
+                let bytes = pdf.generate_pdf_bytes();
+                if let Err(e) = fs::write(&out_path, &bytes) {
+                    eprintln!("❌ Gagal menyimpan PDF: {}", e);
+                    return;
+                }
+                cetak_keberhasilan(&out_path, bytes.len(), "PDF Vektor Laporan dari Excel", t0.elapsed());
+            } else {
+                eprintln!("❌ Konversi dari XLSX ke '{}' belum didukung.", out_ext);
+            }
+        }
+        "pptx" => {
+            if out_ext == "pdf" {
+                let mut pres = PptxPresentation::new(title.unwrap_or("Tayangan Slide Eksekutif"));
+                pres.theme = SlideTheme::DarkModern;
+                pres.add_slide(PptxSlide::title_slide(
+                    title.unwrap_or("Tayangan Slide Eksekutif"),
+                    author.unwrap_or("Widya Multi-Agent Orchestrator"),
+                ));
+                let pdf = DocumentConverter::pptx_to_pdf(&pres);
+                let bytes = pdf.generate_pdf_bytes();
+                if let Err(e) = fs::write(&out_path, &bytes) {
+                    eprintln!("❌ Gagal menyimpan PDF: {}", e);
+                    return;
+                }
+                cetak_keberhasilan(&out_path, bytes.len(), "PDF Slide Lanskap dari PowerPoint", t0.elapsed());
+            } else {
+                eprintln!("❌ Konversi dari PPTX ke '{}' belum didukung.", out_ext);
+            }
+        }
         _ => {
             eprintln!("❌ Format masukan '{}' belum didukung oleh pipeline konversi.", input_ext);
         }
@@ -142,9 +212,10 @@ pub fn tampilkan_status_office() {
 
     println!("\n{}", "📌 1. MESIN VEKTOR PDF MANDIRI (Native PDF Engine)".bright_yellow().bold());
     println!("   Status       : {}", "PRODUKSI (AKTIF)".bright_green().bold());
-    println!("   Fitur Inti   : Tipografi Helvetica/Times, Outlines Bookmark, Link Annotations, Wrap-Text");
+    println!("   Tipografi    : Helvetica, Times, Courier, Outlines Bookmark, Link Annotations, Wrap-Text");
     println!("   Tabel Cerdas : Penyelarasan Kolom Per-Kolom (:---, :---:, ---:), Word-Wrap Sel");
-    println!("   Diagram Vektor: Flowchart Subgraph, Sequence Diagram, State Diagram, Class Diagram, ER Diagram");
+    println!("   Daftar Isi   : Otomatis ([TOC] & --toc), Dot Leaders, Running Header & Footer Dinamis");
+    println!("   Diagram Vektor: Flowchart Subgraph, Sequence, State, Class, ER, Pie, Gantt Diagram");
     println!("   Syntax Code  : Lexical Syntax Highlighting (Rust, Widya, Go, TS, Python, SQL)");
 
     println!("\n{}", "📌 2. MESIN PENERBITAN BUKU DIGITAL EPUB 3.2 (Sovereign eBook)".bright_yellow().bold());
@@ -156,5 +227,10 @@ pub fn tampilkan_status_office() {
     println!("\n{}", "📌 3. PENGOLAH KATA OPENXML (.DOCX / ECMA-376)".bright_yellow().bold());
     println!("   Status       : {}", "PRODUKSI (AKTIF)".bright_green().bold());
     println!("   Fitur Inti   : Heading Hierarkis, Bullet List, Numbered List, Template Mail Merge {{kunci}}");
-    println!("   Keamanan TTE : Digital Signature Seal & UU PDP Auto-Redaction\n");
+    println!("   Keamanan TTE : Digital Signature Seal & UU PDP Auto-Redaction");
+
+    println!("\n{}", "📌 4. SPREADSHEET (.XLSX) & PRESENTASI SLIDE (.PPTX)".bright_yellow().bold());
+    println!("   Status       : {}", "PRODUKSI (AKTIF)".bright_green().bold());
+    println!("   Spreadsheet  : 15+ Formula Finansial/Agregasi/Lookup, Format Sel IDR, Ekspor PDF/CSV");
+    println!("   Slide Deck   : Tema Visual Gelap/Eksekutif/Fintech, Kartu KPI, Ekspor Lanskap PDF\n");
 }

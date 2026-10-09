@@ -1,7 +1,18 @@
+use sha2::{Digest, Sha256};
 use std::fs;
 use std::path::Path;
 use widya::desktop::{buat_tanda_tangan_ed25519, verifikasi_tanda_tangan_ed25519};
 use widya::office::{DocumentConverter, MarkdownDocument};
+
+fn compute_sha256(path: &Path) -> Option<String> {
+    if !path.exists() {
+        return None;
+    }
+    let data = fs::read(path).ok()?;
+    let mut hasher = Sha256::new();
+    hasher.update(&data);
+    Some(hex::encode(hasher.finalize()))
+}
 
 #[test]
 fn generate_documentation_pdfs_and_sign_official_release() {
@@ -42,6 +53,30 @@ fn generate_documentation_pdfs_and_sign_official_release() {
         fs::write("dist/releases/v2.6.0/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_WPM.epub ({:.1} KB)", epub_bytes.len() as f32 / 1024.0);
+    }
+
+    // 2.5 Perbarui SHA256SUMS.txt di dist/releases/v2.6.0 dan www/downloads
+    let release_files = vec![
+        "DOKUMENTASI_PILAR_KEMANDIRIAN.epub",
+        "DOKUMENTASI_PILAR_KEMANDIRIAN.pdf",
+        "DOKUMENTASI_WPM.epub",
+        "DOKUMENTASI_WPM.pdf",
+        "widya-lang-2.5.0.vsix",
+        "widya-v2.6.0-x86_64-linux.tar.gz",
+    ];
+
+    let mut sums = String::new();
+    for f in &release_files {
+        let p = Path::new("dist/releases/v2.6.0").join(f);
+        if let Some(hash) = compute_sha256(&p) {
+            sums.push_str(&format!("{}  {}\n", hash, f));
+        }
+    }
+
+    if !sums.is_empty() {
+        fs::write("dist/releases/v2.6.0/SHA256SUMS.txt", &sums).unwrap();
+        fs::write("www/downloads/SHA256SUMS.txt", &sums).unwrap();
+        println!("✅ SHA256SUMS.txt v2.6.0 berhasil diperbarui secara deterministik.");
     }
 
     // 3. Tanda tangani Ed25519

@@ -847,6 +847,214 @@ impl WidyaErDiagram {
     }
 }
 
+/// Irisan Data pada Pie Chart
+#[derive(Debug, Clone)]
+pub struct PieSlice {
+    pub label: String,
+    pub value: f64,
+}
+
+/// Struktur Data Diagram Lingkaran (Mermaid pie)
+#[derive(Debug, Clone)]
+pub struct WidyaPieChart {
+    pub title: Option<String>,
+    pub show_data: bool,
+    pub slices: Vec<PieSlice>,
+}
+
+impl WidyaPieChart {
+    pub fn parse(source: &str) -> Option<Self> {
+        let mut is_pie = false;
+        let mut title = None;
+        let mut show_data = false;
+        let mut slices = Vec::new();
+
+        for raw_line in source.lines() {
+            let line = raw_line.trim();
+            if line.is_empty() || line.starts_with("%%") {
+                continue;
+            }
+
+            if line.starts_with("pie") {
+                is_pie = true;
+                if line.contains("showData") {
+                    show_data = true;
+                }
+                if let Some(pos) = line.find("title") {
+                    let t = line[pos + 5..].trim();
+                    if !t.is_empty() {
+                        title = Some(clean_markdown_inline(t.trim_matches('"').trim_matches('\'')));
+                    }
+                }
+                continue;
+            }
+
+            if !is_pie {
+                continue;
+            }
+
+            if line.starts_with("title ") || line.starts_with("title:") {
+                let t = line.trim_start_matches("title:").trim_start_matches("title").trim();
+                title = Some(clean_markdown_inline(t.trim_matches('"').trim_matches('\'')));
+                continue;
+            }
+
+            if line.contains(':') {
+                let parts: Vec<&str> = line.splitn(2, ':').collect();
+                let label = parts[0].trim().trim_matches('"').trim_matches('\'').trim();
+                let val_str = parts[1].trim();
+                if let Ok(val) = val_str.parse::<f64>() {
+                    if !label.is_empty() && val > 0.0 {
+                        slices.push(PieSlice {
+                            label: label.to_string(),
+                            value: val,
+                        });
+                    }
+                }
+            }
+        }
+
+        if is_pie && !slices.is_empty() {
+            Some(Self {
+                title,
+                show_data,
+                slices,
+            })
+        } else {
+            None
+        }
+    }
+}
+
+/// Status / Tingkat Kepentingan Tugas Gantt
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum GanttStatus {
+    Done,
+    Active,
+    Crit,
+    Normal,
+}
+
+/// Item Tugas dalam Gantt Chart
+#[derive(Debug, Clone)]
+pub struct GanttTask {
+    pub name: String,
+    pub section: String,
+    pub status: GanttStatus,
+    pub start: f32,
+    pub duration: f32,
+}
+
+/// Struktur Data Diagram Jadwal (Mermaid gantt)
+#[derive(Debug, Clone)]
+pub struct WidyaGanttChart {
+    pub title: Option<String>,
+    pub sections: Vec<String>,
+    pub tasks: Vec<GanttTask>,
+}
+
+impl WidyaGanttChart {
+    pub fn parse(source: &str) -> Option<Self> {
+        let mut is_gantt = false;
+        let mut title = None;
+        let mut current_section = String::from("Tugas");
+        let mut sections = Vec::new();
+        let mut tasks = Vec::new();
+        let mut cursor_time = 0.0f32;
+
+        for raw_line in source.lines() {
+            let line = raw_line.trim();
+            if line.is_empty() || line.starts_with("%%") {
+                continue;
+            }
+
+            if line.starts_with("gantt") {
+                is_gantt = true;
+                continue;
+            }
+
+            if !is_gantt {
+                continue;
+            }
+
+            if line.starts_with("title ") || line.starts_with("title:") {
+                let t = line.trim_start_matches("title:").trim_start_matches("title").trim();
+                title = Some(clean_markdown_inline(t.trim_matches('"').trim_matches('\'')));
+                continue;
+            }
+
+            if line.starts_with("dateFormat") || line.starts_with("axisFormat") || line.starts_with("excludes") {
+                continue;
+            }
+
+            if line.starts_with("section ") || line.starts_with("section:") {
+                let sec = line.trim_start_matches("section:").trim_start_matches("section").trim();
+                current_section = sec.to_string();
+                if !sections.contains(&current_section) {
+                    sections.push(current_section.clone());
+                }
+                continue;
+            }
+
+            if line.contains(':') {
+                let parts: Vec<&str> = line.splitn(2, ':').collect();
+                let task_name = parts[0].trim();
+                let meta = parts[1].trim();
+
+                let mut status = GanttStatus::Normal;
+                let start_val = cursor_time;
+                let mut dur_val = 5.0f32;
+
+                let tokens: Vec<&str> = meta.split(',').map(|s| s.trim()).collect();
+                for tok in &tokens {
+                    let low = tok.to_lowercase();
+                    if low == "done" {
+                        status = GanttStatus::Done;
+                    } else if low == "active" {
+                        status = GanttStatus::Active;
+                    } else if low == "crit" {
+                        status = GanttStatus::Crit;
+                    } else if low.ends_with('d') {
+                        if let Ok(d) = low.trim_end_matches('d').parse::<f32>() {
+                            dur_val = d.max(1.0);
+                        }
+                    } else if low.ends_with('w') {
+                        if let Ok(w) = low.trim_end_matches('w').parse::<f32>() {
+                            dur_val = (w * 7.0).max(1.0);
+                        }
+                    } else if let Ok(num) = tok.parse::<f32>() {
+                        dur_val = num.max(1.0);
+                    }
+                }
+
+                if !sections.contains(&current_section) {
+                    sections.push(current_section.clone());
+                }
+
+                tasks.push(GanttTask {
+                    name: task_name.to_string(),
+                    section: current_section.clone(),
+                    status,
+                    start: start_val,
+                    duration: dur_val,
+                });
+
+                cursor_time += dur_val.min(10.0);
+            }
+        }
+
+        if is_gantt && !tasks.is_empty() {
+            Some(Self {
+                title,
+                sections,
+                tasks,
+            })
+        } else {
+            None
+        }
+    }
+}
+
 /// Mesin Pembangkit Diagram Vektor Mandiri Widya-Lang (Zero Dependency)
 pub struct WidyaDiagramEngine;
 
@@ -902,6 +1110,30 @@ impl WidyaDiagramEngine {
             return Self::render_er_diagram(
                 pdf,
                 &er_diag,
+                margin_x,
+                current_y,
+                content_width,
+                page_height,
+            );
+        }
+
+        // 5. Cek apakah ini Mermaid Pie Chart
+        if let Some(pie_diag) = WidyaPieChart::parse(source) {
+            return Self::render_pie_chart(
+                pdf,
+                &pie_diag,
+                margin_x,
+                current_y,
+                content_width,
+                page_height,
+            );
+        }
+
+        // 6. Cek apakah ini Mermaid Gantt Chart
+        if let Some(gantt_diag) = WidyaGanttChart::parse(source) {
+            return Self::render_gantt_chart(
+                pdf,
+                &gantt_diag,
                 margin_x,
                 current_y,
                 content_width,
@@ -1719,6 +1951,255 @@ impl WidyaDiagramEngine {
 
         current_y
     }
+
+    /// Render Diagram Lingkaran (Mermaid pie) Vektor Asli PDF
+    fn render_pie_chart(
+        pdf: &mut PdfDocument,
+        diag: &WidyaPieChart,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+        page_height: f32,
+    ) -> f32 {
+        if diag.slices.is_empty() {
+            return current_y;
+        }
+
+        let banner_h = 22.0;
+        let chart_h = 160.0;
+        let total_h = banner_h + chart_h + 20.0;
+
+        if current_y - total_h < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        // Banner Judul
+        let page = pdf.current_page_mut();
+        let title_text = diag.title.as_ref()
+            .map(|t| format!("DIAGRAM LINGKARAN: {}", t))
+            .unwrap_or_else(|| "DIAGRAM LINGKARAN & DISTRIBUSI STATISTIK (PIE CHART)".to_string());
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
+        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
+        page.add_styled_text(&title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
+        current_y -= banner_h + 14.0;
+
+        // Wadah Vektor Diagram
+        let page = pdf.current_page_mut();
+        page.add_rect(margin_x, current_y - chart_h, content_width, chart_h, true, (0.985, 0.99, 1.0));
+        page.add_rect(margin_x, current_y - chart_h, content_width, chart_h, false, (0.80, 0.85, 0.90));
+
+        let total: f64 = diag.slices.iter().map(|s| s.value).sum();
+        let r = 58.0f32;
+        let cx = margin_x + 85.0;
+        let cy = current_y - chart_h / 2.0;
+
+        let colors: [(f32, f32, f32); 8] = [
+            (0.12, 0.45, 0.85), // Biru Safir
+            (0.12, 0.68, 0.42), // Hijau Zamrud
+            (0.92, 0.58, 0.12), // Amber Emas
+            (0.85, 0.25, 0.30), // Merah Koral
+            (0.55, 0.30, 0.75), // Ungu Lembayung
+            (0.10, 0.65, 0.75), // Biru Toska
+            (0.85, 0.40, 0.65), // Merah Muda
+            (0.40, 0.50, 0.60), // Slate
+        ];
+
+        let mut start_angle = 0.0f64;
+        let num_slices = diag.slices.len();
+
+        for (idx, slice) in diag.slices.iter().enumerate() {
+            let sweep = if total > 0.0 {
+                (slice.value / total) * 2.0 * std::f64::consts::PI
+            } else {
+                2.0 * std::f64::consts::PI / num_slices as f64
+            };
+            let end_angle = start_angle + sweep;
+            let col = colors[idx % colors.len()];
+
+            // Poligon irisan pie
+            let steps = ((sweep / (std::f64::consts::PI / 18.0)).ceil() as usize).max(6);
+            let mut pts = Vec::with_capacity(steps + 2);
+            pts.push((cx, cy));
+            for s in 0..=steps {
+                let theta = start_angle + (s as f64 / steps as f64) * sweep;
+                let px = cx + r * theta.cos() as f32;
+                let py = cy + r * theta.sin() as f32;
+                pts.push((px, py));
+            }
+            pts.push((cx, cy));
+
+            page.add_polygon(pts, true, col);
+
+            // Garis pembatas antar irisan
+            page.add_styled_line(cx, cy, cx + r * start_angle.cos() as f32, cy + r * start_angle.sin() as f32, 1.2, (1.0, 1.0, 1.0));
+            page.add_styled_line(cx, cy, cx + r * end_angle.cos() as f32, cy + r * end_angle.sin() as f32, 1.2, (1.0, 1.0, 1.0));
+
+            // Label persentase jika irisan cukup lebar
+            if sweep > 0.35 {
+                let mid_theta = start_angle + sweep / 2.0;
+                let text_r = r * 0.65;
+                let tx = cx + text_r * mid_theta.cos() as f32;
+                let ty = cy + text_r * mid_theta.sin() as f32;
+                let pct = if total > 0.0 { (slice.value / total) * 100.0 } else { 0.0 };
+                let pct_str = format!("{:.0}%", pct);
+                let pw = crate::office::pdf::styled_string_width(&pct_str, 7.5, true, false);
+                page.add_styled_text(&pct_str, tx - pw / 2.0, ty - 3.5, 7.5, true, (1.0, 1.0, 1.0));
+            }
+
+            start_angle = end_angle;
+        }
+
+        // Garis batas luar lingkaran
+        let outer_steps = 48;
+        let mut outer_pts = Vec::with_capacity(outer_steps + 1);
+        for s in 0..=outer_steps {
+            let theta = (s as f64 / outer_steps as f64) * 2.0 * std::f64::consts::PI;
+            outer_pts.push((cx + r * theta.cos() as f32, cy + r * theta.sin() as f32));
+        }
+        page.add_polygon(outer_pts, false, (0.75, 0.80, 0.85));
+
+        // Legenda di sisi kanan
+        let legend_x = margin_x + 175.0;
+        let legend_w = content_width - 185.0;
+        let max_leg_items = diag.slices.len();
+        let leg_row_h = (chart_h - 20.0) / max_leg_items.max(1) as f32;
+        let mut leg_y = current_y - 20.0;
+
+        for (idx, slice) in diag.slices.iter().enumerate() {
+            let col = colors[idx % colors.len()];
+            page.add_rect(legend_x, leg_y - 8.0, 12.0, 10.0, true, col);
+            page.add_rect(legend_x, leg_y - 8.0, 12.0, 10.0, false, (0.4, 0.45, 0.5));
+
+            let pct = if total > 0.0 { (slice.value / total) * 100.0 } else { 0.0 };
+            let val_label = format!("{:.1}% ({:.1})", pct, slice.value);
+
+            page.add_styled_text(&slice.label, legend_x + 18.0, leg_y - 6.0, 8.5, true, (0.15, 0.20, 0.30));
+            let val_w = crate::office::pdf::styled_string_width(&val_label, 8.0, false, false);
+            page.add_styled_text(&val_label, legend_x + legend_w - val_w, leg_y - 6.0, 8.0, false, (0.35, 0.40, 0.50));
+
+            leg_y -= leg_row_h.min(18.0);
+        }
+
+        current_y -= chart_h + 14.0;
+        current_y
+    }
+
+    /// Render Diagram Jadwal & Linimasa (Mermaid gantt) Vektor Asli PDF
+    fn render_gantt_chart(
+        pdf: &mut PdfDocument,
+        diag: &WidyaGanttChart,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+        page_height: f32,
+    ) -> f32 {
+        if diag.tasks.is_empty() {
+            return current_y;
+        }
+
+        let banner_h = 22.0;
+        let header_row_h = 18.0;
+        let task_row_h = 18.0;
+        let chart_h = header_row_h + (diag.tasks.len() as f32 * task_row_h) + 14.0;
+        let total_h = banner_h + chart_h + 20.0;
+
+        if current_y - total_h < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        // Banner Judul
+        let page = pdf.current_page_mut();
+        let title_text = diag.title.as_ref()
+            .map(|t| format!("DIAGRAM JADWAL & LINIMASA: {}", t))
+            .unwrap_or_else(|| "DIAGRAM JADWAL & LINIMASA PROYEK (GANTT CHART)".to_string());
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
+        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
+        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
+        page.add_styled_text(&title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
+        current_y -= banner_h + 14.0;
+
+        let mut max_time = 1.0f32;
+        for t in &diag.tasks {
+            let end_t = t.start + t.duration;
+            if end_t > max_time {
+                max_time = end_t;
+            }
+        }
+
+        let label_col_w = 140.0f32;
+        let timeline_w = content_width - label_col_w - 10.0;
+        let timeline_x = margin_x + label_col_w;
+
+        let page = pdf.current_page_mut();
+        page.add_rect(margin_x, current_y - chart_h, content_width, chart_h, true, (0.985, 0.99, 1.0));
+        page.add_rect(margin_x, current_y - chart_h, content_width, chart_h, false, (0.80, 0.85, 0.90));
+
+        // Header Timeline (Grid Waktu)
+        let header_y = current_y - header_row_h;
+        page.add_styled_text("Tugas / Aktivitas", margin_x + 8.0, header_y + 4.0, 8.5, true, (0.12, 0.25, 0.45));
+        page.add_styled_line(margin_x, header_y, margin_x + content_width, header_y, 1.0, (0.75, 0.80, 0.88));
+
+        // Garis pemisah antara label kolom dan timeline
+        page.add_styled_line(timeline_x, current_y, timeline_x, current_y - chart_h, 1.0, (0.80, 0.85, 0.90));
+
+        // Sumbu interval waktu (5 pembagian)
+        let num_ticks = 5;
+        for i in 0..=num_ticks {
+            let frac = i as f32 / num_ticks as f32;
+            let tx = timeline_x + frac * timeline_w;
+            let time_val = (frac * max_time).round();
+            let label = format!("H+{}", time_val as i32);
+            page.add_styled_text(&label, tx - 8.0, header_y + 4.0, 7.5, false, (0.35, 0.40, 0.50));
+            page.add_styled_line(tx, header_y, tx, current_y - chart_h, 0.5, (0.88, 0.90, 0.94));
+        }
+
+        // Render setiap tugas
+        let mut row_y = header_y - 14.0;
+        for task in &diag.tasks {
+            let bar_color = match task.status {
+                GanttStatus::Done => (0.12, 0.65, 0.38),   // Hijau selesai
+                GanttStatus::Active => (0.15, 0.45, 0.85), // Biru aktif
+                GanttStatus::Crit => (0.85, 0.25, 0.20),   // Merah kritis
+                GanttStatus::Normal => (0.40, 0.52, 0.65), // Abu netral
+            };
+
+            let task_display = if task.name.chars().count() > 22 {
+                let tr: String = task.name.chars().take(20).collect();
+                format!("{}..", tr)
+            } else {
+                task.name.clone()
+            };
+            page.add_styled_text(&task_display, margin_x + 8.0, row_y, 8.0, false, (0.15, 0.20, 0.28));
+
+            let start_frac = (task.start / max_time).clamp(0.0, 1.0);
+            let dur_frac = (task.duration / max_time).clamp(0.02, 1.0 - start_frac);
+            let bx = timeline_x + start_frac * timeline_w;
+            let bw = (dur_frac * timeline_w).max(8.0);
+            let bh = 10.0f32;
+
+            page.add_rect(bx, row_y - 2.0, bw, bh, true, bar_color);
+            page.add_rect(bx, row_y - 2.0, bw, bh, false, (0.2, 0.3, 0.4));
+
+            if bw > 24.0 {
+                let badge = match task.status {
+                    GanttStatus::Done => "[v]",
+                    GanttStatus::Crit => "!",
+                    _ => "",
+                };
+                if !badge.is_empty() {
+                    page.add_styled_text(badge, bx + 3.0, row_y, 6.5, true, (1.0, 1.0, 1.0));
+                }
+            }
+
+            row_y -= task_row_h;
+        }
+
+        current_y -= chart_h + 14.0;
+        current_y
+    }
 }
 
 #[cfg(test)]
@@ -1847,5 +2328,67 @@ mod tests {
         assert!(text.contains("PELANGGAN"));
         assert!(text.contains("PESANAN"));
         assert!(text.contains("membuat"));
+    }
+
+    #[test]
+    fn test_parse_and_render_pie_chart() {
+        let code = r#"
+        pie title Alokasi Sumber Daya Sistem
+            "Kompiler ELF-64" : 40.0
+            "Basis Data WidyaBase" : 30.0
+            "Pustaka Kripto" : 20.0
+            "Suite Dokumen" : 10.0
+        "#;
+
+        let pie = WidyaPieChart::parse(code);
+        assert!(pie.is_some(), "Pie chart harus berhasil di-parse");
+        let diag = pie.unwrap();
+        assert_eq!(diag.title.as_deref(), Some("Alokasi Sumber Daya Sistem"));
+        assert_eq!(diag.slices.len(), 4);
+        assert_eq!(diag.slices[0].label, "Kompiler ELF-64");
+        assert_eq!(diag.slices[0].value, 40.0);
+
+        let mut pdf = PdfDocument::new("Uji Pie Chart");
+        let final_y = WidyaDiagramEngine::render_to_pdf(&mut pdf, code, 50.0, 750.0, 480.0);
+        assert!(final_y < 750.0);
+        let bytes = pdf.generate_pdf_bytes();
+        assert!(!bytes.is_empty());
+        let text = String::from_utf8_lossy(&bytes);
+        assert!(text.contains("DIAGRAM LINGKARAN"));
+        assert!(text.contains("Kompiler ELF-64"));
+        assert!(text.contains("40.0%"));
+    }
+
+    #[test]
+    fn test_parse_and_render_gantt_chart() {
+        let code = r#"
+        gantt
+            title Jadwal Rilis Fitur Baru
+            dateFormat YYYY-MM-DD
+            section Riset
+                Spesifikasi Mesin :done, 0, 5
+                Desain Vektor     :active, 5, 8
+            section Eksekusi
+                Implementasi Rust :crit, 8, 14
+        "#;
+
+        let gantt = WidyaGanttChart::parse(code);
+        assert!(gantt.is_some(), "Gantt chart harus berhasil di-parse");
+        let diag = gantt.unwrap();
+        assert_eq!(diag.title.as_deref(), Some("Jadwal Rilis Fitur Baru"));
+        assert_eq!(diag.tasks.len(), 3);
+        assert_eq!(diag.tasks[0].name, "Spesifikasi Mesin");
+        assert_eq!(diag.tasks[0].status, GanttStatus::Done);
+        assert_eq!(diag.tasks[2].status, GanttStatus::Crit);
+
+        let mut pdf = PdfDocument::new("Uji Gantt Chart");
+        let final_y = WidyaDiagramEngine::render_to_pdf(&mut pdf, code, 50.0, 750.0, 480.0);
+        assert!(final_y < 750.0);
+        let bytes = pdf.generate_pdf_bytes();
+        assert!(!bytes.is_empty());
+        let text = String::from_utf8_lossy(&bytes);
+        assert!(text.contains("DIAGRAM JADWAL"));
+        assert!(text.contains("Spesifikasi Mesin"));
+        assert!(text.contains("Implementasi Rust"));
     }
 }

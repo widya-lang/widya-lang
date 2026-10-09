@@ -104,6 +104,7 @@ pub enum DocxElement {
     Callout { title: String, text: String, border_color: String },
     Diagram { raw_mermaid: String },
     Footnote { label: String, text: String },
+    TableOfContents,
 }
 
 /// Dokumen Microsoft Word (.docx / OpenXML Document) Kelas Industri
@@ -389,6 +390,11 @@ impl DocxDocument {
         sig
     }
 
+    /// Menambahkan Blok Daftar Isi Otomatis
+    pub fn add_table_of_contents(&mut self) {
+        self.elements.push(DocxElement::TableOfContents);
+    }
+
     /// Ekstraksi Seluruh Teks Murni dari Dokumen
     pub fn extract_plain_text(&self) -> String {
         let mut out = String::new();
@@ -439,6 +445,9 @@ impl DocxDocument {
                 }
                 DocxElement::Footnote { label, text } => {
                     out.push_str(&format!("[{}] {}\n", label, text));
+                }
+                DocxElement::TableOfContents => {
+                    out.push_str("\n[DAFTAR ISI]\n\n");
                 }
             }
         }
@@ -614,6 +623,9 @@ impl DocxDocument {
                         r#"<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="1" w:color="CBD5E1"/></w:pBdr></w:pPr><w:r><w:rPr><w:vertAlign w:val="superscript"/><w:b/><w:color w:val="0369A1"/></w:rPr><w:t>[{}] </w:t></w:r><w:r><w:rPr><w:sz w:val="18"/><w:color w:val="475569"/></w:rPr><w:t>{}</w:t></w:r></w:p>"#,
                         html_escape(label), html_escape(text)
                     ));
+                }
+                DocxElement::TableOfContents => {
+                    xml.push_str(r#"<w:p><w:pPr><w:pStyle w:val="TOCHeading"/><w:jc w:val="left"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:color w:val="0F172A"/></w:rPr><w:t>DAFTAR ISI</w:t></w:r></w:p>"#);
                 }
             }
         }
@@ -841,6 +853,9 @@ impl DocxDocument {
                         "<div class='footnote' style='border-top: 1px solid #cbd5e1; margin-top: 12px; padding-top: 4px; font-size: 8.5pt; color: #475569;'><sup style='color: #0369a1;'>[{}]</sup> {}</div>",
                         html_escape(label), html_escape(text)
                     ));
+                }
+                DocxElement::TableOfContents => {
+                    html.push_str("<div class='toc-box' style='background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin: 20px 0;'><h3 style='margin-top: 0; color: #0f172a;'>Daftar Isi</h3></div>");
                 }
             }
         }
