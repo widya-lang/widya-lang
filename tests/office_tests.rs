@@ -937,3 +937,115 @@ gantt
     assert!(pdf_str.contains("Pengujian Integrasi"), "PDF harus memuat tugas 4 gantt");
 }
 
+#[test]
+fn test_qr_code_pdf_rendering_and_svg_generation() {
+    let url = "https://widya-lang.org/verify/doc-2026";
+    let qr = WidyaQrCode::encode(url).expect("QR code harus berhasil di-encode");
+
+    // 1. Verifikasi SVG Output
+    let svg = qr.to_svg(5, 2);
+    assert!(svg.starts_with("<svg"), "SVG harus memiliki tag pembuka");
+    assert!(svg.contains("shape-rendering=\"crispEdges\""));
+    assert!(svg.ends_with("</svg>"));
+
+    // 2. Verifikasi Render ke PDF Vektor
+    let mut pdf = PdfDocument::new("Sertifikat Ber-QR Code");
+    qr.render_to_pdf(&mut pdf, 50.0, 600.0, 100.0);
+    let bytes = pdf.generate_pdf_bytes();
+    assert!(!bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&bytes);
+    assert!(pdf_str.contains(" re f\n"), "PDF harus memuat modul-modul persegi QR");
+}
+
+#[test]
+fn test_tte_visual_seal_with_qr_code() {
+    let mut pdf = PdfDocument::new("Surat Keputusan Pengangkatan");
+    pdf.current_page_mut().add_styled_text("SURAT KEPUTUSAN NO: 042/SK/DIR/2026", 50.0, 750.0, 14.0, true, (0.05, 0.15, 0.35));
+
+    let dummy_doc_bytes = b"Isi Surat Keputusan Direksi Widya-Lang 2026";
+    let sig = OfficeSecurity::sign_document(
+        "Satriyo Purnomo",
+        "Direktur Utama",
+        "PT Inovasi Kedaulatan Digital",
+        dummy_doc_bytes,
+        "kunci_rahasia_tte_2026",
+    );
+
+    let next_y = OfficeSecurity::render_tte_visual_seal(&mut pdf, &sig, 50.0, 700.0, 480.0);
+    assert!(next_y < 700.0);
+
+    let bytes = pdf.generate_pdf_bytes();
+    assert!(!bytes.is_empty());
+    let pdf_str = String::from_utf8_lossy(&bytes);
+
+    // Verifikasi teks segel resmi TTE
+    assert!(pdf_str.contains("DOKUMEN INI TELAH DITANDATANGANI SECARA ELEKTRONIK"), "PDF harus memuat header segel resmi");
+    assert!(pdf_str.contains("Satriyo Purnomo"), "PDF harus memuat nama penandatangan");
+    assert!(pdf_str.contains("Direktur Utama"), "PDF harus memuat jabatan");
+    assert!(pdf_str.contains("PT Inovasi Kedaulatan Digital"), "PDF harus memuat instansi");
+    assert!(pdf_str.contains("ASLI & TERVERIFIKASI"), "PDF harus memuat status keaslian");
+}
+
+#[test]
+fn test_pdf_text_extraction_engine() {
+    let mut pdf = PdfDocument::new("Naskah Akademik Widya");
+    let page = pdf.current_page_mut();
+    page.add_styled_text("Kedaulatan Algoritma Nasional", 50.0, 700.0, 14.0, true, (0.1, 0.2, 0.3));
+    page.add_styled_text("Kompiler mandiri tanpa LLVM atau GCC.", 50.0, 680.0, 10.0, false, (0.2, 0.3, 0.4));
+
+    // 1. Ekstraksi langsung dari struktur dokumen
+    let extracted_from_doc = pdf.extract_text();
+    assert!(extracted_from_doc.contains("Kedaulatan Algoritma Nasional"));
+    assert!(extracted_from_doc.contains("Kompiler mandiri tanpa LLVM"));
+
+    // 2. Ekstraksi mandiri dari aliran biner byte PDF
+    let bytes = pdf.generate_pdf_bytes();
+    let extracted_from_bytes = PdfDocument::extract_text_from_bytes(&bytes).expect("Ekstraksi biner PDF harus sukses");
+    assert!(extracted_from_bytes.contains("Kedaulatan Algoritma Nasional"));
+    assert!(extracted_from_bytes.contains("Kompiler mandiri tanpa LLVM"));
+}
+
+#[test]
+fn test_batch_document_mail_merge_pdf_with_qr() {
+    let csv_data = r#"nik,nama,jabatan,gaji,url_verifikasi
+3271012345678901,Budi Santoso,Perekayasa Utama,25000000,https://widya.id/v/101
+3271019876543210,Siti Rahmawati,Spesialis Kriptografi,22000000,https://widya.id/v/102
+"#;
+
+    let records = BatchDocumentEngine::parse_csv_records(csv_data);
+    assert_eq!(records.len(), 2);
+    assert_eq!(records[0].get("nama").unwrap(), "Budi Santoso");
+    assert_eq!(records[1].get("jabatan").unwrap(), "Spesialis Kriptografi");
+
+    let template_md = r#"# Slip Gaji Resmi Periode Oktober 2026
+
+* **Nama Penerima**: {{nama}}
+* **Nomor Induk Kependudukan**: {{nik}}
+* **Jabatan**: {{jabatan}}
+* **Gaji Bersih**: Rp {{gaji}}
+
+Dokumen ini sah dan diterbitkan secara digital oleh Sistem Payroll Berdaulat.
+"#;
+
+    // 1. Generate Batch PDF Documents
+    let (docs, metrics) = BatchDocumentEngine::generate_batch_pdf(template_md, &records, Some("url_verifikasi"));
+    assert_eq!(docs.len(), 2);
+    assert_eq!(metrics.total_documents, 2);
+
+    let doc1_bytes = docs[0].generate_pdf_bytes();
+    let doc1_str = String::from_utf8_lossy(&doc1_bytes);
+    assert!(doc1_str.contains("Budi Santoso"));
+    assert!(doc1_str.contains("Perekayasa Utama"));
+    assert!(doc1_str.contains("Pindai Verifikasi"));
+
+    // 2. Export Batch PDF ke Arsip ZIP Tunggal
+    let (zip_bytes, zip_metrics) = BatchDocumentEngine::export_batch_pdf_to_zip(template_md, &records, "slip_gaji", Some("url_verifikasi"));
+    assert_eq!(zip_metrics.total_documents, 2);
+    assert!(!zip_bytes.is_empty());
+    assert_eq!(&zip_bytes[0..4], b"PK\x03\x04");
+
+    let zip_str = String::from_utf8_lossy(&zip_bytes);
+    assert!(zip_str.contains("slip_gaji_0001.pdf"));
+    assert!(zip_str.contains("slip_gaji_0002.pdf"));
+}
+

@@ -260,6 +260,26 @@ pub enum OfficeSubcommands {
         #[arg(short, long, default_value = "./agen_kantor_digital/proyek")]
         dir: PathBuf,
     },
+    /// Ekstraksi teks dari berkas PDF (ISO 32000-1) secara mandiri
+    BacaPdf {
+        #[arg(value_name = "BERKAS_PDF")]
+        berkas: PathBuf,
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+    },
+    /// Cetak massal dokumen (Mail Merge) dari template Markdown/DOCX dan data CSV ke PDF/DOCX
+    BatchCetak {
+        #[arg(short, long, value_name = "BERKAS_TEMPLATE")]
+        template: PathBuf,
+        #[arg(short, long, value_name = "BERKAS_CSV")]
+        data: PathBuf,
+        #[arg(short, long, default_value = "batch_output.zip")]
+        output: PathBuf,
+        #[arg(short, long, default_value = "pdf")]
+        format: String,
+        #[arg(long)]
+        qr_field: Option<String>,
+    },
     /// Status dan kesiapan modul WidyaOffice
     Status,
 }
@@ -1009,6 +1029,76 @@ pub fn handle_office_command(aksi: &OfficeSubcommands) {
                 println!("{}", "============================================================".bright_blue());
                 println!("{}", format!("✅ Kompilasi Selesai: {} berkas PDF resmi diterbitkan 100% Native Widya-Lang!", count).bright_green().bold());
                 println!("{}", "============================================================\n".bright_blue());
+            }
+            OfficeSubcommands::BacaPdf { berkas, output } => {
+                match widya::office::PdfDocument::extract_text_from_file(&berkas) {
+                    Ok(text) => {
+                        if let Some(out_path) = output {
+                            if let Err(e) = fs::write(&out_path, &text) {
+                                eprintln!("❌ Gagal menulis berkas teks keluaran: {}", e);
+                                process::exit(1);
+                            }
+                            println!("{}", format!("✅ Teks PDF berhasil diekstrak dan disimpan ke {}", out_path.display()).bright_green().bold());
+                        } else {
+                            println!("\n{}", "=== HASIL EKSTRAKSI TEKS PDF ===".bright_cyan().bold());
+                            println!("{}", text);
+                            println!("{}", "================================\n".bright_cyan());
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("❌ Gagal mengekstrak teks PDF: {}", e);
+                        process::exit(1);
+                    }
+                }
+            }
+            OfficeSubcommands::BatchCetak { template, data, output, format, qr_field } => {
+                let csv_content = match fs::read_to_string(&data) {
+                    Ok(c) => c,
+                    Err(e) => {
+                        eprintln!("❌ Gagal membaca berkas CSV {}: {}", data.display(), e);
+                        process::exit(1);
+                    }
+                };
+
+                let records = widya::office::BatchDocumentEngine::parse_csv_records(&csv_content);
+                if records.is_empty() {
+                    eprintln!("❌ Berkas CSV tidak memuat data yang valid.");
+                    process::exit(1);
+                }
+
+                let template_content = match fs::read_to_string(&template) {
+                    Ok(c) => c,
+                    Err(e) => {
+                        eprintln!("❌ Gagal membaca berkas template {}: {}", template.display(), e);
+                        process::exit(1);
+                    }
+                };
+
+                println!("\n{}", "╔══════════════════════════════════════════════════════════════════════════════════════╗".bright_cyan().bold());
+                println!("{}", "║  🖨️  WIDYAOFFICE BATCH DOCUMENT ENGINE (MAIL MERGE MASSAL BERDAULAT)                  ║".bright_white().bold());
+                println!("{}", "╚══════════════════════════════════════════════════════════════════════════════════════╝".bright_cyan().bold());
+                println!("  Template  : {}", template.display().to_string().bright_yellow());
+                println!("  Data CSV  : {} ({} records)", data.display().to_string().bright_yellow(), records.len());
+                println!("  Target    : {}", output.display().to_string().bright_green().bold());
+                println!("  Format    : {}", format.to_uppercase().bright_cyan());
+
+                let (zip_bytes, metrics) = widya::office::BatchDocumentEngine::export_batch_pdf_to_zip(
+                    &template_content,
+                    &records,
+                    "dokumen",
+                    qr_field.as_deref(),
+                );
+
+                if let Err(e) = fs::write(&output, &zip_bytes) {
+                    eprintln!("❌ Gagal menulis berkas ZIP keluaran: {}", e);
+                    process::exit(1);
+                }
+
+                println!("\n{}", "✨ Cetak Massal Selesai!".bright_green().bold());
+                println!("  Total Dokumen : {} berkas", metrics.total_documents);
+                println!("  Kecepatan     : {:.1} dok/detik", metrics.docs_per_second);
+                println!("  Durasi        : {} ms", metrics.elapsed_millis);
+                println!("  Ukuran ZIP    : {:.1} KB\n", zip_bytes.len() as f64 / 1024.0);
             }
             OfficeSubcommands::Status => {
                 crate::cli::office::tampilkan_status_office();

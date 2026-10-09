@@ -23,6 +23,12 @@ pub fn register_office_suite(env: &mut Environment) {
     register_fn(env, "office_docx_ke_pdf", Some(2), builtin_office_docx_ke_pdf);
     register_fn(env, "office_xlsx_ke_pdf", Some(2), builtin_office_xlsx_ke_pdf);
     register_fn(env, "office_markdown_ke_docx", Some(2), builtin_office_markdown_ke_docx);
+    register_fn(env, "office_markdown_ke_pdf", Some(3), builtin_office_markdown_ke_pdf);
+    register_fn(env, "office_pptx_ke_pdf", Some(2), builtin_office_pptx_ke_pdf);
+    register_fn(env, "office_buat_epub", Some(4), builtin_office_buat_epub);
+    register_fn(env, "office_buat_qrcode_svg", Some(1), builtin_office_buat_qrcode_svg);
+    register_fn(env, "office_buat_qrcode_pdf", Some(2), builtin_office_buat_qrcode_pdf);
+    register_fn(env, "office_pdf_ekstrak_teks", Some(1), builtin_office_pdf_ekstrak_teks);
     register_fn(env, "office_sensor_pdp", Some(1), builtin_office_sensor_pdp);
     // PDF, LaTeX, Markdown & WidyaDrive / Workspace
     register_fn(env, "office_pdf_buat", Some(1), builtin_office_pdf_buat);
@@ -413,5 +419,97 @@ fn builtin_crdt_sesi_render_html(args: &[Value], span: &Span) -> Result<Value, G
     let json_v = widya_val_ke_json(&args[0]);
     let session: crate::office::CollabSession = serde_json::from_value(json_v).unwrap_or_else(|_| crate::office::CollabSession::new("room", "doc", "host", "host"));
     Ok(Value::String(session.render_html_editor()))
+}
+
+fn builtin_office_markdown_ke_pdf(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let md_text = match &args[0] { Value::String(s) => s.as_str(), _ => "" };
+    let out_path = match &args[1] { Value::String(s) => s.as_str(), _ => "output.pdf" };
+    let sertakan_toc = match &args[2] { Value::Bool(b) => *b, _ => false };
+
+    let md = crate::office::MarkdownDocument::parse(md_text);
+    let pdf = if sertakan_toc {
+        crate::office::DocumentConverter::markdown_to_pdf_with_toc(&md)
+    } else {
+        crate::office::DocumentConverter::markdown_to_pdf(&md)
+    };
+
+    match pdf.save_to_file(out_path) {
+        Ok(_) => Ok(Value::Bool(true)),
+        Err(e) => Err(Galat::runtime(format!("Gagal konversi Markdown ke PDF: {}", e), span)),
+    }
+}
+
+fn builtin_office_pptx_ke_pdf(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let in_val = &args[0];
+    let out_path = match &args[1] { Value::String(s) => s.as_str(), _ => "presentation.pdf" };
+
+    let pres = match in_val {
+        Value::String(path) => crate::office::PptxPresentation::new(path),
+        _ => {
+            let json_v = widya_val_ke_json(in_val);
+            serde_json::from_value(json_v).unwrap_or_else(|_| crate::office::PptxPresentation::new("Presentasi"))
+        }
+    };
+
+    let pdf = crate::office::DocumentConverter::pptx_to_pdf(&pres);
+    match pdf.save_to_file(out_path) {
+        Ok(_) => Ok(Value::Bool(true)),
+        Err(e) => Err(Galat::runtime(format!("Gagal konversi PPTX ke PDF: {}", e), span)),
+    }
+}
+
+fn builtin_office_buat_epub(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let title = match &args[0] { Value::String(s) => s.as_str(), _ => "Buku" };
+    let author = match &args[1] { Value::String(s) => s.as_str(), _ => "Penulis" };
+    let md_text = match &args[2] { Value::String(s) => s.as_str(), _ => "" };
+    let out_path = match &args[3] { Value::String(s) => s.as_str(), _ => "output.epub" };
+
+    let md = crate::office::MarkdownDocument::parse(md_text);
+    let epub = crate::office::DocumentConverter::markdown_to_epub(&md, Some(title), Some(author));
+    match epub.save_to_file(out_path) {
+        Ok(_) => Ok(Value::Bool(true)),
+        Err(e) => Err(Galat::runtime(format!("Gagal mengekspor buku EPUB: {}", e), span)),
+    }
+}
+
+fn builtin_office_buat_qrcode_svg(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let data = match &args[0] { Value::String(s) => s.as_str(), _ => "" };
+    match crate::office::WidyaQrCode::encode(data) {
+        Ok(qr) => Ok(Value::String(qr.to_svg(4, 2))),
+        Err(e) => Err(Galat::runtime(format!("Gagal membuat QR Code SVG: {}", e), span)),
+    }
+}
+
+fn builtin_office_buat_qrcode_pdf(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let data = match &args[0] { Value::String(s) => s.as_str(), _ => "" };
+    let out_path = match &args[1] { Value::String(s) => s.as_str(), _ => "qrcode.pdf" };
+
+    let qr = crate::office::WidyaQrCode::encode(data)
+        .map_err(|e| Galat::runtime(format!("Gagal encode QR Code: {}", e), span))?;
+
+    let mut pdf = crate::office::PdfDocument::new("QR Code Matrix");
+    pdf.current_page_mut().add_styled_text("QR Code Verifikasi Resmi", 50.0, 750.0, 14.0, true, (0.1, 0.2, 0.4));
+    qr.render_to_pdf(&mut pdf, 50.0, 700.0, 200.0);
+
+    match pdf.save_to_file(out_path) {
+        Ok(_) => Ok(Value::Bool(true)),
+        Err(e) => Err(Galat::runtime(format!("Gagal menyimpan PDF QR Code: {}", e), span)),
+    }
+}
+
+fn builtin_office_pdf_ekstrak_teks(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let path_or_text = match &args[0] { Value::String(s) => s.as_str(), _ => "" };
+    let path = std::path::Path::new(path_or_text);
+    if path.exists() {
+        match crate::office::PdfDocument::extract_text_from_file(path) {
+            Ok(txt) => Ok(Value::String(txt)),
+            Err(e) => Err(Galat::runtime(format!("Gagal ekstrak teks dari PDF: {}", e), span)),
+        }
+    } else {
+        match crate::office::PdfDocument::extract_text_from_bytes(path_or_text.as_bytes()) {
+            Ok(txt) => Ok(Value::String(txt)),
+            Err(e) => Err(Galat::runtime(format!("Gagal ekstrak teks dari data PDF: {}", e), span)),
+        }
+    }
 }
 

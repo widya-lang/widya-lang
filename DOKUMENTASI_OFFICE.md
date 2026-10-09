@@ -1,6 +1,6 @@
 # 🏢 DOKUMENTASI RESMI WIDYAOFFICE ENTERPRISE SUITE (v2.6.0)
 
-**WidyaOffice** adalah modul aplikasi pemrosesan dokumen produktivitas kantor berstandar industri internasional (ECMA-376 / OpenXML, ISO 32000-1 PDF, EPUB 3.2) yang terintegrasi secara *native* di dalam Widya-Lang. Seluruh fungsionalitas diimplementasikan menggunakan 100% kode murni Rust (*Zero External Cloud & Binary Dependency*) demi menjamin kedaulatan data dan kepatuhan penuh terhadap regulasi nasional.
+**WidyaOffice** adalah modul aplikasi pemrosesan dokumen produktivitas kantor berstandar industri internasional (ECMA-376 / OpenXML, ISO 32000-1 PDF, EPUB 3.2, ISO/IEC 18004 QR Code) yang terintegrasi secara *native* di dalam Widya-Lang. Seluruh fungsionalitas diimplementasikan menggunakan 100% kode murni Rust (*Zero External Cloud & Binary Dependency*) demi menjamin kedaulatan data dan kepatuhan penuh terhadap regulasi nasional.
 
 ---
 
@@ -133,7 +133,46 @@ Generator berkas buku elektronik `.epub` mandiri berstandar IDPF/W3C OCF 3.2:
 
 ---
 
-## 🔄 6. Pipeline Konversi Dokumen Universal — `src/office/converter.rs`
+## 🔲 6. Mesin QR Code Vektor Murni & Segel Visual TTE BSrE — `src/office/qrcode.rs` & `src/office/security.rs`
+
+- **Generator Matriks QR Code ISO/IEC 18004**:
+  - 100% Native Rust dengan codec Reed-Solomon GF(256) murni.
+  - Multi-level error correction (`L`, `M`, `Q`, `H`).
+  - Rendering langsung ke vektor PDF murni (`qr.render_to_pdf`) dan SVG string (`qr.to_svg`).
+- **Badge Segel Visual TTE Resmi Nasional (BSrE Compatible)**:
+  - Kotak verifikasi formal bergaris aksen tebal di lembar pengesahan PDF.
+  - QR Code verifikasi dokumen di sisi kiri.
+  - Ringkasan penandatangan, instansi, penerbit sertifikat, stempel waktu ISO 8601, SHA-256 digest, dan badge keaslian di sisi kanan.
+
+---
+
+## 🔍 7. Mesin Ekstraksi Teks PDF Mandiri (*PDF Text Extractor*) — `src/office/pdf.rs`
+
+- Membaca dan mengekstrak teks bersih dari aliran biner berkas PDF (ISO 32000-1) secara mandiri (*zero external dependencies*).
+- Mendukung pemindaian teks untuk audit kepatuhan UU PDP secara lokal (*air-gapped*).
+
+```bash
+# Mengekstrak teks dari berkas PDF langsung di terminal
+widya office baca-pdf dokumen_resmi.pdf
+widya office baca-pdf dokumen_resmi.pdf -o teks_ekstraksi.txt
+```
+
+---
+
+## 🖨️ 8. Mesin Cetak Massal Dokumen (*Batch Mail Merge Engine*) — `src/office/batch.rs`
+
+- Mengombinasikan berkas template Markdown/DOCX dengan kumpulan data CSV untuk menerbitkan ratusan dokumen PDF berseri (Slip Gaji, Sertifikat, Surat Keputusan) secara paralel.
+- Mendukung penyematan QR Code verifikasi unik per penerima.
+- Mengemas seluruh berkas keluaran secara otomatis ke dalam satu arsip ZIP biner berkecepatan hingga ratusan dokumen per detik.
+
+```bash
+# Cetak massal slip gaji / sertifikat ber-QR Code dari data CSV
+widya office batch-cetak --template template_slip.md --data pegawai.csv --output hasil_payroll.zip --qr-field url_verifikasi
+```
+
+---
+
+## 🔄 9. Pipeline Konversi Dokumen Universal — `src/office/converter.rs`
 
 Subkomando CLI `widya office convert` menyediakan konversi universal lintas format:
 - `Markdown (.md) -> PDF`: Mendukung tipografi penuh, sintaks highlight kode, tabel aligned, catatan kaki, bookmark interaktif, dan diagram vektor.
@@ -157,19 +196,30 @@ widya office convert buku.md buku.epub
 
 ---
 
-## 🔒 7. Keamanan Siber & Kepatuhan Regulasi (UU PDP No. 27/2022) — `src/office/security.rs`
+## 💻 10. Fungsi Standar Bahasa Widya-Lang (`src/stdlib/office_suite.rs`)
 
-- **TTE Kriptografis (BSrE Ready)**: Setiap dokumen dapat disegel dengan tanda tangan digital SHA-256 berstempel waktu ISO 8601.
-- **Redaksi Data Pribadi Otomatis**:
-  - NIK & KK (16 digit) disensor menjadi `327101******8901`
-  - Rekening Bank (10-14 digit) disensor menjadi `1234****90`
-  - Nomor Telepon (+62 / 08xx) disensor menjadi `0812****7890`
-  - Email disensor menjadi `b***o@kemdikbud.go.id`
-- **Zero Cloud Leakage**: Seluruh dokumen diproses 100% pada mesin lokal (*air-gapped capable*).
+Seluruh kapabilitas di atas dapat dipanggil langsung dari skrip program bahasa Widya:
+
+```widya
+// 1. Konversi Markdown ke PDF dengan Daftar Isi otomatis
+biar md_teks = "# Judul\n[TOC]\n## Bab 1\nKonten Bab 1"
+office_markdown_ke_pdf(md_teks, "laporan.pdf", benar)
+
+// 2. Menerbitkan buku digital EPUB 3.2
+office_buat_epub("Kedaulatan Digital", "Tim Riset", md_teks, "buku.epub")
+
+// 3. Menghasilkan QR Code SVG & PDF
+biar svg_qr = office_buat_qrcode_svg("https://widya-lang.org/verify/doc1")
+office_buat_qrcode_pdf("https://widya-lang.org/verify/doc1", "qr_verifikasi.pdf")
+
+// 4. Mengekstrak teks dari berkas PDF
+biar teks_pdf = office_pdf_ekstrak_teks("laporan.pdf")
+tulis("Hasil Ekstraksi:\n" + teks_pdf)
+```
 
 ---
 
-## 🧪 8. Status Modul & Perintah CLI
+## 🧪 11. Status Modul & Perintah CLI
 
 ```bash
 widya office status
@@ -186,6 +236,9 @@ Output:
   Buku Digital (EPUB 3.2)  : AKTIF (IDPF OCF, Cover Image & Navigation)
   Diagram Vektor (Mermaid) : AKTIF (Flow, Seq, State, Class, ER, Pie, Gantt)
   Daftar Isi Otomatis      : AKTIF ([TOC] & CLI --toc Dot Leaders)
+  Mesin QR Code & TTE Seal : AKTIF (ISO/IEC 18004 Vektor & Badge BSrE)
+  Ekstraktor Teks PDF      : AKTIF (Ekstraksi Konten & Audit Mandiri)
+  Cetak Massal (Mail Merge): AKTIF (Batch Engine, CSV & ZIP Container)
   TTE & Kepatuhan UU PDP   : AKTIF (SHA-256 BSrE & Auto Redaction)
   Native ISO 32000-1 PDF   : AKTIF (%PDF-1.7 Vector, Outlines & Links)
   LaTeX / TeX Math Engine  : AKTIF (Equations, KaTeX Preview)

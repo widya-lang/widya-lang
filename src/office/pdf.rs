@@ -745,6 +745,150 @@ impl PdfDocument {
         file.write_all(&bytes)?;
         Ok(())
     }
+
+    /// Ekstraksi teks dari struktur halaman internal PdfDocument yang sedang aktif
+    pub fn extract_text(&self) -> String {
+        let mut full_text = String::new();
+        for (idx, page) in self.pages.iter().enumerate() {
+            if idx > 0 {
+                full_text.push('\n');
+            }
+            for el in &page.elements {
+                if let PdfElement::Text { text, .. } = el {
+                    full_text.push_str(text);
+                    full_text.push(' ');
+                }
+            }
+        }
+        full_text.trim().to_string()
+    }
+
+    /// Ekstraksi teks mandiri dari biner berkas PDF (ISO 32000-1) murni tanpa pihak ketiga
+    pub fn extract_text_from_bytes(bytes: &[u8]) -> Result<String, String> {
+        let text = String::from_utf8_lossy(bytes);
+        if !text.contains("%PDF") {
+            return Err("Bukan berkas PDF yang valid (magic header %PDF tidak ditemukan)".to_string());
+        }
+
+        let mut extracted = String::new();
+        let mut in_bt = false;
+        let mut pos = 0;
+        let chars: Vec<char> = text.chars().collect();
+        let len = chars.len();
+
+        while pos < len {
+            if !in_bt {
+                if pos + 2 <= len && chars[pos] == 'B' && chars[pos + 1] == 'T' {
+                    let prev_ok = pos == 0 || chars[pos - 1].is_whitespace();
+                    let next_ok = pos + 2 == len || chars[pos + 2].is_whitespace();
+                    if prev_ok && next_ok {
+                        in_bt = true;
+                        pos += 2;
+                        continue;
+                    }
+                }
+                pos += 1;
+            } else {
+                if pos + 2 <= len && chars[pos] == 'E' && chars[pos + 1] == 'T' {
+                    let prev_ok = chars[pos - 1].is_whitespace();
+                    let next_ok = pos + 2 == len || chars[pos + 2].is_whitespace();
+                    if prev_ok && next_ok {
+                        in_bt = false;
+                        extracted.push('\n');
+                        pos += 2;
+                        continue;
+                    }
+                }
+
+                // Operator teks literal: (teks)
+                if chars[pos] == '(' {
+                    let mut str_content = String::new();
+                    pos += 1;
+                    let mut paren_depth = 1;
+                    while pos < len && paren_depth > 0 {
+                        if chars[pos] == '\\' && pos + 1 < len {
+                            str_content.push(chars[pos]);
+                            str_content.push(chars[pos + 1]);
+                            pos += 2;
+                        } else if chars[pos] == '(' {
+                            paren_depth += 1;
+                            str_content.push('(');
+                            pos += 1;
+                        } else if chars[pos] == ')' {
+                            paren_depth -= 1;
+                            if paren_depth > 0 {
+                                str_content.push(')');
+                            }
+                            pos += 1;
+                        } else {
+                            str_content.push(chars[pos]);
+                            pos += 1;
+                        }
+                    }
+
+                    let parsed = parse_pdf_literal_string(&str_content);
+                    if !parsed.is_empty() {
+                        extracted.push_str(&parsed);
+                        extracted.push(' ');
+                    }
+                    continue;
+                }
+
+                pos += 1;
+            }
+        }
+
+        Ok(extracted.trim().to_string())
+    }
+
+    /// Ekstraksi teks dari berkas fisik PDF di filesystem
+    pub fn extract_text_from_file<P: AsRef<Path>>(path: P) -> Result<String, String> {
+        let bytes = std::fs::read(path).map_err(|e| format!("Gagal membaca berkas PDF: {}", e))?;
+        Self::extract_text_from_bytes(&bytes)
+    }
+}
+
+fn parse_pdf_literal_string(raw: &str) -> String {
+    let mut out = String::new();
+    let mut chars = raw.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '\\' {
+            if let Some(next_c) = chars.next() {
+                match next_c {
+                    'n' => out.push('\n'),
+                    'r' => out.push('\r'),
+                    't' => out.push('\t'),
+                    'b' => out.push('\x08'),
+                    'f' => out.push('\x0c'),
+                    '(' => out.push('('),
+                    ')' => out.push(')'),
+                    '\\' => out.push('\\'),
+                    '0'..='7' => {
+                        let mut oct_val = (next_c as u32) - ('0' as u32);
+                        for _ in 0..2 {
+                            if let Some(&d) = chars.peek() {
+                                if ('0'..='7').contains(&d) {
+                                    chars.next();
+                                    oct_val = oct_val * 8 + ((d as u32) - ('0' as u32));
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                        if oct_val == 225 {
+                            out.push('•');
+                        } else if let Some(ch) = char::from_u32(oct_val) {
+                            out.push(ch);
+                        }
+                    }
+                    other => out.push(other),
+                }
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
 }
 
 /// Sanitasi teks Unicode agar kompatibel 100% dengan standard PDF Type 1 WinAnsi/ASCII Font

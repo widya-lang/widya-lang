@@ -146,4 +146,76 @@ impl OfficeSecurity {
 
         expected_signature == sig.signature_hex
     }
+
+    /// Merender Badge Segel Visual TTE BSrE Resmi ke dalam Dokumen PDF
+    pub fn render_tte_visual_seal(
+        pdf: &mut crate::office::pdf::PdfDocument,
+        sig: &DigitalSignature,
+        margin_x: f32,
+        mut current_y: f32,
+        content_width: f32,
+    ) -> f32 {
+        let box_h = 75.0f32;
+        let (_, page_height) = pdf.page_size.dimensions_points();
+
+        if current_y - box_h < 75.0 {
+            pdf.add_page();
+            current_y = page_height - 70.0;
+        }
+
+        let page = pdf.current_page_mut();
+
+        // 1. Kotak Luar Segel Resmi
+        page.add_rect(margin_x, current_y - box_h, content_width, box_h, true, (0.975, 0.985, 1.0));
+        page.add_rect(margin_x, current_y - box_h, content_width, box_h, false, (0.15, 0.35, 0.70));
+        // Aksen garis kiri tebal
+        page.add_styled_line(margin_x, current_y - box_h, margin_x, current_y, 4.0, (0.12, 0.30, 0.75));
+
+        // 2. Render QR Code Verifikasi di Sisi Kiri
+        let qr_size = 58.0f32;
+        let qr_x = margin_x + 10.0;
+        let qr_y = current_y - 8.0;
+
+        let verify_url = format!("https://tte.widya-lang.org/verify/{}", sig.document_digest);
+        if let Ok(qr) = crate::office::qrcode::WidyaQrCode::encode(&verify_url) {
+            qr.render_to_pdf(pdf, qr_x, qr_y, qr_size);
+        }
+
+        // 3. Teks Informasi TTE Resmi di Sisi Kanan
+        let text_x = qr_x + qr_size + 14.0;
+        let page = pdf.current_page_mut();
+
+        // Header Segel
+        page.add_styled_text(
+            "DOKUMEN INI TELAH DITANDATANGANI SECARA ELEKTRONIK (TTE)",
+            text_x,
+            current_y - 14.0,
+            8.0,
+            true,
+            (0.10, 0.25, 0.65),
+        );
+
+        // Identitas Penandatangan
+        let signer_info = format!("Penandatangan : {} ({})", sig.signer_name, sig.signer_role);
+        page.add_styled_text(&signer_info, text_x, current_y - 26.0, 7.5, false, (0.15, 0.20, 0.25));
+
+        // Instansi & Penerbit Sertifikat
+        let org_info = format!("Instansi / Otoritas : {} | {}", sig.signer_organization, sig.certificate_issuer);
+        page.add_styled_text(&org_info, text_x, current_y - 37.0, 7.0, false, (0.30, 0.35, 0.40));
+
+        // Stempel Waktu
+        let time_info = format!("Stempel Waktu : {} | Algoritma: {}", sig.timestamp, sig.algorithm);
+        page.add_styled_text(&time_info, text_x, current_y - 48.0, 7.0, false, (0.35, 0.40, 0.45));
+
+        // Ringkasan Dokumen (SHA-256 Digest) & Status
+        let digest_short = if sig.document_digest.len() > 16 {
+            format!("{}...{}", &sig.document_digest[..8], &sig.document_digest[sig.document_digest.len() - 8..])
+        } else {
+            sig.document_digest.clone()
+        };
+        let status_info = format!("Integritas (SHA-256) : {} [ASLI & TERVERIFIKASI]", digest_short);
+        page.add_styled_text(&status_info, text_x, current_y - 60.0, 7.0, true, (0.05, 0.50, 0.25));
+
+        current_y - box_h - 10.0
+    }
 }

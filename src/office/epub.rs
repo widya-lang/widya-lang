@@ -354,6 +354,14 @@ hr.section-divider {
         pkg.to_bytes()
     }
 
+    /// Menyimpan berkas EPUB langsung ke filesystem
+    pub fn save_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
+        let bytes = self.export_to_epub_bytes();
+        let mut file = File::create(path)?;
+        file.write_all(&bytes)?;
+        Ok(())
+    }
+
     /// Menghasilkan berkas XML content.opf (Open Packaging Format)
     fn generate_content_opf(&self) -> String {
         let mut opf = String::new();
