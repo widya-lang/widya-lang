@@ -38,7 +38,10 @@ pub mod htap;
 pub mod wire;
 pub use wire::*;
 
-pub use parquet_arrow::{ParquetArrowConnector, ParquetCompression, ParquetFileMetadata, ArrowRecordBatchIpc};
+pub use parquet_arrow::{
+    ArrowField, ArrowRecordBatchIpc, ColumnData, ColumnType, ParquetArrowConnector,
+    ParquetCompression, ParquetFileMetadata, PureArrowEngine, PureParquetEngine, PureRecordBatch,
+};
 pub use hybrid_search::{HybridDocument, HybridSearchEngine, HybridSearchResult, LocalEmbeddingEngine};
 pub use hnsw::{HnswVectorIndex, MetadataFilter};
 pub use checkpoint::CheckpointCoordinator;
