@@ -11,6 +11,7 @@ pub mod pure_widgets;
 pub mod pure_state;
 pub mod pure_router;
 pub mod pure_apk;
+pub mod pure_ipa;
 
 pub use pure_canvas::{FramebufferMurni, PersegiKotak, Titik2D, VektorPath, Warna};
 pub use pure_font::{FontAtlasMurni, GayaTipografi, MetrikTeks, PerataanTeks};
@@ -23,3 +24,4 @@ pub use pure_widgets::WidyaWidgets;
 pub use pure_state::{PemberitahuNilai, Sinyal};
 pub use pure_router::{RuteHalaman, WidyaNavigator};
 pub use pure_apk::*;
+pub use pure_ipa::*;
