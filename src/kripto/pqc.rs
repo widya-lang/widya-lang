@@ -262,16 +262,23 @@ impl PqcEngine {
     pub fn generate_mldsa87_keypair(seed_entropy: &str) -> PqcKeyPair {
         let mut hasher = Sha3_512::new();
         hasher.update(seed_entropy.as_bytes());
-        hasher.update(b"WIDYA_PQC_MLDSA87_FIPS204");
+        hasher.update(b"WIDYA_PQC_MLDSA87_FIPS204_KEYGEN");
         let hash = hasher.finalize();
 
-        let priv_bytes = &hash[..32];
-        let pub_bytes = &hash[32..];
+        let priv_seed = &hash[..32];
+        let a = Poly::sample_from_entropy(b"WIDYA_MLDSA87_GLOBAL_A", 0x05);
+        let s = Poly::sample_from_entropy(priv_seed, 0x01);
+        let t = a.mul_schoolbook(&s);
+
+        let mut pk_bytes = Vec::new();
+        for c in &t.coeffs {
+            pk_bytes.extend_from_slice(&(*c as u16).to_le_bytes());
+        }
 
         PqcKeyPair {
             algorithm: "ML-DSA-87 (Dilithium-5)".to_string(),
-            public_key_hex: format!("mldsa_pk_{}", hex::encode(pub_bytes)),
-            private_key_hex: format!("mldsa_sk_{}", hex::encode(priv_bytes)),
+            public_key_hex: format!("mldsa_pk_{}", hex::encode(pk_bytes)),
+            private_key_hex: format!("mldsa_sk_{}", hex::encode(priv_seed)),
             seed_fingerprint: hex::encode(&hash[..8]),
         }
     }
@@ -279,6 +286,10 @@ impl PqcEngine {
     /// Menandatangani Dokumen / Payload dengan Kunci Privat ML-DSA
     pub fn sign_mldsa(payload_bytes: &[u8], private_key_hex: &str) -> PqcSignature {
         let raw_sk = private_key_hex.strip_prefix("mldsa_sk_").unwrap_or(private_key_hex);
+        let priv_seed = hex::decode(raw_sk).unwrap_or_else(|_| raw_sk.as_bytes().to_vec());
+
+        let s = Poly::sample_from_entropy(&priv_seed, 0x01);
+        let a = Poly::sample_from_entropy(b"WIDYA_MLDSA87_GLOBAL_A", 0x05);
 
         let now_ms = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -287,15 +298,42 @@ impl PqcEngine {
 
         let salt = format!("SALT_{:016X}", now_ms);
 
-        let mut hasher = Sha3_512::new();
-        hasher.update(payload_bytes);
-        hasher.update(raw_sk.as_bytes());
-        hasher.update(salt.as_bytes());
-        let sig_hash = hasher.finalize();
+        // Ephemeral polynomial y
+        let mut y_hasher = Sha3_256::new();
+        y_hasher.update(&priv_seed);
+        y_hasher.update(payload_bytes);
+        y_hasher.update(salt.as_bytes());
+        let y_seed = y_hasher.finalize();
+        let y = Poly::sample_from_entropy(&y_seed, 0x02);
+
+        // Komitmen w = a * y in R_q
+        let w = a.mul_schoolbook(&y);
+
+        // Challenge c_seed = Sha3_256(w || payload || salt)
+        let mut c_hasher = Sha3_256::new();
+        for c_val in &w.coeffs {
+            c_hasher.update(&(*c_val as u16).to_le_bytes());
+        }
+        c_hasher.update(payload_bytes);
+        c_hasher.update(salt.as_bytes());
+        let c_seed = c_hasher.finalize();
+
+        let c = Poly::sample_from_entropy(&c_seed, 0x11);
+
+        // Respon z = y + c * s in R_q
+        let cs = c.mul_schoolbook(&s);
+        let z = y.add(&cs);
+
+        // Serialisasi z (KYBER_N * 2) + c_seed (32 bytes)
+        let mut sig_bytes = Vec::new();
+        for c_val in &z.coeffs {
+            sig_bytes.extend_from_slice(&(*c_val as u16).to_le_bytes());
+        }
+        sig_bytes.extend_from_slice(&c_seed);
 
         PqcSignature {
             algorithm: "ML-DSA-87 (Dilithium-5)".to_string(),
-            signature_hex: format!("mldsa_sig_{}", hex::encode(sig_hash)),
+            signature_hex: format!("mldsa_sig_{}", hex::encode(sig_bytes)),
             timestamp_ms: now_ms,
             salt_hex: hex::encode(salt.as_bytes()),
         }
@@ -311,13 +349,63 @@ impl PqcEngine {
             return false;
         }
 
-        // Tanda tangan harus memiliki panjang yang valid dan tidak kosong
-        let sig_raw = signature.signature_hex.strip_prefix("mldsa_sig_").unwrap();
-        if sig_raw.len() != 128 {
+        let raw_sig = signature.signature_hex.strip_prefix("mldsa_sig_").unwrap();
+        let sig_bytes = match hex::decode(raw_sig) {
+            Ok(b) => b,
+            Err(_) => return false,
+        };
+
+        if sig_bytes.len() != KYBER_N * 2 + 32 {
             return false;
         }
 
-        true
+        let raw_pk = public_key_hex.strip_prefix("mldsa_pk_").unwrap_or(public_key_hex);
+        let pk_bytes = match hex::decode(raw_pk) {
+            Ok(b) => b,
+            Err(_) => return false,
+        };
+
+        if pk_bytes.len() != KYBER_N * 2 {
+            return false;
+        }
+
+        let salt_bytes = match hex::decode(&signature.salt_hex) {
+            Ok(b) => b,
+            Err(_) => return false,
+        };
+
+        // Rekonstruksi z dan c_seed
+        let mut z = Poly::zero();
+        for i in 0..KYBER_N {
+            z.coeffs[i] = u16::from_le_bytes([sig_bytes[2 * i], sig_bytes[2 * i + 1]]) as i32;
+        }
+        let c_seed = &sig_bytes[KYBER_N * 2..];
+
+        // Rekonstruksi t
+        let mut t = Poly::zero();
+        for i in 0..KYBER_N {
+            t.coeffs[i] = u16::from_le_bytes([pk_bytes[2 * i], pk_bytes[2 * i + 1]]) as i32;
+        }
+
+        // Rekonstruksi c
+        let c = Poly::sample_from_entropy(c_seed, 0x11);
+
+        // Hitung w' = a * z - c * t in R_q
+        let a = Poly::sample_from_entropy(b"WIDYA_MLDSA87_GLOBAL_A", 0x05);
+        let az = a.mul_schoolbook(&z);
+        let ct = c.mul_schoolbook(&t);
+        let w_prime = az.sub(&ct);
+
+        // Verifikasi challenge
+        let mut check_hasher = Sha3_256::new();
+        for c_val in &w_prime.coeffs {
+            check_hasher.update(&(*c_val as u16).to_le_bytes());
+        }
+        check_hasher.update(payload_bytes);
+        check_hasher.update(&salt_bytes);
+        let check_c_seed = check_hasher.finalize();
+
+        check_c_seed.as_slice() == c_seed
     }
 
     // ------------------------------------------------------------------------
