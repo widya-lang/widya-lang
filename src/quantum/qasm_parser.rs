@@ -114,7 +114,43 @@ impl QuantumCircuit {
             gates,
         })
     }
+
+    /// Eksekusi rangkaian gerbang sirkuit secara langsung pada simulator kuantum murni berdaulat
+    pub fn execute_pure(&self) -> Result<crate::quantum::pure_quantum::PureQuantumSim, String> {
+        let mut sim = crate::quantum::pure_quantum::PureQuantumSim::new(self.num_qubits);
+        for gate in &self.gates {
+            match gate {
+                QuantumGateOp::Hadamard(q) => {
+                    if *q >= self.num_qubits { return Err(format!("Qubit index {} melebihi batas", q)); }
+                    sim.h(*q);
+                }
+                QuantumGateOp::PauliX(q) => {
+                    if *q >= self.num_qubits { return Err(format!("Qubit index {} melebihi batas", q)); }
+                    sim.x(*q);
+                }
+                QuantumGateOp::PauliY(q) => {
+                    if *q >= self.num_qubits { return Err(format!("Qubit index {} melebihi batas", q)); }
+                    sim.y(*q);
+                }
+                QuantumGateOp::PauliZ(q) => {
+                    if *q >= self.num_qubits { return Err(format!("Qubit index {} melebihi batas", q)); }
+                    sim.z(*q);
+                }
+                QuantumGateOp::Cnot(c, t) => {
+                    if *c >= self.num_qubits || *t >= self.num_qubits { return Err("Qubit index melebihi batas".to_string()); }
+                    sim.cx(*c, *t);
+                }
+                QuantumGateOp::RotationZ(q, theta) => {
+                    if *q >= self.num_qubits { return Err(format!("Qubit index {} melebihi batas", q)); }
+                    sim.rz(*q, *theta);
+                }
+                QuantumGateOp::Measure(_, _) => {}
+            }
+        }
+        Ok(sim)
+    }
 }
+
 
 fn extract_qubit_index(s: &str) -> Result<usize, String> {
     let clean = s.trim().trim_end_matches(';');

@@ -6,6 +6,7 @@
 //! - EEG Spectral Power Band Decomposition (Delta, Theta, Alpha, Beta, Gamma) via Discrete Fourier Transform
 //! - Brain-Computer Interface (BCI) Motor Imagery Lateralization Classifier
 
+use serde::{Deserialize, Serialize};
 use std::f64::consts::PI;
 
 // ============================================================================
@@ -13,7 +14,7 @@ use std::f64::consts::PI;
 // ============================================================================
 
 /// Parameter Sinapsis dengan Aturan Pembelajaran STDP
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StdpSynapse {
     pub pre_neuron_idx: usize,
     pub post_neuron_idx: usize,
@@ -29,6 +30,7 @@ pub struct StdpSynapse {
 }
 
 impl StdpSynapse {
+
     pub fn new(pre: usize, post: usize, initial_weight: f64) -> Self {
         Self {
             pre_neuron_idx: pre,
@@ -71,7 +73,7 @@ impl StdpSynapse {
 }
 
 /// Neuron Leaky Integrate-and-Fire (LIF) Presisi Tinggi
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PureLifNeuron {
     pub v_membrane: f64,
     pub v_rest: f64,
@@ -82,7 +84,37 @@ pub struct PureLifNeuron {
     pub current_refractory: usize,
 }
 
+impl From<crate::neuro::spiking_nn::LifNeuron> for PureLifNeuron {
+    fn from(n: crate::neuro::spiking_nn::LifNeuron) -> Self {
+        Self {
+            v_membrane: n.membrane_potential,
+            v_rest: n.resting_potential,
+            v_threshold: n.threshold_potential,
+            v_reset: n.reset_potential,
+            tau_membrane: 10.0,
+            refractory_steps: n.refractory_period_steps as usize,
+            current_refractory: n.current_refractory as usize,
+        }
+    }
+}
+
+impl From<PureLifNeuron> for crate::neuro::spiking_nn::LifNeuron {
+    fn from(n: PureLifNeuron) -> Self {
+        Self {
+            membrane_potential: n.v_membrane,
+            resting_potential: n.v_rest,
+            threshold_potential: n.v_threshold,
+            reset_potential: n.v_reset,
+            decay_tau: (-1.0 / n.tau_membrane).exp(),
+            refractory_period_steps: n.refractory_steps as u32,
+            current_refractory: n.current_refractory as u32,
+            total_spikes_fired: 0,
+        }
+    }
+}
+
 impl PureLifNeuron {
+
     pub fn new(v_rest: f64, v_threshold: f64, v_reset: f64, tau: f64) -> Self {
         Self {
             v_membrane: v_rest,
@@ -180,7 +212,7 @@ impl SnnNetwork {
 // ============================================================================
 
 /// Estimasi Daya Spektral per Pita Frekuensi Gelombang Otak
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct PureEegBandPower {
     pub delta: f64, // 0.5 - 4 Hz
     pub theta: f64, // 4.0 - 8 Hz
@@ -188,6 +220,35 @@ pub struct PureEegBandPower {
     pub beta: f64,  // 13.0 - 30 Hz
     pub gamma: f64, // 30.0 - 50 Hz
     pub total_power: f64,
+}
+
+impl From<crate::neuro::eeg_filter::EegBandPowers> for PureEegBandPower {
+    fn from(p: crate::neuro::eeg_filter::EegBandPowers) -> Self {
+        let total = p.delta_0_5_4hz + p.theta_4_8hz + p.alpha_8_13hz + p.beta_13_30hz + p.gamma_30_100hz;
+        Self {
+            delta: p.delta_0_5_4hz,
+            theta: p.theta_4_8hz,
+            alpha: p.alpha_8_13hz,
+            beta: p.beta_13_30hz,
+            gamma: p.gamma_30_100hz,
+            total_power: total,
+        }
+    }
+}
+
+impl From<PureEegBandPower> for crate::neuro::eeg_filter::EegBandPowers {
+    fn from(p: PureEegBandPower) -> Self {
+        let denom = p.alpha + p.theta;
+        let engagement = if denom > 1e-6 { p.beta / denom } else { 0.0 };
+        Self {
+            delta_0_5_4hz: p.delta,
+            theta_4_8hz: p.theta,
+            alpha_8_13hz: p.alpha,
+            beta_13_30hz: p.beta,
+            gamma_30_100hz: p.gamma,
+            engagement_index: engagement,
+        }
+    }
 }
 
 pub struct PureBciEngine;
@@ -278,9 +339,10 @@ impl PureBciEngine {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MotorImageryClass {
     Rest,
     LeftHand,
     RightHand,
 }
+

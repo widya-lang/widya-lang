@@ -96,6 +96,22 @@ impl EbpfEmitter {
         self.buffer.clone()
     }
 
+    /// Menghasilkan biner ELF eBPF berdaulat langsung tanpa ketergantungan clang/LLVM
+    pub fn emit_pure_elf(&self) -> Vec<u8> {
+        let mut builder = crate::compiler::pure_ebpf::PureEbpfElfBuilder::new();
+        let default_action = if self.xdp_rules.iter().any(|r| r.action == "XDP_DROP") {
+            crate::compiler::pure_ebpf::XDP_DROP
+        } else {
+            crate::compiler::pure_ebpf::XDP_PASS
+        };
+        builder.add_instruction(crate::compiler::pure_ebpf::EbpfInsn::mov_imm64(
+            0,
+            default_action as i32,
+        ));
+        builder.add_instruction(crate::compiler::pure_ebpf::EbpfInsn::exit());
+        builder.build_elf()
+    }
+
     /// Menghasilkan program eBPF kprobe / uprobe untuk pelacakan fungsi
     pub fn emit_ebpf_c(&mut self, program: &Program) -> Result<String, Galat> {
         self.buffer.clear();

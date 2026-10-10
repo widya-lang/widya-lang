@@ -4,6 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 
+pub use crate::sys::pure_rtos::*;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CanFrame {
     pub id: u32,
@@ -11,6 +13,30 @@ pub struct CanFrame {
     pub dlc: u8,
     pub data: [u8; 8],
 }
+
+impl From<crate::automotive::canbus::CanFrame> for CanFrame {
+    fn from(f: crate::automotive::canbus::CanFrame) -> Self {
+        Self {
+            id: f.id,
+            is_extended: f.is_extended,
+            dlc: f.dlc,
+            data: f.data,
+        }
+    }
+}
+
+impl From<CanFrame> for crate::automotive::canbus::CanFrame {
+    fn from(f: CanFrame) -> Self {
+        Self {
+            id: f.id,
+            is_extended: f.is_extended,
+            is_rtr: false,
+            dlc: f.dlc,
+            data: f.data,
+        }
+    }
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MavlinkTelemetry {

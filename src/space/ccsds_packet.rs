@@ -68,6 +68,24 @@ impl CcsdsSpacePacket {
         }
     }
 
+    /// Bungkus paket CCSDS ke dalam frame transfer telemetri (TM Transfer Frame)
+    pub fn wrap_in_tm_transfer_frame(
+        &self,
+        spacecraft_id: u16,
+        virtual_channel_id: u8,
+        master_frame_count: u8,
+        vc_frame_count: u8,
+    ) -> crate::space::pure_spacecraft::CcsdsTmTransferFrame {
+        crate::space::pure_spacecraft::CcsdsTmTransferFrame::new(
+            spacecraft_id,
+            virtual_channel_id,
+            master_frame_count,
+            vc_frame_count,
+            self.to_bytes(),
+        )
+    }
+
+
     /// Serialisasi biner paket CCSDS (6 bytes header + user data)
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::with_capacity(6 + self.user_data.len());

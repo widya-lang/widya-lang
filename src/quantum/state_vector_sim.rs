@@ -141,3 +141,37 @@ impl QuantumStateVector {
         self.state.iter().map(|c| c.norm_sq()).collect()
     }
 }
+
+impl From<crate::quantum::pure_quantum::PureQuantumSim> for QuantumStateVector {
+    fn from(sim: crate::quantum::pure_quantum::PureQuantumSim) -> Self {
+        Self {
+            num_qubits: sim.num_qubits,
+            state: sim.state.into_iter().map(|c| Complex64::new(c.re, c.im)).collect(),
+        }
+    }
+}
+
+impl From<QuantumStateVector> for crate::quantum::pure_quantum::PureQuantumSim {
+    fn from(qsv: QuantumStateVector) -> Self {
+        let dim = qsv.state.len();
+        Self {
+            num_qubits: qsv.num_qubits,
+            dim,
+            state: qsv.state.into_iter().map(|c| crate::quantum::pure_quantum::Complex::new(c.re, c.im)).collect(),
+        }
+    }
+}
+
+impl From<crate::quantum::pure_quantum::Complex> for Complex64 {
+    fn from(c: crate::quantum::pure_quantum::Complex) -> Self {
+        Complex64::new(c.re, c.im)
+    }
+}
+
+impl From<Complex64> for crate::quantum::pure_quantum::Complex {
+    fn from(c: Complex64) -> Self {
+        crate::quantum::pure_quantum::Complex::new(c.re, c.im)
+    }
+}
+
+

@@ -6,6 +6,12 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+pub use crate::kripto::pure_zk::{
+    FiatShamirZkProver, FieldElement, LinearCombination, PedersenCommitment, PreimageZkProof,
+    R1csCircuit, GOLDILOCKS_PRIME,
+};
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct R1csConstraint {
     pub a_var: String,
@@ -72,4 +78,20 @@ impl ZkEngine {
         }
         proof.public_inputs.get("output_class") == Some(&(public_output_class as u64))
     }
+
+    /// Konversi batasan R1csConstraint menjadi sirkuit R1CS murni berdaulat berbasis medan Goldilocks
+    pub fn to_pure_circuit(
+        constraints: &[R1csConstraint],
+    ) -> crate::kripto::pure_zk::R1csCircuit {
+        let mut circuit = crate::kripto::pure_zk::R1csCircuit::new();
+        for c in constraints {
+            let lc_a = crate::kripto::pure_zk::LinearCombination::from_var(&c.a_var);
+            let lc_b = crate::kripto::pure_zk::LinearCombination::from_var(&c.b_var);
+            let lc_c = crate::kripto::pure_zk::LinearCombination::from_var(&c.c_var);
+            circuit.add_constraint(lc_a, lc_b, lc_c);
+        }
+        circuit
+    }
 }
+
+

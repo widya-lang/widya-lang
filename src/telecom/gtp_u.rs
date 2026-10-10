@@ -137,3 +137,54 @@ impl GtpPacket {
         })
     }
 }
+
+impl From<GtpPacket> for (crate::telecom::pure_5g::PureGtpuHeader, Vec<u8>) {
+    fn from(p: GtpPacket) -> Self {
+        let msg_type = match p.header.message_type {
+            GtpMessageType::EchoRequest => 1,
+            GtpMessageType::EchoResponse => 2,
+            GtpMessageType::ErrorIndication => 26,
+            GtpMessageType::EndMarker => 254,
+            GtpMessageType::TPdu => 255,
+        };
+        let header = crate::telecom::pure_5g::PureGtpuHeader {
+            version: p.header.version,
+            protocol_type: p.header.protocol_type,
+            has_extension: p.header.qfi_extension.is_some(),
+            has_sequence: p.header.sequence_number.is_some(),
+            has_npdu: false,
+            message_type: msg_type,
+            length: p.header.length,
+            teid: p.header.teid,
+            sequence_number: p.header.sequence_number,
+            npdu_number: None,
+            qfi: p.header.qfi_extension,
+        };
+        (header, p.payload)
+    }
+}
+
+impl From<(crate::telecom::pure_5g::PureGtpuHeader, Vec<u8>)> for GtpPacket {
+    fn from((h, payload): (crate::telecom::pure_5g::PureGtpuHeader, Vec<u8>)) -> Self {
+        let msg_type = match h.message_type {
+            1 => GtpMessageType::EchoRequest,
+            2 => GtpMessageType::EchoResponse,
+            26 => GtpMessageType::ErrorIndication,
+            254 => GtpMessageType::EndMarker,
+            _ => GtpMessageType::TPdu,
+        };
+        Self {
+            header: GtpHeader {
+                version: h.version,
+                protocol_type: h.protocol_type,
+                message_type: msg_type,
+                length: h.length,
+                teid: h.teid,
+                sequence_number: h.sequence_number,
+                qfi_extension: h.qfi,
+            },
+            payload,
+        }
+    }
+}
+

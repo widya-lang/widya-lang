@@ -308,3 +308,51 @@ impl Mesh3D {
         obj
     }
 }
+
+impl From<&Mesh3D> for crate::game3d::pure_rasterizer::SoftwareMesh {
+    fn from(mesh: &Mesh3D) -> Self {
+        let to_soft_vertex = |v: &Vertex3D| -> crate::game3d::pure_rasterizer::SoftwareVertex {
+            let color = crate::multimedia::image::RgbaPixel::new(
+                (v.color[0] * 255.0).clamp(0.0, 255.0) as u8,
+                (v.color[1] * 255.0).clamp(0.0, 255.0) as u8,
+                (v.color[2] * 255.0).clamp(0.0, 255.0) as u8,
+                (v.color[3] * 255.0).clamp(0.0, 255.0) as u8,
+            );
+            crate::game3d::pure_rasterizer::SoftwareVertex::new(
+                crate::game3d::math3d::Vec3::new(v.position[0], v.position[1], v.position[2]),
+                color,
+            )
+        };
+
+        let mut triangles = Vec::new();
+        if mesh.indices.is_empty() {
+            for chunk in mesh.vertices.chunks_exact(3) {
+                triangles.push(crate::game3d::pure_rasterizer::SoftwareTriangle {
+                    v0: to_soft_vertex(&chunk[0]),
+                    v1: to_soft_vertex(&chunk[1]),
+                    v2: to_soft_vertex(&chunk[2]),
+                });
+            }
+        } else {
+            for chunk in mesh.indices.chunks_exact(3) {
+                let (i0, i1, i2) = (chunk[0] as usize, chunk[1] as usize, chunk[2] as usize);
+                if i0 < mesh.vertices.len() && i1 < mesh.vertices.len() && i2 < mesh.vertices.len() {
+                    triangles.push(crate::game3d::pure_rasterizer::SoftwareTriangle {
+                        v0: to_soft_vertex(&mesh.vertices[i0]),
+                        v1: to_soft_vertex(&mesh.vertices[i1]),
+                        v2: to_soft_vertex(&mesh.vertices[i2]),
+                    });
+                }
+            }
+        }
+        crate::game3d::pure_rasterizer::SoftwareMesh { triangles }
+    }
+}
+
+impl From<Mesh3D> for crate::game3d::pure_rasterizer::SoftwareMesh {
+    fn from(mesh: Mesh3D) -> Self {
+        (&mesh).into()
+    }
+}
+
+

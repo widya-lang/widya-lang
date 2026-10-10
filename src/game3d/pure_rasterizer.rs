@@ -217,4 +217,18 @@ impl SoftwareRasterizer {
             }
         }
     }
+
+    /// Render Mesh3D standar menggunakan pure CPU software rasterizer
+    pub fn render_mesh3d(
+        &mut self,
+        mesh: &crate::game3d::mesh::Mesh3D,
+        model_matrix: &Mat4,
+        view_proj_matrix: &Mat4,
+        framebuffer: &mut ImageBuffer,
+    ) {
+        let soft_mesh: SoftwareMesh = mesh.into();
+        self.render_mesh(&soft_mesh, model_matrix, view_proj_matrix, framebuffer);
+    }
 }
+
+

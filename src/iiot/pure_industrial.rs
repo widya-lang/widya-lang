@@ -7,6 +7,7 @@
 //! - IEEE-754 Float32 & Int32 Industrial Multi-Register Word Conversion
 
 use crate::iiot::modbus::calculate_crc16_modbus;
+use serde::{Deserialize, Serialize};
 
 // ============================================================================
 // 1. CAN-BUS 2.0A / 2.0B SOCKETCAN COMPLIANT FRAME ENGINE
@@ -19,14 +20,14 @@ pub const CAN_SFF_MASK: u32 = 0x000007FF; // 11-bit standard mask
 pub const CAN_EFF_MASK: u32 = 0x1FFFFFFF; // 29-bit extended mask
 
 /// Tipe Pengalamatan CAN-Bus
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CanId {
     Standard(u16), // 11-bit (0x000 .. 0x7FF)
     Extended(u32), // 29-bit (0x00000000 .. 0x1FFFFFFF)
 }
 
 /// Struktur Frame CAN-Bus 2.0 (16-byte Linux SocketCAN struct can_frame layout)
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CanFrame {
     pub id: CanId,
     pub is_rtr: bool,
@@ -160,12 +161,77 @@ impl CanFrame {
     }
 }
 
+impl From<crate::automotive::canbus::CanFrame> for CanFrame {
+    fn from(f: crate::automotive::canbus::CanFrame) -> Self {
+        let id = if f.is_extended {
+            CanId::Extended(f.id)
+        } else {
+            CanId::Standard(f.id as u16)
+        };
+        Self {
+            id,
+            is_rtr: f.is_rtr,
+            is_error: false,
+            dlc: f.dlc,
+            data: f.data,
+        }
+    }
+}
+
+impl From<CanFrame> for crate::automotive::canbus::CanFrame {
+    fn from(f: CanFrame) -> Self {
+        let (id, is_extended) = match f.id {
+            CanId::Standard(s) => (s as u32, false),
+            CanId::Extended(e) => (e, true),
+        };
+        Self {
+            id,
+            is_extended,
+            is_rtr: f.is_rtr,
+            dlc: f.dlc,
+            data: f.data,
+        }
+    }
+}
+
+impl From<crate::rtos::CanFrame> for CanFrame {
+    fn from(f: crate::rtos::CanFrame) -> Self {
+        let id = if f.is_extended {
+            CanId::Extended(f.id)
+        } else {
+            CanId::Standard(f.id as u16)
+        };
+        Self {
+            id,
+            is_rtr: false,
+            is_error: false,
+            dlc: f.dlc,
+            data: f.data,
+        }
+    }
+}
+
+impl From<CanFrame> for crate::rtos::CanFrame {
+    fn from(f: CanFrame) -> Self {
+        let (id, is_extended) = match f.id {
+            CanId::Standard(s) => (s as u32, false),
+            CanId::Extended(e) => (e, true),
+        };
+        Self {
+            id,
+            is_extended,
+            dlc: f.dlc,
+            data: f.data,
+        }
+    }
+}
+
 // ============================================================================
 // 2. MODBUS RTU SERIAL PROTOCOL STACK
 // ============================================================================
 
 /// Frame Modbus RTU: [Slave ID (1B), Function Code (1B), Payload (NB), CRC-16 (2B Little-Endian)]
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModbusRtuFrame {
     pub slave_id: u8,
     pub function_code: u8,

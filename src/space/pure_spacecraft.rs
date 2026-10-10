@@ -7,6 +7,7 @@
 //! - Two-Line Element (TLE) Parser & SGP4 Keplerian Satellite Orbit Propagator
 //! - Sub-Satellite Point Geodetic Coordinates (Lat, Lon, Alt) and Nusantara Groundstation Tracking
 
+use serde::{Deserialize, Serialize};
 use std::f64::consts::PI;
 
 pub const CCSDS_ASM: [u8; 4] = [0x1A, 0xCF, 0xFC, 0x1D]; // 32-bit Attached Synchronization Marker
@@ -38,7 +39,7 @@ pub fn calculate_ccsds_crc16(data: &[u8]) -> u16 {
 // 2. CCSDS TELEMETRY (TM) TRANSFER FRAME (CCSDS 132.0-B-2)
 // ============================================================================
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CcsdsTmTransferFrame {
     pub spacecraft_id: u16,       // 10 bits (0..1023)
     pub virtual_channel_id: u8,   // 3 bits (0..7)
@@ -145,6 +146,11 @@ impl CcsdsTmTransferFrame {
             data_payload: payload,
         })
     }
+
+    /// Ekstrak paket antariksa CCSDS (Space Packet) dari payload data frame TM
+    pub fn extract_space_packet(&self) -> Result<crate::space::ccsds_packet::CcsdsSpacePacket, String> {
+        crate::space::ccsds_packet::CcsdsSpacePacket::parse_bytes(&self.data_payload)
+    }
 }
 
 // ============================================================================
@@ -152,7 +158,7 @@ impl CcsdsTmTransferFrame {
 // ============================================================================
 
 /// Parameter Elemen Orbit Satelit TLE
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SatelliteTle {
     pub sat_name: String,
     pub sat_number: u32,
@@ -167,7 +173,7 @@ pub struct SatelliteTle {
 }
 
 /// Posisi Geodetik Sub-Satelit di Permukaan Bumi
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct GeodeticPosition {
     pub lat_deg: f64,
     pub lon_deg: f64,

@@ -6,10 +6,11 @@
 //! - AIS Type 1, 2, 3 (Position Reports) & Type 5 (Static & Voyage Data) Decoders
 //! - Maritime CPA (Closest Point of Approach) & TCPA (Time to CPA) Collision Prediction
 
+use serde::{Deserialize, Serialize};
 use std::f64::consts::PI;
 
 /// Status Navigasi Kapal (ITU-R M.1371)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum NavigationalStatus {
     UnderWayUsingEngine,
     AtAnchor,
@@ -41,7 +42,7 @@ impl NavigationalStatus {
 }
 
 /// Laporan Posisi AIS (Tipe 1, 2, dan 3)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AisPositionReport {
     pub message_type: u8,
     pub repeat_indicator: u8,
@@ -58,7 +59,7 @@ pub struct AisPositionReport {
 }
 
 /// Data Statis & Perjalanan Kapal (Tipe 5)
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AisStaticVoyageData {
     pub mmsi: u32,
     pub imo_number: u32,
@@ -136,6 +137,24 @@ impl AisBitReader {
 pub struct AisDecoder;
 
 impl AisDecoder {
+    /// Konstruktor helper laporan posisi AIS langsung
+    pub fn decode_position_report(mmsi: u32, lat: f64, lon: f64, sog: f64, cog: f64, hdg: u16) -> AisPositionReport {
+        AisPositionReport {
+            message_type: 1,
+            repeat_indicator: 0,
+            mmsi,
+            nav_status: NavigationalStatus::UnderWayUsingEngine,
+            rate_of_turn: 0,
+            speed_over_ground_knots: sog,
+            position_accuracy: true,
+            longitude: lon,
+            latitude: lat,
+            course_over_ground_deg: cog,
+            true_heading_deg: Some(hdg),
+            timestamp_sec: 35,
+        }
+    }
+
     /// Validasi checksum NMEA 0183 (XOR antar karakter antara '!' dan '*')
     pub fn verify_nmea_checksum(sentence: &str) -> bool {
         let trimmed = sentence.trim();
