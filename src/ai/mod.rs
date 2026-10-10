@@ -41,4 +41,9 @@ pub use autonomous_hosting::{AutonomousAgentHostManager, AutonomousAgentState};
 pub use voice_stream::{VoiceStreamEngine, AudioPcmChunk, AudioSampleRate, VoiceSessionState};
 pub use lora::LoraLinearLayer;
 pub use federated_rag::{FederatedRagEngine, FederatedSearchResult, LocalVectorDoc};
+pub mod pure_weights;
+pub use pure_weights::{
+    PureGgufEngine, PureGgufModel, PureGgufTensor, PureGgufType, PureGgufValue,
+    PureSafeTensorsEngine, SafeTensorRecord, SafeTensorsModel,
+};
 
