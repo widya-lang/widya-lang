@@ -193,7 +193,7 @@ impl KernelThreadManager {
 
         let current_id = self.current_thread.load(Ordering::SeqCst) as ThreadID;
         
-        let mut threads = self.threads.borrow_mut();
+        let threads = self.threads.borrow_mut();
         if let Some(tcb) = threads.get(&current_id) {
             let mut tcb_ref = tcb.borrow_mut();
             tcb_ref.state = ThreadState::Ready;
@@ -201,12 +201,14 @@ impl KernelThreadManager {
 
         drop(threads);
 
-        let mut ready_queue = self.ready_queue.borrow_mut();
-        ready_queue.push_back(current_id);
-        drop(ready_queue);
+        let id_opt = {
+            let mut ready_queue = self.ready_queue.borrow_mut();
+            ready_queue.push_back(current_id);
+            ready_queue.pop_front()
+        };
 
         // Rotate queue
-        if let Some(id) = ready_queue.pop_front() {
+        if let Some(id) = id_opt {
             self.current_thread.store(id as usize, Ordering::SeqCst);
         }
 
@@ -231,20 +233,26 @@ impl KernelThreadManager {
 
     /// Wake up a waiting thread
     pub fn wake_up(&self, thread_id: ThreadID) -> Result<(), String> {
-        let threads = self.threads.borrow();
-        let tcb = threads.get(&thread_id)
-            .ok_or_else(|| format!("Thread {} not found", thread_id))?;
+        let should_queue = {
+            let threads = self.threads.borrow();
+            let tcb = threads.get(&thread_id)
+                .ok_or_else(|| format!("Thread {} not found", thread_id))?;
 
-        let mut tcb_ref = tcb.borrow_mut();
-        
-        match tcb_ref.state {
-            ThreadState::Waiting | ThreadState::Blocked => {
-                tcb_ref.state = ThreadState::Ready;
-                drop(threads);
-                self.ready_queue.borrow_mut().push_back(thread_id);
-                Ok(())
+            let mut tcb_ref = tcb.borrow_mut();
+            match tcb_ref.state {
+                ThreadState::Waiting | ThreadState::Blocked => {
+                    tcb_ref.state = ThreadState::Ready;
+                    true
+                }
+                _ => false,
             }
-            _ => Err(format!("Thread {} is not waiting", thread_id)),
+        };
+
+        if should_queue {
+            self.ready_queue.borrow_mut().push_back(thread_id);
+            Ok(())
+        } else {
+            Err(format!("Thread {} is not waiting", thread_id))
         }
     }
 
@@ -252,7 +260,7 @@ impl KernelThreadManager {
     pub fn terminate(&self) -> ! {
         let current_id = self.current_thread.load(Ordering::SeqCst) as ThreadID;
         
-        let mut threads = self.threads.borrow_mut();
+        let threads = self.threads.borrow_mut();
         let tcb = threads.get(&current_id)
             .expect("Current thread not found");
 

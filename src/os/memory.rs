@@ -18,22 +18,64 @@ use std::sync::atomic::{AtomicU64, Ordering};
 pub const PAGE_SIZE: usize = 4096;
 
 /// Page flags
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum PageFlags {
-    Readable = 0x1,
-    Writable = 0x2,
-    Executable = 0x4,
-    UserMode = 0x8,
-    Present = 0x10,
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PageFlags(pub u32);
+
+impl PageFlags {
+    pub const READ: Self = Self(0x1);
+    pub const WRITE: Self = Self(0x2);
+    pub const EXEC: Self = Self(0x4);
+    pub const USER: Self = Self(0x8);
+    pub const PRESENT: Self = Self(0x10);
+
+    pub const READABLE: Self = Self(0x1);
+    pub const WRITABLE: Self = Self(0x2);
+    pub const EXECUTABLE: Self = Self(0x4);
+    pub const USER_MODE: Self = Self(0x8);
+
+    pub const NONE: Self = Self(0);
+
+    pub fn contains(&self, other: Self) -> bool {
+        (self.0 & other.0) == other.0
+    }
+
+    pub fn bits(&self) -> u32 {
+        self.0
+    }
+}
+
+impl std::ops::BitOr for PageFlags {
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self(self.0 | rhs.0)
+    }
+}
+
+impl std::ops::BitAnd for PageFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
 }
 
 /// Physical page frame
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct PhysicalPage {
     pub frame_number: usize,
     pub flags: PageFlags,
     pub reference_count: AtomicU64,
     pub is_free: bool,
+}
+
+impl Clone for PhysicalPage {
+    fn clone(&self) -> Self {
+        Self {
+            frame_number: self.frame_number,
+            flags: self.flags,
+            reference_count: AtomicU64::new(self.reference_count.load(Ordering::Relaxed)),
+            is_free: self.is_free,
+        }
+    }
 }
 
 /// Virtual page mapping
@@ -62,7 +104,7 @@ impl PageAllocator {
         for i in 0..total_pages {
             page_frames.push(PhysicalPage {
                 frame_number: i,
-                flags: PageFlags::Readable | PageFlags::Writable,
+                flags: PageFlags::READABLE | PageFlags::WRITABLE,
                 reference_count: AtomicU64::new(0),
                 is_free: true,
             });
@@ -224,7 +266,7 @@ impl SlabAllocator {
             Some(offset)
         } else {
             // Allocate new slab
-            let slab_memory = allocator.allocate_page(PageFlags::Readable | PageFlags::Writable)?;
+            let slab_memory = allocator.allocate_page(PageFlags::READABLE | PageFlags::WRITABLE)?;
             let slab_count = self.slab_count.fetch_add(1, Ordering::SeqCst) as usize;
             
             // Initialize free list for this slab
@@ -271,7 +313,7 @@ impl VirtualAddressSpace {
         let entry = PageTableEntry {
             virtual_address: virt,
             physical_address: phys,
-            flags,
+            flags: flags | PageFlags::PRESENT,
             present: true,
         };
 
@@ -296,7 +338,7 @@ impl VirtualAddressSpace {
         let page_addr = virt & !(PAGE_SIZE - 1);
         
         if let Some(entry) = self.page_tables.borrow().get(&page_addr) {
-            if entry.present && entry.flags.contains(PageFlags::Present) {
+            if entry.present {
                 let offset = virt & (PAGE_SIZE - 1);
                 return Some(entry.physical_address + offset);
             }
@@ -357,12 +399,11 @@ impl MemoryManager {
         // Round up to page size
         let page_count = (size + PAGE_SIZE - 1) / PAGE_SIZE;
         
-        let phys_addr = self.page_allocator.allocate_pages(page_count, flags)
+        let start_frame = self.page_allocator.allocate_pages(page_count, flags)
             .ok_or_else(|| "Out of physical memory".to_string())?;
 
-        // Map to virtual address (current process)
-        // In real OS, this would use current process's address space
-        let virt_addr = 0x0000_0000_1000_0000 + page_count * PAGE_SIZE;
+        let phys_addr = start_frame * PAGE_SIZE;
+        let virt_addr = 0x0000_0000_1000_0000;
 
         self.virtual_space.map(virt_addr, phys_addr, flags)?;
 
@@ -371,7 +412,7 @@ impl MemoryManager {
 
     /// Free allocated memory
     pub fn free(&self, virt_addr: usize) -> Result<(), String> {
-        let page_count = (self.page_allocator.total_pages - self.page_allocator.free_count()) as usize;
+        let page_count = self.page_allocator.total_pages.saturating_sub(self.page_allocator.free_count() as usize);
         
         self.virtual_space.unmap(virt_addr)?;
         Ok(())
@@ -439,7 +480,7 @@ mod tests {
     fn test_page_allocation() {
         let allocator = PageAllocator::new(64);
         
-        let addr = allocator.allocate_page(PageFlags::Readable | PageFlags::Writable);
+        let addr = allocator.allocate_page(PageFlags::READABLE | PageFlags::WRITABLE);
         assert!(addr.is_some());
         
         assert_eq!(allocator.free_count(), (64 * 1024 * 1024 / PAGE_SIZE as u64) - 1);
@@ -452,8 +493,8 @@ mod tests {
     fn test_virtual_mapping() {
         let virt_space = VirtualAddressSpace::new(0, 0x7FFF_FFFF, 0x8000_0000);
         
-        let result = virt_space.map(0x1000_0000, 0x0000_0000, 
-            PageFlags::Readable | PageFlags::Writable | PageFlags::Present);
+        let result = virt_space.map(0x1000_1000, 0x0000_1000, 
+            PageFlags::READABLE | PageFlags::WRITABLE | PageFlags::PRESENT);
         assert!(result.is_ok());
         
         let phys = virt_space.translate(0x1000_1234);

@@ -81,8 +81,6 @@ fn rewrite_placeholders_duckdb(sql: &str) -> String {
 fn normalize_path(p: &str) -> String {
     if let Some(stripped) = p.strip_prefix("/./") {
         format!("./{}", stripped)
-    } else if let Some(stripped) = p.strip_prefix('/') {
-        stripped.to_string()
     } else {
         p.to_string()
     }

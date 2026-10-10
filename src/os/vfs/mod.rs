@@ -63,23 +63,23 @@ pub struct OpenFlags {
 impl OpenFlags {
     pub fn from_raw(flags: u32) -> Self {
         Self {
-            read: (flags & 0o1) != 0,
-            write: (flags & 0o2) != 0,
-            append: (flags & 0o4) != 0,
-            truncate: (flags & 0o8) != 0,
-            create: (flags & 0o16) != 0,
-            exclusive: (flags & 0o32) != 0,
+            read: (flags & 0x01) != 0,
+            write: (flags & 0x02) != 0,
+            append: (flags & 0x04) != 0,
+            truncate: (flags & 0x08) != 0,
+            create: (flags & 0x10) != 0,
+            exclusive: (flags & 0x20) != 0,
         }
     }
 
     pub fn to_raw(&self) -> u32 {
         let mut flags = 0;
-        if self.read { flags |= 0o1; }
-        if self.write { flags |= 0o2; }
-        if self.append { flags |= 0o4; }
-        if self.truncate { flags |= 0o8; }
-        if self.create { flags |= 0o16; }
-        if self.exclusive { flags |= 0o32; }
+        if self.read { flags |= 0x01; }
+        if self.write { flags |= 0x02; }
+        if self.append { flags |= 0x04; }
+        if self.truncate { flags |= 0x08; }
+        if self.create { flags |= 0x10; }
+        if self.exclusive { flags |= 0x20; }
         flags
     }
 }
@@ -156,11 +156,20 @@ pub struct FilesystemType {
 }
 
 /// Mount point
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct MountPoint {
     pub path: PathBuf,
     pub superblock: Arc<RwLock<dyn SuperblockOps>>,
     pub root_inode: InodeID,
+}
+
+impl std::fmt::Debug for MountPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("MountPoint")
+            .field("path", &self.path)
+            .field("root_inode", &self.root_inode)
+            .finish()
+    }
 }
 
 /// VFS error
@@ -179,7 +188,7 @@ pub enum VfsError {
 }
 
 impl VfsError {
-    pub fn as_str(&self) -> &'static str {
+    pub fn as_str(&self) -> &str {
         match self {
             VfsError::NotFound => "File or directory not found",
             VfsError::PermissionDenied => "Permission denied",
@@ -208,8 +217,18 @@ pub struct VirtualFilesystem {
 
 impl VirtualFilesystem {
     pub fn new() -> Self {
+        let mut mount_points = HashMap::new();
+        mount_points.insert(
+            PathBuf::from("/"),
+            MountPoint {
+                path: PathBuf::from("/"),
+                superblock: Arc::new(RwLock::new(DummySuperblock)),
+                root_inode: 1,
+            },
+        );
+
         Self {
-            mount_points: RwLock::new(HashMap::new()),
+            mount_points: RwLock::new(mount_points),
             inode_cache: RwLock::new(HashMap::new()),
             filesystem_types: RwLock::new(HashMap::new()),
             next_inode: RwLock::new(1), // Start from 1 (0 is reserved)
@@ -407,6 +426,22 @@ impl VirtualFilesystem {
 impl Default for VirtualFilesystem {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+struct DummySuperblock;
+
+impl SuperblockOps for DummySuperblock {
+    fn alloc_inode(&mut self, _file_type: FileType, _permissions: u16) -> Result<InodeID, VfsError> {
+        Ok(1)
+    }
+
+    fn free_inode(&mut self, _inode: InodeID) -> Result<(), VfsError> {
+        Ok(())
+    }
+
+    fn sync(&self) -> Result<(), VfsError> {
+        Ok(())
     }
 }
 

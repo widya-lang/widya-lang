@@ -11,6 +11,8 @@ use widya::value::Value;
 #[test]
 fn test_sqlite_ffi_wrapper_operations() {
     let _ = std::fs::remove_file("./test_eco_sqlite.db");
+    let _ = std::fs::remove_file("./test_eco_sqlite.db-shm");
+    let _ = std::fs::remove_file("./test_eco_sqlite.db-wal");
     let db = SqliteDb::new("./test_eco_sqlite.db").expect("Harus berhasil membuka sqlite");
 
     let create_res = db.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);", &[]);
@@ -28,6 +30,8 @@ fn test_sqlite_ffi_wrapper_operations() {
     let close_ok = db.close();
     assert!(close_ok);
     let _ = std::fs::remove_file("./test_eco_sqlite.db");
+    let _ = std::fs::remove_file("./test_eco_sqlite.db-shm");
+    let _ = std::fs::remove_file("./test_eco_sqlite.db-wal");
 }
 
 #[test]

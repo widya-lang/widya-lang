@@ -11,7 +11,7 @@
 
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicUsize, AtomicU16, Ordering};
 
 /// Interrupt vector number (0-255)
 pub type InterruptVector = u8;
@@ -101,10 +101,6 @@ impl InterruptDescriptorTable {
     pub fn set_handler(&self, vector: InterruptVector, handler: InterruptHandler, 
                        interrupt_type: InterruptType) -> Result<(), String> {
         let mut descriptors = self.descriptors.borrow_mut();
-        
-        if vector >= 256 {
-            return Err("Invalid interrupt vector".to_string());
-        }
 
         descriptors[vector as usize] = Some(InterruptDescriptor {
             vector,
@@ -127,9 +123,6 @@ impl InterruptDescriptorTable {
     /// Unset interrupt handler
     pub fn unset_handler(&self, vector: InterruptVector) -> bool {
         let mut descriptors = self.descriptors.borrow_mut();
-        if vector >= 256 {
-            return false;
-        }
         let was_present = descriptors[vector as usize].is_some();
         descriptors[vector as usize] = None;
         was_present
@@ -186,10 +179,7 @@ pub struct InterruptController {
 
 impl InterruptController {
     pub fn new() -> Self {
-        let mut irqs_handled = [AtomicUsize::new(0); 16];
-        for i in 0..16 {
-            irqs_handled[i] = AtomicUsize::new(0);
-        }
+        let irqs_handled = [const { AtomicUsize::new(0) }; 16];
 
         Self {
             idt: InterruptDescriptorTable::new(),
@@ -344,10 +334,10 @@ type ExceptionHandlerFn = fn(&ExceptionInfo) -> bool;
 
 impl ExceptionHandler {
     pub fn new() -> Self {
-        let mut exceptions = HashMap::new();
+        let mut exceptions: HashMap<InterruptVector, ExceptionHandlerFn> = HashMap::new();
         
         // Register default handlers
-        for vector in 0..32 {
+        for vector in 0u8..32u8 {
             exceptions.insert(vector, Self::default_exception_handler);
         }
 
@@ -431,7 +421,7 @@ impl SyscallHandler {
 
 /// Global interrupt controller
 pub struct GlobalInterruptController {
-    pub PIC: InterruptController,
+    pub pic: InterruptController,
     pub exception_handler: ExceptionHandler,
     pub syscall_handler: SyscallHandler,
     pub interrupts_enabled: AtomicUsize,
@@ -440,7 +430,7 @@ pub struct GlobalInterruptController {
 impl GlobalInterruptController {
     pub fn new() -> Self {
         Self {
-            PIC: InterruptController::new(),
+            pic: InterruptController::new(),
             exception_handler: ExceptionHandler::new(),
             syscall_handler: SyscallHandler::new(),
             interrupts_enabled: AtomicUsize::new(0),
@@ -502,12 +492,8 @@ impl GlobalInterruptController {
             (31, "Reserved"),
         ];
 
-        for (vector, name) in exceptions {
-            let name = name.to_string();
-            self.exception_handler.register_exception(vector as u8, move |info| {
-                // In real implementation, print error and panic
-                let _ = name;
-                let _ = info;
+        for (vector, _name) in exceptions {
+            self.exception_handler.register_exception(vector as u8, |_info| {
                 false
             });
         }
@@ -553,7 +539,7 @@ impl GlobalInterruptController {
             false // Not implemented
         } else {
             // IRQ
-            self.PIC.handle_interrupt(vector, frame)
+            self.pic.handle_interrupt(vector, frame)
         }
     }
 }
