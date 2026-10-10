@@ -11,10 +11,12 @@ pub mod pure_window;
 pub mod pure_ipc;
 pub mod pure_hardware;
 pub mod pure_display;
+pub mod pure_packager;
 pub use pure_window::*;
 pub use pure_ipc::*;
 pub use pure_hardware::*;
 pub use pure_display::*;
+pub use pure_packager::*;
 
 use std::collections::HashMap;
 
