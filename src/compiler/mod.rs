@@ -17,12 +17,14 @@ pub mod arena;
 pub mod unikernel;
 pub mod pure_emitter;
 pub mod pure_pe;
+pub mod pure_ebpf;
 
 use generic_codegen::GenericCodeGenerator;
 pub use decimal::Desimal;
 pub use arena::{ScopedArena, ArenaStats, EscapeStatus, EscapeAnalysis, EscapeAnalysisReport};
 pub use pure_emitter::*;
 pub use pure_pe::*;
+pub use pure_ebpf::*;
 pub use unikernel::{
     UnikernelArch, BootProtocol, UnikernelConfig, UnikernelImageBuilder,
     UnikernelImageReport, Multiboot2Header, LinuxBootHeader,
