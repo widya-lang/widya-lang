@@ -9,9 +9,11 @@ pub mod threading;
 pub mod interrupts;
 pub mod syscall;
 pub mod vfs;
+pub mod iso;
 
 pub use memory::{MemoryManager, MemoryStats, PageAllocator, PageFlags, PageTableEntry, VirtualAddressSpace};
 pub use threading::{KernelThreadManager, Priority, ThreadHandle, ThreadID, ThreadState};
 pub use interrupts::{GlobalInterruptController, InterruptController, ExceptionHandler, SyscallHandler};
 pub use syscall::{SyscallTable, SyscallError, FileStat, OpenFile, SyscallNumber, FD};
 pub use vfs::{VirtualFilesystem, OpenFlags, InodeMetadata, FileType, DirEntry, VfsError};
+pub use iso::*;

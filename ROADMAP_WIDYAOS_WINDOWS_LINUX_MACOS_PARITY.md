@@ -120,10 +120,18 @@
 ---
 
 ## 🏆 STATUS VALIDASI TEST INTEGRASI
-- **Test Suite**: `tests/widyaos_kernel_tests.rs`
-- **Hasil**: **5 / 5 PASSED (100% OK, 0.01s)**
+- **Test Suite Kernel**: `tests/widyaos_kernel_tests.rs`
+  - **Hasil**: **5 / 5 PASSED (100% OK, 0.01s)**
   - `test_widyaos_pillar_1_boot_and_idt`: **PASSED**
   - `test_widyaos_pillar_2_pmm_vmm_paging`: **PASSED**
   - `test_widyaos_pillar_4_drivers_pci_and_vfs`: **PASSED**
   - `test_widyaos_pillar_3_process_cfs_and_syscalls`: **PASSED**
   - `test_widyaos_pillar_6_ipc_and_network_stack`: **PASSED**
+- **Test Suite Live ISO & UEFI Generator Mandiri**: `tests/pure_live_iso_test.rs`
+  - **Hasil**: **6 / 6 PASSED (100% OK, 0.00s)**
+  - `test_both_endian_encoding`: **PASSED** (ECMA-119 Little & Big Endian)
+  - `test_hybrid_mbr_structure`: **PASSED** (Hybrid MBR Sektor 0 & 0x55, 0xAA)
+  - `test_uefi_esp_fat12_image`: **PASSED** (UEFI ESP FAT12 /EFI/BOOT/BOOTX64.EFI)
+  - `test_el_torito_boot_catalog_validation`: **PASSED** (El Torito v1.0 Checksum Modulo 0x10000)
+  - `test_live_iso_generation_and_descriptors`: **PASSED** (PVD, BR, Terminator, Root Dir)
+  - `test_iso_export_to_file`: **PASSED** (Ekspor fisik .iso tanpa xorriso / genisoimage)
