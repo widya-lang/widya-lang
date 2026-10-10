@@ -173,6 +173,8 @@ pub struct ParquetFileMetadata {
     pub created_by: String,
     pub num_rows: i64,
     pub columns: Vec<ParquetColumnMeta>,
+    #[serde(default)]
+    pub row_groups: Vec<ParquetRowGroup>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -258,6 +260,7 @@ impl PureParquetEngine {
             created_by: "WidyaBase Sovereign Parquet Engine v2.6.0".to_string(),
             num_rows: batch.num_rows as i64,
             columns: col_metas,
+            row_groups: Vec::new(),
         };
 
         let meta_json = serde_json::to_vec(&meta)
@@ -684,13 +687,33 @@ impl ParquetArrowConnector {
             })
             .collect();
 
-        let _ = compression;
+        let row_group_cols: Vec<ParquetColumnMetadata> = columns
+            .iter()
+            .map(|&c| ParquetColumnMetadata {
+                column_name: c.to_string(),
+                num_values: num_rows,
+                total_uncompressed_size: num_rows * 8,
+                total_compressed_size: (num_rows * 8) / 2,
+                compression,
+                data_page_offset: 4,
+                dictionary_page_offset: None,
+            })
+            .collect();
+
+        let total_size: i64 = row_group_cols.iter().map(|c| c.total_compressed_size).sum();
+
+        let row_group = ParquetRowGroup {
+            columns: row_group_cols,
+            total_byte_size: total_size,
+            num_rows,
+        };
 
         ParquetFileMetadata {
             version: 2,
             created_by: "WidyaBase Sovereign Parquet Engine v2.6.0".to_string(),
             num_rows,
             columns: col_metas,
+            row_groups: vec![row_group],
         }
     }
 
