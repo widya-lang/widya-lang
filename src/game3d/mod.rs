@@ -4,6 +4,7 @@ pub mod math3d;
 pub mod mesh;
 pub mod pbr;
 pub mod physics3d;
+pub mod pure_rasterizer;
 pub mod scene;
 
 // Re-exports untuk kemudahan penggunaan
@@ -19,3 +20,4 @@ pub use physics3d::{
     AABB,
 };
 pub use scene::{Scene3D, SceneNode3D};
+pub use pure_rasterizer::{SoftwareMesh, SoftwareRasterizer, SoftwareTriangle, SoftwareVertex};
