@@ -1,0 +1,94 @@
+{
+  "name": "arenasilat-sovereign-saas",
+  "version": "2.6.0",
+  "framework": "widyaweb",
+  "description": "Sovereign Pencak Silat Tournament Platform — 100% In-House Widya-Lang Ecosystem",
+  "public_dir": "public",
+  "api_dir": "api",
+  "port": 8088,
+  "redirects": [
+    {
+      "source": "/tv",
+      "destination": "/scoreboard",
+      "status": 301
+    },
+    {
+      "source": "/wasit",
+      "destination": "/juri?id=1",
+      "status": 302
+    },
+    {
+      "source": "/live-stream",
+      "destination": "/camera",
+      "status": 302
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/v1/scoring/press",
+      "destination": "/api/scoring"
+    },
+    {
+      "source": "/api/v1/bracket/generate",
+      "destination": "/api/bracket"
+    },
+    {
+      "source": "/api/v1/finance/settlement",
+      "destination": "/api/split_settlement"
+    },
+    {
+      "source": "/api/v1/var/replay",
+      "destination": "/api/var_stream"
+    },
+    {
+      "source": "/api/v1/standings/medals",
+      "destination": "/api/medali"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": {
+        "X-Frame-Options": "DENY",
+        "X-Content-Type-Options": "nosniff",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+        "X-Platform-Engine": "WidyaWeb Sovereign 2.6.0",
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/rekap_poin_nasional",
+      "schedule": "0 */1 * * *"
+    },
+    {
+      "path": "/api/cdc_sync_gelanggang",
+      "schedule": "*/1 * * * *"
+    }
+  ],
+  "functions": {
+    "/api/scoring": {
+      "memory_mb": 128,
+      "max_duration_sec": 3,
+      "runtime": "widya-edge-realtime"
+    },
+    "/api/var_stream": {
+      "memory_mb": 512,
+      "max_duration_sec": 15,
+      "runtime": "widya-stream-quic"
+    },
+    "/api/bracket": {
+      "memory_mb": 256,
+      "max_duration_sec": 5,
+      "runtime": "widya-edge"
+    }
+  },
+  "regions": ["jkt1", "smg1", "sub1", "yog1"],
+  "env": {
+    "WIDYA_ENV": "production",
+    "EDGE_NODE": "edge-jkt-gor-01",
+    "LATENCY_TARGET_MS": "10",
+    "IPSI_REGULATION_YEAR": "2026"
+  }
+}

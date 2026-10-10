@@ -1,0 +1,27 @@
+// Projects/arenasilat/api/split_settlement.wya
+// ==============================================================================
+// WidyaWeb Serverless Edge Handler: Automated Financial Split Settlement
+// ==============================================================================
+
+fungsi tangani_permintaan(req) {
+    misal invoice_id = req["invoice_id"]
+    misal total_idr = req["total_idr"]
+    misal jumlah_atlet = req["jumlah_atlet"]
+
+    misal saas_fee = jumlah_atlet * 15000
+    misal ipsi_fee = jumlah_atlet * 10000
+    misal gateway_fee = 3500
+
+    misal eo_net = total_idr - (saas_fee + ipsi_fee + gateway_fee)
+
+    kembalikan {
+        "status": "LUNAS",
+        "invoice_id": invoice_id,
+        "total_tagihan": total_idr,
+        "porsi_eo_panitia": eo_net,
+        "kas_federasi_ipsi": ipsi_fee,
+        "platform_saas_fee": saas_fee,
+        "biaya_gateway": gateway_fee,
+        "metode": "QRIS_DINAMIS_ASPI"
+    }
+}
