@@ -14,6 +14,7 @@ pub mod widyadrive;
 pub mod workspace;
 pub mod xlsx;
 pub mod zip;
+pub mod odf;
 
 pub use batch::{BatchDocumentEngine, BatchGenerationMetrics};
 pub use converter::DocumentConverter;
@@ -37,3 +38,7 @@ pub use xlsx::{
     XlsxWorkbook,
 };
 pub use zip::{crc32, ZipEntry, ZipPackage};
+pub use odf::{
+    ODF_MIME_PRESENTATION, ODF_MIME_SPREADSHEET, ODF_MIME_TEXT,
+    OdpDocument, OdpSlide, OdsCellValue, OdsDocument, OdsSheet, OdtBlock, OdtDocument,
+};
