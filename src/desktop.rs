@@ -7,9 +7,17 @@
 //! - 🔄 Auto-Updater Pipeline with Ed25519 Cryptographic Signatures
 //! - 🖨️ Native Printing & POS Thermal ESC/POS Receipt Ticket Generator
 //! - 📊 Resource Watchdog, Process Telemetry & Green Computing Auto-Throttle
-//! - 🛡️ Defense-in-Depth: Anti-CSRF Token, Strict CSP, Allowlist Capabilities, AES-256-GCM Vault, SHA-256 Lockfile
+pub mod pure_window;
+pub mod pure_ipc;
+pub mod pure_hardware;
+pub mod pure_display;
+pub use pure_window::*;
+pub use pure_ipc::*;
+pub use pure_hardware::*;
+pub use pure_display::*;
 
 use std::collections::HashMap;
+
 use std::fs;
 use std::io::{self, Read, Write};
 use std::net::{TcpListener, TcpStream};

@@ -106,18 +106,43 @@ impl PureBase64 {
         Ok(out)
     }
 
+    pub fn encode_url(data: &[u8]) -> String {
+        Self::encode(data)
+            .replace('+', "-")
+            .replace('/', "_")
+            .trim_end_matches('=')
+            .to_string()
+    }
+
+    pub fn decode_url(b64_url_str: &str) -> Result<Vec<u8>, String> {
+        let mut s = b64_url_str.replace('-', "+").replace('_', "/");
+        while s.len() % 4 != 0 {
+            s.push('=');
+        }
+        Self::decode(&s)
+    }
+
     fn from_b64(c: u8) -> Result<u8, String> {
         match c {
             b'A'..=b'Z' => Ok(c - b'A'),
             b'a'..=b'z' => Ok(c - b'a' + 26),
             b'0'..=b'9' => Ok(c - b'0' + 52),
-            b'+' => Ok(62),
-            b'/' => Ok(63),
+            b'+' | b'-' => Ok(62),
+            b'/' | b'_' => Ok(63),
             b'=' => Ok(0),
             _ => Err(format!("Karakter Base64 tidak valid: '{}'", c as char)),
         }
     }
 }
+
+pub fn to_base64_url(data: &[u8]) -> String {
+    PureBase64::encode_url(data)
+}
+
+pub fn from_base64_url(b64_url_str: &str) -> Result<Vec<u8>, String> {
+    PureBase64::decode_url(b64_url_str)
+}
+
 
 // ============================================================================
 // 2. PURE SHA-256 HASH ENGINE (FIPS 180-4)
@@ -463,6 +488,11 @@ impl PureHmacSha256 {
         PureHex::encode(&Self::mac(key, message))
     }
 }
+
+pub fn hmac_sha256(key: &[u8], message: &[u8]) -> [u8; 32] {
+    PureHmacSha256::mac(key, message)
+}
+
 
 // ============================================================================
 // 5. PURE CHACHA20 & POLY1305 AEAD ENGINE (RFC 8439)

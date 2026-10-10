@@ -47,6 +47,7 @@ pub mod bootstrap;
 pub mod widyabase;
 pub mod fintech;
 pub mod game3d;
+pub mod graphics;
 pub mod web3;
 pub mod healthtech;
 pub mod iot;
@@ -105,6 +106,7 @@ pub mod learn;
 pub mod embedded;
 pub mod benchmark;
 pub mod sys;
+pub mod os;
 
 use borrow_checker::BorrowChecker;
 use error::Galat;
