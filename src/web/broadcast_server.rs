@@ -19,13 +19,13 @@ use std::time::Duration;
 use crate::web::ws::{encode_frame, generate_sec_websocket_accept, parse_frame_header};
 
 // Embedded assets untuk distribusi biner mandiri (zero-dependency standalone executable)
-const EMBEDDED_MCR_INDEX_HTML: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/index.html");
-const EMBEDDED_MCR_APP_JS: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/app.js");
-const EMBEDDED_MCR_STYLE_CSS: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/style.css");
-const EMBEDDED_KAMERA_HP_HTML: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/kamera_hp.html");
-const EMBEDDED_VAR_HAKIM_HTML: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/var_dewan_hakim.html");
-const EMBEDDED_MANIFEST_JSON: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/manifest.json");
-const EMBEDDED_SW_JS: &str = include_str!("../../aplikasi/08_widya_broadcasting_studio/sw.js");
+const EMBEDDED_MCR_INDEX_HTML: &str = include_str!("broadcast_assets/index.html");
+const EMBEDDED_MCR_APP_JS: &str = include_str!("broadcast_assets/app.js");
+const EMBEDDED_MCR_STYLE_CSS: &str = include_str!("broadcast_assets/style.css");
+const EMBEDDED_KAMERA_HP_HTML: &str = include_str!("broadcast_assets/kamera_hp.html");
+const EMBEDDED_VAR_HAKIM_HTML: &str = include_str!("broadcast_assets/var_dewan_hakim.html");
+const EMBEDDED_MANIFEST_JSON: &str = include_str!("broadcast_assets/manifest.json");
+const EMBEDDED_SW_JS: &str = include_str!("broadcast_assets/sw.js");
 
 /// Mendeteksi alamat IP lokal aktif di jaringan LAN (tanpa dependensi eksternal)
 pub fn detect_lan_ip() -> String {
@@ -258,31 +258,31 @@ impl BroadcastStudioServer {
         let is_get_or_head = method == "GET" || method == "HEAD";
         match path {
             "/" | "/index.html" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/index.html", EMBEDDED_MCR_INDEX_HTML);
+                let content = Self::load_asset("src/web/broadcast_assets/index.html", EMBEDDED_MCR_INDEX_HTML);
                 Self::send_http_response(stream, method, 200, "text/html; charset=utf-8", &content);
             }
             "/app.js" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/app.js", EMBEDDED_MCR_APP_JS);
+                let content = Self::load_asset("src/web/broadcast_assets/app.js", EMBEDDED_MCR_APP_JS);
                 Self::send_http_response(stream, method, 200, "application/javascript; charset=utf-8", &content);
             }
             "/style.css" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/style.css", EMBEDDED_MCR_STYLE_CSS);
+                let content = Self::load_asset("src/web/broadcast_assets/style.css", EMBEDDED_MCR_STYLE_CSS);
                 Self::send_http_response(stream, method, 200, "text/css; charset=utf-8", &content);
             }
             "/kamera" | "/kamera_hp.html" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/kamera_hp.html", EMBEDDED_KAMERA_HP_HTML);
+                let content = Self::load_asset("src/web/broadcast_assets/kamera_hp.html", EMBEDDED_KAMERA_HP_HTML);
                 Self::send_http_response(stream, method, 200, "text/html; charset=utf-8", &content);
             }
             "/var" | "/var_dewan_hakim.html" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/var_dewan_hakim.html", EMBEDDED_VAR_HAKIM_HTML);
+                let content = Self::load_asset("src/web/broadcast_assets/var_dewan_hakim.html", EMBEDDED_VAR_HAKIM_HTML);
                 Self::send_http_response(stream, method, 200, "text/html; charset=utf-8", &content);
             }
             "/manifest.json" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/manifest.json", EMBEDDED_MANIFEST_JSON);
+                let content = Self::load_asset("src/web/broadcast_assets/manifest.json", EMBEDDED_MANIFEST_JSON);
                 Self::send_http_response(stream, method, 200, "application/manifest+json; charset=utf-8", &content);
             }
             "/sw.js" if is_get_or_head => {
-                let content = Self::load_asset("aplikasi/08_widya_broadcasting_studio/sw.js", EMBEDDED_SW_JS);
+                let content = Self::load_asset("src/web/broadcast_assets/sw.js", EMBEDDED_SW_JS);
                 Self::send_http_response_with_header(stream, method, 200, "application/javascript; charset=utf-8", "Service-Worker-Allowed: /", &content);
             }
             "/api/push/notify" if is_get_or_head => {
