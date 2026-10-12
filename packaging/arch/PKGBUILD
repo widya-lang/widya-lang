@@ -9,7 +9,7 @@ license=('MIT')
 depends=('gcc-libs' 'glibc')
 provides=('widya')
 conflicts=('widya')
-source=("https://github.com/Bakulcoding/widya-lang/releases/download/v${pkgver}/widya-v${pkgver}-x86_64-linux.tar.gz")
+source=("https://github.com/widya-lang/widya-lang/releases/download/v${pkgver}/widya-v${pkgver}-x86_64-linux.tar.gz")
 sha256sums=('SKIP')
 
 package() {

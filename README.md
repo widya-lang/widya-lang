@@ -3,7 +3,7 @@
 # ⚡ Widya-Lang
 ### *Bahasa Pemrograman Berdaulat, Tipe Aman, Kinerja Tinggi, dan Zero-External-Dependency Stack.*
 
-[![Version](https://img.shields.io/badge/version-2.6.0--GA%20Stable-blue.svg)](https://github.com/Bakulcoding/widya-lang/releases)
+[![Version](https://img.shields.io/badge/version-2.6.0--GA%20Stable-blue.svg)](https://github.com/widya-lang/widya-lang/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Security Policy](https://img.shields.io/badge/security-RFC%209116-red.svg)](SECURITY.md)
 [![Penta-Core Matrix](https://img.shields.io/badge/Penta--Core-100%25%20PASS-brightgreen.svg)](#-penta-core-sovereign-matrix)
@@ -110,7 +110,7 @@ cocokkan status {
 ### 🐧 Di Linux (Ubuntu, Debian, Fedora, Arch, dll.)
 ```bash
 # 1. Kloning repositori
-git clone https://github.com/Bakulcoding/widya-lang.git
+git clone https://github.com/widya-lang/widya-lang.git
 cd widya-lang
 
 # 2. Pasang langsung biner rilis
@@ -123,7 +123,7 @@ widya --version
 
 ### 🍎 Di macOS (Apple Silicon M1/M2/M3 & Intel)
 ```bash
-git clone https://github.com/Bakulcoding/widya-lang.git
+git clone https://github.com/widya-lang/widya-lang.git
 cd widya-lang
 cargo install --path .
 widya --version
@@ -131,7 +131,7 @@ widya --version
 
 ### 🪟 Di Windows (PowerShell / Command Prompt)
 ```powershell
-git clone https://github.com/Bakulcoding/widya-lang.git
+git clone https://github.com/widya-lang/widya-lang.git
 cd widya-lang
 cargo install --path .
 widya --version

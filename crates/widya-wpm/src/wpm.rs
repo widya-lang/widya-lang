@@ -1319,7 +1319,7 @@ impl WpmRegistryServer {
     </div>
 
     <footer>
-        <p>© 2026 Tim Pengembang Widya-Lang (Bakulcoding). Dilisensikan di bawah MIT License. Repositori Berdaulat Indonesia.</p>
+        <p>© 2026 Tim Pengembang Widya-Lang (widya-lang). Dilisensikan di bawah MIT License. Repositori Berdaulat Indonesia.</p>
     </footer>
 
     <script>

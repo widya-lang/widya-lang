@@ -66,7 +66,7 @@
 
 ## 📁 Repository
 
-**URL:** https://github.com/Bakulcoding/widya-lang  
+**URL:** https://github.com/widya-lang/widya-lang  
 **Branch:** main  
 **Tags:** v11.0.0, v11.1.0  
 **Status:** ✅ Pushed

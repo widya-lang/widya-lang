@@ -4,7 +4,7 @@
 Pada hari ini, **Rabu tanggal 30 September 2026**, bertempat di Jakarta, telah dibuat dan ditandatangani Perjanjian Kerjasama Lisensi Hak Kekayaan Intelektual (selanjutnya disebut **"Perjanjian"**), oleh dan antara:
 
 ### PIHAK PERTAMA (PEMBERI LISENSI / OWNER HKI):
-* **Nama / Institusi** : Tim Pengembang Inti / Yayasan Pengembang Widya-Lang (Bakulcoding)
+* **Nama / Institusi** : Tim Pengembang Inti / Yayasan Pengembang Widya-Lang (widya-lang)
 * **Kewarganegaraan**  : Republik Indonesia
 * **Kapasitas**        : Pemegang Hak Cipta Sah & Hak Moral/Ekonomi Bahasa Pemrograman Widya-Lang
 * (Selanjutnya disebut **"PIHAK PERTAMA"**)

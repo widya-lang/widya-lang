@@ -31,7 +31,7 @@ cp -r editors/neovim/queries/widya/* ~/.config/nvim/after/queries/widya/
 Tambahkan ke konfigurasi plugin Anda:
 ```lua
 {
-  "Bakulcoding/widya-lang",
+  "widya-lang/widya-lang",
   ft = "widya",
   config = function()
     require("widya.lsp").setup({
@@ -43,7 +43,7 @@ Tambahkan ke konfigurasi plugin Anda:
 
 ### 3. Menggunakan `vim-plug` (Vim / Neovim)
 ```vim
-Plug 'Bakulcoding/widya-lang', { 'rtp': 'editors/neovim' }
+Plug 'widya-lang/widya-lang', { 'rtp': 'editors/neovim' }
 ```
 
 ### 4. Pemasangan Manual Berkas Vim Tradisional

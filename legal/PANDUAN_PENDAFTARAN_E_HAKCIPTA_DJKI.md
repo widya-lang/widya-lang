@@ -15,7 +15,7 @@
 | **Uraian Singkat Ciptaan** | Bahasa pemrograman dwibahasa (Indonesia & Inggris) generasi baru yang dilengkapi *self-hosted compiler*, mesin basis data mandiri (*WidyaBase*), orkestrator kontainer, komunikasi multi-agen cerdas, serta integrasi protokol industri berat. |
 | **Tanggal Pertama Kali Diumumkan** | 30 September 2026 |
 | **Kota Pertama Kali Diumumkan** | Jakarta, Republik Indonesia |
-| **Nama Pencipta** | Tim Pengembang Inti Widya-Lang (Bakulcoding) |
+| **Nama Pencipta** | Tim Pengembang Inti Widya-Lang (widya-lang) |
 | **Nama Pemegang Hak Cipta** | PT / Konsorsium Teknologi Widya Digital Nusantara |
 
 ---

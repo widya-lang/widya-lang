@@ -43,7 +43,7 @@ Widya-Lang dirancang dengan kata kunci ekspresif berbahasa Indonesia dengan perf
 #### 🐧 Di Linux (Ubuntu, Debian, Fedora, Arch, CentOS, dll.)
 ```bash
 # 1. Kloning repositori
-git clone https://github.com/Bakulcoding/widya-lang.git
+git clone https://github.com/widya-lang/widya-lang.git
 cd widya-lang
 
 # 2. Berikan izin eksekusi dan jalankan instalasi
@@ -57,7 +57,7 @@ widya --version
 #### 🍎 Di macOS (Intel & Apple Silicon M-Series)
 ```bash
 # 1. Kloning repositori
-git clone https://github.com/Bakulcoding/widya-lang.git
+git clone https://github.com/widya-lang/widya-lang.git
 cd widya-lang
 
 # 2. Jalankan instalasi otomatis
@@ -71,7 +71,7 @@ widya --version
 #### 🪟 Di Windows (PowerShell)
 ```powershell
 # 1. Kloning repositori
-git clone https://github.com/Bakulcoding/widya-lang.git
+git clone https://github.com/widya-lang/widya-lang.git
 cd widya-lang
 
 # 2. Jalankan skrip PowerShell

@@ -86,6 +86,6 @@ curl -fsSL https://get.widya-lang.org | sh
 
 ## 📖 Dokumentasi & Komunitas
 - **Portal Resmi**: [https://widya-lang.org](https://widya-lang.org)
-- **Repositori GitHub**: [https://github.com/Bakulcoding/widya-lang](https://github.com/Bakulcoding/widya-lang)
+- **Repositori GitHub**: [https://github.com/widya-lang/widya-lang](https://github.com/widya-lang/widya-lang)
 - **Kebijakan Keamanan (RFC 9116)**: [SECURITY.md](SECURITY.md) atau `security@widya-lang.org`
 - **Lisensi**: Open Source di bawah lisensi [MIT License](LICENSE).

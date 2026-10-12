@@ -231,4 +231,4 @@ Setiap paket yang didistribusikan melalui WPM memenuhi standar **SLSA Level 3 (S
 
 ---
 
-*Hak Cipta © 2026 Tim Pengembang Widya-Lang (Bakulcoding). Dilisensikan di bawah Lisensi MIT. Repositori Berdaulat Indonesia.*
+*Hak Cipta © 2026 Tim Pengembang Widya-Lang (widya-lang). Dilisensikan di bawah Lisensi MIT. Repositori Berdaulat Indonesia.*

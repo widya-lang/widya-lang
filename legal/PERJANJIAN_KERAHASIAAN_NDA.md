@@ -4,7 +4,7 @@
 Perjanjian Kerahasiaan ini dibuat dan disepakati pada hari ini, **Rabu tanggal 30 September 2026**, oleh dan antara:
 
 1. **PIHAK PENGUNGKAP (Disclosing Party)**:
-   - **Nama Institusi**: Tim Riset & Pengembang Inti Bahasa Pemrograman Widya-Lang (Bakulcoding)
+   - **Nama Institusi**: Tim Riset & Pengembang Inti Bahasa Pemrograman Widya-Lang (widya-lang)
    - **Kapasitas**: Pemilik Hak Eksklusif atas Algoritma Kompiler, Source Code Engine, Arsitektur Actor Concurrency, dan Modul Industri Widya-Lang.
 
 2. **PIHAK PENERIMA (Receiving Party)**:

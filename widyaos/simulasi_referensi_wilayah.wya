@@ -1,6 +1,6 @@
 // ==============================================================================
 // WIDYAOS: SIMULASI MASTER REFERENSI WILAYAH KEMENDAGRI 2025
-// Berdasarkan dataset resmi: https://github.com/Bakulcoding/wilayah
+// Berdasarkan dataset resmi: https://github.com/widya-lang/wilayah
 // Menguji:
 // 1. Rekapitulasi 38 Provinsi Nasional (Termasuk 4 DOB Papua Baru)
 // 2. Hirarki 4 Tingkat Kode Kemendagri & Deteksi Kelurahan (1xxx) vs Desa (2xxx)
@@ -13,7 +13,7 @@ impor "widyaos/modul/referensi_wilayah.wya";
 cetak("");
 cetak("╔══════════════════════════════════════════════════════════════════╗");
 cetak("║   === SIMULASI REFERENSI WILAYAH KEMENDAGRI 2025 v1.0 ===        ║");
-cetak("║   Integrasi Dataset Wilayah Indonesia (Bakulcoding/wilayah)      ║");
+cetak("║   Integrasi Dataset Wilayah Indonesia (widya-lang/wilayah)       ║");
 cetak("╚══════════════════════════════════════════════════════════════════╝");
 cetak("");
 
