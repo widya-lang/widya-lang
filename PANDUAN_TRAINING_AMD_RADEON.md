@@ -25,8 +25,8 @@ Unsloth secara arsitektural dibangun menggunakan kernel komputasi Triton/CUDA ya
 ## 🚀 Cara 1: Menggunakan Hugging Face PEFT + TRL (Skrip Siap Pakai)
 
 Kami telah menyiapkan skrip pelatihan khusus untuk AMD Radeon di repositori ini:
-* Skrip Pelatihan: [`scripts/train_amd_radeon.py`](file:///c:/widya-lang/scripts/train_amd_radeon.py)
-* Dataset Siap Pakai: [`widya_ai_dataset.jsonl`](file:///c:/widya-lang/widya_ai_dataset.jsonl)
+* Skrip Pelatihan: [`scripts/train_amd_radeon.py`](file:///home/devops/widya-lang/scripts/train_amd_radeon.py)
+* Dataset Siap Pakai: [`widya_ai_dataset.jsonl`](file:///home/devops/widya-lang/widya_ai_dataset.jsonl)
 
 Anda bisa menjalankannya dengan dua opsi:
 

@@ -171,6 +171,12 @@ widya wpm add widya-office --versi 2.6.0
 widya wpm audit          # Audit rantai pasok (CVE/WSA, SHA256 & Ed25519)
 widya wpm outdated       # Pengecekan versi usang (SemVer)
 widya wpm serve-registry # Jalankan registry lokal di port 8090
+
+# Asisten AI Pemrograman Berdaulat 100% Lokal (WidyaCoder - Opsi 3)
+widyacoder indeks        # Indeks seluruh dokumentasi & contoh kode via HNSW
+widyacoder tanya "bagaimana cara membuat server web?" # Tanya jawab RAG lokal + Ollama
+widyacoder chat          # Sesi percakapan REPL interaktif pemrograman
+widyacoder serve         # Jalankan REST API server lokal di port 8088
 ```
 
 ---

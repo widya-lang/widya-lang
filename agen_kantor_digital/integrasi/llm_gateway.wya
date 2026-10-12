@@ -36,23 +36,30 @@ fungsi llm_gateway_inferensi(prompt_teks, opsi_peran) {
         kembalikan { "sumber": "HEURISTIK_WIDYA", "teks": fallback_heuristik, "token": 0 };
     }
 
-    // 3. Provider 1: Local Ollama / Widya-Coder Endpoint
+    // 3. Provider 1: Local Ollama / Qwen 2.5 Coder Endpoint
     coba {
         misal res_ollama = http_post_detil("http://127.0.0.1:11434/api/generate", {
             "headers": { "Content-Type": "application/json" },
             "body": ke_json({
-                "model": "widya-coder",
+                "model": "qwen2.5-coder:7b",
                 "prompt": prompt_teks,
-                "stream": salah
+                "stream": salah,
+                "options": {
+                    "num_predict": 80,
+                    "temperature": 0.25
+                }
             }),
-            "timeout_ms": 5000
+            "timeout_ms": 15000
         });
 
-        jika (res_ollama != nil dan res_ollama["response"] != nil) {
-            misal jawaban_local = res_ollama["response"];
-            LLM_SEMANTIC_CACHE[hash_kunci] = jawaban_local;
-            LLM_TOTAL_TOKEN_TERPAKAI = LLM_TOTAL_TOKEN_TERPAKAI + 200;
-            kembalikan { "sumber": "OLLAMA_LOCAL_WIDYA", "teks": jawaban_local, "token": 200 };
+        jika (res_ollama != nil dan res_ollama["body"] != nil) {
+            misal body_parsed = dari_json(res_ollama["body"]);
+            jika (body_parsed != nil dan body_parsed["response"] != nil) {
+                misal jawaban_local = body_parsed["response"];
+                LLM_SEMANTIC_CACHE[hash_kunci] = jawaban_local;
+                LLM_TOTAL_TOKEN_TERPAKAI = LLM_TOTAL_TOKEN_TERPAKAI + 80;
+                kembalikan { "sumber": "QWEN_OLLAMA_LOCAL", "teks": jawaban_local, "token": 80 };
+            }
         }
     } tangkap (e1) {}
 

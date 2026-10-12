@@ -27,17 +27,19 @@ Pilihan model dasar terbaik untuk dilatih dengan data Widya-Lang:
 
 ## 🛠️ 3. Tahap 1: Ekstraksi Data Pelatihan (*Dataset Preparation*)
 
-Repositori Widya-Lang telah dilengkapi dengan skrip otomatis [`scripts/generate_dataset.py`](file:///c:/widya-lang/scripts/generate_dataset.py) yang memanen seluruh pengetahuan proyek:
-* **176+ berkas contoh nyata** di direktori [`contoh/`](file:///c:/widya-lang/contoh/)
-* **60+ modul pustaka standar** di direktori [`modul/`](file:///c:/widya-lang/modul/)
-* **Dokumentasi resmi** [`DOKUMENTASI_WIDYABASE.md`](file:///c:/widya-lang/DOKUMENTASI_WIDYABASE.md), [`README.md`](file:///c:/widya-lang/README.md), dan sintaks DDL/DML dwibahasa.
+Repositori Widya-Lang telah dilengkapi dengan skrip otomatis [`scripts/generate_dataset.py`](file:///home/devops/widya-lang/scripts/generate_dataset.py) yang memanen seluruh pengetahuan proyek secara komprehensif:
+* **229+ berkas contoh nyata** di direktori [`contoh/`](file:///home/devops/widya-lang/contoh/) (generasi kode, penjelasan, dan pengujian)
+* **85+ pustaka & modul standar** di direktori [`modul/`](file:///home/devops/widya-lang/modul/) (panduan impor dan referensi API)
+* **Bank Soal Kuis & Ujian Sertifikasi** [`BANK_SOAL_KUIS_DAN_UJIAN_SERTIFIKASI.md`](file:///home/devops/widya-lang/BANK_SOAL_KUIS_DAN_UJIAN_SERTIFIKASI.md) (WCA, WCP, WCE & spesialisasi industri)
+* **500+ Potongan Dokumentasi & KB RAG** (`widyacoder_kb.json` / `DOKUMENTASI_*.md`)
+* **Pilar WidyaBase Deep Engine, Translasi Multi-Bahasa, Debugging, dan Kurikulum Bahasa Daerah**.
 
 ### Menjalankan Generator Dataset:
 ```bash
 # Di terminal Linux, WSL2, atau terminal Windows dengan Python 3:
-python scripts/generate_dataset.py
+python3 scripts/generate_dataset.py
 ```
-*Hasil:* Berkas [`widya_ai_dataset.jsonl`](file:///c:/widya-lang/widya_ai_dataset.jsonl) berformat ChatML / ShareGPT siap santap untuk Unsloth.
+*Hasil:* Berkas [`widya_ai_dataset.jsonl`](file:///home/devops/widya-lang/widya_ai_dataset.jsonl) berformat ChatML / ShareGPT memuat **1.330+ pasang instruksi berkualitas tinggi (~4.3 MB)** siap santap untuk Unsloth maupun Hugging Face SFTTrainer.
 
 ---
 

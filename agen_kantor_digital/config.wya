@@ -38,13 +38,18 @@ fungsi dapatkan_konfigurasi() {
             "lokal_url": "http://127.0.0.1:3000/api/send-message"
         },
 
-        // 3. PENGATURAN AI LLM LOKAL (Ollama / Qwen)
+        // 3. PENGATURAN AI LLM LOKAL BERDAULAT (Qwen 2.5 Coder / Ollama)
         "ai_llm": {
             "aktif": benar,
             "penyedia": "ollama", // "ollama" atau "heuristik_internal"
             "endpoint_url": "http://127.0.0.1:11434/api/generate",
-            "model": "widya-coder", // atau "qwen2.5-coder:7b"
-            "timeout_detik": 10
+            "model": "qwen2.5-coder:7b", // Qwen 2.5 Coder 7B Instruct (Lokal & Berdaulat)
+            "model_cadangan": "widya-coder",
+            "timeout_detik": 15,
+            "max_tokens": 90, // Batas token per giliran rapat agar alur tetap gesit
+            "temperature": 0.25,
+            "cache_semantik_aktif": benar,
+            "profil_persona_aktif": benar
         },
 
         // 4. JADWAL RAPAT HARIAN (WIB / Waktu Lokal)
@@ -237,9 +242,10 @@ fungsi dapatkan_konfigurasi() {
             },
             "llm_gateway": {
                 "aktif": benar,
+                "model_utama": "qwen2.5-coder:7b",
                 "semantic_cache": benar,
                 "token_budget_harian": 500000,
-                "fallback_cascade": ["OLLAMA_LOCAL", "WIDYA_NATIVE_HEURISTIC"]
+                "fallback_cascade": ["QWEN_OLLAMA_LOCAL", "SEMANTIC_CACHE", "WIDYA_NATIVE_HEURISTIC"]
             },
             "dokumen_industri": {
                 "aktif": benar,

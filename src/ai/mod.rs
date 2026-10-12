@@ -16,6 +16,11 @@ pub mod autonomous_hosting;
 pub mod voice_stream;
 pub mod lora;
 pub mod federated_rag;
+pub mod widyacoder;
+
+pub use widyacoder::{
+    KnowledgeChunk, KnowledgeBase, KnowledgeMatch, WidyaCoderEngine,
+};
 
 pub use gguf::{
     parse_gguf_header, GgufModelInfo, GgufTensorInfo, GgufTensorType, GgufValue,

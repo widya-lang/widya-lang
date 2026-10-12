@@ -17,7 +17,17 @@ fungsi eksekusi_rapat_pagi(cfg, tim_agen, tanggal_str) {
     cetak("👥 10 Agen hadir lengkap sesuai SOP.");
     cetak("📢 [agen_orkestrator] Membuka rapat dan meminta usulan fokus harian...");
 
-    // 1b. agen_analis_data: Snapshot portofolio pembuka sidang
+    // 1b. Penalaran Cerdas AI Berdaulat (Qwen 2.5 Coder Engine)
+    misal usulan_orkestrator = minta_penalaran_llm(cfg, "agen_orkestrator", "Buka sidang pagi dan tetapkan arahan disiplin P1-P3 hari ini.");
+    cetak("💬 [agen_orkestrator] \"" + usulan_orkestrator + "\"");
+
+    misal usulan_arsitek = minta_penalaran_llm(cfg, "agen_arsitek", "Bagaimana strategi validasi skema tabel dan migrasi basis data hari ini?");
+    cetak("📐 [agen_arsitek] \"" + usulan_arsitek + "\"");
+
+    misal usulan_keamanan = minta_penalaran_llm(cfg, "agen_keamanan", "Apa fokus audit siber dan kepatuhan UU PDP No. 27/2022 hari ini?");
+    cetak("🛡️ [agen_keamanan] \"" + usulan_keamanan + "\"");
+
+    // 1c. agen_analis_data: Snapshot portofolio pembuka sidang
     cetak("\n📊 [agen_analis_data] Mempresentasikan Snapshot Portofolio...");
     misal snapshot = analitika_snapshot_portofolio(cfg, tim_agen);
 
@@ -78,7 +88,11 @@ fungsi eksekusi_rapat_pagi(cfg, tim_agen, tanggal_str) {
         "## 🛡️ Catatan Keamanan & Kepatuhan UU PDP No. 27/2022\n" +
         "- Tidak diperkenankan menyimpan sandi polos.\n" +
         "- Cookie sesi wajib menggunakan atribut `HttpOnly` dan `SameSite=Strict`.\n" +
-        "- Berkas log CCTV wajib disanitasi dari informasi kredensial (*Log Masking*).\n";
+        "- Berkas log CCTV wajib disanitasi dari informasi kredensial (*Log Masking*).\n\n" +
+        "## 🧠 Arahan Penalaran AI Berdaulat (Qwen 2.5 Coder)\n" +
+        "- **Mandor PM (`agen_orkestrator`):** " + usulan_orkestrator + "\n" +
+        "- **Arsitek DB (`agen_arsitek`):** " + usulan_arsitek + "\n" +
+        "- **Auditor Siber (`agen_keamanan`):** " + usulan_keamanan + "\n";
 
     // 5. Arsipkan ke Obsidian Vault
     misal path_obsidian = obsidian_tulis_catatan_harian(cfg, tanggal_str, "Pagi", "Risalah Rapat Pagi", md_konten, {});

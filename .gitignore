@@ -21,6 +21,7 @@ _rv_*.log
 output_*.txt
 test_wdb_core_tmp.json
 widyadb_*_backup.json
+widyacoder_kb.json
 *.tmp
 *.bak
 debug_*.wya
