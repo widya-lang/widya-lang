@@ -53,25 +53,7 @@ Mulai rilis **v2.6.0 GA**, Widya-Lang mandiri 100% dari pustaka pihak ketiga: me
 - 🖥️ **WidyaDesktop & Standalone Packagers**: Window lifecycle state machine, zero-copy IPC bridge, Mica/Acrylic visual styling, POS ESC/POS thermal bytecode generator, serta builder installer biner murni `.deb`, `.rpm`, `.tar.gz`, `.run`, dan `.wapp`.
 - 📱 **WidyaMobile & Mobile Bundler**: Pure 2D software canvas rasterizer, TrueType font parser, Three-Tree Reactive UI, serta generator paket fisik mandiri `.apk` (AXML/DEX/ARSC/v1 signature) dan `.ipa` (Mach-O ARM64).
 - 📦 **WPM (Widya Package Manager)**: Solver dependensi PubGrub, tanda tangan digital Ed25519, verifikasi checksum SHA-256, dan mode air-gapped `widya pasok` (vendor).
-- 🏭 **18 Pilar Kedaulatan Industri Strategis**:
-  1. *Kripto Pasca-Kuantum & ZK*: FIPS 203 ML-KEM, FIPS 204 ML-DSA, R1CS synthesizer, Fiat-Shamir NIZK proof.
-  2. *Energi & Smart Grid*: IEC 61850 GOOSE (`0x88B8`) & Sampled Values (`0x88BA`), True RMS, sub-3ms relay trip.
-  3. *Kesehatan & Radiologi*: DICOM v3.0 Explicit VR, Hounsfield Unit scaling, windowing presets, ImageBuffer.
-  4. *Pertanian Presisi*: Indeks multispektral NDVI/NDRE/SAVI/EVI, ISOBUS TLG.BIN grid & ISO-XML.
-  5. *Material Canggih*: 7 Sistem Kristal Bravais, tensor metrik resiprokal, difraksi sinar-X serbuk (XRD) Bragg Cu-Kα1.
-  6. *Otomotif & Kendaraan Listrik*: ISO 14229 UDS server, ISO-TP DoCAN multi-frame transport, Coulomb counting EV BMS.
-  7. *Eksplorasi Pertambangan*: SEG-Y Rev 1/2 binary engine, konverter IBM 360/370 float, transkoder EBCDIC, seismik Zoeppritz.
-  8. *Smart City & Urban*: Hidrologi banjir rasional ($Q = 0.278 \cdot C \cdot I \cdot A$), Webster traffic cycle, Rooftop PV.
-  9. *Telekomunikasi 5G/6G*: 5G Core UPF line-rate packet router, GTP-U tunnel encap/decap, protokol PFCP.
-  10. *Antariksa & Satelit*: Paket telemetri CCSDS, sinkronisasi ASM `0x1ACFFC1D`, kalkulator orbit TLE SGP4.
-  11. *Maritim & Navigasi*: Dekoder ITU-R M.1371 NMEA AIS Type 1/2/3/5, perhitungan CPA/TCPA anti-tabrakan kapal.
-  12. *Sistem Tertanam RTOS*: Penjadwal preemptif berbasis prioritas, Priority-Inheritance Mutex (PI-Mutex).
-  13. *Game & Spasial 3D*: Software 3D rasterizer CPU, interpolasi Barycentric, Z-buffer, backface culling.
-  14. *Neuroteknologi & BCI*: Spiking Neural Network (SNN), model Leaky Integrate-and-Fire (LIF), STDP.
-  15. *Komputasi Kuantum*: Simulator state-vector kompleks 64-bit hingga 24 qubit, parser/eksekutor OpenQASM 3.0.
-  16. *AI & Bobot Model*: Parser SafeTensors dan GGUF v3 lokal untuk inferensi model bahasa LLM/SLM lokal.
-  17. *Kantor & Dokumen ODF*: ISO/IEC 26300 ODF (.odt, .ods, .odp) dan ISO/IEC 29500 OOXML (.docx, .xlsx, .pptx) murni.
-  18. *Multimedia & Codec*: Enkoder/dekoder gambar QOI, BMP bit-depth penuh, dan audio PCM WAV lossless.
+
 
 ---
 
