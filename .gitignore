@@ -41,6 +41,8 @@ widyac.wya
 21_aplikasi_multiplatform_bundle.rs
 
 # ===== Internal Discussion, Specs, & Archives =====
+/.agents/
+/.github/
 /.internal_archive/
 /.trae/
 /.vscode/
