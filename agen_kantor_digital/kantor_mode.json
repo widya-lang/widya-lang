@@ -1,9 +1,0 @@
-{
-  "status": "BUKA",
-  "versi_sistem": "1.1.0-GA",
-  "total_agen": 10,
-  "agen_baru": "agen_analis_data (SOP-10: Analitika KPI & Deteksi Anomali)",
-  "terakhir_diubah": "2026-09-30T00:01:00.000Z",
-  "diubah_oleh": "Satriyo",
-  "catatan": "Upgrade: Penambahan Agen ke-10 (Analis Data & KPI Bisnis)"
-}

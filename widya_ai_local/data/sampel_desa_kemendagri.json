@@ -1,7 +1,0 @@
-[
-  { "id_desa": "1101012001", "nama_desa": "KEUDE BAKONGAN", "kecamatan": "BAKONGAN", "kabupaten": "ACEH SELATAN", "provinsi": "ACEH", "populasi": 1420, "luas_km2": 4.8 },
-  { "id_desa": "3302012001", "nama_desa": "KEDUNGBANTENG", "kecamatan": "KEDUNGBANTENG", "kabupaten": "BANYUMAS", "provinsi": "JAWA TENGAH", "populasi": 6840, "luas_km2": 12.3 },
-  { "id_desa": "5103012001", "nama_desa": "KUTUH", "kecamatan": "KUTA SELATAN", "kabupaten": "BADUNG", "provinsi": "BALI", "populasi": 4520, "luas_km2": 8.7 },
-  { "id_desa": "6409012001", "nama_desa": "SEPAKU", "kecamatan": "SEPAKU", "kabupaten": "PENAJAM PASER UTARA", "provinsi": "KALIMANTAN TIMUR", "populasi": 9850, "luas_km2": 45.2 },
-  { "id_desa": "9101012001", "nama_desa": "BAMBAM", "kecamatan": "MERAUKE", "kabupaten": "MERAUKE", "provinsi": "PAPUA SELATAN", "populasi": 1180, "luas_km2": 68.9 }
-]

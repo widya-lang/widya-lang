@@ -1,8 +1,0 @@
-// Skill Mandiri: Analisis Statistik Data Desa
-fungsi hitung_rata_rata_desa(daftar_angka) {
-    misal total = 0.0;
-    misal n = panjang(daftar_angka);
-    jika (n == 0) { kembalikan 0.0; }
-    untuk x di daftar_angka { total = total + x; }
-    kembalikan total / n;
-}

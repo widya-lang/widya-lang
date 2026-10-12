@@ -1,4 +1,0 @@
-// Skill Mandiri Komputasi Khusus
-fungsi proses_komputasi_kustom(input_data) {
-    kembalikan { 'sukses': benar, 'hasil': input_data };
-}

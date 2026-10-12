@@ -9,7 +9,7 @@
 [![Penta-Core Matrix](https://img.shields.io/badge/Penta--Core-100%25%20PASS-brightgreen.svg)](#-penta-core-sovereign-matrix)
 [![Tests Status](https://img.shields.io/badge/Tests-250%2B%20PASS-brightgreen.svg)](#-pengujian-test-suite)
 
-[Portal Resmi](https://widya-lang.org) • [Dokumentasi Lengkap](DOKUMENTASI_KOMPREHENSIF.md) • [Pilar Kemandirian](DOKUMENTASI_PILAR_KEMANDIRIAN.md) • [Ekstensi VS Code](editors/vscode/) • [Panduan Kontribusi](CONTRIBUTING.md) • [Kebijakan Keamanan](SECURITY.md)
+[Portal Resmi & Dokumentasi](https://widya-lang.org) • [Contoh Kode](contoh/) • [Ekstensi VS Code](editors/vscode/) • [Panduan Kontribusi](CONTRIBUTING.md) • [Kebijakan Keamanan](SECURITY.md)
 
 </div>
 
@@ -192,12 +192,11 @@ cargo test
 
 ---
 
-## 📖 Dokumentasi Lengkap
+## 📖 Dokumentasi & Komunitas
 
-Untuk panduan mendalam tentang arsitektur, sintaks, sistem operasi, basis data terdistribusi, dan tutorial bertahap:
-* 👉 **[DOKUMENTASI_PILAR_KEMANDIRIAN.md](DOKUMENTASI_PILAR_KEMANDIRIAN.md)** — Spesifikasi Arsitektur Kedaulatan Nol-Dependensi & 18 Pilar Industri.
-* 👉 **[ROADMAP_PENTA_CORE_SOVEREIGN_MATRIX.md](ROADMAP_PENTA_CORE_SOVEREIGN_MATRIX.md)** — Spesifikasi Matriks 5 Pilar Komputasi Mandiri.
-* 👉 **[DOKUMENTASI_KOMPREHENSIF.md](DOKUMENTASI_KOMPREHENSIF.md)** — Buku Panduan Lengkap Pemrograman Widya.
+Dokumentasi resmi lengkap, panduan arsitektur, dan tutorial interaktif tersedia di:
+* 🌐 **Portal Resmi & Dokumentasi:** [https://widya-lang.org](https://widya-lang.org)
+* 💡 **Contoh Kode Rujukan:** Direktori [contoh/](contoh/) memuat kode rujukan bahasa dan pustaka inti.
 
 ---
 
