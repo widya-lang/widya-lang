@@ -49,6 +49,9 @@ jobs:
       - name: Validate Deterministic Stage-0 -> Stage-1 -> Stage-2 Self-Hosting
         run: cargo run --bin widya -- bootstrap
 
+      - name: Run Native Widya Test Runner (Auto-Discovery)
+        run: cargo run --bin widya -- test
+
       - name: Execute End-to-End Showcase (AI Analytics Service)
         run: cargo run --bin widya -- run contoh/18_layanan_ai_analitika.wya
 
