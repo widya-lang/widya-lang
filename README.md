@@ -9,7 +9,7 @@
 [![Tests Status](https://img.shields.io/badge/Tests-255%20PASS-brightgreen.svg)](#-pengujian--jaminan-mutu)
 [![Self-Hosting](https://img.shields.io/badge/Self--Hosting-Deterministic-brightgreen.svg)](#-kompiler-mandiri-full-self-hosting)
 
-[Dokumentasi Tutorial](docs/tutorials/) • [Contoh Kode](contoh/) • [Ekstensi VS Code](editors/vscode/) • [Panduan Kontribusi](CONTRIBUTING.md) • [Kebijakan Keamanan](SECURITY.md)
+[Dokumentasi Resmi](https://widya-lang.org/docs) • [Contoh Kode](contoh/) • [Ekstensi VS Code](editors/vscode/) • [Panduan Kontribusi](CONTRIBUTING.md) • [Kebijakan Keamanan](SECURITY.md)
 
 </div>
 
@@ -19,7 +19,10 @@
 
 **Widya-Lang** adalah bahasa pemrograman tingkat sistem dan aplikasi yang menggabungkan ekspresivitas sintaks dwibahasa (Nusantara & Internasional), inferensi tipe statis matematis **Hindley-Milner**, alokator memori aman berkinerja tinggi, serta arsitektur mandiri bebas ketergantungan asing (*zero-libc direct syscall*).
 
-Repositori ini difokuskan secara minimal dan presisi pada **inti bahasa pemrograman Widya-Lang**: kompilator, mesin virtual (VM), pustaka standar, manajer paket (WPM), perkakas pengembang, serta panduan tutorial kurikulum inti.
+Repositori ini difokuskan secara minimal, cepat, dan presisi pada **inti bahasa pemrograman Widya-Lang**: kompilator, mesin virtual (VM), pustaka standar, manajer paket (WPM), perkakas pengembang, serta rangkaian pengujian otomatis.
+
+> [!NOTE]
+> Seluruh dokumentasi komprehensif, buku panduan cetak (PDF ISO 32000-1), spesifikasi arsitektur (*The Widya Book*), 80 bab tutorial, dan 240 slide presentasi (PPTX) disajikan terpusat di portal resmi **[widya-lang.org/docs](https://widya-lang.org/docs)** agar repositori GitHub tetap berukuran sangat ringkas, cepat di-clone, dan murni berfokus pada pengembangan bahasa.
 
 ---
 
@@ -49,7 +52,6 @@ widya-lang/
 ├── src/                     # Kode sumber aplikasi CLI widya
 ├── compiler_self_hosted/    # Kompiler mandiri dalam bahasa Widya (.wya)
 ├── contoh/                  # Berkas contoh kode sumber resmi (.wya)
-├── docs/tutorials/          # Tutorial resmi Level Dasar & Lanjut (Markdown & PDF)
 ├── editors/vscode/          # Ekstensi resmi Visual Studio Code (v0.1.0 VSIX)
 ├── packages/                # Paket resmi standar WPM (@widya/tensor, ai, web, dll.)
 └── tests/                   # Rangkaian pengujian integrasi otomatis
@@ -175,13 +177,16 @@ widya wpm audit
 
 ---
 
-## 📚 Buku Panduan & Tutorial Resmi
+## 📚 Buku Panduan & Dokumentasi Resmi
 
-Materi pembelajaran resmi bahasa Widya-Lang tersedia lengkap di direktori [`docs/tutorials/`](docs/tutorials/):
+Seluruh materi dokumentasi, buku arsitektur, dan kurikulum pembelajaran resmi bahasa Widya-Lang tersedia terpusat di situs resmi:
 
-- 📗 **[Level Dasar (Pemula)](docs/tutorials/01_TUTORIAL_LEVEL_DASAR.pdf)**: Buku panduan komprehensif cetak ~229 halaman standar ISO 32000-1 (40 bab pembelajaran dari pengenalan hingga OOP dan penanganan galat). Sumber bab mandiri di [`docs/tutorials/level_dasar/`](docs/tutorials/level_dasar/).
-- 📘 **[Level Tingkat Lanjut](docs/tutorials/02_TUTORIAL_LEVEL_LANJUT.pdf)**: Buku panduan sistem tingkat lanjut (Hindley-Milner, Borrow Checker, Direct Syscalls, dan Kriptografi PQC). Sumber bab mandiri di [`docs/tutorials/level_lanjut/`](docs/tutorials/level_lanjut/).
-- 📊 **[Slide Modul Presentasi (PPTX)](docs/tutorials/pptx/)**: 80 modul slide PowerPoint 16:9 siap ajar untuk kurikulum Level Dasar dan Lanjut.
+👉 **[Portal Dokumentasi Widya-Lang (widya-lang.org/docs)](https://widya-lang.org/docs)**
+
+- 📗 **Buku Panduan Level Dasar (Pemula)**: Edisi komprehensif cetak ~229 halaman standar ISO 32000-1 (40 bab pembelajaran dari pengenalan hingga OOP dan penanganan galat). Tersedia unduhan PDF resmi dan materi per bab di portal web.
+- 📘 **Buku Panduan Level Tingkat Lanjut**: Edisi sistem komprehensif (Hindley-Milner, Borrow Checker, Direct Syscalls kernel OS, dan Kriptografi PQC). Tersedia unduhan PDF resmi dan materi per bab di portal web.
+- 📊 **Slide Modul Presentasi (PPTX)**: 240 modul slide PowerPoint 16:9 siap ajar untuk kurikulum Level Dasar, Level Lanjut, dan Ekosistem.
+- 📖 **The Widya Book & Spesifikasi**: Spesifikasi arsitektur kompilator self-hosting, model memori kedaulatan, panduan deployment server produksi, dan panduan migrasi dari Go/Rust.
 
 ---
 
