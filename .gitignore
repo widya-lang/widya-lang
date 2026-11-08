@@ -107,3 +107,6 @@ run_office.ps1
 /docs/tutorials/05_BUKU_WIDYADESKTOP.*
 /docs/tutorials/06_BUKU_WIDYAMOBILE.*
 /docs/tutorials/03_TUTORIAL_LEVEL_EKOSISTEM.*
+
+# ===== Website Portal widya-lang.org (Hosting Server Mandiri / Lokal Saja) =====
+/website/

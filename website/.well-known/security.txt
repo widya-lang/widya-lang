@@ -1,7 +1,0 @@
-Contact: mailto:security@widya-lang.org
-Expires: 2028-12-31T23:59:59.000Z
-Preferred-Languages: id, en
-Canonical: https://widya-lang.org/.well-known/security.txt
-Policy: https://github.com/widya-lang/widya-lang/blob/master/SECURITY.md
-Hiring: https://widya-lang.org/careers
-Acknowledgments: https://widya-lang.org/security-hall-of-fame
