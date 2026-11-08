@@ -4,7 +4,7 @@ use std::path::Path;
 #[test]
 fn test_android_binary_xml_generation() {
     let manifest = ApkManifest::baru("org.widya.silat.app", "ArenaSilatMobile")
-        .dengan_versi(42, "2.6.0")
+        .dengan_versi(42, "0.1.0")
         .dengan_sdk(24, 34)
         .dengan_activity(".ArenaSilatMainActivity")
         .tambah_izin("android.permission.CAMERA")
@@ -102,7 +102,7 @@ fn test_apk_v1_signature_generation() {
 fn test_pure_apk_builder_and_zip_container() {
     let dummy_native_so = vec![0x7F, b'E', b'L', b'F', 0x02, 0x01, 0x01, 0x00]; // ELF64 header
     let manifest = ApkManifest::baru("org.widya.silat.app", "ArenaSilat")
-        .dengan_versi(1, "2.6.0")
+        .dengan_versi(1, "0.1.0")
         .dengan_native_lib("arm64-v8a", &dummy_native_so);
 
     let apk_bytes = PureApkBuilder::bangun_apk(&manifest).expect("Harus sukses membuat APK");
@@ -125,7 +125,7 @@ fn test_pure_apk_builder_and_zip_container() {
 #[test]
 fn test_export_apk_file() {
     let manifest = ApkManifest::baru("org.widya.arena", "ArenaSilatApp")
-        .dengan_versi(10, "2.6.0");
+        .dengan_versi(10, "0.1.0");
 
     let target_dir = Path::new("/tmp/widya_apk_export_test");
     let apk_path = PureApkBuilder::ekspor_berkas_apk(&manifest, target_dir).expect("Ekspor APK harus sukses");

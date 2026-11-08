@@ -53,7 +53,7 @@ fn test_macho_64_arm64_header_and_load_commands() {
 fn test_apple_info_plist_xml_and_binary() {
     let config = IpaConfig::baru("id.widya.mobile.demo", "WidyaDemo")
         .dengan_display_name("Widya Demo App")
-        .dengan_versi("2.6.0", "42");
+        .dengan_versi("0.1.0", "42");
 
     // 1. XML Info.plist
     let xml = InfoPlistBuilder::bangun_xml_plist(&config);
@@ -62,7 +62,7 @@ fn test_apple_info_plist_xml_and_binary() {
     assert!(xml.contains("<key>CFBundleDisplayName</key>"));
     assert!(xml.contains("<string>Widya Demo App</string>"));
     assert!(xml.contains("<key>CFBundleShortVersionString</key>"));
-    assert!(xml.contains("<string>2.6.0</string>"));
+    assert!(xml.contains("<string>0.1.0</string>"));
     assert!(xml.contains("<key>CFBundleVersion</key>"));
     assert!(xml.contains("<string>42</string>"));
     assert!(xml.contains("<string>arm64</string>"));
@@ -106,7 +106,7 @@ fn test_full_ipa_generation_and_zip_container() {
     let icon_data = b"\x89PNG\r\n\x1a\nPure Widya iOS Icon PNG Bytes";
     let config = IpaConfig::baru("id.widya.app", "WidyaSovereign")
         .dengan_display_name("Widya Sovereign iOS")
-        .dengan_versi("2.6.0", "1")
+        .dengan_versi("0.1.0", "1")
         .tambah_asset("AppIcon.png", icon_data);
 
     let ipa_bytes = PureIpaBuilder::bangun_ipa(&config)

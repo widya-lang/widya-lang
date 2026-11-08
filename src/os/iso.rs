@@ -493,7 +493,7 @@ impl PureLiveIsoBuilder {
     pub fn bangun_live_iso(config: &LiveIsoConfig) -> Result<Vec<u8>, String> {
         let kernel_bytes = if config.kernel_payload.is_empty() {
             // Default bare-metal kernel stub jika tidak disediakan
-            b"\x7FELF\x02\x01\x01\x00WIDYAOS_BAREMETAL_KERNEL_IMAGE_V2_6_0".to_vec()
+            b"\x7FELF\x02\x01\x01\x00WIDYAOS_BAREMETAL_KERNEL_IMAGE_V0_1_0".to_vec()
         } else {
             config.kernel_payload.clone()
         };

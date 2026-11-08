@@ -130,7 +130,7 @@ fn test_el_torito_boot_catalog_validation() {
 
 #[test]
 fn test_live_iso_generation_and_descriptors() {
-    let dummy_kernel = b"\x7FELF\x02\x01\x01\x00WidyaOS Sovereign Microkernel Baremetal Payload v2.6.0";
+    let dummy_kernel = b"\x7FELF\x02\x01\x01\x00WidyaOS Sovereign Microkernel Baremetal Payload v0.1.0";
     let dummy_initrd = b"CPIO_RAMFS_ARCHIVE_MANDIRI_SOVEREIGN_ROOT_FS";
 
     let config = LiveIsoConfig::baru("WIDYAOS_TEST_ISO")

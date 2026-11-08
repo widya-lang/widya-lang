@@ -44,7 +44,7 @@ fn test_amf0_command_serialization_and_parsing() {
     let params = [
         ("app", "live"),
         ("tcUrl", "rtmp://siaran.widya.id/live"),
-        ("flashVer", "WidyaBroadcaster 2.6.0"),
+        ("flashVer", "WidyaBroadcaster 0.1.0"),
     ];
 
     // 1. Serialisasi perintah AMF0

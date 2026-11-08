@@ -958,14 +958,24 @@ impl WpmRegistryServer {
             let checksum = Wpm::calculate_sha256(dummy_bytes.as_bytes());
             let signature = sign_package_content(checksum.as_bytes(), &sovereign_priv_k).ok();
 
-            let mut versions = HashMap::new();
-            versions.insert(ver.to_string(), RegistryVersionInfo {
+            let ver_info = RegistryVersionInfo {
                 version: ver.to_string(),
                 checksum_sha256: checksum,
                 dependencies: HashMap::new(),
                 published_at_utc: now,
                 signature,
-            });
+            };
+
+            if let Ok(mut pkgs) = server.packages.write() {
+                if let Some(existing) = pkgs.get_mut(name) {
+                    existing.versions.insert(ver.to_string(), ver_info);
+                    existing.latest_version = ver.to_string();
+                    return;
+                }
+            }
+
+            let mut versions = HashMap::new();
+            versions.insert(ver.to_string(), ver_info);
             server.register_package(RegistryPackageInfo {
                 name: name.to_string(),
                 description: desc.to_string(),
@@ -982,13 +992,22 @@ impl WpmRegistryServer {
         add_default("widya-dataframe", "Pustaka manipulasi data tabular, agregasi, pemfilteran, dan CSV setara Pandas", "0.1.0", 9150, vec!["dataframe", "pandas", "csv", "data-science"]);
         add_default("widya-web", "Framework web RESTful modular dengan perutean kilat dan middleware setara Express/FastAPI", "0.1.0", 8940, vec!["web", "router", "express", "fastapi", "rest"]);
         add_default("widya-math", "Pustaka matematika dan aljabar linier presisi tinggi SIMD Widya-Lang", "0.1.0", 3840, vec!["math", "simd", "algebra"]);
+        add_default("widya-math", "Pustaka matematika dan aljabar linier presisi tinggi SIMD Widya-Lang", "1.0.0", 3840, vec!["math", "simd", "algebra"]);
         add_default("widya-http", "Klien dan server HTTP/HTTPS asinkron berkecepatan tinggi berbasis epoll/kqueue", "0.1.0", 5210, vec!["web", "http", "rest", "async"]);
+        add_default("widya-http", "Klien dan server HTTP/HTTPS asinkron berkecepatan tinggi berbasis epoll/kqueue", "1.0.0", 5210, vec!["web", "http", "rest", "async"]);
+        add_default("widya-http", "Klien dan server HTTP/HTTPS asinkron berkecepatan tinggi berbasis epoll/kqueue", "1.2.0", 5210, vec!["web", "http", "rest", "async"]);
         add_default("widya-crypto", "Pustaka kriptografi pasca-kuantum (PQC Kyber/Dilithium), Ed25519 & ChaCha20", "0.1.0", 2980, vec!["crypto", "ed25519", "pqc", "security"]);
+        add_default("widya-crypto", "Pustaka kriptografi pasca-kuantum (PQC Kyber/Dilithium), Ed25519 & ChaCha20", "1.0.0", 2980, vec!["crypto", "ed25519", "pqc", "security"]);
         add_default("widya-ui", "Kerangka kerja antarmuka grafis reaktif bergaya Flutter dengan canvas rendering", "0.1.0", 4120, vec!["ui", "reactive", "canvas", "frontend"]);
+        add_default("widya-ui", "Kerangka kerja antarmuka grafis reaktif bergaya Flutter dengan canvas rendering", "0.2.0", 4120, vec!["ui", "reactive", "canvas", "frontend"]);
         add_default("widya-ai", "Mesin komputasi tensor, autograd diferensial otomatis, dan jembatan ekosistem AI", "0.1.0", 6450, vec!["ai", "autograd", "tensor", "machine-learning"]);
+        add_default("widya-ai", "Mesin komputasi tensor, autograd diferensial otomatis, dan jembatan ekosistem AI", "0.9.5", 6450, vec!["ai", "autograd", "tensor", "machine-learning"]);
         add_default("widya-sql", "Driver basis data & ORM berdaulat WidyaBase (B+Tree, WAL ACID, Vector HNSW)", "0.1.0", 8120, vec!["database", "sql", "widyabase", "orm"]);
+        add_default("widya-sql", "Driver basis data & ORM berdaulat WidyaBase (B+Tree, WAL ACID, Vector HNSW)", "1.1.0", 8120, vec!["database", "sql", "widyabase", "orm"]);
         add_default("widya-test", "Framework penegasan (assertion) dan pelari uji (test runner) setara Jest / Pytest", "0.1.0", 7200, vec!["test", "jest", "pytest", "testing"]);
+        add_default("widya-test", "Framework penegasan (assertion) dan pelari uji (test runner) setara Jest / Pytest", "1.0.0", 7200, vec!["test", "jest", "pytest", "testing"]);
         add_default("widya-office", "Kompilator dokumen legal ISO 32000-1 PDF, Word DOCX OpenXML, Excel XLSX & TTE", "0.1.0", 9430, vec!["office", "pdf", "docx", "iso32000"]);
+        add_default("widya-office", "Kompilator dokumen legal ISO 32000-1 PDF, Word DOCX OpenXML, Excel XLSX & TTE", "2.5.0", 9430, vec!["office", "pdf", "docx", "iso32000"]);
         add_default("widya-pqc", "Kriptografi pasca-kuantum NIST FIPS 203 (ML-KEM), FIPS 204 (ML-DSA) & ZKP", "1.0.0", 4890, vec!["pqc", "quantum", "fips203", "zkp"]);
         add_default("widya-bifast", "Gateway switching transaksi finansial nasional BI-FAST ISO 20022 & QRIS", "1.0.0", 7340, vec!["fintech", "bifast", "iso20022", "qris"]);
         add_default("widya-arkas", "Tata kelola anggaran pendidikan BOS & BKU berantai audit anti-fraud BPK", "1.0.0", 5620, vec!["edutech", "arkas", "bos", "kemdikbud"]);

@@ -114,7 +114,7 @@ fn test_benchmark_hybrid_pqc_key_exchange_throughput() {
 #[test]
 fn test_benchmark_mcp_protocol_dispatch_latency() {
     println!("\n--- [BENCHMARK 4] Model Context Protocol (MCP) Tool Call Dispatch ---");
-    let server = McpServer::new("bench-mcp", "2.6.0");
+    let server = McpServer::new("bench-mcp", "0.1.0");
     server.register_tool(
         "bench_add",
         "Menjumlahkan dua bilangan integer",

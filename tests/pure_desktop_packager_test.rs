@@ -3,7 +3,7 @@ use std::process::Command;
 
 #[test]
 fn test_freedesktop_desktop_entry_generation() {
-    let manifest = DesktopPackageManifest::baru("arenasilat", "2.6.0")
+    let manifest = DesktopPackageManifest::baru("arenasilat", "0.1.0")
         .dengan_deskripsi("Platform Turnamen Pencak Silat Berdaulat")
         .dengan_kategori("Sports;Game;Office;")
         .dengan_eksekusi("arenasilat")
@@ -41,7 +41,7 @@ fn test_pure_tar_and_gzip_generation_and_decompression() {
 
 #[test]
 fn test_pure_deb_package_structure_and_dpkg_compliance() {
-    let manifest = DesktopPackageManifest::baru("arenasilat", "2.6.0")
+    let manifest = DesktopPackageManifest::baru("arenasilat", "0.1.0")
         .dengan_deskripsi("ArenaSilat Pencak Silat Platform")
         .dengan_arsitektur("amd64")
         .dengan_eksekusi("arenasilat")
@@ -65,7 +65,7 @@ fn test_pure_deb_package_structure_and_dpkg_compliance() {
             if output.status.success() {
                 let stdout = String::from_utf8_lossy(&output.stdout);
                 assert!(stdout.contains("Package: arenasilat"));
-                assert!(stdout.contains("Version: 2.6.0"));
+                assert!(stdout.contains("Version: 0.1.0"));
                 assert!(stdout.contains("Architecture: amd64"));
             }
         }
@@ -75,7 +75,7 @@ fn test_pure_deb_package_structure_and_dpkg_compliance() {
 
 #[test]
 fn test_pure_rpm_package_structure() {
-    let manifest = DesktopPackageManifest::baru("arenasilat", "2.6.0")
+    let manifest = DesktopPackageManifest::baru("arenasilat", "0.1.0")
         .dengan_deskripsi("ArenaSilat Pencak Silat Platform")
         .dengan_arsitektur("x86_64")
         .dengan_eksekusi("arenasilat")
@@ -91,7 +91,7 @@ fn test_pure_rpm_package_structure() {
 
 #[test]
 fn test_self_extracting_run_script_and_hash_integrity() {
-    let manifest = DesktopPackageManifest::baru("arenasilat", "2.6.0")
+    let manifest = DesktopPackageManifest::baru("arenasilat", "0.1.0")
         .dengan_eksekusi("arenasilat")
         .dengan_biner(b"#!/bin/sh\necho ArenaSilat!\n");
 
@@ -106,7 +106,7 @@ fn test_self_extracting_run_script_and_hash_integrity() {
 
 #[test]
 fn test_wapp_sovereign_container() {
-    let manifest = DesktopPackageManifest::baru("arenasilat", "2.6.0")
+    let manifest = DesktopPackageManifest::baru("arenasilat", "0.1.0")
         .dengan_biner(b"\x7FELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00");
 
     let wapp_bytes = PureWappPackager::bangun_paket_wapp(&manifest).expect("Harus sukses membuat .wapp");
@@ -119,7 +119,7 @@ fn test_wapp_sovereign_container() {
 
 #[test]
 fn test_universal_packager_export_all() {
-    let manifest = DesktopPackageManifest::baru("arenasilat", "2.6.0")
+    let manifest = DesktopPackageManifest::baru("arenasilat", "0.1.0")
         .dengan_deskripsi("ArenaSilat Sovereign Edition")
         .dengan_biner(b"#!/bin/sh\necho ArenaSilat Universal!\n")
         .tambah_berkas("./usr/share/doc/arenasilat/README.txt", 0o644, b"ArenaSilat Docs\n");

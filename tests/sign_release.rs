@@ -23,7 +23,7 @@ fn generate_documentation_pdfs_and_sign_official_release() {
         let pdf = DocumentConverter::markdown_to_pdf(&md);
         let bytes = pdf.generate_pdf_bytes();
         fs::write("DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
-        fs::write("dist/releases/v2.6.0/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
+        fs::write("dist/releases/v0.1.0/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.pdf", &bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_PILAR_KEMANDIRIAN.pdf ({:.1} KB)", bytes.len() as f32 / 1024.0);
 
@@ -31,7 +31,7 @@ fn generate_documentation_pdfs_and_sign_official_release() {
         let epub = DocumentConverter::markdown_to_epub(&md, Some("Pilar Kemandirian Widya-Lang"), Some("Komite Kedaulatan Widya"));
         let epub_bytes = epub.export_to_epub_bytes();
         fs::write("DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
-        fs::write("dist/releases/v2.6.0/DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
+        fs::write("dist/releases/v0.1.0/DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_PILAR_KEMANDIRIAN.epub", &epub_bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_PILAR_KEMANDIRIAN.epub ({:.1} KB)", epub_bytes.len() as f32 / 1024.0);
     }
@@ -43,46 +43,45 @@ fn generate_documentation_pdfs_and_sign_official_release() {
         let pdf = DocumentConverter::markdown_to_pdf(&md);
         let bytes = pdf.generate_pdf_bytes();
         fs::write("DOKUMENTASI_WPM.pdf", &bytes).unwrap();
-        fs::write("dist/releases/v2.6.0/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
+        fs::write("dist/releases/v0.1.0/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_WPM.pdf", &bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_WPM.pdf ({:.1} KB)", bytes.len() as f32 / 1024.0);
 
         let epub = DocumentConverter::markdown_to_epub(&md, Some("Panduan Widya Package Manager (WPM)"), Some("Tim Pengembang Widya"));
         let epub_bytes = epub.export_to_epub_bytes();
         fs::write("DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
-        fs::write("dist/releases/v2.6.0/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
+        fs::write("dist/releases/v0.1.0/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
         fs::write("www/downloads/DOKUMENTASI_WPM.epub", &epub_bytes).unwrap();
         println!("✅ Sukses menghasilkan DOKUMENTASI_WPM.epub ({:.1} KB)", epub_bytes.len() as f32 / 1024.0);
     }
 
-    // 2.5 Perbarui SHA256SUMS.txt di dist/releases/v2.6.0 dan www/downloads
+    // 2.5 Perbarui SHA256SUMS.txt di dist/releases/v0.1.0 dan www/downloads
     let release_files = vec![
         "DOKUMENTASI_PILAR_KEMANDIRIAN.epub",
         "DOKUMENTASI_PILAR_KEMANDIRIAN.pdf",
         "DOKUMENTASI_WPM.epub",
         "DOKUMENTASI_WPM.pdf",
-        "widya-lang-2.5.0.vsix",
-        "widya-v2.6.0-x86_64-linux.tar.gz",
+        "widya-lang-0.1.0.vsix",
+        "widya-v0.1.0-x86_64-linux.tar.gz",
     ];
 
     let mut sums = String::new();
     for f in &release_files {
-        let p = Path::new("dist/releases/v2.6.0").join(f);
+        let p = Path::new("dist/releases/v0.1.0").join(f);
         if let Some(hash) = compute_sha256(&p) {
             sums.push_str(&format!("{}  {}\n", hash, f));
         }
     }
 
     if !sums.is_empty() {
-        fs::write("dist/releases/v2.6.0/SHA256SUMS.txt", &sums).unwrap();
+        fs::write("dist/releases/v0.1.0/SHA256SUMS.txt", &sums).unwrap();
         fs::write("www/downloads/SHA256SUMS.txt", &sums).unwrap();
-        println!("✅ SHA256SUMS.txt v2.6.0 berhasil diperbarui secara deterministik.");
+        println!("✅ SHA256SUMS.txt v0.1.0 berhasil diperbarui secara deterministik.");
     }
 
     // 3. Tanda tangani Ed25519
     let targets = vec![
-        ("dist/releases/v1.0.0/SHA256SUMS.txt", "dist/releases/v1.0.0/SHA256SUMS.sig", "dist/releases/v1.0.0/widya_vendor_pubkey.hex"),
-        ("dist/releases/v2.6.0/SHA256SUMS.txt", "dist/releases/v2.6.0/SHA256SUMS.sig", "dist/releases/v2.6.0/widya_vendor_pubkey.hex"),
+        ("dist/releases/v0.1.0/SHA256SUMS.txt", "dist/releases/v0.1.0/SHA256SUMS.sig", "dist/releases/v0.1.0/widya_vendor_pubkey.hex"),
         ("www/downloads/SHA256SUMS.txt", "www/downloads/SHA256SUMS.sig", "www/downloads/widya_vendor_pubkey.hex"),
     ];
 
