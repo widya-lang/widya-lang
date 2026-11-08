@@ -1,0 +1,53 @@
+// packages/widya-tensor/tests/tensor_test.wya
+// Uji Unit Mandiri Pustaka @widya/tensor
+
+impor "@widya/test" sebagai test;
+impor "@widya/tensor" sebagai np;
+
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_pembuatan_dan_konstanta(t) {
+    misal t_nol = np.nol([2, 3]);
+    test.tegaskan_sama(t, t_nol.total_elemen, 6, "Total elemen t_nol harus 6");
+    test.tegaskan_sama(t, t_nol.dimensi, 2, "Dimensi t_nol harus 2");
+
+    misal t_satu = np.satu([3]);
+    test.tegaskan_sama(t, t_satu.total_elemen, 3, "Total elemen t_satu harus 3");
+    test.tegaskan_sama(t, np.jumlah(t_satu), 3.0, "Jumlah elemen t_satu harus 3.0");
+
+    misal t_id = np.identitas(3);
+    test.tegaskan_sama(t, t_id.total_elemen, 9, "Total elemen identitas 3x3 harus 9");
+    test.tegaskan_sama(t, np.jumlah(t_id), 3.0, "Jumlah trace identitas 3x3 harus 3.0");
+}
+
+fungsi uji_aljabar_dan_matmul(t) {
+    misal a = np.tensor_buat([1.0, 2.0, 3.0, 4.0], [2, 2]);
+    misal id = np.identitas(2);
+    misal hasil = np.matmul(a, id);
+
+    test.tegaskan_sama(t, hasil.data[0], 1.0, "a * I [0,0] harus 1.0");
+    test.tegaskan_sama(t, hasil.data[1], 2.0, "a * I [0,1] harus 2.0");
+    test.tegaskan_sama(t, hasil.data[2], 3.0, "a * I [1,0] harus 3.0");
+    test.tegaskan_sama(t, hasil.data[3], 4.0, "a * I [1,1] harus 4.0");
+
+    misal v1 = [1.0, 2.0, 3.0];
+    misal v2 = [4.0, 5.0, 6.0];
+    misal d = np.dot(v1, v2);
+    // 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32
+    test.tegaskan_sama(t, d, 32.0, "Dot product v1 . v2 harus 32.0");
+}
+
+fungsi uji_reduksi_statistik(t) {
+    misal data_t = np.tensor_buat([10.0, 20.0, 30.0, 40.0], [4]);
+    test.tegaskan_sama(t, np.jumlah(data_t), 100.0, "Total jumlah harus 100.0");
+    test.tegaskan_sama(t, np.rata_rata(data_t), 25.0, "Rata-rata harus 25.0");
+    test.tegaskan_sama(t, np.minimum(data_t), 10.0, "Nilai minimum harus 10.0");
+    test.tegaskan_sama(t, np.maksimum(data_t), 40.0, "Nilai maksimum harus 40.0");
+}
+
+test.uji_kasus(pelari, "Pembuatan Tensor & Konstanta", uji_pembuatan_dan_konstanta);
+test.uji_kasus(pelari, "Aljabar Matriks & Matmul", uji_aljabar_dan_matmul);
+test.uji_kasus(pelari, "Reduksi Statistik Tensor", uji_reduksi_statistik);
+
+misal hasil = test.uji_ringkasan(pelari);
+tulis("Hasil Uji @widya/tensor: " + ke_teks(hasil["lulus"]) + "/" + ke_teks(hasil["total"]) + " LULUS.");

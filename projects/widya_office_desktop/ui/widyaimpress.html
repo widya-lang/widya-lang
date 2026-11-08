@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paparan_Kedaulatan_Digital.pptx — WidyaImpress (DeckCraft Sovereign Parity)</title>
+  <link rel="stylesheet" href="css/office_theme.css">
+  <style>
+    .app-impress-standalone {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .impress-main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+  </style>
+</head>
+<body class="app-impress-standalone">
+
+  <!-- 1. WidyaImpress Titlebar (DeckCraft Warm Orange Theme #c43e1c) -->
+  <header class="wc-header">
+    <div class="wc-header-left">
+      <!-- 9-Dot Sovereign Suite App Launcher -->
+      <button class="wc-waffle-btn" id="waffleBtn" onclick="toggleWaffleMenu()" title="Peluncur Aplikasi WidyaOffice Suite (ArtCraft Parity)">
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+      </button>
+
+      <!-- AutoSave Pill Switch -->
+      <div class="wc-autosave" title="Penyimpanan Otomatis Aktif">
+        <span>AutoSave</span>
+        <div class="wc-switch" id="autoSaveToggle" onclick="toggleAutoSave()">
+          <div class="wc-switch-knob"></div>
+        </div>
+      </div>
+
+      <!-- Quick Access Toolbar -->
+      <button class="wc-quick-btn" onclick="savePresentation()" title="Simpan Presentasi (Ctrl+S)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/></svg>
+      </button>
+      <button class="wc-quick-btn" onclick="document.execCommand('undo')" title="Undo (Ctrl+Z)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 0 0-5 5v1H1.5a.5.5 0 0 0-.354.854l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5A.5.5 0 0 0 6.5 9H5V8a4 4 0 1 1 4 4v1a5 5 0 0 0-1-9.9z"/></svg>
+      </button>
+    </div>
+
+    <!-- Center: Presentation Title & Search -->
+    <div class="wc-header-center">
+      <div class="wc-doc-title-box">
+        <span class="wc-doc-title">Paparan_Kedaulatan_Digital.pptx</span>
+        <span class="wc-doc-status">— Saved to this PC</span>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
+      </div>
+
+      <div class="wc-search-pill">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="#707070"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <input type="text" class="wc-search-input" placeholder="Search commands, slides, and transitions (Alt+Q)" />
+      </div>
+    </div>
+
+    <!-- Right: Slide Show Present Button & Avatar -->
+    <div class="wc-header-right">
+      <button class="wc-share-pill" style="background:#c43e1c;" onclick="startSlideShow()" title="Putar Presentasi Layar Penuh (F5)">
+        <span>Present ▷</span>
+      </button>
+      <div class="wc-user-avatar" style="background:#c43e1c;">IU</div>
+    </div>
+  </header>
+
+  <!-- Waffle Flyout App Switcher Menu -->
+  <div class="wc-waffle-dropdown" id="waffleDropdown">
+    <div style="font-size:12px; font-weight:700; color:#616161; text-transform:uppercase; letter-spacing:0.5px;">Sovereign Office Suite</div>
+    <div class="wc-waffle-grid">
+      <a class="wc-waffle-item" href="widyawriter.html">
+        <div class="wc-waffle-icon" style="background:#2b47b5;">W</div>
+        <div>
+          <div style="font-weight:700; color:#183691;">WidyaWriter</div>
+          <div style="font-size:11px; color:#555;">WordCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyacalc.html">
+        <div class="wc-waffle-icon" style="background:#107c41;">C</div>
+        <div>
+          <div style="font-weight:700; color:#0e6b37;">WidyaCalc</div>
+          <div style="font-size:11px; color:#555;">SheetCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyaimpress.html" style="background:#fdeee9; border-color:#f6c4b5;">
+        <div class="wc-waffle-icon" style="background:#c43e1c;">I</div>
+        <div>
+          <div style="font-weight:700; color:#a13014;">WidyaImpress</div>
+          <div style="font-size:11px; color:#555;">DeckCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyapdf.html">
+        <div class="wc-waffle-icon" style="background:#d9381e;">P</div>
+        <div>
+          <div style="font-weight:700; color:#b0220c;">WidyaPDF</div>
+          <div style="font-size:11px; color:#555;">PDFCraft Parity</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. DeckCraft Ribbon 12 Tabs -->
+  <nav class="wc-tab-strip">
+    <button class="wc-tab tab-file" onclick="openBackstage('home')">File</button>
+    <button class="wc-tab active" data-tab="home" onclick="switchRibbonTab('home')">Home</button>
+    <button class="wc-tab" data-tab="insert" onclick="switchRibbonTab('insert')">Insert</button>
+    <button class="wc-tab" data-tab="draw" onclick="switchRibbonTab('draw')">Draw</button>
+    <button class="wc-tab" data-tab="design" onclick="switchRibbonTab('design')">Design</button>
+    <button class="wc-tab" data-tab="transitions" onclick="switchRibbonTab('transitions')">Transitions</button>
+    <button class="wc-tab" data-tab="animations" onclick="switchRibbonTab('animations')">Animations</button>
+    <button class="wc-tab" data-tab="slideshow" onclick="switchRibbonTab('slideshow')">Slide Show</button>
+    <button class="wc-tab" data-tab="record" onclick="switchRibbonTab('record')">Record</button>
+    <button class="wc-tab" data-tab="review" onclick="switchRibbonTab('review')">Review</button>
+    <button class="wc-tab" data-tab="view" onclick="switchRibbonTab('view')">View</button>
+    <button class="wc-tab" data-tab="help" onclick="switchRibbonTab('help')">Help</button>
+  </nav>
+
+  <!-- 3. Ribbon Toolbar for WidyaImpress (12 Tabs) -->
+  <section class="wc-ribbon-panel" id="wcRibbonPanel">
+
+    <!-- Tab 1: HOME (Active) -->
+    <div class="wc-ribbon-tab-content active" id="tabContent-home">
+      <!-- Group: Clipboard -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" title="Paste (Ctrl+V)" onclick="document.execCommand('paste')">
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="#c43e1c"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>
+            <span>Paste</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="document.execCommand('cut')">Cut</button>
+            <button class="wc-tool-btn" onclick="document.execCommand('copy')">Copy</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Clipboard</div>
+      </div>
+
+      <!-- Group: Slides -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="addNewSlide('content')" title="Tambah Slide Baru">
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="#c43e1c"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+            <span>New Slide</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="duplicateSlide()">Duplicate</button>
+            <button class="wc-tool-btn" onclick="deleteCurrentSlide()">Delete</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="changeCurrentLayout('title_only')">Layout ▾</button>
+            <button class="wc-tool-btn" onclick="showToast('Tata Letak Direset', '↺')">Reset</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Slides</div>
+      </div>
+
+      <!-- Group: Font & Paragraph -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <div class="wc-row" style="gap:4px;">
+            <select class="wc-select" style="width:115px;"><option selected>Segoe UI</option><option>Aptos</option><option>Calibri</option></select>
+            <select class="wc-select" style="width:52px;"><option>24</option><option selected>28</option><option>32</option><option>40</option></select>
+            <button class="wc-tool-btn" onclick="document.execCommand('bold')"><b>B</b></button>
+            <button class="wc-tool-btn" onclick="document.execCommand('italic')"><i>I</i></button>
+            <button class="wc-tool-btn" onclick="document.execCommand('underline')"><u>U</u></button>
+          </div>
+          <div class="wc-row" style="gap:3px;">
+            <button class="wc-tool-btn" onclick="document.execCommand('justifyLeft')">Left</button>
+            <button class="wc-tool-btn" onclick="document.execCommand('justifyCenter')">Center</button>
+            <button class="wc-tool-btn" onclick="document.execCommand('justifyRight')">Right</button>
+            <button class="wc-tool-btn" onclick="document.execCommand('insertUnorderedList')">• Bullet</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Font &amp; Paragraph</div>
+      </div>
+
+      <!-- Group: Drawing & Objects -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertTextBox()" title="Sisipkan Kotak Teks">
+            <span style="font-size:18px; font-weight:700; color:#c43e1c;">T</span>
+            <span>Text Box</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertShape('rect')" title="Sisipkan Bentuk">
+            <span style="font-size:18px; color:#c43e1c;">▭</span>
+            <span>Shapes</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="exportPPTX()" title="Ekspor OpenXML PPTX">
+            <span style="font-size:18px; color:#c43e1c;">📽️</span>
+            <span>Export PPTX</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Drawing &amp; Export</div>
+      </div>
+    </div>
+
+    <!-- Tab 2: INSERT -->
+    <div class="wc-ribbon-tab-content" id="tabContent-insert">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="addNewSlide('content')">
+            <span style="font-size:18px; color:#c43e1c;">➕</span>
+            <span>New Slide</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertSlideTable()">
+            <span style="font-size:18px; color:#c43e1c;">▦</span>
+            <span>Table</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Slides &amp; Tables</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="promptInsertImage()">
+            <span style="font-size:18px; color:#c43e1c;">🖼️</span>
+            <span>Pictures</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertShape('circle')">
+            <span style="font-size:18px; color:#c43e1c;">⭕</span>
+            <span>Shapes</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertSlideChart('bar')">
+            <span style="font-size:18px; color:#c43e1c;">📊</span>
+            <span>Chart</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Illustrations</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertTextBox()">
+            <span style="font-size:18px; color:#c43e1c;">T</span>
+            <span>Text Box</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Header & Footer Disisipkan ke Slide', '📑')">
+            <span style="font-size:18px; color:#c43e1c;">📑</span>
+            <span>Header/Footer</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Text</div>
+      </div>
+    </div>
+
+    <!-- Tab 3: DRAW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-draw">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg active" onclick="showToast('Alat Seleksi Vektor', '👆')">
+            <span style="font-size:18px; color:#c43e1c;">👆</span>
+            <span>Select</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="togglePen()">
+            <span style="font-size:18px; color:#c43e1c;">✏️</span>
+            <span>Draw</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="clearDrawings()">
+            <span style="font-size:18px; color:#c43e1c;">🧹</span>
+            <span>Eraser</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Tools</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" style="border-bottom:3px solid #c43e1c;" onclick="showToast('Pena Oranye', '🖊️')">Oranye Impress</button>
+          <button class="wc-tool-btn" style="border-bottom:3px solid #1e293b;" onclick="showToast('Pena Slate', '🖊️')">Hitam Gelap</button>
+          <button class="wc-tool-btn" style="border-bottom:3px solid #ffff00;" onclick="showToast('Stabilo Presenter', '🖍️')">Stabilo Kuning</button>
+        </div>
+        <div class="wc-group-label">Pens</div>
+      </div>
+    </div>
+
+    <!-- Tab 4: DESIGN -->
+    <div class="wc-ribbon-tab-content" id="tabContent-design">
+      <!-- Group: Themes -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="setTheme('modern_dark')">
+            <span style="font-size:18px; color:#c43e1c;">⬛</span>
+            <span>Modern Dark</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="setTheme('classic_light')">
+            <span style="font-size:18px; color:#c43e1c;">⬜</span>
+            <span>Classic Light</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="setTheme('sovereign_emerald')">
+            <span style="font-size:18px; color:#107c41;">🟢</span>
+            <span>Emerald</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="setTheme('deckcraft_warm')">
+            <span style="font-size:18px; color:#c43e1c;">🔥</span>
+            <span>Warm Crimson</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Themes</div>
+      </div>
+
+      <!-- Group: Customize -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnRatio169" onclick="setAspectRatio('16:9')" title="Layar Lebar 16:9">
+            <span style="font-size:18px; color:#c43e1c;">📺</span>
+            <span>Widescreen 16:9</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnRatio43" onclick="setAspectRatio('4:3')" title="Standar 4:3">
+            <span style="font-size:18px; color:#c43e1c;">📻</span>
+            <span>Standard 4:3</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="changeSlideColorPrompt()">
+            <span style="font-size:18px; color:#c43e1c;">🎨</span>
+            <span>Background</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Customize</div>
+      </div>
+    </div>
+
+    <!-- Tab 5: TRANSITIONS -->
+    <div class="wc-ribbon-tab-content" id="tabContent-transitions">
+      <!-- Group: Transition to This Slide -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" onclick="setSlideTransition('none')">None</button>
+          <button class="wc-tool-btn active" onclick="setSlideTransition('fade')">Fade</button>
+          <button class="wc-tool-btn" onclick="setSlideTransition('push')">Push</button>
+          <button class="wc-tool-btn" onclick="setSlideTransition('wipe')">Wipe</button>
+          <button class="wc-tool-btn" onclick="setSlideTransition('split')">Split</button>
+          <button class="wc-tool-btn" onclick="setSlideTransition('dissolve')">Dissolve</button>
+        </div>
+        <div class="wc-group-label">Transition to This Slide</div>
+      </div>
+
+      <!-- Group: Timing -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="previewTransition()">
+            <span style="font-size:18px; color:#c43e1c;">▶</span>
+            <span>Preview</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="applyTransitionToAll()">
+            <span style="font-size:18px; color:#c43e1c;">✨</span>
+            <span>Apply to All</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Timing</div>
+      </div>
+    </div>
+
+    <!-- Tab 6: ANIMATIONS -->
+    <div class="wc-ribbon-tab-content" id="tabContent-animations">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" onclick="showToast('Animasi: Appear', '⚡')">Appear</button>
+          <button class="wc-tool-btn" onclick="showToast('Animasi: Fade In', '⚡')">Fade</button>
+          <button class="wc-tool-btn" onclick="showToast('Animasi: Fly In', '⚡')">Fly In</button>
+          <button class="wc-tool-btn" onclick="showToast('Animasi: Float In', '⚡')">Float In</button>
+          <button class="wc-tool-btn" onclick="showToast('Animasi: Wipe', '⚡')">Wipe</button>
+        </div>
+        <div class="wc-group-label">Animation Library</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Panel Animasi Dibuka', '📑')">
+            <span style="font-size:18px; color:#c43e1c;">📑</span>
+            <span>Animation Pane</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Advanced Animation</div>
+      </div>
+    </div>
+
+    <!-- Tab 7: SLIDE SHOW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-slideshow">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="startSlideShow()" title="Putar Dari Awal (F5)">
+            <span style="font-size:18px; color:#c43e1c;">▷</span>
+            <span>From Beginning</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="startSlideShow()" title="Putar Dari Slide Saat Ini (Shift+F5)">
+            <span style="font-size:18px; color:#c43e1c;">▶</span>
+            <span>From Current</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Start Slide Show</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnRehearse" onclick="toggleRehearseTimings()" title="Latihan Pewaktuan Presentasi">
+            <span id="rehearseTimerDisplay" style="display:none; font-family:monospace; font-weight:bold; color:#c43e1c;">00:00</span>
+            <span style="font-size:18px; color:#c43e1c;">⏱️</span>
+            <span>Rehearse Timings</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Set Up</div>
+      </div>
+    </div>
+
+    <!-- Tab 8: RECORD -->
+    <div class="wc-ribbon-tab-content" id="tabContent-record">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Perekaman Paparan Dimulai (Audio + Slide)', '🔴')">
+            <span style="font-size:18px; color:#dc2626;">🔴</span>
+            <span>Record Show</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mengekspor Slide Paparan ke Berkas Video MP4...', '🎞️')">
+            <span style="font-size:18px; color:#c43e1c;">🎞️</span>
+            <span>Export to Video</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Record &amp; Export</div>
+      </div>
+    </div>
+
+    <!-- Tab 9: REVIEW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-review">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="checkSpellingKBBI()">
+            <span style="font-size:18px; color:#c43e1c;">✓</span>
+            <span>Spelling KBBI</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showImpressStats()">
+            <span style="font-size:18px; color:#c43e1c;">📊</span>
+            <span>Slide Stats</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Proofing</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Komentar Baru Ditambahkan ke Slide', '💬')">
+            <span style="font-size:18px; color:#c43e1c;">💬</span>
+            <span>New Comment</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Comments</div>
+      </div>
+    </div>
+
+    <!-- Tab 10: VIEW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-view">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn active" id="btnViewNormal" onclick="toggleViewMode('normal')">Normal</button>
+          <button class="wc-tool-btn" id="btnViewSorter" onclick="toggleViewMode('sorter')">Slide Sorter</button>
+          <button class="wc-tool-btn" onclick="toggleNotesDrawer()">Notes Drawer</button>
+        </div>
+        <div class="wc-group-label">Presentation Views</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" onclick="showToast('Rasio Tampilan 100%', '🔍')">Fit Window</button>
+          <button class="wc-tool-btn" onclick="showToast('Mode Warna Berdaulat', '🎨')">Color</button>
+        </div>
+        <div class="wc-group-label">Zoom &amp; Color</div>
+      </div>
+    </div>
+
+    <!-- Tab 11: HELP -->
+    <div class="wc-ribbon-tab-content" id="tabContent-help">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showImpressHelp()">
+            <span style="font-size:20px; color:#c43e1c;">❓</span>
+            <span>Help (F1)</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="verifyImpressIntegrity()">
+            <span style="font-size:20px; color:#c43e1c;">🛡️</span>
+            <span>NIST FIPS 204</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showImpressStats()">
+            <span style="font-size:20px; color:#c43e1c;">📊</span>
+            <span>Audit PPTX</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Sovereignty &amp; Help</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 4. DeckCraft Canvas Main Workspace -->
+  <main class="impress-main-container" id="workspace-impress">
+    <!-- View 1: Normal View -->
+    <div class="impress-workspace" id="impressNormalView" style="display:flex; width:100%; height:100%;">
+      <!-- Left Thumbnail Navigator -->
+      <aside class="impress-sidebar" style="width:200px; background:#ffffff; border-right:1px solid #d1d1d1; display:flex; flex-direction:column;">
+        <div style="padding:8px 12px; font-size:11px; font-weight:700; color:#64748b; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+          <span>SLIDES</span>
+          <button onclick="addNewSlide('content')" style="padding:2px 6px; background:#c43e1c; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:11px;">+ Slide</button>
+        </div>
+        <div class="impress-thumbnails-scroll" id="impressThumbnailsList" style="flex:1; overflow-y:auto; padding:10px;"></div>
+      </aside>
+
+      <!-- Center Slide Canvas Viewport + Notes Drawer -->
+      <div class="impress-canvas-wrapper" style="flex:1; display:flex; flex-direction:column; align-items:center; position:relative; overflow:auto; padding:24px; background:#e2e8f0;">
+        <div class="impress-slide-canvas" id="impressSlideCanvas" style="box-shadow:0 10px 25px rgba(0,0,0,0.2);"></div>
+
+        <!-- Speaker Notes Drawer -->
+        <div class="impress-notes-drawer" id="impressNotesDrawer" style="width:100%; max-width:800px; margin-top:20px; background:#fff; border:1px solid #d1d1d1; border-radius:6px; padding:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+          <div style="font-size:12px; font-weight:700; color:#c43e1c; margin-bottom:6px;">📝 Catatan Pembicara (Speaker Notes)</div>
+          <textarea class="impress-notes-textarea" id="impressNotesTextarea" style="width:100%; height:64px; border:1px solid #e2e8f0; border-radius:4px; padding:6px; font-size:12px; font-family:inherit; resize:vertical; outline:none;" placeholder="Ketik catatan pembicara untuk slide ini di sini..." oninput="WidyaImpress.onNotesInput(this.value)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 2: Slide Sorter Grid View -->
+    <div class="impress-sorter-view" id="impressSorterView" style="display:none; width:100%; height:100%; overflow:auto; padding:24px; background:#f1f5f9;"></div>
+  </main>
+
+  <!-- 5. Presenter Cockpit Modal (PowerPoint Full Presenter View Parity) -->
+  <div class="impress-presenter-modal" id="impressPresenterModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0f172a; color:#fff; z-index:9999; flex-direction:column;">
+    <div class="virtual-laser-dot" id="virtualLaserDot"></div>
+    <div class="presenter-cockpit" style="display:flex; flex:1; overflow:hidden;">
+      <div class="presenter-main-view" id="presenterMainView" style="flex:2; display:flex; align-items:center; justify-content:center; position:relative; padding:20px;">
+        <canvas class="presenter-draw-canvas" id="presenterDrawCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:10; pointer-events:auto;"></canvas>
+        <div id="presenterMainSlide"></div>
+      </div>
+      <div class="presenter-sidebar-view" style="flex:1; border-left:1px solid #334155; padding:20px; display:flex; flex-direction:column; gap:16px;">
+        <div class="presenter-timer-card" style="background:#1e293b; border-radius:8px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8;">
+            <span>⏱️ WAKTU BICARA</span>
+            <span id="presenterRealClock">00:00:00</span>
+          </div>
+          <div class="presenter-timer-digits" id="presenterTimerDigits" style="font-size:32px; font-weight:700; color:#f8fafc; font-family:monospace; margin-top:4px;">00:00</div>
+        </div>
+        <div class="presenter-next-preview" style="background:#1e293b; border-radius:8px; padding:12px; flex:1;">
+          <div style="font-size:11px; font-weight:700; color:#94a3b8; margin-bottom:8px;">SLIDE BERIKUTNYA:</div>
+          <div id="presenterNextSlide"></div>
+        </div>
+        <textarea class="presenter-notes-box" id="presenterNotesArea" style="height:120px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:6px; padding:8px; font-size:12px;" placeholder="Catatan pembicara..."></textarea>
+      </div>
+    </div>
+    <div class="impress-presenter-bar" style="height:50px; background:#1e293b; border-top:1px solid #334155; display:flex; align-items:center; justify-content:space-between; padding:0 16px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button onclick="WidyaImpress.prevPresenterSlide()" style="padding:6px 12px; background:#334155; color:#fff; border:none; border-radius:4px; cursor:pointer;">◀</button>
+        <span id="impressPresenterProgress" style="font-weight:700; font-size:13px;">Slide 1 / 4</span>
+        <button onclick="WidyaImpress.nextPresenterSlide()" style="padding:6px 12px; background:#334155; color:#fff; border:none; border-radius:4px; cursor:pointer;">▶</button>
+        <button id="btnPenPointer" onclick="WidyaImpress.togglePen()" style="padding:6px 12px; background:#334155; color:#fff; border:none; border-radius:4px; cursor:pointer;">🖊️ Pulpen</button>
+        <button class="win-btn" id="btnBlackout" onclick="WidyaImpress.toggleBlackScreen()" title="Layar Hitam (B)">⬛ Hitam (B)</button>
+        <button class="win-btn" id="btnWhiteout" onclick="WidyaImpress.toggleWhiteScreen()" title="Layar Putih (W)">⬜ Putih (W)</button>
+        <button id="btnLaserPointer" onclick="WidyaImpress.toggleLaserPointer()" style="padding:6px 12px; background:#334155; color:#fff; border:none; border-radius:4px; cursor:pointer;">🔴 Laser</button>
+      </div>
+      <button onclick="WidyaImpress.closePresenter()" style="padding:6px 12px; background:#c43e1c; color:#fff; border:none; border-radius:4px; cursor:pointer;">✕ Keluar (Esc)</button>
+    </div>
+  </div>
+
+  <!-- 6. Status Bar -->
+  <footer style="height:28px; background:#ffffff; border-top:1px solid #d1d1d1; display:flex; align-items:center; justify-content:space-between; padding:0 12px; font-size:11.5px; color:#555;">
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="impressSlideCounter">Slide 1 dari 4</span>
+      <span>Bahasa: Indonesia</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button onclick="toggleNotesDrawer()" style="background:none; border:none; color:#555; cursor:pointer;">📝 Notes</button>
+      <button onclick="WidyaImpress.setAspectRatio('16:9')" style="background:none; border:none; color:#555; cursor:pointer;">16:9</button>
+      <button onclick="WidyaImpress.setAspectRatio('4:3')" style="background:none; border:none; color:#555; cursor:pointer;">4:3</button>
+      <span>100%</span>
+    </div>
+  </footer>
+
+  <!-- 7. DeckCraft Backstage Start Screen -->
+  <div class="wc-backstage" id="wcBackstage">
+    <div class="wc-backstage-sidebar" style="background-color:#c43e1c;">
+      <button class="wc-backstage-back-btn" onclick="closeBackstage()" title="Kembali ke Paparan (Esc)">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/></svg>
+      </button>
+
+      <div class="wc-backstage-item active" data-bstab="home" onclick="switchBackstageTab('home')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="new" onclick="switchBackstageTab('new')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+        <span>New</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="open" onclick="switchBackstageTab('open')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10.4a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V10.4a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+        <span>Open</span>
+      </div>
+      <div class="wc-backstage-divider"></div>
+      <div class="wc-backstage-item" onclick="savePresentation(); closeBackstage();">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/></svg>
+        <span>Save</span>
+      </div>
+      <div class="wc-backstage-item" onclick="openSaveAsDialog()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Save As</span>
+      </div>
+      <div class="wc-backstage-item" onclick="exportPPTX()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Export PPTX</span>
+      </div>
+      <div class="wc-backstage-item" onclick="closeBackstage()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        <span>Close</span>
+      </div>
+    </div>
+
+    <!-- Backstage Content Panes -->
+    <div class="wc-backstage-content">
+      <div class="wc-backstage-pane" id="bsPane-home">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">WidyaImpress Presentation</h1>
+        <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 12px;">New Presentation</div>
+        <div class="wc-template-grid">
+          <div class="wc-template-card" onclick="closeBackstage()">
+            <div class="wc-template-preview" style="align-items:center; justify-content:center;">
+              <span style="font-size:32px; color:#c43e1c;">📽️</span>
+            </div>
+            <div class="wc-template-label">Blank Presentation</div>
+          </div>
+          <div class="wc-template-card" onclick="closeBackstage()">
+            <div class="wc-template-preview" style="background:#fdeee9; border-color:#c43e1c;">
+              <div style="height:4px; background:#c43e1c; width:100%; margin-bottom:6px;"></div>
+              <div style="font-size:7px; font-weight:700; color:#c43e1c;">Paparan Eksekutif</div>
+              <div style="font-size:5px; color:#555; margin-top:4px;">Kedaulatan Digital RI</div>
+            </div>
+            <div class="wc-template-label">Executive Deck</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/office_commands.js"></script>
+  <script src="js/impress_core.js"></script>
+  <script src="js/office_suite_ui.js"></script>
+  <script src="js/widyaimpress_ui.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.WidyaImpress && typeof window.WidyaImpress.init === 'function') {
+        window.WidyaImpress.init();
+      }
+    });
+  </script>
+
+  <div class="wc-tellme-dropdown" id="tellMeDropdown" style="display:none;"></div>
+  <div class="wc-toast" id="wcToastNotification"></div>
+
+  <!-- Modal: Save As Format & Directory Picker Dialog -->
+  <div class="wc-modal-backdrop" id="saveAsModal">
+    <div class="wc-modal-box" style="max-width:540px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title" id="saveAsModalTitle">💾 Simpan Sebagai (Save As)</span>
+        <button class="wc-modal-close" onclick="closeModal('saveAsModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Nama Berkas:</label>
+        <input type="text" id="saveAsFileName" value="The_Open_Studio_Handbook" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px;" onkeydown="if(event.key==='Enter') confirmSaveAs()" />
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <label style="font-weight:600; font-size:12.5px;">Lokasi Direktori / Folder Penyimpanan:</label>
+          <span style="font-size:11px; color:#64748b;">Ketik path atau jelajahi folder</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('C:\\Satriyo')">📁 C:\Satriyo</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Dokumen')">📄 Dokumen</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Desktop')">🖥️ Desktop</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Unduhan')">⬇️ Unduhan</button>
+        </div>
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+          <input type="text" id="saveAsFolderLocation" value="C:\Satriyo\" style="flex:1; padding:7px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" placeholder="Contoh: C:\Satriyo\ atau D:\Arsip\" />
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="browseFolderLocation()" title="Buka Penjelajah Direktori Interaktif">📂 Pilih Direktori...</button>
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="pickNativeOsFolder()" title="Pilih Direktori via Windows Explorer">🖥️ Windows...</button>
+        </div>
+        <input type="file" id="nativeFolderPickerInput" webkitdirectory style="display:none;" onchange="onNativeFolderSelected(event)" />
+
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Format Berkas Penyimpanan:</label>
+        <select id="saveAsFileType" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px; background:#fff;">
+          <option value="docx">📄 Word Document OpenXML (*.docx) — ISO/IEC 29500</option>
+          <option value="pdf">📑 PDF Berdaulat (*.pdf) — ISO 32000-1 Vektor Murni</option>
+          <option value="odt">📝 OpenDocument Text (*.odt) — Standar Terbuka ISO 26300</option>
+          <option value="html">🌐 Halaman Web HTML (*.html)</option>
+          <option value="txt">📃 Dokumen Teks Polos (*.txt)</option>
+        </select>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('docx')">📄 Simpan Cepat sebagai Word Document (*.docx) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('pdf')">📑 Simpan Cepat sebagai PDF Vektor (*.pdf) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('odt')">📝 Simpan Cepat sebagai OpenDocument (*.odt) ke Direktori Di Atas</button>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="wc-btn-secondary" onclick="closeModal('saveAsModal')">Batal</button>
+        <button class="wc-btn-primary" onclick="confirmSaveAs()">💾 Simpan ke Direktori</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sovereign Interactive Directory Picker -->
+  <div class="wc-modal-backdrop" id="folderPickerModal" style="z-index:10005;">
+    <div class="wc-modal-box" style="max-width:620px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">📂 Pilih Direktori Penyimpanan Berkas</span>
+        <button class="wc-modal-close" onclick="closeFolderPickerModal()">✕</button>
+      </div>
+      <div class="wc-modal-body" style="padding:14px 18px;">
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; font-weight:600;" onclick="navigateFolderPickerParent()" title="Naik ke Folder Induk">⬆ Naik</button>
+          <input type="text" id="folderPickerCurrentPath" value="C:\Satriyo\" style="flex:1; padding:6px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" onkeydown="if(event.key==='Enter') loadFolderPickerPath(this.value)" />
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px;" onclick="loadFolderPickerPath(document.getElementById('folderPickerCurrentPath').value)">Buka</button>
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; color:#185abd; font-weight:600;" onclick="createFolderInPicker()">+ Folder Baru</button>
+        </div>
+        <div id="folderPickerDrivesBar" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;"></div>
+        <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <span>DAFTAR SUB-FOLDER (Klik 2x untuk membuka):</span>
+          <span id="folderPickerItemCount" style="font-weight:normal;">0 sub-folder</span>
+        </div>
+        <div id="folderPickerList" style="min-height:200px; max-height:250px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px; background:#ffffff; padding:4px;"></div>
+        <div style="margin-top:10px; padding:8px 10px; background:#f8fafc; border-radius:4px; display:flex; align-items:center; gap:8px; font-size:12px; border:1px solid #e2e8f0;">
+          <span style="font-weight:700; color:#334155;">Direktori Dipilih:</span>
+          <span id="folderPickerSelectedLabel" style="color:#185abd; font-family:monospace; font-weight:600; word-break:break-all;">C:\Satriyo\</span>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="wc-btn-secondary" onclick="pickNativeOsFolder()">🖥️ Dialog Windows Explorer...</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="wc-btn-secondary" onclick="closeFolderPickerModal()">Batal</button>
+          <button type="button" class="wc-btn-primary" onclick="selectCurrentPickerFolder()">✓ Pilih Folder Ini</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

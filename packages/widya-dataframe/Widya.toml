@@ -1,0 +1,15 @@
+[package]
+name = "@widya/dataframe"
+version = "0.1.0"
+description = "Columnar Tabular Data Analysis & Transformation Engine (Pandas Parity)"
+authors = ["Widya Core Team <dev@widya-lang.org>"]
+license = "MIT"
+edition = "2026"
+repository = "https://github.com/widya-lang/widya-lang"
+
+[dependencies]
+
+[keamanan]
+tanda_tangan = "Ed25519"
+airgap_compatible = true
+

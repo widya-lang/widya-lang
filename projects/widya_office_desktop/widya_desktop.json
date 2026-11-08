@@ -1,0 +1,110 @@
+{
+  "name": "WidyaOffice Desktop",
+  "app_id": "id.widya.office.desktop",
+  "version": "1.0.0",
+  "description": "Suite Perkantoran Berdaulat Generasi Baru untuk Desktop (WidyaWriter, WidyaCalc, WidyaImpress, WidyaPDF)",
+  "author": "Widya-Lang Core Architecture Team",
+  "backend_entry": "src/main.wya",
+  "frontend_dir": "ui",
+  "gui_backend": "webview",
+  "canvas": {
+    "target_fps": 120,
+    "vsync": true,
+    "low_latency_mode": true,
+    "max_ram_target_mb": 18.5,
+    "render_pipeline": "wgpu-vulkan-dx12-metal",
+    "sample_count": 2,
+    "clear_color": [0.08, 0.09, 0.12, 1.0]
+  },
+  "window": {
+    "title": "WidyaOffice Desktop",
+    "width": 1280,
+    "height": 800,
+    "min_width": 800,
+    "min_height": 600,
+    "resizable": true,
+    "centered": true,
+    "fullscreen": false,
+    "frameless": false,
+    "dark_mode": true,
+    "icon": "assets/icon.png",
+    "splash_screen": true
+  },
+  "menu": {
+    "enabled": true,
+    "items": [
+      {
+        "label": "Berkas",
+        "shortcut": null,
+        "action": null,
+        "subitems": ["Dokumen Baru", "Buka Berkas...", "Simpan (.docx)", "Ekspor PDF", "Keluar"]
+      },
+      {
+        "label": "Sisipkan",
+        "shortcut": null,
+        "action": null,
+        "subitems": ["Rumus OMML Matematika", "Tabel", "Gambar", "Bagan"]
+      },
+      {
+        "label": "Surat",
+        "shortcut": null,
+        "action": null,
+        "subitems": ["Wisaya Mail Merge", "Muat Data CSV", "Ekspor Dokumen Massal"]
+      },
+      {
+        "label": "Keamanan",
+        "shortcut": null,
+        "action": null,
+        "subitems": ["Tanda Tangan PQC ML-DSA-87", "Inspektor HSM PKCS#11", "Verifikasi Integritas"]
+      }
+    ]
+  },
+  "tray": {
+    "enabled": true,
+    "icon": "assets/tray_icon.png",
+    "tooltip": "WidyaOffice Desktop - Sovereign Office Suite",
+    "hide_on_close": true
+  },
+  "bridge": {
+    "enabled": true,
+    "port": 0,
+    "rpc_timeout_ms": 10000,
+    "dev_tools": true
+  },
+  "security": {
+    "require_ipc_token": true,
+    "csp_enabled": true,
+    "csp_policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' http://127.0.0.1:*; frame-ancestors 'none';",
+    "permissions": [
+      "system:ping",
+      "system:info",
+      "system:hotkey",
+      "state:modify",
+      "dialog:open",
+      "dialog:save",
+      "tray:notify",
+      "window:manage",
+      "storage:read",
+      "storage:write",
+      "crypto:vault",
+      "clipboard:read",
+      "clipboard:write",
+      "hardware:printer",
+      "update:check"
+    ],
+    "asset_integrity_check": true,
+    "strict_origin": true,
+    "encrypted_storage": true,
+    "anti_tamper": true
+  },
+  "industrial": {
+    "resource_throttling": true,
+    "crash_recovery": true,
+    "multi_window": true,
+    "global_hotkeys": ["Ctrl+Alt+W", "Ctrl+Shift+Space", "Alt+="],
+    "max_connections": 64,
+    "heartbeat_interval_ms": 30000,
+    "security_grade": "Enterprise Grade (A+)"
+  },
+  "targets": ["windows", "linux", "macos"]
+}

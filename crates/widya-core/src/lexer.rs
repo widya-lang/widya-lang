@@ -62,7 +62,13 @@ impl Lexer {
             ':' => Ok(Some(self.make_token(TokenType::Colon))),
             ';' => Ok(Some(self.make_token(TokenType::Semicolon))),
             '?' => Ok(Some(self.make_token(TokenType::Question))),
-            '^' => Ok(Some(self.make_token(TokenType::Caret))),
+            '^' => {
+                if self.match_char('^') {
+                    Ok(Some(self.make_token(TokenType::Identifier("__bitxor__".to_string()))))
+                } else {
+                    Ok(Some(self.make_token(TokenType::Caret)))
+                }
+            }
             '%' => Ok(Some(self.make_token(TokenType::Percent))),
             '.' => {
                 if self.match_char('.') {
@@ -128,6 +134,10 @@ impl Lexer {
             '<' => {
                 if self.match_char('=') {
                     Ok(Some(self.make_token(TokenType::LessEqual)))
+                } else if self.match_char('<') {
+                    Ok(Some(self.make_token(TokenType::Identifier("__shl__".to_string()))))
+                } else if self.match_char('-') {
+                    Ok(Some(self.make_token(TokenType::Identifier("__chan_op__".to_string()))))
                 } else {
                     Ok(Some(self.make_token(TokenType::Less)))
                 }
@@ -135,11 +145,14 @@ impl Lexer {
             '>' => {
                 if self.match_char('=') {
                     Ok(Some(self.make_token(TokenType::GreaterEqual)))
+                } else if self.match_char('>') {
+                    Ok(Some(self.make_token(TokenType::Identifier("__shr__".to_string()))))
                 } else {
                     Ok(Some(self.make_token(TokenType::Greater)))
                 }
             }
-            '#' => Ok(Some(self.make_token(TokenType::Hash))),
+            '#' | '@' => Ok(Some(self.make_token(TokenType::Hash))),
+            '~' => Ok(Some(self.make_token(TokenType::Identifier("__bitnot__".to_string())))),
             '&' => {
                 if self.match_char('&') {
                     Ok(Some(self.make_token(TokenType::Dan)))
@@ -151,14 +164,15 @@ impl Lexer {
                 if self.match_char('|') {
                     Ok(Some(self.make_token(TokenType::Atau)))
                 } else {
-                    Err(Galat::sintaks(
-                        "Karakter '|' tidak valid; gunakan 'atau' atau '||'",
-                        &self.current_span(),
-                    ))
+                    Ok(Some(self.make_token(TokenType::Identifier("__bitor__".to_string()))))
                 }
             }
             '"' => self.string('"').map(Some),
             '\'' => self.string('\'').map(Some),
+            'f' | 'F' if self.peek() == '"' || self.peek() == '\'' => {
+                let quote = self.advance();
+                self.f_string(quote).map(Some)
+            }
             'r' if self.peek() == '"' => {
                 self.advance(); // consume '"'
                 self.raw_string().map(Some)
@@ -237,6 +251,82 @@ impl Lexer {
         ))
     }
 
+    fn f_string(&mut self, quote: char) -> Result<Token, Galat> {
+        let start_span = self.current_span();
+        let mut value = String::from("\x01FSTR:");
+        let mut brace_depth: usize = 0;
+
+        while !self.is_at_end() {
+            if self.peek() == quote && brace_depth == 0 {
+                break;
+            }
+            if self.peek() == '\n' {
+                self.line += 1;
+                self.column = 0;
+            }
+            if self.peek() == '\\' {
+                self.advance(); // consume '\'
+                match self.advance() {
+                    'n' => value.push('\n'),
+                    't' => value.push('\t'),
+                    'r' => value.push('\r'),
+                    '\\' => value.push('\\'),
+                    '"' => value.push('"'),
+                    '\'' => value.push('\''),
+                    '{' => {
+                        value.push_str("{{");
+                    }
+                    '}' => {
+                        value.push_str("}}");
+                    }
+                    '0' => value.push('\0'),
+                    other => {
+                        value.push('\\');
+                        value.push(other);
+                    }
+                }
+            } else {
+                let ch = self.advance();
+                if ch == '{' {
+                    if self.peek() == '{' && brace_depth == 0 {
+                        self.advance();
+                        value.push_str("{{");
+                    } else {
+                        brace_depth += 1;
+                        value.push('{');
+                    }
+                } else if ch == '}' {
+                    if brace_depth > 0 {
+                        brace_depth -= 1;
+                        value.push('}');
+                    } else if self.peek() == '}' {
+                        self.advance();
+                        value.push_str("}}");
+                    } else {
+                        value.push('}');
+                    }
+                } else {
+                    value.push(ch);
+                }
+            }
+        }
+
+        if self.is_at_end() {
+            return Err(Galat::sintaks(
+                format!("Teks f-string tidak ditutup (harus diakhiri {})", quote),
+                &start_span,
+            ));
+        }
+
+        self.advance(); // The closing quote
+        let lexeme: String = self.chars[self.start..self.current].iter().collect();
+        Ok(Token::new(
+            TokenType::StringLiteral(value),
+            lexeme,
+            Span::new(self.line, self.start_column),
+        ))
+    }
+
     fn raw_string(&mut self) -> Result<Token, Galat> {
         let start_span = self.current_span();
         let mut value = String::new();
@@ -270,10 +360,10 @@ impl Lexer {
         if self.chars[self.start] == '0' && (self.peek() == 'x' || self.peek() == 'X') {
             self.advance(); // consume 'x' or 'X'
             let hex_start = self.current;
-            while self.peek().is_ascii_hexdigit() {
+            while self.peek().is_ascii_hexdigit() || self.peek() == '_' {
                 self.advance();
             }
-            let hex_str: String = self.chars[hex_start..self.current].iter().collect();
+            let hex_str: String = self.chars[hex_start..self.current].iter().filter(|&&c| c != '_').collect();
             match u64::from_str_radix(&hex_str, 16) {
                 Ok(val) => return Ok(self.make_token(TokenType::Number(val as f64))),
                 Err(_) => {
@@ -287,10 +377,10 @@ impl Lexer {
         if self.chars[self.start] == '0' && (self.peek() == 'b' || self.peek() == 'B') {
             self.advance(); // consume 'b' or 'B'
             let bin_start = self.current;
-            while self.peek() == '0' || self.peek() == '1' {
+            while self.peek() == '0' || self.peek() == '1' || self.peek() == '_' {
                 self.advance();
             }
-            let bin_str: String = self.chars[bin_start..self.current].iter().collect();
+            let bin_str: String = self.chars[bin_start..self.current].iter().filter(|&&c| c != '_').collect();
             match u64::from_str_radix(&bin_str, 2) {
                 Ok(val) => return Ok(self.make_token(TokenType::Number(val as f64))),
                 Err(_) => {
@@ -300,14 +390,31 @@ impl Lexer {
             }
         }
 
-        while self.peek().is_ascii_digit() {
+        // Octal support: 0o... or 0O...
+        if self.chars[self.start] == '0' && (self.peek() == 'o' || self.peek() == 'O') {
+            self.advance(); // consume 'o' or 'O'
+            let oct_start = self.current;
+            while matches!(self.peek(), '0'..='7' | '_') {
+                self.advance();
+            }
+            let oct_str: String = self.chars[oct_start..self.current].iter().filter(|&&c| c != '_').collect();
+            match u64::from_str_radix(&oct_str, 8) {
+                Ok(val) => return Ok(self.make_token(TokenType::Number(val as f64))),
+                Err(_) => {
+                    let span = Span::new(self.line, self.start_column);
+                    return Err(Galat::sintaks(format!("Format angka oktal tidak valid: 0o{}", oct_str), &span));
+                }
+            }
+        }
+
+        while self.peek().is_ascii_digit() || self.peek() == '_' {
             self.advance();
         }
 
         // Look for a fractional part
         if self.peek() == '.' && self.peek_next().is_ascii_digit() {
             self.advance(); // Consume the "."
-            while self.peek().is_ascii_digit() {
+            while self.peek().is_ascii_digit() || self.peek() == '_' {
                 self.advance();
             }
         }
@@ -326,7 +433,7 @@ impl Lexer {
             }
         }
 
-        let num_str: String = self.chars[self.start..self.current].iter().collect();
+        let num_str: String = self.chars[self.start..self.current].iter().filter(|&&c| c != '_').collect();
         match num_str.parse::<f64>() {
             Ok(num) => Ok(self.make_token(TokenType::Number(num))),
             Err(_) => Err(Galat::sintaks(
@@ -343,8 +450,8 @@ impl Lexer {
 
         let text: String = self.chars[self.start..self.current].iter().collect();
         let token_type = match text.as_str() {
-            "misal" | "let" | "var" | "biar" | "diketahui" | "diket" => TokenType::Misal,
-            "tetap" | "konst" | "const" => TokenType::Tetap,
+            "misal" | "misalkan" | "buat" | "let" | "var" | "biar" | "biarkan" | "diketahui" | "diket" => TokenType::Misal,
+            "tetap" | "tetapkan" | "konst" | "const" => TokenType::Tetap,
             "fungsi" | "fn" | "def" => TokenType::Fungsi,
             "kembalikan" | "return" => TokenType::Kembalikan,
             "jika" | "if" => TokenType::Jika,
@@ -370,7 +477,7 @@ impl Lexer {
             "tangkap" | "catch" => TokenType::Tangkap,
             "lempar" | "throw" => TokenType::Lempar,
             "struktur" | "kelas" | "struct" | "class" => TokenType::Struktur,
-            "sifat" | "trait" | "interface" => TokenType::Sifat,
+            "sifat" | "antarmuka" | "trait" | "interface" => TokenType::Sifat,
             "terapkan" | "implementasi" | "impl" => TokenType::Terapkan,
             "enum" | "varian" | "pilihan" | "opsi" => TokenType::Enum,
             "cocokkan" | "sesuaikan" | "match" | "cocok" => TokenType::Cocokkan,

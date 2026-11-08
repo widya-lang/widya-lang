@@ -226,9 +226,97 @@ impl BorrowChecker {
         }
     }
 
+    /// Define or reset a variable as Owned
+    pub fn define_owned(&mut self, name: &str) {
+        self.variables.insert(name.to_string(), OwnershipState::Owned);
+    }
+
+    /// Check if a variable can be read (not moved, not mutably borrowed directly)
+    pub fn check_can_read(&self, name: &str, span: &Span) -> Result<(), Galat> {
+        if let Some(OwnershipState::Moved(_)) = self.variables.get(name) {
+            return Err(Galat::runtime(
+                format!(
+                    "Galat Borrow Checker: Penggunaan variabel '{}' setelah dipindahkan (use-after-move)",
+                    name
+                ),
+                span,
+            ));
+        }
+        Ok(())
+    }
+
+    /// Check if a variable can be directly assigned/mutated
+    pub fn check_can_mutate(&self, name: &str, span: &Span) -> Result<(), Galat> {
+        match self.variables.get(name) {
+            Some(OwnershipState::Moved(_)) => Err(Galat::runtime(
+                format!(
+                    "Galat Borrow Checker: Tidak dapat mengubah variabel '{}' yang sudah dipindahkan (moved)",
+                    name
+                ),
+                span,
+            )),
+            Some(OwnershipState::BorrowedImmutable { .. }) => Err(Galat::runtime(
+                format!(
+                    "Galat Borrow Checker: Tidak dapat mengubah '{}' karena sedang dipinjam secara imutabel (&)",
+                    name
+                ),
+                span,
+            )),
+            Some(OwnershipState::BorrowedMutable(_)) => Err(Galat::runtime(
+                format!(
+                    "Galat Borrow Checker: Tidak dapat mengubah '{}' secara langsung saat sedang dipinjam secara mutabel (&ubah)",
+                    name
+                ),
+                span,
+            )),
+            _ => Ok(()),
+        }
+    }
+
+    /// Check if a variable can be moved, and mark it as Moved
+    pub fn move_variable(&mut self, name: &str, span: &Span) -> Result<(), Galat> {
+        match self.variables.get(name) {
+            Some(OwnershipState::Moved(_)) => {
+                return Err(Galat::runtime(
+                    format!(
+                        "Galat Borrow Checker: Variabel '{}' sudah dipindahkan sebelumnya (use-after-move)",
+                        name
+                    ),
+                    span,
+                ));
+            }
+            Some(OwnershipState::BorrowedImmutable { .. })
+            | Some(OwnershipState::BorrowedMutable(_)) => {
+                return Err(Galat::runtime(
+                    format!(
+                        "Galat Borrow Checker: Tidak dapat memindahkan '{}' karena sedang dipinjam",
+                        name
+                    ),
+                    span,
+                ));
+            }
+            _ => {}
+        }
+        if self.field_borrows.keys().any(|(r, _)| r == name) {
+            return Err(Galat::runtime(
+                format!(
+                    "Galat Borrow Checker: Tidak dapat memindahkan '{}' karena salah satu field-nya sedang dipinjam",
+                    name
+                ),
+                span,
+            ));
+        }
+        self.variables.insert(name.to_string(), OwnershipState::Moved(span.clone()));
+        Ok(())
+    }
+
     /// Explicitly mark a variable as moved (ownership transfer)
     pub fn mark_moved(&mut self, name: &str, span: Span) {
         self.variables.insert(name.to_string(), OwnershipState::Moved(span));
+    }
+
+    pub fn is_moved(&self, name: &str) -> bool {
+        matches!(self.variables.get(name), Some(OwnershipState::Moved(_)))
     }
 
     /// Borrow variable immutably (Multiple readers allowed)

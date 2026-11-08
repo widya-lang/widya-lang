@@ -1,0 +1,53 @@
+// ==========================================================
+// Modul Algoritma Bagan Turnamen & Pool Pemasalan Ramah Anak
+// ArenaSilat.id - Platform Digital Pencak Silat Berdaulat
+// ==========================================================
+
+struktur BaganPoolPemasalan {
+    id_pool,
+    kategori_usia, // "USIA_DINI_1", "USIA_DINI_2", "PRA_REMAJA"
+    kelas_tanding, // "KELAS_A", "KELAS_B", dll
+    pesilat_1, // Semifinal 1 - Merah
+    pesilat_2, // Semifinal 1 - Biru
+    pesilat_3, // Semifinal 2 - Merah
+    pesilat_4, // Semifinal 2 - Biru
+
+    juara_1_emas,
+    juara_2_perak,
+    juara_3_perunggu_a,
+    juara_3_perunggu_b,
+
+    fungsi cetak_bagan() {
+        cetak("🏆 BAGAN POOL PEMASALAN #" + ke_teks(ini.id_pool) + " [" + ini.kategori_usia + " - " + ini.kelas_tanding + "]");
+        cetak("   ┌─ Semifinal 1: " + ini.pesilat_1 + " vs " + ini.pesilat_2);
+        cetak("   └─ Semifinal 2: " + ini.pesilat_3 + " vs " + ini.pesilat_4);
+        cetak("   🏅 Semua 4 Pesilat Dipastikan Meraih Medali Juara Bersama!");
+    }
+
+    fungsi tentukan_juara(pemenang_semi1, kalah_semi1, pemenang_semi2, kalah_semi2, pemenang_final, kalah_final) {
+        ini.juara_1_emas = pemenang_final;
+        ini.juara_2_perak = kalah_final;
+        ini.juara_3_perunggu_a = kalah_semi1;
+        ini.juara_3_perunggu_b = kalah_semi2;
+
+        cetak("🥇 JUARA 1 (EMAS)    : " + ini.juara_1_emas);
+        cetak("🥈 JUARA 2 (PERAK)   : " + ini.juara_2_perak);
+        cetak("🥉 JUARA 3 BERSAMA A : " + ini.juara_3_perunggu_a);
+        cetak("🥉 JUARA 3 BERSAMA B : " + ini.juara_3_perunggu_b);
+    }
+}
+
+struktur BaganPrestasiEliminasi {
+    id_bagan,
+    kelas_kejuaraan,
+    total_peserta,
+    ronde_aktif,
+
+    fungsi validasi_pemisahan_kontingen(kontingen_a, kontingen_b) {
+        jika kontingen_a == kontingen_b {
+            cetak("⚠️ Peringatan Seeding: Kontingen se-daerah bertemu di babak awal (" + kontingen_a + ")! Perlu swap seeding.");
+            kembalikan salah;
+        }
+        kembalikan benar;
+    }
+}

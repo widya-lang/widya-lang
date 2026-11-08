@@ -1,6 +1,6 @@
 [package]
 name = "widya-core"
-version = "2.6.0"
+version = "0.1.0"
 edition = "2024"
 description = "Widya-Lang Core: Lexer, Parser, AST, Typesystem, Pattern Matching, and Borrow Checker"
 

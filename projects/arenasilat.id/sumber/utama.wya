@@ -1,0 +1,143 @@
+// ==========================================================
+// Berkas Titik Masuk Utama Proyek: arenasilat.id
+// Platform Digital Pencak Silat Indonesia Berdaulat
+// ==========================================================
+
+muat "sumber/skor_persilat.wya";
+muat "sumber/kejuaraan.wya";
+muat "sumber/seni_persilat.wya";
+muat "sumber/bracket_generator.wya";
+muat "sumber/dewan_hakim.wya";
+
+fungsi utama() {
+    cetak("===============================================================");
+    cetak("🇮🇩 ARENASILAT.ID - PLATFORM DIGITAL PENCAK SILAT INDONESIA 🇮🇩");
+    cetak("   Sistem Skor Digital PERSILAT & Live Broadcast Multi-Gelanggang");
+    cetak("===============================================================\n");
+
+    // -------------------------------------------------------------
+    // BAGIAN 1: SIMULASI TANDING DEWASA
+    // -------------------------------------------------------------
+    misal merah = PoinPesilat(
+        "Arya Wira Sena",
+        "SUDUT MERAH",
+        "DKI Jakarta (Tapak Suci)",
+        0, 0, 0, 0, 0
+    );
+
+    misal biru = PoinPesilat(
+        "Bagas Danuarta",
+        "SUDUT BIRU",
+        "Jawa Barat (Merpati Putih)",
+        0, 0, 0, 0, 0
+    );
+
+    misal partai_final = PertandinganArena(
+        "P-14",
+        "Gelanggang 1 (Utama)",
+        "Tanding Dewasa Kelas C (55-60 Kg)",
+        merah,
+        biru,
+        1,
+        salah
+    );
+
+    cetak("🥋 [1] Simulasi Pertandingan Tanding " + partai_final.id_partai + " [" + partai_final.kelas_tanding + "]");
+    cetak("🔴 Sudut Merah : " + merah.nama_pesilat + " (" + merah.kontingen + ")");
+    cetak("🔵 Sudut Biru  : " + biru.nama_pesilat + " (" + biru.kontingen + ")");
+    cetak("⏱️ Durasi Tiap Babak: 120 Detik (2 Menit)\n");
+
+    // Babak 1
+    cetak("--- [BABAK 1 TANDING] ---");
+    merah.tambah_pukulan();     // +1
+    biru.tambah_tendangan();    // +2
+    merah.tambah_bantingan();   // +3
+    biru.tambah_pukulan();      // +1
+    biru.beri_teguran(1);       // -1
+
+    // Babak 2
+    cetak("\n--- [BABAK 2 TANDING] ---");
+    merah.tambah_tendangan();   // +2
+    merah.tambah_bantingan();   // +3
+    biru.tambah_tendangan();    // +2
+
+    // Babak 3
+    cetak("\n--- [BABAK 3 (PENENTUAN)] ---");
+    biru.tambah_bantingan();    // +3
+    merah.tambah_pukulan();     // +1
+    biru.beri_peringatan(1);    // -5
+
+    // Hasil Akhir Tanding
+    partai_final.evaluasi_pemenang();
+
+    // -------------------------------------------------------------
+    // BAGIAN 2: SIMULASI PENILAIAN SENI TUNGGAL BAKU PERSILAT 2026
+    // -------------------------------------------------------------
+    cetak("\n---------------------------------------------------------------");
+    cetak("🎭 [2] Simulasi Penilaian Seni Tunggal Baku PERSILAT 2026");
+    cetak("---------------------------------------------------------------");
+
+    misal juri1_merah = LembarNilaiJuriSeni(
+        1, "Farhan Al-Fatih", "TUNGGAL", 9.90, 2, 0.08, 0, 0, 0, 0, 0
+    );
+    // Durasi tampil 178 detik (Aman: 175 - 185 detik -> Tanpa Penalti Waktu)
+    misal skor_m = juri1_merah.hitung_skor_juri(178);
+    cetak("🔴 Nilai Seni Sudut Merah (Juri 1): " + ke_teks(skor_m) + " [Durasi 02:58 - Zona Aman]");
+
+    misal juri1_biru = LembarNilaiJuriSeni(
+        1, "Rizky Ramadhan", "TUNGGAL", 9.90, 4, 0.06, 0.50, 0, 0, 0, 0
+    );
+    // Durasi tampil 172 detik (Kurang 3 detik -> Penalti -0.05) + Senjata Jatuh (-0.50)
+    misal skor_b = juri1_biru.hitung_skor_juri(172);
+    cetak("🔵 Nilai Seni Sudut Biru (Juri 1) : " + ke_teks(skor_b) + " [Durasi 02:52 - Penalti -0.05 & Senjata -0.50]");
+
+    misal partai_seni = PertandinganSeni(
+        "S-03", "Gelanggang 2", "Tunggal Baku Putra",
+        "Farhan Al-Fatih (Jawa Timur)", "Rizky Ramadhan (Bali)",
+        skor_m, skor_b
+    );
+    partai_seni.cetak_hasil_seni();
+
+    // -------------------------------------------------------------
+    // BAGIAN 3: SIMULASI BAGAN POOL PEMASALAN (RAMAH ANAK)
+    // -------------------------------------------------------------
+    cetak("\n---------------------------------------------------------------");
+    cetak("👶 [3] Simulasi Bagan Pool Pemasalan (Pool 4 Pesilat)");
+    cetak("---------------------------------------------------------------");
+
+    misal pool_a = BaganPoolPemasalan(
+        101, "USIA_DINI_2", "KELAS_B_PUTRA",
+        "Kenzo Alvaro (Jateng)", "Aditya Pratama (DIY)",
+        "Gibran Maulana (Jabar)", "Daniswara (DKI)",
+        "", "", "", ""
+    );
+    pool_a.cetak_bagan();
+    pool_a.tentukan_juara(
+        "Kenzo Alvaro (Jateng)", "Aditya Pratama (DIY)",
+        "Daniswara (DKI)", "Gibran Maulana (Jabar)",
+        "Kenzo Alvaro (Jateng)", "Daniswara (DKI)"
+    );
+
+    // -------------------------------------------------------------
+    // BAGIAN 4: SIMULASI SIDANG BANDING DEWAN HAKIM & UANG JAMINAN
+    // -------------------------------------------------------------
+    cetak("\n---------------------------------------------------------------");
+    cetak("⚖️ [4] Simulasi Sidang Banding Dewan Hakim & Uang Jaminan");
+    cetak("---------------------------------------------------------------");
+
+    misal banding_1 = SidangBandingDewanHakim(
+        "BND-08", "P-14", "Coach Hendra", "Merpati Putih", "BIRU",
+        "Tendangan menit 01:45 masuk telak namun kuorum juri tidak sah",
+        "", "", ""
+    );
+    banding_1.daftarkan_protes("Coach Hendra", "Merpati Putih", "BIRU", "Tendangan sah tidak terhitung");
+    // Dewan hakim meninjau Black-Box Audit Trail & VAR Replay
+    banding_1.putuskan_sidang(benar); // Putusan Sah / Diterima
+
+    cetak("\n===============================================================");
+    cetak("🌐 Web Portal ArenaSilat.id Siap Diakses di: http://localhost:8080");
+    cetak("✨ Status Platform: Berdaulat, Cepat, Akurat, dan Lengkap!");
+    cetak("===============================================================");
+}
+
+utama();

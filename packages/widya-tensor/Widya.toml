@@ -1,0 +1,15 @@
+[package]
+name = "@widya/tensor"
+version = "0.1.0"
+description = "High-Performance N-Dimensional Tensor & Linear Algebra Engine (NumPy Parity)"
+authors = ["Widya Core Team <dev@widya-lang.org>"]
+license = "MIT"
+edition = "2026"
+repository = "https://github.com/widya-lang/widya-lang"
+
+[dependencies]
+
+[keamanan]
+tanda_tangan = "Ed25519"
+airgap_compatible = true
+

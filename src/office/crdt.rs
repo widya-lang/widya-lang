@@ -226,6 +226,18 @@ impl TextCrdt {
     pub fn read_text(&self) -> String {
         self.read()
     }
+
+    /// Mengambil salinan seluruh operasi karakter
+    pub fn get_characters(&self) -> Vec<CrdtChar> {
+        self.characters.clone()
+    }
+
+    /// Sinkronisasi dengan sekumpulan operasi dari rekanan lain
+    pub fn sync_with(&mut self, remote_chars: &[CrdtChar]) {
+        for ch in remote_chars {
+            self.integrate(ch.clone());
+        }
+    }
 }
 
 /// Pengguna dalam Sesi Kolaboratif
@@ -505,3 +517,67 @@ impl CollabSession {
         )
     }
 }
+
+/// Hasil Evaluasi Simulasi Konkurensi CRDT Real-Time Peer-to-Peer
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrdtSimulationResult {
+    pub peer_a_initial: String,
+    pub peer_b_initial: String,
+    pub peer_a_converged: String,
+    pub peer_b_converged: String,
+    pub is_identical: bool,
+    pub total_ops_exchanged: usize,
+    pub causal_lamport_clock: u64,
+}
+
+/// Mesin Simulator Kolaborasi Peer-to-Peer Offline-First Berdaulat
+pub struct CrdtSimulator;
+
+impl CrdtSimulator {
+    /// Menjalankan simulasi konkurensi offline-first antara dua simpul lokal tanpa server luar
+    pub fn simulate_two_peers_concurrent(
+        base_text: &str,
+        peer_a_insert: (usize, &str),
+        peer_b_insert: (usize, &str),
+    ) -> CrdtSimulationResult {
+        // Inisialisasi Simpul A dan Simpul B
+        let mut peer_a = TextCrdt::new("peer-alpha");
+        let mut peer_b = TextCrdt::new("peer-beta");
+
+        if !base_text.is_empty() {
+            peer_a.insert_text(0, base_text);
+            peer_b.sync_with(&peer_a.get_characters());
+        }
+
+        // Kedua simpul menyunting secara konkuren dan offline
+        peer_a.insert_text(peer_a_insert.0, peer_a_insert.1);
+        peer_b.insert_text(peer_b_insert.0, peer_b_insert.1);
+
+        let state_a_before_sync = peer_a.read();
+        let state_b_before_sync = peer_b.read();
+
+        // Tukar operasi (P2P zero-cloud broadcast)
+        let ops_from_a = peer_a.get_characters();
+        let ops_from_b = peer_b.get_characters();
+
+        peer_a.sync_with(&ops_from_b);
+        peer_b.sync_with(&ops_from_a);
+
+        let final_a = peer_a.read();
+        let final_b = peer_b.read();
+        let is_identical = final_a == final_b;
+        let total_ops = ops_from_a.len() + ops_from_b.len();
+        let max_clock = peer_a.clock.counter.max(peer_b.clock.counter);
+
+        CrdtSimulationResult {
+            peer_a_initial: state_a_before_sync,
+            peer_b_initial: state_b_before_sync,
+            peer_a_converged: final_a,
+            peer_b_converged: final_b,
+            is_identical,
+            total_ops_exchanged: total_ops,
+            causal_lamport_clock: max_clock,
+        }
+    }
+}
+

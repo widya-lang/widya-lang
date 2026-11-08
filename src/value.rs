@@ -184,6 +184,11 @@ impl PartialEq for Value {
             (Value::EnumVariant(a), Value::EnumVariant(b)) => {
                 a.enum_name == b.enum_name && a.variant_name == b.variant_name && a.fields == b.fields
             }
+            (Value::Instance(a), Value::Instance(b)) => {
+                let ia = a.borrow();
+                let ib = b.borrow();
+                ia.struct_def.name == ib.struct_def.name && ia.fields == ib.fields
+            }
             (Value::Range(a1, a2), Value::Range(b1, b2)) => a1 == b1 && a2 == b2,
             _ => false,
         }

@@ -13,6 +13,22 @@ pub struct DocumentConverter;
 impl DocumentConverter {
     /// Konversi Dokumen Word (`DocxDocument`) ke Dokumen PDF Vektor Asli (`PdfDocument`)
     pub fn docx_to_pdf(doc: &DocxDocument) -> PdfDocument {
+        let has_toc = doc.elements.iter().any(|e| matches!(e, DocxElement::TableOfContents));
+        if has_toc {
+            // Lintasan 1: Ukur nomor halaman riil untuk setiap heading bab
+            let (_, heading_pages) = Self::docx_to_pdf_internal(doc, None);
+            // Lintasan 2: Render dokumen akhir dengan nomor halaman Daftar Isi yang 100% presisi
+            Self::docx_to_pdf_internal(doc, Some(&heading_pages)).0
+        } else {
+            Self::docx_to_pdf_internal(doc, None).0
+        }
+    }
+
+    /// Internal layout & rendering engine dengan dukungan pemetaan nomor halaman Daftar Isi
+    fn docx_to_pdf_internal(
+        doc: &DocxDocument,
+        heading_page_map: Option<&std::collections::HashMap<usize, usize>>,
+    ) -> (PdfDocument, std::collections::HashMap<usize, usize>) {
         let mut pdf = PdfDocument::new(&doc.title);
         pdf.author = doc.author.clone();
         pdf.organization = doc.organization.clone();
@@ -25,8 +41,9 @@ impl DocumentConverter {
         let mut current_y = page_height - 70.0;
         let margin_x = 50.0;
         let content_width = 480.0;
+        let mut recorded_heading_pages: std::collections::HashMap<usize, usize> = std::collections::HashMap::new();
 
-        for el in &doc.elements {
+        for (el_idx, el) in doc.elements.iter().enumerate() {
             if current_y < 90.0 {
                 pdf.add_page();
                 current_y = page_height - 70.0;
@@ -35,8 +52,30 @@ impl DocumentConverter {
             match el {
                 DocxElement::Heading { level, text } => {
                     let clean_text = clean_markdown_inline(text);
+
+                    let is_chapter_start = clean_text.starts_with("Bab ")
+                        || clean_text.starts_with("BAB ")
+                        || clean_text.starts_with("Bagian ")
+                        || clean_text.starts_with("BAGIAN ")
+                        || clean_text.starts_with("Lampiran ")
+                        || clean_text.starts_with("LAMPIRAN ")
+                        || clean_text.starts_with("Prakata")
+                        || clean_text.starts_with("PENGANTAR");
+
+                    if is_chapter_start && el_idx > 0 {
+                        let is_clean_top = current_y >= (page_height - 75.0);
+                        if !is_clean_top {
+                            pdf.add_page();
+                        }
+                        if pdf.pages.len() % 2 == 0 {
+                            pdf.add_page();
+                        }
+                        current_y = page_height - 70.0;
+                    }
+
                     let page_idx = pdf.pages.len().saturating_sub(1);
                     pdf.add_bookmark(&clean_text, page_idx, current_y, *level);
+                    recorded_heading_pages.insert(el_idx, page_idx + 1);
 
                     let (font_size, line_height) = match level {
                         1 => (16.0, 22.0),
@@ -458,29 +497,45 @@ impl DocumentConverter {
                     current_y -= 4.0;
                 }
                 DocxElement::TableOfContents => {
+                    let doc_title_clean = clean_markdown_inline(&doc.title);
                     let mut toc_entries = Vec::new();
-                    for el in &doc.elements {
+                    for (idx, el) in doc.elements.iter().enumerate() {
                         if let DocxElement::Heading { level, text } = el {
-                            toc_entries.push((*level, clean_markdown_inline(text)));
+                            let clean = clean_markdown_inline(text);
+                            // Jangan masukkan judul dokumen (Heading 1 pertama yang sama dengan judul dokumen)
+                            if idx == 0 && *level == 1 && clean == doc_title_clean {
+                                continue;
+                            }
+                            if *level <= 3 {
+                                toc_entries.push((idx, *level, clean));
+                            }
                         }
                     }
 
                     if !toc_entries.is_empty() {
-                        if current_y < page_height - 180.0 {
+                        // Mulai Daftar Isi di halaman baru yang bersih agar tidak menumpuk dengan judul atau paragraf sebelumnya
+                        if current_y < page_height - 75.0 {
                             pdf.add_page();
                             current_y = page_height - 70.0;
                         }
 
                         let page = pdf.current_page_mut();
+                        current_y -= 8.0;
                         page.add_styled_text("DAFTAR ISI", margin_x, current_y, 16.0, true, (0.05, 0.15, 0.35));
-                        current_y -= 6.0;
+                        current_y -= 8.0;
                         page.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 1.2, (0.1, 0.4, 0.8));
-                        current_y -= 18.0;
+                        current_y -= 22.0;
 
-                        for (idx, (lvl, h_text)) in toc_entries.iter().enumerate() {
-                            if current_y < 75.0 {
+                        for (el_idx, lvl, h_text) in &toc_entries {
+                            if current_y < 80.0 {
                                 pdf.add_page();
                                 current_y = page_height - 70.0;
+                                let page_next = pdf.current_page_mut();
+                                current_y -= 8.0;
+                                page_next.add_styled_text("DAFTAR ISI (Lanjutan)", margin_x, current_y, 12.0, true, (0.05, 0.15, 0.35));
+                                current_y -= 6.0;
+                                page_next.add_styled_line(margin_x, current_y, margin_x + content_width, current_y, 0.8, (0.3, 0.5, 0.7));
+                                current_y -= 18.0;
                             }
 
                             let indent = match lvl {
@@ -489,38 +544,72 @@ impl DocumentConverter {
                                 _ => 28.0f32,
                             };
 
-                            let (font_size, is_bold, text_color) = match lvl {
-                                1 => (9.5f32, true, (0.10, 0.15, 0.25)),
-                                2 => (8.5f32, false, (0.20, 0.25, 0.35)),
-                                _ => (8.0f32, false, (0.35, 0.40, 0.45)),
+                            let (font_size, is_bold, text_color, line_spacing) = match lvl {
+                                1 => (9.5f32, true, (0.08, 0.12, 0.22), 18.0f32),
+                                2 => (8.5f32, false, (0.18, 0.22, 0.30), 16.0f32),
+                                _ => (8.0f32, false, (0.30, 0.35, 0.45), 15.0f32),
                             };
 
                             let text_x = margin_x + indent;
-                            let title_w = styled_string_width(h_text, font_size, is_bold, false);
-                            let page = pdf.current_page_mut();
-                            page.add_styled_text(h_text, text_x, current_y, font_size, is_bold, text_color);
 
-                            let page_num_str = format!("{}", (idx + 1).max(1));
+                            // Ambil nomor halaman riil dari lintasan sebelumnya
+                            let page_num = heading_page_map
+                                .and_then(|m| m.get(el_idx).copied())
+                                .unwrap_or(1);
+                            let page_num_str = format!("{}", page_num);
                             let page_num_w = styled_string_width(&page_num_str, font_size, is_bold, false);
                             let page_num_x = margin_x + content_width - page_num_w;
 
-                            let dots_start = text_x + title_w + 6.0;
-                            let dots_end = page_num_x - 6.0;
+                            // Lindungi agar teks judul tidak pernah bertabrakan atau menimpa nomor halaman
+                            let max_title_w = (content_width - indent - page_num_w - 35.0).max(60.0);
+                            let mut display_title = h_text.clone();
+                            let mut title_w = styled_string_width(&display_title, font_size, is_bold, false);
+
+                            if title_w > max_title_w {
+                                while title_w > max_title_w && display_title.len() > 5 {
+                                    display_title.pop();
+                                    title_w = styled_string_width(&format!("{}...", display_title), font_size, is_bold, false);
+                                }
+                                display_title = format!("{}...", display_title);
+                                title_w = styled_string_width(&display_title, font_size, is_bold, false);
+                            }
+
+                            let page = pdf.current_page_mut();
+                            page.add_styled_text(&display_title, text_x, current_y, font_size, is_bold, text_color);
+
+                            // Titik-titik penuntun (leader dots) yang rapi
+                            let dots_start = text_x + title_w + 8.0;
+                            let dots_end = page_num_x - 8.0;
 
                             if dots_end > dots_start {
                                 let mut dot_x = dots_start;
                                 while dot_x < dots_end {
-                                    page.add_styled_text(".", dot_x, current_y, 8.0, false, (0.55, 0.60, 0.65));
-                                    dot_x += 5.0;
+                                    page.add_styled_text(".", dot_x, current_y, 7.5, false, (0.55, 0.60, 0.65));
+                                    dot_x += 6.5;
                                 }
                             }
 
-                            page.add_styled_text(&page_num_str, page_num_x, current_y, font_size, is_bold, (0.1, 0.35, 0.7));
-                            current_y -= 15.0;
+                            // Nomor halaman rapi rata kanan
+                            page.add_styled_text(&page_num_str, page_num_x, current_y, font_size, true, (0.1, 0.35, 0.7));
+                            current_y -= line_spacing;
                         }
 
-                        current_y -= 12.0;
+                        // Buat halaman baru untuk isi bab pertama setelah Daftar Isi selesai
+                        pdf.add_page();
+                        current_y = page_height - 70.0;
                     }
+                }
+                DocxElement::Equation { latex_math, is_block } => {
+                    current_y -= 8.0;
+                    if current_y < 70.0 {
+                        pdf.add_page();
+                        current_y = page_height - 70.0;
+                    }
+                    let font_size = if *is_block { 11.0 } else { 9.5 };
+                    let eq_text = format!("  [Formula: {}]", latex_math);
+                    let page = pdf.current_page_mut();
+                    page.add_styled_text(&eq_text, margin_x, current_y, font_size, true, (0.08, 0.22, 0.45));
+                    current_y -= font_size + 8.0;
                 }
             }
         }
@@ -546,7 +635,7 @@ impl DocumentConverter {
             }
         }
 
-        pdf
+        (pdf, recorded_heading_pages)
     }
 
     /// Konversi Spreadsheet Excel (`XlsxWorkbook`) ke Laporan Rekapitulasi PDF
@@ -695,11 +784,31 @@ impl DocumentConverter {
         let mut doc = Self::markdown_to_docx(md);
         let has_toc = doc.elements.iter().any(|e| matches!(e, DocxElement::TableOfContents));
         if !has_toc {
-            let insert_idx = if !doc.elements.is_empty() && matches!(doc.elements[0], DocxElement::Heading { level: 1, .. }) {
-                1
-            } else {
-                0
+            // Sisipkan Daftar Isi sebelum bab pertama agar judul dokumen & deskripsi pembuka tetap di halaman cover
+            let first_chapter_idx = doc
+                .elements
+                .iter()
+                .enumerate()
+                .skip(1)
+                .find_map(|(idx, el)| {
+                    if matches!(el, DocxElement::Heading { .. }) {
+                        Some(idx)
+                    } else {
+                        None
+                    }
+                });
+
+            let insert_idx = match first_chapter_idx {
+                Some(idx) => idx,
+                None => {
+                    if !doc.elements.is_empty() && matches!(doc.elements[0], DocxElement::Heading { level: 1, .. }) {
+                        1
+                    } else {
+                        0
+                    }
+                }
             };
+
             doc.elements.insert(insert_idx, DocxElement::TableOfContents);
         }
         Self::docx_to_pdf(&doc)

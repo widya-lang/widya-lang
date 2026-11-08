@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArenaSilat.id - Platform Digital Pencak Silat Berdaulat Indonesia</title>
+  <meta name="description" content="Platform Digital Pencak Silat Indonesia: Digital Scoring PERSILAT 2026, VAR Video Review, Multi-Gelanggang, Live Broadcast MCR, dan E-Sertifikat Anti-Fraud.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Header & Live Ticker -->
+  <header class="app-header" id="appHeader">
+    <div class="top-bar">
+      <div class="brand-section">
+        <div class="brand-logo" id="brandLogo">🥋</div>
+        <div class="brand-title-wrap">
+          <h1 id="brandTitle">ArenaSilat.id</h1>
+          <div class="brand-tagline">
+            <span class="live-badge"><span class="pulse-dot"></span> LIVE PERSILAT 2026</span>
+            <span>Kejuaraan Nasional Pencak Silat Piala Presiden</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Court Switcher -->
+      <div class="court-switcher" id="courtSwitcher">
+        <button class="court-btn active" id="btnCourt1" onclick="switchCourt(1)">
+          <span class="status-dot"></span> Gelanggang 1 (Utama)
+        </button>
+        <button class="court-btn" id="btnCourt2" onclick="switchCourt(2)">
+          <span class="status-dot"></span> Gelanggang 2
+        </button>
+        <button class="court-btn" id="btnCourt3" onclick="switchCourt(3)">
+          <span class="status-dot"></span> Gelanggang 3
+        </button>
+        <button class="court-btn" id="btnCourt4" onclick="switchCourt(4)">
+          <span class="status-dot"></span> Gelanggang 4
+        </button>
+      </div>
+
+      <!-- Header Utilities -->
+      <div class="header-actions">
+        <a href="index.html" class="btn-utility" style="text-decoration: none; color: #fff; background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5);">
+          🏠 Beranda Publik
+        </a>
+        <button class="btn-utility active" id="btnSoundToggle" onclick="toggleSound()">
+          <span id="soundIcon">🔊</span> Audio FX
+        </button>
+        <button class="btn-utility" id="btnObsMode" onclick="toggleObsMode()">
+          📺 Mode OBS
+        </button>
+        <button class="btn-utility" id="btnFullscreen" onclick="toggleFullscreen()">
+          ⛶ Layar Penuh
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" id="navTabs">
+      <button class="tab-link active" id="tabLinkScoreboard" onclick="switchTab('scoreboard')">
+        🥋 Gelanggang Tanding
+      </button>
+      <button class="tab-link" id="tabLinkSeni" onclick="switchTab('seni')">
+        🎭 Penilaian Seni TGR
+      </button>
+      <button class="tab-link" id="tabLinkJuryPad" onclick="switchTab('jurypad')">
+        📱 Wasit Juri Pad
+      </button>
+      <button class="tab-link" id="tabLinkDewanHakim" onclick="switchTab('dewanhakim')">
+        ⚖️ Dewan Hakim & Black-Box
+      </button>
+      <button class="tab-link" id="tabLinkMultiCourt" onclick="switchTab('multicourt')">
+        🏟️ Multi-Gelanggang (4 Matras)
+      </button>
+      <button class="tab-link" id="tabLinkBracket" onclick="switchTab('bracket')">
+        🏆 Bagan & Pemasalan
+      </button>
+      <button class="tab-link" id="tabLinkWeighin" onclick="switchTab('weighin')">
+        ⚖️ Timbang BLE & Antrean
+      </button>
+      <button class="tab-link" id="tabLinkKontingen" onclick="switchTab('kontingen')">
+        💳 Kontingen & Billing
+      </button>
+      <button class="tab-link" id="tabLinkAthletes" onclick="switchTab('athletes')">
+        👥 Database Pesilat
+      </button>
+      <button class="tab-link" id="tabLinkCertificate" onclick="switchTab('certificate')">
+        📜 E-Sertifikat Juara
+      </button>
+      <button class="tab-link" id="tabLinkMedical" onclick="switchTab('medical')">
+        🏥 Konsol Medis (3 Menit)
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="main-content">
+
+    <!-- ======================================================================
+         TAB 1: SCOREBOARD ARENA GELANGGANG (MEJA KP)
+         ====================================================================== -->
+    <section class="tab-pane active" id="tabScoreboard">
+      <div class="arena-card">
+        <!-- Match Header Info -->
+        <div class="match-header-bar">
+          <div class="match-title-group">
+            <h2 id="matchTitleText">
+              <span id="matchCourtLabel">Gelanggang 1</span> • Partai <span id="matchPartaiLabel">#14</span>
+              <span class="match-class-badge" id="matchClassBadge">Tanding Dewasa Putra Kelas C (55-60 Kg)</span>
+            </h2>
+            <div class="match-subtext">Babak Semifinal • Regulasi Resmi PERSILAT 2026 • Road to Olympic</div>
+          </div>
+
+          <div class="match-status-pills">
+            <div class="round-pill-group">
+              <span class="round-pill active" id="pillRound1" onclick="selectRound(1)">Babak 1</span>
+              <span class="round-pill" id="pillRound2" onclick="selectRound(2)">Babak 2</span>
+              <span class="round-pill" id="pillRound3" onclick="selectRound(3)">Babak 3</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Column Scoreboard Grid -->
+        <div class="scoreboard-grid">
+          
+          <!-- SUDUT MERAH (KIRI) -->
+          <div class="corner-box red-corner">
+            <div>
+              <div class="corner-badge-header">
+                <span class="corner-label">🔴 SUDUT MERAH</span>
+                <span class="contingent-badge" id="redContingentTag">DKI JAKARTA</span>
+              </div>
+
+              <div class="fighter-profile">
+                <div class="fighter-avatar" id="redFighterAvatar">🥋</div>
+                <div class="fighter-info">
+                  <h3 id="redFighterName">Arya Wira Sena</h3>
+                  <div class="school-name" id="redSchoolName">Tapak Suci Putera Muhammadiyah</div>
+                  <div class="contingent-loc">Kontingen DKI Jakarta • Seed 1</div>
+                </div>
+              </div>
+
+              <!-- Giant LED Score -->
+              <div class="score-display-box">
+                <div class="score-digits" id="redScoreDigits">0</div>
+              </div>
+
+              <!-- Stats Breakdown -->
+              <div class="stats-breakdown-row">
+                <div class="stat-chip">
+                  <span class="chip-label">Pukulan (+1)</span>
+                  <div class="chip-val" id="redStatPukulan">0</div>
+                </div>
+                <div class="stat-chip">
+                  <span class="chip-label">Tendangan (+2)</span>
+                  <div class="chip-val" id="redStatTendangan">0</div>
+                </div>
+                <div class="stat-chip">
+                  <span class="chip-label">Bantingan (+3)</span>
+                  <div class="chip-val" id="redStatBantingan">0</div>
+                </div>
+                <div class="stat-chip">
+                  <span class="chip-label">Hukuman</span>
+                  <div class="chip-val" id="redStatHukuman" style="color: #f87171;">0</div>
+                </div>
+              </div>
+
+              <!-- Action Scoring Buttons -->
+              <div class="scoring-actions-grid">
+                <button class="btn-point" id="btnRedPukulan" onclick="addScore('red', 'pukulan')">
+                  <span class="pt-badge">+1</span>
+                  <span>Pukulan</span>
+                </button>
+                <button class="btn-point" id="btnRedTendangan" onclick="addScore('red', 'tendangan')">
+                  <span class="pt-badge">+2</span>
+                  <span>Tendangan</span>
+                </button>
+                <button class="btn-point" id="btnRedBantingan" onclick="addScore('red', 'bantingan')">
+                  <span class="pt-badge">+3</span>
+                  <span>Bantingan</span>
+                </button>
+              </div>
+
+              <!-- Penalties Row -->
+              <div class="penalties-row">
+                <button class="btn-penalty" id="btnRedTeguran1" onclick="addPenalty('red', 1)">Teguran 1 (-1)</button>
+                <button class="btn-penalty" id="btnRedTeguran2" onclick="addPenalty('red', 2)">Teguran 2 (-2)</button>
+                <button class="btn-penalty" id="btnRedPeringatan1" onclick="addPenalty('red', 5)">Peringatan 1 (-5)</button>
+                <button class="btn-penalty" id="btnRedBinaan" onclick="addPenalty('red', 0)">Binaan</button>
+              </div>
+            </div>
+
+            <!-- Undo & VAR Cards Footer -->
+            <div class="corner-footer-bar">
+              <button class="btn-undo" id="btnRedUndo" onclick="undoScore('red')">↶ Hapus Poin Terakhir</button>
+              <div class="var-cards-quota">
+                <span style="font-size: 11px; color: var(--text-dim); margin-right: 4px;">Kartu VAR:</span>
+                <span class="var-card-tag active" id="redVarCard1" title="Kartu VAR 1"></span>
+                <span class="var-card-tag active" id="redVarCard2" title="Kartu VAR 2"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CENTER CONSOLE: TIMER & CONTROL WASIT -->
+          <div class="center-console">
+            <div class="round-info-display">
+              <div class="current-round-title" id="centerRoundTitle">BABAK 1</div>
+              <div class="court-name-tag" id="centerCourtTag">GELANGGANG 1 (UTAMA)</div>
+            </div>
+
+            <!-- Circular Timer Dial -->
+            <div class="timer-container">
+              <div class="timer-circle-wrap">
+                <div class="timer-digits" id="timerDigits">02:00</div>
+                <div class="timer-label" id="timerStatusLabel">SIAP TANDING</div>
+              </div>
+            </div>
+
+            <!-- Timer Action Buttons -->
+            <div class="timer-controls-row">
+              <button class="btn-timer-primary" id="btnTimerToggle" onclick="toggleTimer()">
+                <span id="timerPlayIcon">▶</span> <span id="timerBtnText">Mulai Babak</span>
+              </button>
+              <button class="btn-timer-secondary" id="btnTimerReset" onclick="resetTimer()">
+                🔄 Reset
+              </button>
+              <button class="btn-timer-secondary" id="btnTimerPlus10" onclick="addTime(10)">
+                +10s
+              </button>
+            </div>
+
+            <!-- Soundboard Triggers -->
+            <div class="soundboard-row">
+              <button class="btn-sound" id="btnSoundGong" onclick="playGongSound()">
+                🔔 Gong Babak
+              </button>
+              <button class="btn-sound" id="btnSoundWhistle" onclick="playWhistleSound()">
+                📣 Peluit Wasit
+              </button>
+            </div>
+
+            <!-- Quick Action Row -->
+            <div class="center-actions-row">
+              <button class="btn-trigger-var" id="btnTriggerVar" onclick="openVarModal('MERAH')">
+                📹 Tinjau Video Review (VAR)
+              </button>
+              <button class="btn-trigger-medis" id="btnTriggerMedis" onclick="switchTab('medical')">
+                🏥 Panggil Dokter Medis (3 Menit)
+              </button>
+            </div>
+          </div>
+
+          <!-- SUDUT BIRU (KANAN) -->
+          <div class="corner-box blue-corner">
+            <div>
+              <div class="corner-badge-header">
+                <span class="corner-label">🔵 SUDUT BIRU</span>
+                <span class="contingent-badge" id="blueContingentTag">JAWA BARAT</span>
+              </div>
+
+              <div class="fighter-profile">
+                <div class="fighter-avatar" id="blueFighterAvatar">🥋</div>
+                <div class="fighter-info">
+                  <h3 id="blueFighterName">Bagas Danuarta</h3>
+                  <div class="school-name" id="blueSchoolName">PPS Betako Merpati Putih</div>
+                  <div class="contingent-loc">Kontingen Jawa Barat • Seed 2</div>
+                </div>
+              </div>
+
+              <!-- Giant LED Score -->
+              <div class="score-display-box">
+                <div class="score-digits" id="blueScoreDigits">0</div>
+              </div>
+
+              <!-- Stats Breakdown -->
+              <div class="stats-breakdown-row">
+                <div class="stat-chip">
+                  <span class="chip-label">Pukulan (+1)</span>
+                  <div class="chip-val" id="blueStatPukulan">0</div>
+                </div>
+                <div class="stat-chip">
+                  <span class="chip-label">Tendangan (+2)</span>
+                  <div class="chip-val" id="blueStatTendangan">0</div>
+                </div>
+                <div class="stat-chip">
+                  <span class="chip-label">Bantingan (+3)</span>
+                  <div class="chip-val" id="blueStatBantingan">0</div>
+                </div>
+                <div class="stat-chip">
+                  <span class="chip-label">Hukuman</span>
+                  <div class="chip-val" id="blueStatHukuman" style="color: #f87171;">0</div>
+                </div>
+              </div>
+
+              <!-- Action Scoring Buttons -->
+              <div class="scoring-actions-grid">
+                <button class="btn-point" id="btnBluePukulan" onclick="addScore('blue', 'pukulan')">
+                  <span class="pt-badge">+1</span>
+                  <span>Pukulan</span>
+                </button>
+                <button class="btn-point" id="btnBlueTendangan" onclick="addScore('blue', 'tendangan')">
+                  <span class="pt-badge">+2</span>
+                  <span>Tendangan</span>
+                </button>
+                <button class="btn-point" id="btnBlueBantingan" onclick="addScore('blue', 'bantingan')">
+                  <span class="pt-badge">+3</span>
+                  <span>Bantingan</span>
+                </button>
+              </div>
+
+              <!-- Penalties Row -->
+              <div class="penalties-row">
+                <button class="btn-penalty" id="btnBlueTeguran1" onclick="addPenalty('blue', 1)">Teguran 1 (-1)</button>
+                <button class="btn-penalty" id="btnBlueTeguran2" onclick="addPenalty('blue', 2)">Teguran 2 (-2)</button>
+                <button class="btn-penalty" id="btnBluePeringatan1" onclick="addPenalty('blue', 5)">Peringatan 1 (-5)</button>
+                <button class="btn-penalty" id="btnBlueBinaan" onclick="addPenalty('blue', 0)">Binaan</button>
+              </div>
+            </div>
+
+            <!-- Undo & VAR Cards Footer -->
+            <div class="corner-footer-bar">
+              <button class="btn-undo" id="btnBlueUndo" onclick="undoScore('blue')">↶ Hapus Poin Terakhir</button>
+              <div class="var-cards-quota">
+                <span style="font-size: 11px; color: var(--text-dim); margin-right: 4px;">Kartu VAR:</span>
+                <span class="var-card-tag active" id="blueVarCard1" title="Kartu VAR 1"></span>
+                <span class="var-card-tag active" id="blueVarCard2" title="Kartu VAR 2"></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Consensus Matrix Panel (Juri 1 s/d 5) -->
+        <div class="consensus-matrix-panel">
+          <div class="consensus-side">
+            <span class="consensus-title">Konsensus Juri Sudut Merah:</span>
+            <div class="jury-dots-group" id="redJuryDotsGroup">
+              <div class="jury-indicator-dot" id="dotRedJ1" onclick="toggleJuryDot('red', 1)">J1</div>
+              <div class="jury-indicator-dot" id="dotRedJ2" onclick="toggleJuryDot('red', 2)">J2</div>
+              <div class="jury-indicator-dot" id="dotRedJ3" onclick="toggleJuryDot('red', 3)">J3</div>
+              <div class="jury-indicator-dot" id="dotRedJ4" onclick="toggleJuryDot('red', 4)">J4</div>
+              <div class="jury-indicator-dot" id="dotRedJ5" onclick="toggleJuryDot('red', 5)">J5</div>
+            </div>
+          </div>
+
+          <div class="consensus-banner" id="consensusBanner">
+            ⚖️ Menunggu Masukan Kuorum Juri (Min. 3 dari 5)
+          </div>
+
+          <div class="consensus-side">
+            <span class="consensus-title">Konsensus Juri Sudut Biru:</span>
+            <div class="jury-dots-group" id="blueJuryDotsGroup">
+              <div class="jury-indicator-dot" id="dotBlueJ1" onclick="toggleJuryDot('blue', 1)">J1</div>
+              <div class="jury-indicator-dot" id="dotBlueJ2" onclick="toggleJuryDot('blue', 2)">J2</div>
+              <div class="jury-indicator-dot" id="dotBlueJ3" onclick="toggleJuryDot('blue', 3)">J3</div>
+              <div class="jury-indicator-dot" id="dotBlueJ4" onclick="toggleJuryDot('blue', 4)">J4</div>
+              <div class="jury-indicator-dot" id="dotBlueJ5" onclick="toggleJuryDot('blue', 5)">J5</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 2: JURY PAD TOUCH SCREEN (BLIND SCORING FOR JUDGES)
+         ====================================================================== -->
+    <section class="tab-pane" id="tabJuryPad">
+      <div class="jury-pad-container">
+        <div class="jury-selector-bar">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800;">📱 Mode Wasit Juri (Jury Pad)</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Blind Scoring Mode: Skor akumulasi disembunyikan demi menjaga netralitas juri.</p>
+          </div>
+          <div class="jury-select-buttons">
+            <button class="btn-jury-select active" id="btnSelectJ1" onclick="selectJuryNumber(1)">Juri 1</button>
+            <button class="btn-jury-select" id="btnSelectJ2" onclick="selectJuryNumber(2)">Juri 2</button>
+            <button class="btn-jury-select" id="btnSelectJ3" onclick="selectJuryNumber(3)">Juri 3</button>
+            <button class="btn-jury-select" id="btnSelectJ4" onclick="selectJuryNumber(4)">Juri 4</button>
+            <button class="btn-jury-select" id="btnSelectJ5" onclick="selectJuryNumber(5)">Juri 5</button>
+          </div>
+        </div>
+
+        <div class="blind-scoring-card">
+          <!-- Merah Touch Panel -->
+          <div class="jury-touch-panel panel-red">
+            <div>
+              <div style="font-size: 14px; font-weight: 800; color: var(--red-corner); margin-bottom: 4px;">🔴 SUDUT MERAH</div>
+              <h2 id="jpRedFighterName" style="font-size: 24px; font-weight: 900;">Arya Wira Sena</h2>
+              <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Tapak Suci • DKI Jakarta</div>
+            </div>
+
+            <div>
+              <button class="jury-btn-large" id="jpBtnRedPukulan" onclick="juryInputTouch('red', 'pukulan')">
+                <span>🥊 PUKULAN</span>
+                <span>+1</span>
+              </button>
+              <button class="jury-btn-large" id="jpBtnRedTendangan" onclick="juryInputTouch('red', 'tendangan')">
+                <span>🥋 TENDANGAN</span>
+                <span>+2</span>
+              </button>
+              <button class="jury-btn-large" id="jpBtnRedBantingan" onclick="juryInputTouch('red', 'bantingan')">
+                <span>💥 BANTINGAN / JATUHAN</span>
+                <span>+3</span>
+              </button>
+            </div>
+            
+            <div style="font-size: 11px; color: var(--text-dim); text-align: center;">Sentuh tombol untuk mengirim sinyal konsensus</div>
+          </div>
+
+          <!-- Biru Touch Panel -->
+          <div class="jury-touch-panel panel-blue">
+            <div>
+              <div style="font-size: 14px; font-weight: 800; color: var(--blue-corner); margin-bottom: 4px;">🔵 SUDUT BIRU</div>
+              <h2 id="jpBlueFighterName" style="font-size: 24px; font-weight: 900;">Bagas Danuarta</h2>
+              <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Merpati Putih • Jawa Barat</div>
+            </div>
+
+            <div>
+              <button class="jury-btn-large" id="jpBtnBluePukulan" onclick="juryInputTouch('blue', 'pukulan')">
+                <span>🥊 PUKULAN</span>
+                <span>+1</span>
+              </button>
+              <button class="jury-btn-large" id="jpBtnBlueTendangan" onclick="juryInputTouch('blue', 'tendangan')">
+                <span>🥋 TENDANGAN</span>
+                <span>+2</span>
+              </button>
+              <button class="jury-btn-large" id="jpBtnBlueBantingan" onclick="juryInputTouch('blue', 'bantingan')">
+                <span>💥 BANTINGAN / JATUHAN</span>
+                <span>+3</span>
+              </button>
+            </div>
+
+            <div style="font-size: 11px; color: var(--text-dim); text-align: center;">Sentuh tombol untuk mengirim sinyal konsensus</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 3: MULTI-COURT MONITORING (4 MATRAS SERENTAK)
+         ====================================================================== -->
+    <section class="tab-pane" id="tabMultiCourt">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 20px; font-weight: 800;">🏟️ Monitoring 4 Gelanggang Paralel</h2>
+        <p style="font-size: 13px; color: var(--text-muted);">Pantau status skor, partai aktif, dan durasi tanding di seluruh matras venue secara real-time.</p>
+      </div>
+
+      <div class="multi-court-grid" id="multiCourtGridContainer">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB: BAGAN TURNAMEN & POOL PEMASALAN
+         ====================================================================== -->
+    <section class="tab-pane" id="tabBracket">
+      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800;" id="bracketMainTitle">🏆 Bagan Pertandingan & Pool Pemasalan</h2>
+          <p style="font-size: 13px; color: var(--text-muted);" id="bracketSubTitle">Sistem bagan resmi PERSILAT 2026: Bagan Prestasi Eliminasi & Pool Pemasalan Ramah Anak.</p>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <div class="mode-pill-group">
+            <button class="mode-pill-btn active" id="btnModePrestasi" onclick="setBracketMode('prestasi')">
+              ⚔️ Bagan Prestasi
+            </button>
+            <button class="mode-pill-btn" id="btnModePemasalan" onclick="setBracketMode('pemasalan')">
+              👶 Pool Pemasalan (Pool 4)
+            </button>
+          </div>
+
+          <button class="btn-utility" style="border-color: rgba(245, 158, 11, 0.4); color: var(--gold);" onclick="exportPuspresnasSimt()">
+            📥 Ekspor SIMT Puspresnas
+          </button>
+          <button class="btn-utility" id="btnResetBracket" onclick="resetTournamentBracket()">
+            🔄 Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Container Prestasi (Eliminasi Tunggal) -->
+      <div class="bracket-wrapper" id="bracketPrestasiWrapper">
+        <div class="bracket-tree" id="bracketTreeContainer">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Container Pemasalan (Pool 4 Pesilat - Ramah Anak) -->
+      <div id="bracketPemasalanWrapper" style="display: none;">
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #fde68a;">
+          ⭐ <strong>Prinsip Kategori Pemasalan (Usia Dini & Pra-Remaja):</strong> Setiap pool terdiri dari maksimal 4 pesilat. Seluruh 4 atlet dipastikan meraih medali pembinaan: 🥇 Juara 1 (Emas), 🥈 Juara 2 (Perak), dan 🥉 Dua Juara 3 Bersama (Perunggu).
+        </div>
+        <div class="pool-grid" id="poolPemasalanGrid">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 5: TIMBANG BADAN BLE & MARSHALLING
+         ====================================================================== -->
+    <section class="tab-pane" id="tabWeighin">
+      <div class="weighin-grid">
+        <!-- Bluetooth BLE Scale Simulator -->
+        <div class="ble-scale-card">
+          <h3 style="font-size: 18px; font-weight: 800;">⚖️ Terminal Timbangan Bluetooth BLE</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Web Bluetooth API (W3C Standard) • Bebas Manipulasi Manual</p>
+
+          <div class="scale-digital-screen">
+            <div style="font-size: 12px; color: #64748b; text-transform: uppercase;">BERAT BADAN AKTUAL</div>
+            <div class="scale-weight-val" id="scaleWeightVal">58.4 <span style="font-size: 24px;">kg</span></div>
+            <div class="scale-status-badge passed" id="scaleStatusBadge">LOLOS TIMBANG (KELAS C 55-60 KG)</div>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn-utility" id="btnSimulateBleWeighin" onclick="simulateBleWeighin()">
+              📡 Hubungkan Timbangan BLE
+            </button>
+            <button class="btn-utility" id="btnVerifyWeighin" onclick="confirmWeighin()">
+              ✅ Simpan & Sahkan Timbang
+            </button>
+          </div>
+        </div>
+
+        <!-- Marshalling Queue List -->
+        <div class="arena-card" style="padding: 24px;">
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">📋 Antrean Ruang Tunggu (Marshalling)</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Pemeriksaan perlengkapan bertanding atlet H-3 partai sebelum masuk gelanggang.</p>
+
+          <div id="marshallingListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 6: DATABASE PESILAT & BIOMOTORIK
+         ====================================================================== -->
+    <section class="tab-pane" id="tabAthletes">
+      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800;">👥 Master Atlet & Sport Science Pencak Silat</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">Database pesilat nasional terverifikasi NIK, BPJS Ketenagakerjaan, dan rekam jejak Elo Rating.</p>
+        </div>
+        <input type="text" id="athleteSearchInput" placeholder="Cari nama pesilat / perguruan..." 
+               style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-glass); padding: 8px 16px; border-radius: var(--radius-sm); color: #fff; width: 280px;"
+               onkeyup="filterAthletes()">
+      </div>
+
+      <div class="multi-court-grid" id="athleteCardsContainer">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 7: E-SERTIFIKAT JUARA & VERIFIKASI QR CODE
+         ====================================================================== -->
+    <section class="tab-pane" id="tabCertificate">
+      <div style="margin-bottom: 24px; text-align: center;">
+        <h2 style="font-size: 22px; font-weight: 800;">📜 Generator E-Piagam & Verifikasi Kriptografi</h2>
+        <p style="font-size: 13px; color: var(--text-muted);">Piagam digital resmi dengan stempel HMAC-SHA256 & QR Code lolos kurasi SIMT Puspresnas Kemendikdasmen.</p>
+      </div>
+
+      <div class="certificate-preview-card" id="certificateCard">
+        <div class="cert-header">
+          <div style="font-size: 14px; font-weight: 700; letter-spacing: 1px; color: #78350f;">PENGURUS BESAR IKATAN PENCAK SILAT INDONESIA</div>
+          <div class="cert-title">SERTIFIKAT PENGHARGAAN</div>
+          <div style="font-size: 12px; color: #475569;">Nomor SK: IPSI/KEJURNAS/2026/XI/0842-EMAS</div>
+        </div>
+
+        <div class="cert-recipient">
+          <div style="font-size: 13px; color: #64748b;">Diberikan dengan penuh kehormatan kepada:</div>
+          <div class="cert-name" id="certWinnerName">Arya Wira Sena</div>
+          <div style="font-size: 15px; font-weight: 700; color: #b45309; margin-top: 6px;">JUARA 1 - MEDALI EMAS</div>
+          <div style="font-size: 13px; color: #334155; margin-top: 2px;">Kategori Tanding Dewasa Putra Kelas C (55-60 Kg)</div>
+          <div style="font-size: 12px; color: #64748b;">Mewakili Kontingen: Pengprov IPSI DKI Jakarta</div>
+        </div>
+
+        <div class="cert-footer-row">
+          <div class="cert-qr-box" id="certQrBox">
+            <div style="text-align: center;">
+              <div style="font-size: 24px;">🏁</div>
+              <div style="font-size: 9px; margin-top: 2px;">SCAN SAH</div>
+            </div>
+          </div>
+
+          <div style="text-align: right; font-size: 12px;">
+            <div style="color: #64748b;">Jakarta, 21 Oktober 2026</div>
+            <div style="font-weight: 800; margin-top: 24px;">Ketua Umum PB IPSI</div>
+            <div style="font-size: 10px; color: #94a3b8; font-family: var(--font-mono); margin-top: 4px;">SHA256: 8a4f...7c21e</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <button class="btn-utility" style="margin: 0 auto; padding: 10px 24px;" onclick="window.print()">
+          🖨️ Cetak / Simpan PDF Piagam
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 8: KONSOL MEDIS & TIMER 3 MENIT
+         ====================================================================== -->
+    <section class="tab-pane" id="tabMedical">
+      <div class="weighin-grid">
+        <div class="arena-card" style="padding: 24px;">
+          <h3 style="font-size: 18px; font-weight: 800;">🏥 Konsol Dokter Pertandingan</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">SOP Medis PERSILAT: Batas perawatan kumulatif 3 menit per partai laga.</p>
+
+          <div class="scale-digital-screen" style="border-color: #ef4444;">
+            <div style="font-size: 12px; color: #f87171; text-transform: uppercase;">HITUNG MUNDUR MEDIS (3 MENIT)</div>
+            <div class="scale-weight-val" id="medTimerDigits" style="color: #ef4444;">03:00</div>
+            <div class="scale-status-badge failed" id="medStatusBadge">TIM MEDIS SIAGA</div>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px;">
+            <button class="btn-utility" id="btnMedTimerToggle" onclick="toggleMedTimer()">
+              ▶ Mulai Timer Medis
+            </button>
+            <button class="btn-utility" id="btnMedTimerReset" onclick="resetMedTimer()">
+              🔄 Reset (03:00)
+            </button>
+          </div>
+
+          <button class="btn-point" style="width: 100%; background: #dc2626; color: #fff; padding: 14px;" onclick="triggerDoctorStoppage()">
+            🛑 DOCTOR STOPPAGE (HENTIKAN LAGA - UNFIT)
+          </button>
+        </div>
+
+        <!-- Injury Log & BPJS Slip -->
+        <div class="arena-card" style="padding: 24px;">
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">🩺 Peta Cedera Tubuh & Rujukan RS</h3>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Pilih lokasi cedera atlet dan terbitkan rujukan IGD RSUD via BPJS Ketenagakerjaan.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+            <button class="btn-penalty" onclick="logInjury('Kepala (Benturan / Gegar Ringan)')">🧠 Kepala / Wajah</button>
+            <button class="btn-penalty" onclick="logInjury('Tulang Selangka / Bahu')">🦴 Bahu / Clavicle</button>
+            <button class="btn-penalty" onclick="logInjury('Tulang Rusuk / Dada')">🫁 Tulang Rusuk</button>
+            <button class="btn-penalty" onclick="logInjury('Lutut / Engsel Kaki (Sprain)')">🦵 Lutut / Ligamen</button>
+          </div>
+
+          <div id="injuryLogDisplay" style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: var(--radius-sm); font-size: 12px; color: var(--text-muted); min-height: 80px;">
+            Belum ada insiden cedera tercatat pada partai ini.
+          </div>
+    <!-- ======================================================================
+         TAB: PENILAIAN SENI TGR (TUNGGAL, GANDA, REGU & SOLO KREATIF)
+         ====================================================================== -->
+    <section class="tab-pane" id="tabSeni">
+      <div class="arena-card" style="margin-bottom: 20px;">
+        <div class="match-header-bar">
+          <div class="match-title-group">
+            <h2>
+              <span>Gelanggang 2</span> • Partai Seni <span style="color: var(--gold);">#S-03</span>
+            </h2>
+            <div class="match-subtitle">
+              Seni Tunggal Baku Putra PERSILAT 2026 • 100 Jurus Baku IPSI (Tangan Kosong, Golok, Toya)
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <span class="status-tag live">🔴 PENTAS AKTIF</span>
+            <span class="status-tag live" style="background: rgba(245, 158, 11, 0.2); color: var(--gold); border-color: rgba(245, 158, 11, 0.4);">
+              ⏱️ Durasi: 3 Menit (180 Detik)
+            </span>
+          </div>
+        </div>
+
+        <!-- Fighter / Performer Banner -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 16px 24px; border-radius: var(--radius-sm); margin-bottom: 20px;">
+          <div>
+            <div style="font-size: 12px; color: var(--red-corner); font-weight: 800; text-transform: uppercase;">🔴 PESILAT SEDANG TAMPIL</div>
+            <h3 style="font-size: 22px; font-weight: 900; margin: 4px 0;" id="seniPerformerName">Farhan Al-Fatih</h3>
+            <div style="font-size: 13px; color: var(--text-muted);">Kontingen: <strong style="color: #fff;">Pengprov Jawa Timur</strong> (Tapak Suci)</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; color: var(--text-muted);">Skor Standar Deviasi Sementara</div>
+            <div style="font-size: 32px; font-weight: 900; color: var(--gold); font-family: var(--font-mono);" id="seniFinalScoreDisplay">9.960</div>
+          </div>
+        </div>
+
+        <!-- Live Countdown Timer & Safe Zone Bar -->
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">HITUNG MUNDUR WAKTU PENAMPILAN SENI</div>
+          <div class="scale-weight-val" id="seniTimerDigits" style="font-size: 56px; color: var(--emerald); font-family: var(--font-mono); margin: 6px 0;">03:00</div>
+          
+          <div class="seni-timer-bar-wrap">
+            <div class="seni-timer-fill" id="seniTimerBar"></div>
+            <div class="seni-safe-zone" title="Zona Waktu Aman 02:55 - 03:05 (Bebas Penalti)"></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-top: 4px;">
+            <span>00:00 (Mulai)</span>
+            <span style="color: var(--emerald); font-weight: 700;">🟢 ZONA AMAN: 02:55 s.d. 03:05 (Bebas Penalti)</span>
+            <span>03:15 (Penalti Maks)</span>
+          </div>
+
+          <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: center; align-items: center;">
+            <button class="btn-utility active" id="btnSeniTimerToggle" onclick="toggleSeniTimer()">
+              ▶ Mulai Timer Seni
+            </button>
+            <button class="btn-utility" onclick="resetSeniTimer()">
+              🔄 Reset (03:00)
+            </button>
+            <div class="scale-status-badge passed" id="seniTimeStatusBadge" style="margin: 0; padding: 6px 14px;">
+              WAKTU AMAN (BEBAS PENALTI)
+            </div>
+          </div>
+        </div>
+
+        <!-- Jury Scoring Console for Seni -->
+        <div class="seni-jury-grid">
+          <!-- Left: Input Juri Aktif -->
+          <div class="seni-control-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 800;">📱 Panel Penilaian Juri Seni</h3>
+              <div class="mode-pill-group">
+                <button class="mode-pill-btn active" id="btnSeniJ1" onclick="selectSeniJury(1)">Juri 1</button>
+                <button class="mode-pill-btn" id="btnSeniJ2" onclick="selectSeniJury(2)">Juri 2</button>
+                <button class="mode-pill-btn" id="btnSeniJ3" onclick="selectSeniJury(3)">Juri 3</button>
+                <button class="mode-pill-btn" id="btnSeniJ4" onclick="selectSeniJury(4)">Juri 4</button>
+                <button class="mode-pill-btn" id="btnSeniJ5" onclick="selectSeniJury(5)">Juri 5</button>
+              </div>
+            </div>
+
+            <!-- Kebenaran Gerak -->
+            <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 14px; border: 1px solid var(--border-glass);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div>
+                  <strong style="font-size: 14px;">1. Kebenaran 100 Gerakan Baku</strong>
+                  <div style="font-size: 11px; color: var(--text-muted);">Nilai Dasar: 9.90 • Pengurangan -0.01 per gerakan salah</div>
+                </div>
+                <div style="font-size: 20px; font-weight: 900; color: var(--blue-corner); font-family: var(--font-mono);" id="seniKebenaranScore">9.88</div>
+              </div>
+              
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="btn-penalty" style="flex: 1; padding: 10px;" onclick="addSeniMistake()">
+                  ❌ Salah Gerakan (-0.01)
+                </button>
+                <button class="btn-utility" onclick="undoSeniMistake()">
+                  ↩ Koreksi (+0.01)
+                </button>
+                <div style="font-size: 12px; color: var(--text-muted);">
+                  Total Salah: <strong id="seniMistakeCount" style="color: #ff2a5f;">2</strong> gerak
+                </div>
+              </div>
+            </div>
+
+            <!-- Kemantapan & Penjiwaan -->
+            <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 14px; border: 1px solid var(--border-glass);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div>
+                  <strong style="font-size: 14px;">2. Kemantapan, Tenaga & Penjiwaan</strong>
+                  <div style="font-size: 11px; color: var(--text-muted);">Rentang Nilai Tambahan: 0.01 s.d. 0.10</div>
+                </div>
+                <div style="font-size: 20px; font-weight: 900; color: var(--emerald); font-family: var(--font-mono);" id="seniKemantapanDisplay">+0.08</div>
+              </div>
+              <input type="range" min="1" max="10" value="8" style="width: 100%; accent-color: var(--emerald); cursor: pointer;" oninput="updateSeniKemantapan(this.value)">
+            </div>
+
+            <!-- Penalti Teknis Cepat -->
+            <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+              <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #f87171;">3. Penalti Pelanggaran Teknis (-0.50 per kejadian):</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button class="btn-penalty" id="btnPenSenjata" onclick="toggleSeniPenalty('senjata', 0.50)">
+                  🗡️ Senjata Jatuh / Patah (-0.5)
+                </button>
+                <button class="btn-penalty" id="btnPenGaris" onclick="toggleSeniPenalty('garis', 0.50)">
+                  🦶 Keluar Gelanggang (-0.5)
+                </button>
+                <button class="btn-penalty" id="btnPenPakaian" onclick="toggleSeniPenalty('pakaian', 0.50)">
+                  🥋 Atribut / Baju Rusak (-0.5)
+                </button>
+                <button class="btn-penalty" id="btnPenSuara" onclick="toggleSeniPenalty('suara', 0.50)">
+                  🗣️ Suara / Vokal Ilegal (-0.5)
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-cta-primary" style="width: 100%; margin-top: 16px; padding: 12px;" onclick="submitActiveSeniJury()">
+              ✅ Sahkan & Kirim Nilai Juri Ini
+            </button>
+          </div>
+
+          <!-- Right: Rekap 5 Juri & Standar Deviasi PERSILAT -->
+          <div class="seni-control-box">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px;">📊 Rekap Nilai 5 Juri (Sistem Median PERSILAT)</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Sesuai regulasi: Nilai tertinggi dan terendah dibuang, nilai akhir dihitung dari rata-rata 3 juri tengah.</p>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; margin-bottom: 20px;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-dim);">
+                  <th style="padding: 8px;">JURI</th>
+                  <th style="padding: 8px;">KEBENARAN</th>
+                  <th style="padding: 8px;">KEMANTAPAN</th>
+                  <th style="padding: 8px;">PENALTI</th>
+                  <th style="padding: 8px; text-align: right;">SKOR AKHIR</th>
+                  <th style="padding: 8px; text-align: center;">STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="seniJuryTableBody">
+                <!-- Rendered dynamically via JS -->
+              </tbody>
+            </table>
+
+            <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-sm); padding: 14px; text-align: center;">
+              <div style="font-size: 12px; color: var(--gold); font-weight: 800;">SKOR RESMI KEPUTUSAN DEWAN:</div>
+              <div style="font-size: 36px; font-weight: 900; color: #fff; font-family: var(--font-mono); margin: 6px 0;" id="seniOfficialResultScore">9.960</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Pemenang Otomatis Memajukan Bagan Juara Seni</div>
+            </div>
+
+            <button class="btn-utility" style="width: 100%; margin-top: 14px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5); color: #fff;" onclick="finalizeSeniMatch()">
+              🏆 Sahkan Pemenang Partai Seni S-03
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB: KONSOL DEWAN HAKIM & FORENSIC BLACK-BOX AUDIT TRAIL
+         ====================================================================== -->
+    <section class="tab-pane" id="tabDewanHakim">
+      <div class="arena-card" style="margin-bottom: 20px;">
+        <div class="match-header-bar">
+          <div class="match-title-group">
+            <h2>⚖️ Konsol Dewan Hakim & Forensic Black-Box Logger</h2>
+            <div class="match-subtitle">
+              Sistem Investigasi Sengketa Pertandingan, Audit Trail Milidetik Juri & Sidang Banding Resmi IPSI 2026
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-utility active" onclick="refreshBlackboxTimeline()">
+              🔄 Replay Waveform Milidetik
+            </button>
+            <button class="btn-utility" style="color: var(--gold); border-color: rgba(245, 158, 11, 0.4);" onclick="generateBapDocument()">
+              📄 Cetak BAP Resmi (QR Code)
+            </button>
+          </div>
+        </div>
+
+        <!-- Waveform Timeline Milidetik -->
+        <div class="blackbox-waveform-wrap">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="font-size: 13px; font-weight: 800; color: #a78bfa;">
+              ⏱️ Rekaman Forensik Tombol Juri Partai P-14 • Insiden Bantingan Menit 01:24 (Babak 2)
+            </div>
+            <div style="font-size: 11px; color: var(--emerald); font-weight: 700;">
+              ⚡ Kuorum Konsensus Sah: Terpenuhi dalam Jendela 320ms (&lt; Toleransi 1.500ms)
+            </div>
+          </div>
+
+          <!-- Waveform Tracks -->
+          <div class="timeline-track">
+            <div class="timeline-label">Juri 1</div>
+            <div class="timeline-lane">
+              <div class="time-marker-pulse" style="left: 35%; background: var(--blue-corner);" title="Juri 1 menekan Biru Bantingan (+3)">J1</div>
+            </div>
+          </div>
+
+          <div class="timeline-track">
+            <div class="timeline-label">Juri 2</div>
+            <div class="timeline-lane">
+              <div class="time-marker-pulse" style="left: 37%; background: var(--blue-corner);" title="Juri 2 menekan Biru Bantingan (+3)">J2</div>
+            </div>
+          </div>
+
+          <div class="timeline-track">
+            <div class="timeline-label">Juri 3</div>
+            <div class="timeline-lane">
+              <div class="time-marker-pulse" style="left: 38.5%; background: var(--blue-corner);" title="Juri 3 menekan Biru Bantingan (+3)">J3</div>
+            </div>
+          </div>
+
+          <div class="timeline-track">
+            <div class="timeline-label">Juri 4</div>
+            <div class="timeline-lane">
+              <div class="time-marker-pulse" style="left: 65%; background: #64748b;" title="Juri 4 terlambat (>1.5 detik)">J4</div>
+            </div>
+          </div>
+
+          <div class="timeline-track" style="border-bottom: none;">
+            <div class="timeline-label">Juri 5</div>
+            <div class="timeline-lane">
+              <!-- Tidak menekan -->
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 6px; font-family: var(--font-mono);">
+            <span>00:00ms (Insiden Terjadi)</span>
+            <span style="color: var(--emerald);">+320ms (3 Juri Sepakat -> Poin Masuk)</span>
+            <span style="color: #f87171;">+1500ms (Batas Akhir Kuorum Toleransi)</span>
+          </div>
+        </div>
+
+        <!-- Grid: Form Sidang Banding vs Forensic Log Table -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Left: Sidang Banding & Uang Jaminan -->
+          <div class="seni-control-box">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 6px; color: var(--gold);">
+              ⚖️ Sidang Banding Resmi Dewan Hakim
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+              Formulir banding ofisial kontingen sesuai Pasal 24 Regulasi PERSILAT 2026.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+              <div>
+                <label style="color: var(--text-muted); font-size: 11px;">Nomor Partai Pertandingan:</label>
+                <input type="text" value="Partai #P-14 (Kelas C Putra)" readonly style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff; font-weight: 700;">
+              </div>
+
+              <div>
+                <label style="color: var(--text-muted); font-size: 11px;">Ofisial Pemohon Banding:</label>
+                <input type="text" id="bandingApplicant" value="Coach Hendra Wijaya (Merpati Putih Jawa Barat)" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+              </div>
+
+              <div>
+                <label style="color: var(--text-muted); font-size: 11px;">Alasan Pengajuan Banding:</label>
+                <textarea id="bandingReason" rows="2" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff; resize: vertical;">Bantingan sudut biru di menit 01:24 babak 2 seharusnya sah 3 poin karena lawan jatuh sempurna.</textarea>
+              </div>
+
+              <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm); padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 11px; color: var(--emerald); font-weight: 700;">UANG JAMINAN PROTES RESMI:</div>
+                  <div style="font-size: 18px; font-weight: 900; color: #fff;">Rp 3.000.000</div>
+                </div>
+                <span class="scale-status-badge passed" style="margin: 0; padding: 4px 10px;">LUNAS DIVERIFIKASI</span>
+              </div>
+
+              <div style="font-size: 12px; font-weight: 700; margin-top: 6px;">Disposisi Putusan Sidang Dewan Hakim:</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn-cta-primary" style="background: #059669; padding: 10px;" onclick="resolveBanding(true)">
+                  ✅ Protes DITERIMA (Uang Kembali)
+                </button>
+                <button class="btn-point" style="background: #dc2626; padding: 10px;" onclick="resolveBanding(false)">
+                  ❌ Protes DITOLAK (Uang Hangus)
+                </button>
+              </div>
+
+              <div id="bandingVerdictNotice" style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: var(--radius-sm); font-size: 12px; color: var(--text-muted); text-align: center;">
+                Status: Menunggu putusan majelis Dewan Hakim.
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Immutable Black-Box Log -->
+          <div class="seni-control-box">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 6px;">
+              📜 Immutable Forensic Audit Log (HMAC-SHA256)
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+              Setiap sentuhan tombol juri dan keputusan KP terenkripsi anti-manipulasi.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto;" id="blackboxLogList">
+              <!-- Rendered dynamically via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB: PORTAL KONTINGEN & BILLING PAYMENT GATEWAY XENDIT
+         ====================================================================== -->
+    <section class="tab-pane" id="tabKontingen">
+      <div class="arena-card" style="margin-bottom: 20px;">
+        <div class="match-header-bar">
+          <div class="match-title-group">
+            <h2>💳 Portal Pendaftaran Kontingen & Simulasi Billing Xendit</h2>
+            <div class="match-subtitle">
+              Sistem Pendaftaran Mandiri, Split Disbursement (95% EO / 5% Platform SaaS), dan Dynamic QRIS Bank Indonesia
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-utility active" onclick="simulatePayXendit()">
+              ⚡ Bayar Lunas (Webhook Instant)
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Left: Pendaftaran Atlet Baru -->
+          <div class="seni-control-box">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px;">➕ Daftarkan Atlet Kontingen Baru</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+              <div>
+                <label style="color: var(--text-muted); font-size: 11px;">Nama Lengkap Pesilat:</label>
+                <input type="text" id="regAthleteName" placeholder="Contoh: Raden Satria Pratama" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                  <label style="color: var(--text-muted); font-size: 11px;">NIK (UU PDP Protected):</label>
+                  <input type="text" id="regAthleteNik" placeholder="320101******0008" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+                </div>
+                <div>
+                  <label style="color: var(--text-muted); font-size: 11px;">NISN (Jalur Prestasi SIMT):</label>
+                  <input type="text" id="regAthleteNisn" placeholder="0081928192" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                  <label style="color: var(--text-muted); font-size: 11px;">Kontingen / Daerah:</label>
+                  <input type="text" id="regContingent" placeholder="DKI Jakarta" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+                </div>
+                <div>
+                  <label style="color: var(--text-muted); font-size: 11px;">Perguruan Silat:</label>
+                  <input type="text" id="regSchool" placeholder="Tapak Suci Putera Muhammadiyah" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                  <label style="color: var(--text-muted); font-size: 11px;">Kategori:</label>
+                  <select id="regCategory" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+                    <option value="Tanding">Tanding Prestasi</option>
+                    <option value="Pemasalan">Tanding Pemasalan (Pool 4)</option>
+                    <option value="Tunggal">Seni Tunggal Baku</option>
+                    <option value="Ganda">Seni Ganda</option>
+                    <option value="Regu">Seni Regu</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="color: var(--text-muted); font-size: 11px;">Kelas Tanding:</label>
+                  <select id="regWeightClass" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); padding: 8px 12px; border-radius: var(--radius-sm); color: #fff;">
+                    <option value="Kelas C (55-60 Kg)">Kelas C (55-60 Kg)</option>
+                    <option value="Kelas B (50-55 Kg)">Kelas B (50-55 Kg)</option>
+                    <option value="Kelas A (45-50 Kg)">Kelas A (45-50 Kg)</option>
+                    <option value="Kelas D (60-65 Kg)">Kelas D (60-65 Kg)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn-cta-primary" style="margin-top: 10px; padding: 12px;" onclick="addRegisteredAthlete()">
+                ➕ Daftarkan Atlet ke Roster Kontingen
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Faktur Checkout Xendit & Split Payment -->
+          <div class="billing-split-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+              <div>
+                <span class="status-tag live" style="background: rgba(0, 229, 255, 0.2); color: var(--blue-corner);">
+                  INVOICE: INV-2026-XENDIT-0891
+                </span>
+                <h3 style="font-size: 20px; font-weight: 900; margin-top: 6px;">Faktur Pembayaran Kontingen</h3>
+                <div style="font-size: 12px; color: var(--text-muted);">Kontingen: Tapak Suci Wilayah DKI Jakarta (10 Atlet)</div>
+              </div>
+              <div id="invoiceStatusBadge" class="scale-status-badge failed" style="margin: 0; padding: 6px 14px;">
+                MENUNGGU PEMBAYARAN
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+              <!-- Dynamic QRIS Canvas -->
+              <div class="qris-display-frame">
+                <div class="qris-top-banner">QRIS 🇮🇩</div>
+                <svg width="130" height="130" viewBox="0 0 100 100" style="display: block; margin: 0 auto;">
+                  <rect width="100" height="100" fill="#ffffff" />
+                  <!-- QR Finder top-left -->
+                  <rect x="10" y="10" width="26" height="26" fill="#000000" />
+                  <rect x="14" y="14" width="18" height="18" fill="#ffffff" />
+                  <rect x="18" y="18" width="10" height="10" fill="#000000" />
+                  <!-- QR Finder top-right -->
+                  <rect x="64" y="10" width="26" height="26" fill="#000000" />
+                  <rect x="68" y="14" width="18" height="18" fill="#ffffff" />
+                  <rect x="72" y="18" width="10" height="10" fill="#000000" />
+                  <!-- QR Finder bottom-left -->
+                  <rect x="10" y="64" width="26" height="26" fill="#000000" />
+                  <rect x="14" y="68" width="18" height="18" fill="#ffffff" />
+                  <rect x="18" y="72" width="10" height="10" fill="#000000" />
+                  <!-- Pattern bits -->
+                  <rect x="42" y="15" width="6" height="6" fill="#000000" />
+                  <rect x="52" y="25" width="6" height="6" fill="#000000" />
+                  <rect x="42" y="45" width="8" height="8" fill="#000000" />
+                  <rect x="55" y="45" width="8" height="8" fill="#000000" />
+                  <rect x="70" y="55" width="8" height="8" fill="#000000" />
+                  <rect x="45" y="70" width="6" height="6" fill="#000000" />
+                  <rect x="60" y="75" width="8" height="8" fill="#000000" />
+                  <rect x="75" y="75" width="6" height="6" fill="#000000" />
+                </svg>
+                <div style="font-size: 9px; color: #475569; font-weight: 700; margin-top: 4px;">NMID: ID102026ARENASILAT</div>
+              </div>
+
+              <!-- Virtual Account Details -->
+              <div style="flex: 1; min-width: 220px;">
+                <div class="va-bank-pill active">
+                  <div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Virtual Account BCA</div>
+                    <div style="font-size: 15px; font-weight: 800; font-family: var(--font-mono); color: #fff;">8271 0891 2910 8821</div>
+                  </div>
+                  <span style="font-size: 11px; color: var(--blue-corner);">Salin</span>
+                </div>
+
+                <div class="va-bank-pill">
+                  <div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Virtual Account Mandiri</div>
+                    <div style="font-size: 15px; font-weight: 800; font-family: var(--font-mono); color: #fff;">8921 7820 9182 3001</div>
+                  </div>
+                  <span style="font-size: 11px; color: var(--text-muted);">Salin</span>
+                </div>
+
+                <div style="font-size: 11px; color: var(--text-dim); margin-top: 6px;">
+                  Mendukung QRIS BCA, Mandiri, BRImo, BNI Wondr, BSI, GoPay, OVO, DANA.
+                </div>
+              </div>
+            </div>
+
+            <!-- Total & Split Breakdown Card -->
+            <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                <span style="color: var(--text-muted);">Total Biaya Pendaftaran (10 Atlet):</span>
+                <strong style="color: #fff; font-size: 16px;">Rp 3.500.000</strong>
+              </div>
+              <div style="border-top: 1px dashed var(--border-glass); padding-top: 8px; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; justify-content: space-between; color: var(--emerald);">
+                  <span>🏦 95% Rekening Panitia Pelaksana EO:</span>
+                  <strong>Rp 3.325.000 (Split Settlement Otomatis)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: var(--blue-corner);">
+                  <span>⚡ 5% Platform SaaS Fee (ArenaSilat.id):</span>
+                  <strong>Rp 175.000</strong>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-cta-primary" id="btnSimulatePayXendit" style="width: 100%; padding: 14px; font-size: 14px;" onclick="simulatePayXendit()">
+              ⚡ Simulasikan Pembayaran Lunas (Webhook Callback Xendit)
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================
+       VAR VIDEO REVIEW MODAL PLAYER
+       ====================================================================== -->
+  <div class="var-modal-backdrop" id="varModal">
+    <div class="var-modal-card">
+      <div class="var-modal-header">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 800; color: #a78bfa;">📹 Tinjauan Video Assistant Referee (VAR)</h3>
+          <div style="font-size: 12px; color: var(--text-muted);">Pemohon: <span id="varCornerApplicant" style="font-weight: 700; color: #fff;">SUDUT MERAH</span> • Sisa Kuota: 2 Kartu Protes</div>
+        </div>
+        <button class="btn-utility" onclick="closeVarModal()">✖ Tutup</button>
+      </div>
+
+      <!-- Video Playback Simulation Canvas -->
+      <div class="var-video-canvas-wrap">
+        <canvas id="varVideoCanvas"></canvas>
+      </div>
+
+      <!-- Playback Controls Bar -->
+      <div class="var-controls-bar">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn-utility" id="btnVarPlay" onclick="toggleVarPlayback()">▶ Putar</button>
+          <button class="btn-utility" onclick="setVarSpeed(0.25)">0.25x (Slow-Mo)</button>
+          <button class="btn-utility" onclick="setVarSpeed(0.5)">0.5x</button>
+          <button class="btn-utility" onclick="setVarSpeed(1.0)">1.0x Normal</button>
+        </div>
+
+        <!-- Verdict Decision Buttons -->
+        <div class="var-verdict-row">
+          <button class="btn-verdict-sah" id="btnVarSah" onclick="decideVar(true)">
+            ✅ PROTES SAH (+3 Poin)
+          </button>
+          <button class="btn-verdict-batal" id="btnVarBatal" onclick="decideVar(false)">
+            ❌ PROTES BATAL (Kartu Hangus)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

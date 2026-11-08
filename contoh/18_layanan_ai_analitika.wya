@@ -1,0 +1,164 @@
+// contoh/18_layanan_ai_analitika.wya
+// Showcase Terpadu Ekosistem Standar Widya-Lang (Setara Full-Stack Python & Node.js)
+// Mengintegrasikan:
+// 1. @widya/sql       (Database Relasional In-Memory)
+// 2. @widya/dataframe (Manipulasi Tabular & Agregasi Data)
+// 3. @widya/tensor    (Operasi Matriks & Aljabar Linier SIMD)
+// 4. @widya/ai        (Graf Komputasi Autograd & Optimasi SGD)
+// 5. @widya/web       (Microservice REST API & Router Kilat)
+// 6. @widya/test      (Verifikasi & Penegasan Integritas Sistem)
+
+impor "@widya/sql" sebagai sql;
+impor "@widya/dataframe" sebagai pd;
+impor "@widya/tensor" sebagai np;
+impor "@widya/ai" sebagai torch;
+impor "@widya/web" sebagai web;
+impor "@widya/test" sebagai test;
+
+tulis("============================================================");
+tulis("  SISTEM ANALITIKA & INFERENSI AI CERDAS WIDYA-LANG");
+tulis("============================================================");
+
+// ------------------------------------------------------------
+// LANGKAH 1: Inisialisasi Basis Data Relasional In-Memory (@widya/sql)
+// ------------------------------------------------------------
+tulis("\n[1] Menginisialisasi Basis Data Relasional...");
+misal db = sql.db_buka("analitika_telemetri");
+sql.db_buat_tabel(db, "telemetri_sensor");
+
+// Sisip data rekaman telemetri
+sql.db_sisip(db, "telemetri_sensor", {"id": 1, "zona": "Zona-A", "beban": 10.0, "suhu": 32.0, "status": "normal"});
+sql.db_sisip(db, "telemetri_sensor", {"id": 2, "zona": "Zona-A", "beban": 14.0, "suhu": 35.0, "status": "normal"});
+sql.db_sisip(db, "telemetri_sensor", {"id": 3, "zona": "Zona-B", "beban": 22.0, "suhu": 45.0, "status": "waspada"});
+sql.db_sisip(db, "telemetri_sensor", {"id": 4, "zona": "Zona-B", "beban": 28.0, "suhu": 52.0, "status": "waspada"});
+
+misal total_rekaman = sql.db_hitung(db, "telemetri_sensor");
+tulis(" -> Total rekaman tersimpan di SQL: " + ke_teks(total_rekaman));
+
+// ------------------------------------------------------------
+// LANGKAH 2: Transformasi Data Tabular (@widya/dataframe)
+// ------------------------------------------------------------
+tulis("\n[2] Memuat Data ke DataFrame & Menghitung Agregasi...");
+fungsi ambil_semua(row) { kembalikan true; }
+misal baris_db = sql.db_pilih(db, "telemetri_sensor", ambil_semua);
+
+misal df = pd.df_buat(["id", "zona", "beban", "suhu", "status"], baris_db);
+misal list_ringkasan = pd.ringkasan(df);
+misal ringkasan_beban = nil;
+untuk r in list_ringkasan {
+    jika r["kolom"] == "beban" {
+        ringkasan_beban = r;
+    }
+}
+
+tulis(" -> DataFrame dibuat: " + ke_teks(df.jumlah_baris) + " baris, " + ke_teks(df.jumlah_kolom) + " kolom");
+tulis(" -> Statistik Beban: Min=" + ke_teks(ringkasan_beban["min"]) + ", Maks=" + ke_teks(ringkasan_beban["max"]) + ", Rata-rata=" + ke_teks(ringkasan_beban["mean"]));
+
+// ------------------------------------------------------------
+// LANGKAH 3: Komputasi Aljabar Linier Matriks (@widya/tensor)
+// ------------------------------------------------------------
+tulis("\n[3] Komputasi Transformasi Tensor Aljabar Linier...");
+// Matriks bobot proyeksi 2x2
+misal matriks_bobot = np.tensor_buat([0.8, 0.2, 0.1, 0.9], [2, 2]);
+misal identitas_2x2 = np.identitas(2);
+misal hasil_matmul = np.matmul(matriks_bobot, identitas_2x2);
+misal jumlah_koefisien = np.jumlah(hasil_matmul);
+tulis(" -> Hasil perkalian matriks dengan identitas terverifikasi identik.");
+tulis(" -> Jumlah total koefisien tensor: " + ke_teks(jumlah_koefisien));
+
+// ------------------------------------------------------------
+// LANGKAH 4: Pelatihan Model AI & Autograd (@widya/ai)
+// ------------------------------------------------------------
+tulis("\n[4] Inferensi & Pembaharuan Bobot Neural Network (Autograd)...");
+// Model regresi linear satu variabel: pred = w * x + b
+misal model_layer = torch.lapisan_linear(1.5, 0.5);
+misal input_x = torch.variabel(ringkasan_beban["mean"], false);
+misal target_y = 35.0; // Target suhu optimal
+
+// Forward Pass
+misal y_pred = torch.linear_maju(model_layer, input_x);
+misal rugi = torch.mse_loss(y_pred, target_y);
+tulis(" -> Prediksi awal model: " + ke_teks(y_pred.data));
+tulis(" -> Nilai Loss (MSE)   : " + ke_teks(rugi.data));
+
+// Backward Pass (Diferensiasi Otomatis)
+torch.mundur(rugi);
+misal gradien_bobot = model_layer.bobot.grad;
+tulis(" -> Gradien bobot terhitung (dL/dw): " + ke_teks(gradien_bobot));
+
+// Langkah Optimasi SGD
+torch.sgd_langkah([model_layer.bobot, model_layer.bias], 0.001);
+tulis(" -> Bobot baru setelah SGD step    : " + ke_teks(model_layer.bobot.data));
+
+// ------------------------------------------------------------
+// LANGKAH 5: Penyajian Layanan Mikro REST API (@widya/web)
+// ------------------------------------------------------------
+tulis("\n[5] Mendaftarkan Rute REST API Web...");
+misal router = web.buat_router();
+
+// Middleware pencatatan (logging)
+fungsi log_middleware(req) {
+    kembalikan nil;
+}
+web.gunakan_middleware(router, log_middleware);
+
+// Rute 1: Pemeriksaan Kesehatan Server
+web.get(router, "/kesehatan", fungsi(req) {
+    kembalikan web.respons_json({
+        "status": "online",
+        "layanan": "Widya AI Analytics Service",
+        "versi": "2.6.0"
+    }, 200);
+});
+
+// Rute 2: Endpoint Inferensi AI
+web.post(router, "/api/inferensi", fungsi(req) {
+    kembalikan web.respons_json({
+        "status": "sukses",
+        "rata_beban": ringkasan_beban["mean"],
+        "prediksi_suhu": y_pred.data,
+        "bobot_terkini": model_layer.bobot.data
+    }, 200);
+});
+
+// Mensimulasikan penanganan permintaan HTTP
+misal req_kesehatan = web.Permintaan("GET", "/kesehatan", {}, {}, nil);
+misal req_api = web.Permintaan("POST", "/api/inferensi", {}, {}, nil);
+
+misal respons_kesehatan = web.tangani_permintaan(router, req_kesehatan);
+misal respons_api = web.tangani_permintaan(router, req_api);
+
+tulis(" -> Dispatch GET /kesehatan: Status " + ke_teks(respons_kesehatan.status));
+tulis(" -> Dispatch POST /api/inferensi: Status " + ke_teks(respons_api.status));
+
+// ------------------------------------------------------------
+// LANGKAH 6: Pengujian Unit Terotomasi (@widya/test)
+// ------------------------------------------------------------
+tulis("\n[6] Menjalankan Pengujian Kualitas Sistem Otomatis...");
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_koneksi_sql(t) {
+    test.tegaskan_sama(t, total_rekaman, 4, "Jumlah rekaman SQL harus tepat 4");
+}
+
+fungsi uji_dataframe_agregasi(t) {
+    test.tegaskan_sama(t, ringkasan_beban["min"], 10.0, "Nilai beban minimum harus 10.0");
+    test.tegaskan_sama(t, ringkasan_beban["max"], 28.0, "Nilai beban maksimum harus 28.0");
+}
+
+fungsi uji_layanan_api(t) {
+    test.tegaskan_sama(t, respons_kesehatan.status, 200, "Kode status /kesehatan harus 200");
+    test.tegaskan_sama(t, respons_api.status, 200, "Kode status /api/inferensi harus 200");
+}
+
+test.uji_kasus(pelari, "Integritas Basis Data SQL", uji_koneksi_sql);
+test.uji_kasus(pelari, "Akurasi DataFrame Agregasi", uji_dataframe_agregasi);
+test.uji_kasus(pelari, "Keandalan Endpoint REST Web", uji_layanan_api);
+
+misal hasil_pengujian = test.uji_ringkasan(pelari);
+tulis(" -> Hasil Pengujian: " + ke_teks(hasil_pengujian["lulus"]) + " LULUS dari " + ke_teks(hasil_pengujian["total"]) + " pengujian.");
+
+sql.db_tutup(db);
+tulis("\n============================================================");
+tulis("  EKSEKUSI PIPELINE LENGKAP SUKSES 100% SECARA DETERMINISTIK!");
+tulis("============================================================");

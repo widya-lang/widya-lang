@@ -1,0 +1,105 @@
+// packages/widya-web/src/lib.wya
+// Pustaka Resmi WPM: @widya/web (Setara Express & FastAPI untuk Widya-Lang)
+// Menyediakan routing RESTful berkinerja tinggi, pipeline middleware, dan pembangun respons HTTP
+
+struktur Router {
+    rute_list,
+    middleware_list
+}
+
+struktur Permintaan {
+    metode,
+    jalur,
+    header,
+    query,
+    badan
+}
+
+struktur Respons {
+    status,
+    header,
+    badan
+}
+
+// 1. Inisialisasi Router
+fungsi buat_router() {
+    kembalikan Router([], []);
+}
+
+// 2. Registrasi Middleware
+fungsi gunakan_middleware(router, middleware_fn) {
+    tambah(router.middleware_list, middleware_fn);
+    kembalikan router;
+}
+
+// 3. Pendaftaran Rute RESTful
+fungsi daftarkan_rute(router, metode, jalur, handler) {
+    tambah(router.rute_list, {
+        "metode": metode,
+        "jalur": jalur,
+        "handler": handler
+    });
+    kembalikan router;
+}
+
+fungsi get(router, jalur, handler) {
+    kembalikan daftarkan_rute(router, "GET", jalur, handler);
+}
+
+fungsi post(router, jalur, handler) {
+    kembalikan daftarkan_rute(router, "POST", jalur, handler);
+}
+
+fungsi put(router, jalur, handler) {
+    kembalikan daftarkan_rute(router, "PUT", jalur, handler);
+}
+
+fungsi hapus(router, jalur, handler) {
+    kembalikan daftarkan_rute(router, "DELETE", jalur, handler);
+}
+
+// 4. Pembantu Respons HTTP
+fungsi respons_json(data_obj, status_code = 200) {
+    misal header_map = {
+        "Content-Type": "application/json; charset=utf-8"
+    };
+    kembalikan Respons(status_code, header_map, data_obj);
+}
+
+fungsi respons_teks(teks_str, status_code = 200) {
+    misal header_map = {
+        "Content-Type": "text/plain; charset=utf-8"
+    };
+    kembalikan Respons(status_code, header_map, teks_str);
+}
+
+fungsi respons_galat(pesan_error, status_code = 400) {
+    kembalikan respons_json({
+        "sukses": false,
+        "galat": pesan_error
+    }, status_code);
+}
+
+// 5. Penanganan & Pencocokan Rute Permintaan (Dispatcher)
+fungsi tangani_permintaan(router, req) {
+    // 1. Eksekusi Middleware Pipeline
+    untuk mw in router.middleware_list {
+        misal res_mw = mw(req);
+        // Jika middleware mengembalikan respons (interupsi), kembalikan langsung
+        jika res_mw != nil {
+            kembalikan res_mw;
+        }
+    }
+
+    // 2. Pencocokan Rute
+    untuk r in router.rute_list {
+        jika r["metode"] == req.metode && r["jalur"] == req.jalur {
+            misal handler_fn = r["handler"];
+            kembalikan handler_fn(req);
+        }
+    }
+
+    // 3. Rute Tidak Ditemukan (404 Not Found)
+    kembalikan respons_galat(f"Rute {req.metode} {req.jalur} tidak ditemukan", 404);
+}
+

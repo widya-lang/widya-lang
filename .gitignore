@@ -42,7 +42,6 @@ widyac.wya
 
 # ===== Internal Discussion, Specs, & Archives =====
 /.agents/
-/.github/
 /.internal_archive/
 /.trae/
 /.vscode/
@@ -76,3 +75,17 @@ Thumbs.db
 /scratch/
 /target_dist/
 /modul_sertifikasi_pdf/
+
+node_modules/
+*.filepart
+
+
+**/target/
+crates/**/target/
+
+
+/dist_desktop/
+scratch_*
+wordcraft_*
+package.json
+package-lock.json

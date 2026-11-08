@@ -214,9 +214,9 @@ impl LogError {
     }
     
     /// Create from standard error
-    pub fn from_std_error<E: std::error::Error>(error: &E) -> Self {
+    pub fn from_std_error<E: std::error::Error + ?Sized>(error: &E) -> Self {
         Self {
-            error_type: std::any::type_name::<E>().to_string(),
+            error_type: "std::error::Error".to_string(),
             message: error.to_string(),
             source: error.source().map(|e| e.to_string()),
             stack_trace: None,
@@ -226,6 +226,7 @@ impl LogError {
 }
 
 /// Logger for structured logging
+#[derive(Clone)]
 pub struct Logger {
     /// Logger configuration
     config: ObservabilityConfig,
@@ -476,19 +477,13 @@ impl Logger {
 
 /// Get current thread ID
 fn get_thread_id() -> Option<u64> {
-    #[cfg(target_os = "windows")]
-    {
-        unsafe {
-            use windows::Win32::System::Threading::GetCurrentThreadId;
-            Some(GetCurrentThreadId() as u64)
-        }
-    }
-    
-    #[cfg(not(target_os = "windows"))]
-    {
-        // For non-Windows platforms, use thread ID
-        Some(std::thread::current().id().as_u64().get())
-    }
+    let id_str = format!("{:?}", std::thread::current().id());
+    let num = id_str
+        .trim_start_matches("ThreadId(")
+        .trim_end_matches(')')
+        .parse::<u64>()
+        .unwrap_or(0);
+    Some(num)
 }
 
 /// Format timestamp for human-readable output

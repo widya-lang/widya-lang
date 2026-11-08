@@ -60,6 +60,15 @@ pub enum PdfElement {
         fill: bool,
         color_rgb: (f32, f32, f32),
     },
+    RoundedRectangle {
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        radius: f32,
+        fill: bool,
+        color_rgb: (f32, f32, f32),
+    },
 }
 
 /// Anotasi Hyperlink Interaktif PDF (ISO 32000-1 Subtype /Link)
@@ -189,6 +198,27 @@ impl PdfPage {
     pub fn add_rect(&mut self, x: f32, y: f32, w: f32, h: f32, fill: bool, color_rgb: (f32, f32, f32)) {
         self.elements.push(PdfElement::Rectangle {
             x, y, w, h, fill, color_rgb,
+        });
+    }
+
+    pub fn add_rounded_rect(
+        &mut self,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        radius: f32,
+        fill: bool,
+        color_rgb: (f32, f32, f32),
+    ) {
+        self.elements.push(PdfElement::RoundedRectangle {
+            x,
+            y,
+            w,
+            h,
+            radius,
+            fill,
+            color_rgb,
         });
     }
 
@@ -625,6 +655,34 @@ impl PdfDocument {
                                 color_rgb.0, color_rgb.1, color_rgb.2, x, y, w, h
                             ));
                         }
+                    }
+                    PdfElement::RoundedRectangle { x, y, w, h, radius, fill, color_rgb } => {
+                        let r = radius.min(w / 2.0).min(h / 2.0).max(0.0);
+                        let k = r * 0.55228475;
+                        let mut path = String::new();
+                        if *fill {
+                            path.push_str(&format!("{:.3} {:.3} {:.3} rg\n", color_rgb.0, color_rgb.1, color_rgb.2));
+                        } else {
+                            path.push_str(&format!("{:.3} {:.3} {:.3} RG 1.0 w\n", color_rgb.0, color_rgb.1, color_rgb.2));
+                        }
+                        path.push_str(&format!(
+                            "{:.2} {:.2} m {:.2} {:.2} l {:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c {:.2} {:.2} l {:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c {:.2} {:.2} l {:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c {:.2} {:.2} l {:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c h\n",
+                            x + r, y,
+                            x + w - r, y,
+                            x + w - r + k, y, x + w, y + r - k, x + w, y + r,
+                            x + w, y + h - r,
+                            x + w, y + h - r + k, x + w - r + k, y + h, x + w - r, y + h,
+                            x + r, y + h,
+                            x + r - k, y + h, x, y + h - r + k, x, y + h - r,
+                            x, y + r,
+                            x, y + r - k, x + r - k, y, x + r, y,
+                        ));
+                        if *fill {
+                            path.push_str("f\n");
+                        } else {
+                            path.push_str("S\n");
+                        }
+                        stream_data.push_str(&path);
                     }
                     PdfElement::Polygon { points, fill, color_rgb } => {
                         if !points.is_empty() {

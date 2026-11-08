@@ -1,0 +1,166 @@
+// packages/widya-ai/src/lib.wya
+// Pustaka Resmi WPM: @widya/ai (Setara PyTorch untuk Widya-Lang)
+// Menyediakan Graf Diferensiasi Otomatis (Autograd), Neural Network Layers, & SGD Optimizer
+
+struktur VariabelAutograd {
+    data,
+    grad,
+    operasi,
+    anak,
+    memerlukan_grad,
+    terkunjungi
+}
+
+// 1. Pembentukan Simpul Variabel dalam Graf Komputasi
+fungsi variabel(data_nilai, butuh_grad = true) {
+    kembalikan VariabelAutograd(
+        data_nilai * 1.0,
+        0.0,
+        "LEAF",
+        [],
+        butuh_grad,
+        false
+    );
+}
+
+// 2. Operasi Maju Penjumlahan (Forward Addition: z = x + y)
+fungsi tambah_var(v1, v2) {
+    misal z_data = v1.data + v2.data;
+    misal butuh = v1.memerlukan_grad || v2.memerlukan_grad;
+    kembalikan VariabelAutograd(
+        z_data,
+        0.0,
+        "TAMBAH",
+        [v1, v2],
+        butuh,
+        false
+    );
+}
+
+// 3. Operasi Maju Perkalian (Forward Multiplication: z = x * y)
+fungsi kali_var(v1, v2) {
+    misal z_data = v1.data * v2.data;
+    misal butuh = v1.memerlukan_grad || v2.memerlukan_grad;
+    kembalikan VariabelAutograd(
+        z_data,
+        0.0,
+        "KALI",
+        [v1, v2],
+        butuh,
+        false
+    );
+}
+
+// Pembantu pengurutan topologis graf komputasi (DAG)
+fungsi bangun_topo(node, urutan_topo) {
+    jika node.terkunjungi {
+        kembalikan;
+    }
+    node.terkunjungi = true;
+    untuk anak in node.anak {
+        bangun_topo(anak, urutan_topo);
+    }
+    tambah(urutan_topo, node);
+}
+
+// 4. Perambatan Mundur Gradien (Reverse-mode Automatic Differentiation / Autograd)
+fungsi mundur(v_akar) {
+    // 1. Bangun urutan topologis DAG komputasi
+    misal urutan_topo = [];
+    bangun_topo(v_akar, urutan_topo);
+
+    // 2. Inisialisasi gradien akar dengan 1.0 (dL/dL = 1.0)
+    v_akar.grad = 1.0;
+
+    // 3. Perambatan mundur sepanjang urutan topologis terbalik
+    misal i = panjang(urutan_topo) - 1;
+    selama i >= 0 {
+        misal v_curr = urutan_topo[i];
+        v_curr.terkunjungi = false; // Reset status kunjungan
+
+        jika v_curr.operasi == "TAMBAH" {
+            misal v1 = v_curr.anak[0];
+            misal v2 = v_curr.anak[1];
+            jika v1.memerlukan_grad {
+                v1.grad = v1.grad + (1.0 * v_curr.grad);
+            }
+            jika v2.memerlukan_grad {
+                v2.grad = v2.grad + (1.0 * v_curr.grad);
+            }
+        } lainnya jika v_curr.operasi == "KALI" {
+            misal v1 = v_curr.anak[0];
+            misal v2 = v_curr.anak[1];
+            misal g1 = v2.data * v_curr.grad;
+            misal g2 = v1.data * v_curr.grad;
+            jika v1.memerlukan_grad {
+                v1.grad = v1.grad + g1;
+            }
+            jika v2.memerlukan_grad {
+                v2.grad = v2.grad + g2;
+            }
+        } lainnya jika v_curr.operasi == "RELU" {
+            misal v_in = v_curr.anak[0];
+            jika v_in.memerlukan_grad {
+                misal grad_in = 0.0;
+                jika v_in.data > 0.0 { grad_in = 1.0; }
+                v_in.grad = v_in.grad + (grad_in * v_curr.grad);
+            }
+        }
+
+        i = i - 1;
+    }
+}
+
+// 5. Lapisan Neural Network: Linear Layer (y = w * x + b)
+struktur LapisanLinear {
+    bobot,
+    bias
+}
+
+fungsi lapisan_linear(bobot_awal, bias_awal) {
+    kembalikan LapisanLinear(
+        variabel(bobot_awal, true),
+        variabel(bias_awal, true)
+    );
+}
+
+fungsi linear_maju(layer, x_var) {
+    misal wx = kali_var(layer.bobot, x_var);
+    misal out = tambah_var(wx, layer.bias);
+    kembalikan out;
+}
+
+// 6. Fungsi Aktivasi Non-Linier (ReLU: max(0, x))
+fungsi relu(v) {
+    misal out_val = v.data;
+    jika out_val < 0.0 { out_val = 0.0; }
+    kembalikan VariabelAutograd(
+        out_val,
+        0.0,
+        "RELU",
+        [v],
+        v.memerlukan_grad,
+        false
+    );
+}
+
+// 7. Fungsi Rugi (Loss Function: MSE = 0.5 * (pred - target)^2)
+fungsi mse_loss(prediksi_var, target_nilai) {
+    misal target_var = variabel(target_nilai, false);
+    misal neg_target = variabel(-1.0 * target_nilai, false);
+    misal diff = tambah_var(prediksi_var, neg_target);
+    misal squared = kali_var(diff, diff);
+    misal setengah = variabel(0.5, false);
+    kembalikan kali_var(squared, setengah);
+}
+
+// 8. Pengoptimal Gradient Descent (SGD Optimizer: w = w - lr * grad)
+fungsi sgd_langkah(parameter_list, laju_belajar = 0.01) {
+    untuk p in parameter_list {
+        jika p.memerlukan_grad {
+            p.data = p.data - (laju_belajar * p.grad);
+            // Reset gradien setelah langkah optimasi (zero_grad)
+            p.grad = 0.0;
+        }
+    }
+}

@@ -1,0 +1,92 @@
+// packages/widya-test/src/lib.wya
+// Pustaka Resmi WPM: @widya/test (Setara Jest / Pytest / Cargo Test untuk Widya-Lang)
+// Menyediakan Framework Assertion, Test Suite Runner, & Pelaporan Hasil Uji Otomatis
+
+struktur PelariUji {
+    total,
+    lulus,
+    gagal,
+    daftar_kegagalan,
+    uji_aktif
+}
+
+// 1. Inisialisasi Pelari Uji
+fungsi uji_buat_pelari() {
+    kembalikan PelariUji(
+        0,
+        0,
+        0,
+        [],
+        ""
+    );
+}
+
+// 2. Mendaftarkan dan menjalankan satu kasus uji
+fungsi uji_kasus(pelari, nama_uji, fungsi_badan_uji) {
+    pelari.total = pelari.total + 1;
+    pelari.uji_aktif = nama_uji;
+    misal gagal_awal = pelari.gagal;
+
+    fungsi_badan_uji(pelari);
+
+    jika pelari.gagal == gagal_awal {
+        pelari.lulus = pelari.lulus + 1;
+    }
+}
+
+// 3. Penegasan kesamaan nilai (assert_eq)
+fungsi tegaskan_sama(pelari, aktual, diharapkan, pesan = "") {
+    jika aktual != diharapkan {
+        pelari.gagal = pelari.gagal + 1;
+        misal info = "GAGAL [" + pelari.uji_aktif + "]: Diharapkan " + ke_teks(diharapkan) + " tetapi mendapatkan " + ke_teks(aktual) + ". " + pesan;
+        tambah(pelari.daftar_kegagalan, info);
+        kembalikan false;
+    }
+    kembalikan true;
+}
+
+// 4. Penegasan ketidaksamaan nilai (assert_ne)
+fungsi tegaskan_tidak_sama(pelari, aktual, tidak_diharapkan, pesan = "") {
+    jika aktual == tidak_diharapkan {
+        pelari.gagal = pelari.gagal + 1;
+        misal info = "GAGAL [" + pelari.uji_aktif + "]: Nilai tidak boleh bernilai " + ke_teks(tidak_diharapkan) + ". " + pesan;
+        tambah(pelari.daftar_kegagalan, info);
+        kembalikan false;
+    }
+    kembalikan true;
+}
+
+// 5. Penegasan kondisi bernilai benar (assert_true)
+fungsi tegaskan_benar(pelari, kondisi, pesan = "") {
+    jika !kondisi {
+        pelari.gagal = pelari.gagal + 1;
+        misal info = "GAGAL [" + pelari.uji_aktif + "]: Kondisi tidak bernilai benar (true). " + pesan;
+        tambah(pelari.daftar_kegagalan, info);
+        kembalikan false;
+    }
+    kembalikan true;
+}
+
+// 6. Penegasan kondisi bernilai salah (assert_false)
+fungsi tegaskan_salah(pelari, kondisi, pesan = "") {
+    jika kondisi {
+        pelari.gagal = pelari.gagal + 1;
+        misal info = "GAGAL [" + pelari.uji_aktif + "]: Kondisi tidak bernilai salah (false). " + pesan;
+        tambah(pelari.daftar_kegagalan, info);
+        kembalikan false;
+    }
+    kembalikan true;
+}
+
+// 7. Ringkasan hasil eksekusi pengujian
+fungsi uji_ringkasan(pelari) {
+    misal semua_sukses = (pelari.gagal == 0);
+    kembalikan {
+        "total": pelari.total,
+        "lulus": pelari.lulus,
+        "gagal": pelari.gagal,
+        "sukses": semua_sukses,
+        "kegagalan": pelari.daftar_kegagalan
+    };
+}
+

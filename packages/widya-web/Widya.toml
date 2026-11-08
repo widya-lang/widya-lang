@@ -1,0 +1,15 @@
+[package]
+name = "@widya/web"
+version = "0.1.0"
+description = "High-Throughput Radix-Tree Web Router, Middleware, & REST Framework (FastAPI / Express Parity)"
+authors = ["Widya Core Team <dev@widya-lang.org>"]
+license = "MIT"
+edition = "2026"
+repository = "https://github.com/widya-lang/widya-lang"
+
+[dependencies]
+
+[keamanan]
+tanda_tangan = "Ed25519"
+airgap_compatible = true
+

@@ -29,6 +29,14 @@ pub mod consensus;
 pub mod cdc;
 pub mod parquet_arrow;
 pub mod hnsw;
+pub mod enterprise_pool;
+
+pub use enterprise_pool::{
+    EnterpriseConnectionPool, PoolConfig, PoolMetrics, ManagedConnection, PooledConnection,
+    ConnectionFactory, EmbeddedConnectionFactory, MockConnectionFactory,
+    EnterpriseMigrationEngine, Migration, MigrationRecord, MigrationStatus, MigrationReport,
+    IntegrityAudit,
+};
 
 pub use parquet_arrow::{ParquetArrowConnector, ParquetCompression, ParquetFileMetadata, ArrowRecordBatchIpc};
 pub use hybrid_search::{HybridDocument, HybridSearchEngine, HybridSearchResult, LocalEmbeddingEngine};

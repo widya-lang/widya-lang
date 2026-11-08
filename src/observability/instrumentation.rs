@@ -119,7 +119,7 @@ impl HttpInstrumentation {
         
         // Create span for the request
         let span_name = format!("HTTP {} {}", request.method, request.path);
-        let span = if let Some(context) = context {
+        let span = if let Some(ref context) = context {
             self.observability.tracer()
                 .map(|tracer| tracer.start_span_from_context(&span_name, &context, SpanKind::Server))
         } else {
@@ -165,7 +165,7 @@ impl HttpInstrumentation {
         
         // Log request
         if let Some(logger) = self.observability.logger() {
-            let log_context = context.map(|c| {
+            let log_context = context.as_ref().map(|c| {
                 let mut ctx = LogContext::from_distributed_context(&c);
                 if let Some(tenant_id) = request.tenant_id {
                     ctx = ctx.with_tenant_id(tenant_id);
@@ -195,7 +195,7 @@ impl HttpInstrumentation {
             start_time,
             correlation_id,
             request: request.clone(),
-            context: context.cloned(),
+            context: context.clone(),
         }
     }
 }
@@ -357,7 +357,7 @@ impl DatabaseInstrumentation {
         
         // Create span for the query
         let span_name = format!("DB {} {}", query.query_type, query.table.as_deref().unwrap_or("query"));
-        let span = if let Some(context) = context {
+        let span = if let Some(ref context) = context {
             self.observability.tracer()
                 .map(|tracer| tracer.start_span_from_context(&span_name, &context, SpanKind::Internal))
         } else {
@@ -404,7 +404,7 @@ impl DatabaseInstrumentation {
         
         // Log query start
         if let Some(logger) = self.observability.logger() {
-            let log_context = context.map(|c| {
+            let log_context = context.as_ref().map(|c| {
                 let mut ctx = LogContext::from_distributed_context(&c);
                 if let Some(tenant_id) = query.tenant_id {
                     ctx = ctx.with_tenant_id(tenant_id);
@@ -430,7 +430,7 @@ impl DatabaseInstrumentation {
             span,
             start_time,
             query: query.clone(),
-            context: context.cloned(),
+            context: context.clone(),
         }
     }
 }

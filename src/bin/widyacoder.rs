@@ -32,7 +32,7 @@ const BANNER: &str = r#"
 #[derive(Parser)]
 #[command(name = "widyacoder")]
 #[command(author = "Tim Pengembang Widya-Lang <dev@widya-lang.org>")]
-#[command(version = "2.6.0")]
+#[command(version = "0.1.0")]
 #[command(
     about = "🤖 WidyaCoder: Asisten AI Pemrograman Berdaulat Berbasis WidyaBase Local RAG",
     long_about = "WidyaCoder adalah asisten AI lokal mandiri yang memahami seluruh ekosistem Widya-Lang.\n\

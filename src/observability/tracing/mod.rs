@@ -187,6 +187,7 @@ impl Span {
 }
 
 /// Tracer for distributed tracing
+#[derive(Clone)]
 pub struct Tracer {
     /// Tracer configuration
     config: ObservabilityConfig,
@@ -272,7 +273,7 @@ impl Tracer {
     
     /// End a span
     pub fn end_span(&self, span_id: u64, status: SpanStatus) -> Result<()> {
-        let mut span = {
+        let span = {
             let mut active_spans = self.active_spans.write().unwrap();
             active_spans.remove(&span_id)
         };
@@ -517,7 +518,7 @@ impl Tracer {
 fn generate_span_id() -> u64 {
     use rand::Rng;
     let mut rng = rand::thread_rng();
-    rng.gen()
+    rng.r#gen()
 }
 
 /// Get current time in microseconds

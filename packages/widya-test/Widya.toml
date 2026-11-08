@@ -1,0 +1,9 @@
+[package]
+name = "@widya/test"
+version = "0.1.0"
+description = "Framework penegasan (assertion) dan pelari uji (test runner) setara Jest / Pytest untuk Widya-Lang"
+author = "Tim Pengembang Widya"
+license = "MIT"
+
+[dependencies]
+

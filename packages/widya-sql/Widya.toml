@@ -1,0 +1,9 @@
+[package]
+name = "@widya/sql"
+version = "0.1.0"
+description = "Mesin basis data relasional in-memory & query builder setara SQLite3 / Knex / Prisma untuk Widya-Lang"
+author = "Tim Pengembang Widya"
+license = "MIT"
+
+[dependencies]
+

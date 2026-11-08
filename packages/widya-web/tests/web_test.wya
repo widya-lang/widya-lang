@@ -1,0 +1,65 @@
+// packages/widya-web/tests/web_test.wya
+// Uji Unit Mandiri Pustaka @widya/web
+
+impor "@widya/test" sebagai test;
+impor "@widya/web" sebagai web;
+
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_routing_dan_respons(t) {
+    misal app = web.buat_router();
+
+    web.get(app, "/ping", fungsi(req) {
+        kembalikan web.respons_teks("pong", 200);
+    });
+
+    web.post(app, "/api/data", fungsi(req) {
+        kembalikan web.respons_json({"sukses": true, "id": 123}, 201);
+    });
+
+    // Uji GET /ping
+    misal req_get = web.Permintaan("GET", "/ping", {}, {}, nil);
+    misal res_get = web.tangani_permintaan(app, req_get);
+    test.tegaskan_sama(t, res_get.status, 200, "Status GET /ping harus 200");
+    test.tegaskan_sama(t, res_get.badan, "pong", "Badan respons harus pong");
+
+    // Uji POST /api/data
+    misal req_post = web.Permintaan("POST", "/api/data", {}, {}, nil);
+    misal res_post = web.tangani_permintaan(app, req_post);
+    test.tegaskan_sama(t, res_post.status, 201, "Status POST /api/data harus 201");
+    test.tegaskan_sama(t, res_post.badan["id"], 123, "ID respons harus 123");
+
+    // Uji 404 Not Found
+    misal req_404 = web.Permintaan("GET", "/tidak_ada", {}, {}, nil);
+    misal res_404 = web.tangani_permintaan(app, req_404);
+    test.tegaskan_sama(t, res_404.status, 404, "Status harus 404 untuk rute tak terdaftar");
+}
+
+fungsi uji_middleware_pipeline(t) {
+    misal app = web.buat_router();
+    misal hit_mw = 0;
+
+    fungsi middleware_pencatat(req) {
+        hit_mw = hit_mw + 1;
+        kembalikan nil; // Lanjutkan ke handler
+    }
+
+    web.gunakan_middleware(app, middleware_pencatat);
+
+    web.get(app, "/halo", fungsi(req) {
+        kembalikan web.respons_teks("halo dunia", 200);
+    });
+
+    misal req = web.Permintaan("GET", "/halo", {}, {}, nil);
+    misal res = web.tangani_permintaan(app, req);
+
+    test.tegaskan_sama(t, res.status, 200, "Status harus 200");
+    test.tegaskan_sama(t, hit_mw, 1, "Middleware harus terpanggil tepat 1 kali");
+}
+
+test.uji_kasus(pelari, "Routing REST & Respons HTTP", uji_routing_dan_respons);
+test.uji_kasus(pelari, "Pipeline Eksekusi Middleware", uji_middleware_pipeline);
+
+misal hasil = test.uji_ringkasan(pelari);
+tulis("Hasil Uji @widya/web: " + ke_teks(hasil["lulus"]) + "/" + ke_teks(hasil["total"]) + " LULUS.");
+

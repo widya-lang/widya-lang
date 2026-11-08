@@ -12,11 +12,13 @@ pub mod pure_ipc;
 pub mod pure_hardware;
 pub mod pure_display;
 pub mod pure_packager;
+pub mod office_bridge;
 pub use pure_window::*;
 pub use pure_ipc::*;
 pub use pure_hardware::*;
 pub use pure_display::*;
 pub use pure_packager::*;
+pub use office_bridge::*;
 
 use std::collections::HashMap;
 
@@ -368,6 +370,8 @@ pub struct DesktopConfig {
     pub backend_entry: String,
     pub frontend_dir: String,
     #[serde(default)]
+    pub entry_html: Option<String>,
+    #[serde(default)]
     pub gui_backend: GuiBackend,
     #[serde(default)]
     pub canvas: NativeCanvasConfig,
@@ -392,6 +396,7 @@ impl Default for DesktopConfig {
             author: "Pengembang Widya".to_string(),
             backend_entry: "src/main.wya".to_string(),
             frontend_dir: "ui".to_string(),
+            entry_html: None,
             gui_backend: GuiBackend::WebView,
             canvas: NativeCanvasConfig::default(),
             window: WindowConfig::default(),
@@ -1052,13 +1057,45 @@ fi
 
     /// Run the desktop application with live bridge server, HMR watcher, CSP headers, and anti-CSRF token
     pub fn run_desktop_app(&self, target_path: &Path, requested_port: u16, dev_mode: bool) -> Result<(), DesktopError> {
-        let project_dir = if target_path.is_dir() {
+        self.run_desktop_app_with_entry(target_path, requested_port, dev_mode, None)
+    }
+
+    /// Run the desktop application with a specific HTML entry page and .wya backend execution
+    pub fn run_desktop_app_with_entry(&self, target_path: &Path, requested_port: u16, dev_mode: bool, custom_entry: Option<&str>) -> Result<(), DesktopError> {
+        let mut project_dir = if target_path.is_dir() && target_path.join("widya_desktop.json").exists() {
             target_path.to_path_buf()
         } else if let Some(parent) = target_path.parent() {
-            parent.to_path_buf()
+            if parent.join("widya_desktop.json").exists() {
+                parent.to_path_buf()
+            } else if target_path.is_dir() {
+                target_path.to_path_buf()
+            } else {
+                PathBuf::from(".")
+            }
         } else {
             PathBuf::from(".")
         };
+
+        // Fallback resilience: jika widya_desktop.json atau ui/index.html belum ditemukan, telusuri lokasi kandidat
+        if !project_dir.join("widya_desktop.json").exists() || !project_dir.join("ui").exists() {
+            let candidates = [
+                PathBuf::from("."),
+                PathBuf::from("app"),
+                PathBuf::from("projects/widya_office_desktop"),
+                std::env::current_dir().unwrap_or_default(),
+                std::env::current_dir().unwrap_or_default().join("app"),
+                std::env::current_dir().unwrap_or_default().join("projects/widya_office_desktop"),
+                std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.to_path_buf())).unwrap_or_default(),
+                std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("app"))).unwrap_or_default(),
+                std::env::current_exe().ok().and_then(|p| p.parent().and_then(|p| p.parent().map(|d| d.join("projects/widya_office_desktop")))).unwrap_or_default(),
+            ];
+            for cand in &candidates {
+                if cand.join("widya_desktop.json").exists() && (cand.join("ui").exists() || cand.join("ui/index.html").exists()) {
+                    project_dir = cand.clone();
+                    break;
+                }
+            }
+        }
 
         let manifest_path = project_dir.join("widya_desktop.json");
         let config: DesktopConfig = if manifest_path.exists() {
@@ -1067,6 +1104,21 @@ fi
         } else {
             DesktopConfig::default()
         };
+
+        // 1. Eksekusi backend logika Widya-Lang (.wya)
+        let backend_path = project_dir.join(&config.backend_entry);
+        if backend_path.exists() {
+            if let Ok(source) = fs::read_to_string(&backend_path) {
+                let mut lexer = Lexer::new(&source);
+                if let Ok(tokens) = lexer.scan_tokens() {
+                    let mut parser = Parser::new(tokens);
+                    if let Ok(program) = parser.parse() {
+                        let mut interpreter = Interpreter::new();
+                        let _ = interpreter.interpret(&program);
+                    }
+                }
+            }
+        }
 
         // Cek jika proyek dikonfigurasi menggunakan Pure Native GPU Canvas (Skia/wgpu)
         if config.gui_backend == GuiBackend::NativeWgpu || config.gui_backend == GuiBackend::NativeSkia {
@@ -1102,7 +1154,12 @@ fi
         };
 
         let port = listener.local_addr()?.port();
-        let app_url = format!("http://127.0.0.1:{}", port);
+        let entry_target = custom_entry.unwrap_or(config.entry_html.as_deref().unwrap_or(""));
+        let app_url = if entry_target.is_empty() || entry_target == "index.html" {
+            format!("http://127.0.0.1:{}", port)
+        } else {
+            format!("http://127.0.0.1:{}/{}", port, entry_target)
+        };
 
         println!("{}", "====================================================================".bright_cyan());
         println!("{}", format!("  🖥️  WIDYADESKTOP ENTERPRISE - {} v{}", config.name, config.version).bright_green().bold());
@@ -3287,13 +3344,24 @@ fn handle_desktop_client(
         return Ok(());
     }
 
-    let target_file = ui_dir.join(rel_file);
-    if target_file.exists() && target_file.is_file() {
+    let clean_rel = rel_file.strip_prefix("ui/").unwrap_or(rel_file);
+    let candidate_paths = [
+        ui_dir.join(rel_file),
+        ui_dir.join(clean_rel),
+        project_dir.join(rel_file),
+        project_dir.join("ui").join(clean_rel),
+        project_dir.join("app").join("ui").join(clean_rel),
+        PathBuf::from("projects/widya_office_desktop/ui").join(clean_rel),
+        PathBuf::from("dist_desktop/WidyaOffice Desktop_windows/app/ui").join(clean_rel),
+    ];
+
+    let found_file = candidate_paths.into_iter().find(|p| p.exists() && p.is_file());
+    if let Some(target_file) = found_file {
         let content = fs::read(&target_file)?;
 
         if config.security.asset_integrity_check {
             if let Some(lock) = security_lock {
-                let rel_key = format!("ui/{}", rel_file.replace('\\', "/"));
+                let rel_key = format!("ui/{}", clean_rel.replace('\\', "/"));
                 if let Some(expected_hash) = lock.get(&rel_key) {
                     let actual_hash = hitung_sha256_bytes(&content);
                     if &actual_hash != expected_hash {
@@ -3307,11 +3375,21 @@ fn handle_desktop_client(
             }
         }
 
-        let mime = get_mime_type(rel_file);
+        let mime = get_mime_type(clean_rel);
 
-        if rel_file == "index.html" {
+        if clean_rel.ends_with(".html") || clean_rel.ends_with(".htm") {
             let html_str = String::from_utf8_lossy(&content);
-            let injected_html = html_str.replace("{{WIDYA_IPC_TOKEN}}", session_token);
+            let injected_html = if html_str.contains("{{WIDYA_IPC_TOKEN}}") {
+                html_str.replace("{{WIDYA_IPC_TOKEN}}", session_token)
+            } else if html_str.contains("</head>") {
+                html_str.replacen(
+                    "</head>",
+                    &format!("<script>window.__WIDYA_IPC_TOKEN__ = \"{}\";</script>\n</head>", session_token),
+                    1,
+                )
+            } else {
+                html_str.into_owned()
+            };
             let final_bytes = injected_html.into_bytes();
 
             let csp_header = if config.security.csp_enabled {
@@ -3339,26 +3417,13 @@ fn handle_desktop_client(
         stream.write_all(resp_header.as_bytes())?;
         stream.write_all(&content)?;
     } else {
-        let asset_file = project_dir.join(rel_file);
-        if asset_file.exists() && asset_file.is_file() {
-            let content = fs::read(&asset_file)?;
-            let mime = get_mime_type(rel_file);
-            let resp_header = format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\nX-Content-Type-Options: nosniff\r\nConnection: close\r\n\r\n",
-                mime,
-                content.len()
-            );
-            stream.write_all(resp_header.as_bytes())?;
-            stream.write_all(&content)?;
-        } else {
-            let not_found = "404 Not Found";
-            let resp = format!(
-                "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
-                not_found.len(),
-                not_found
-            );
-            stream.write_all(resp.as_bytes())?;
-        }
+        let not_found = "404 Not Found";
+        let resp = format!(
+            "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+            not_found.len(),
+            not_found
+        );
+        stream.write_all(resp.as_bytes())?;
     }
 
     Ok(())
@@ -3383,8 +3448,8 @@ fn handle_ipc_call(body: &str, project_dir: &Path, config: &DesktopConfig) -> St
         "ping" => "system:ping",
         "info_sistem" | "audit_keamanan" | "telemetri_sumber_daya" => "system:info",
         "counter_ubah" => "state:modify",
-        "dialog_buka_berkas" => "dialog:open",
-        "dialog_simpan_berkas" => "dialog:save",
+        "dialog_buka_berkas" | "sistem.jelajahi_folder" | "sistem.pilih_folder_os" => "dialog:open",
+        "dialog_simpan_berkas" | "sistem.buat_folder" | "sistem.simpan_berkas_fisik" => "dialog:save",
         "tray_kirim_notifikasi" => "tray:notify",
         "jendela_pusatkan" | "jendela_minimalkan" | "jendela_maksimalkan" | "jendela_tutup"
         | "jendela_buat_anak" | "jendela_tutup_anak" | "splash_tutup" => "window:manage",
@@ -3396,6 +3461,17 @@ fn handle_ipc_call(body: &str, project_dir: &Path, config: &DesktopConfig) -> St
         "cetak_thermal_struk" => "hardware:printer",
         "pembaruan_periksa" => "update:check",
         "hotkey_daftarkan" | "hotkey_ambil_daftar" => "system:hotkey",
+        m if m.starts_with("dokumen.")
+            || m.starts_with("calc.")
+            || m.starts_with("deck.")
+            || m.starts_with("pdf.")
+            || m.starts_with("craft.")
+            || m.starts_with("sistem.")
+            || m.starts_with("mailmerge.")
+            || m.starts_with("engine.")
+            || m.starts_with("crdt.")
+            || m.starts_with("openxml.")
+            || m.starts_with("hsm.") => "storage:write",
         _ => "custom:execute",
     };
 
@@ -3746,6 +3822,33 @@ fn handle_ipc_call(body: &str, project_dir: &Path, config: &DesktopConfig) -> St
             let list = daftar_hotkeys_aktif();
             json!({ "sukses": true, "data": list }).to_string()
         }
+        other if other.starts_with("dokumen.")
+            || other.starts_with("calc.")
+            || other.starts_with("deck.")
+            || other.starts_with("pdf.")
+            || other.starts_with("craft.")
+            || other.starts_with("sistem.")
+            || other.starts_with("mailmerge.")
+            || other.starts_with("engine.")
+            || other.starts_with("crdt.")
+            || other.starts_with("openxml.")
+            || other.starts_with("hsm.") => {
+            let bridge = crate::desktop::office_bridge::OfficeBridgeEngine::default_for_window("win-main", "token-main");
+            let req_payload = payload.unwrap_or(&serde_json::Value::Null);
+            match bridge.call_method(other, req_payload) {
+                Ok(mut res) => {
+                    if let Some(obj) = res.as_object_mut() {
+                        let copy = serde_json::Value::Object(obj.clone());
+                        obj.insert("data".to_string(), copy);
+                        if !obj.contains_key("sukses") {
+                            obj.insert("sukses".to_string(), json!(true));
+                        }
+                    }
+                    res.to_string()
+                }
+                Err(e) => json!({ "sukses": false, "galat": e }).to_string(),
+            }
+        }
         other => {
             json!({
                 "sukses": false,
@@ -3825,6 +3928,12 @@ pub fn bangun_aplikasi_desktop(sumber: &Path, output: Option<&Path>, platform_st
 pub fn jalankan_aplikasi_desktop(sumber: &Path, port: u16, dev: bool) -> Result<(), String> {
     let compiler = DesktopCompiler::default_compiler();
     compiler.run_desktop_app(sumber, port, dev)
+        .map_err(|e| format!("{}", e))
+}
+
+pub fn jalankan_aplikasi_desktop_dengan_entri(sumber: &Path, port: u16, dev: bool, entri_html: Option<&str>) -> Result<(), String> {
+    let compiler = DesktopCompiler::default_compiler();
+    compiler.run_desktop_app_with_entry(sumber, port, dev, entri_html)
         .map_err(|e| format!("{}", e))
 }
 

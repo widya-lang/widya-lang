@@ -397,34 +397,339 @@ pub fn builtin_lewati(args: &[Value], span: &Span) -> Result<Value, Galat> {
 }
 
 pub fn builtin_apakah_ada(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() {
+        return Err(Galat::runtime("'apakah_ada'/'any' memerlukan setidaknya 1 argumen", span));
+    }
     match &args[0] {
         Value::Array(a) => {
             let items = a.borrow().clone();
-            for item in items {
-                let res = invoke_closure_or_fn(&args[1], &[item], span)?;
-                if res.is_truthy() {
-                    return Ok(Value::Bool(true));
+            if args.len() >= 2 {
+                for item in items {
+                    let res = invoke_closure_or_fn(&args[1], &[item], span)?;
+                    if res.is_truthy() {
+                        return Ok(Value::Bool(true));
+                    }
                 }
+                Ok(Value::Bool(false))
+            } else {
+                Ok(Value::Bool(items.iter().any(|x| x.is_truthy())))
             }
-            Ok(Value::Bool(false))
         }
         other => Err(Galat::runtime(format!("'apakah_ada' memerlukan daftar sebagai argumen pertama, ditemukan '{}'", other.type_name()), span)),
     }
 }
 
 pub fn builtin_semua(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() {
+        return Err(Galat::runtime("'semua'/'all' memerlukan setidaknya 1 argumen", span));
+    }
     match &args[0] {
         Value::Array(a) => {
             let items = a.borrow().clone();
-            for item in items {
-                let res = invoke_closure_or_fn(&args[1], &[item], span)?;
-                if !res.is_truthy() {
-                    return Ok(Value::Bool(false));
+            if args.len() >= 2 {
+                for item in items {
+                    let res = invoke_closure_or_fn(&args[1], &[item], span)?;
+                    if !res.is_truthy() {
+                        return Ok(Value::Bool(false));
+                    }
                 }
+                Ok(Value::Bool(true))
+            } else {
+                Ok(Value::Bool(items.iter().all(|x| x.is_truthy())))
             }
-            Ok(Value::Bool(true))
         }
         other => Err(Galat::runtime(format!("'semua' memerlukan daftar sebagai argumen pertama, ditemukan '{}'", other.type_name()), span)),
+    }
+}
+
+pub fn builtin_iris_koleksi(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() {
+        return Err(Galat::runtime("Fungsi 'iris' memerlukan koleksi target", span));
+    }
+    let step = match args.get(3) {
+        Some(Value::Number(n)) => *n as i64,
+        Some(Value::Nil) | None => 1,
+        _ => return Err(Galat::runtime("Langkah iris (step) harus berupa angka", span)),
+    };
+    if step == 0 {
+        return Err(Galat::runtime("Langkah iris (slice step) tidak boleh nol", span));
+    }
+
+    let compute_indices = |len: i64| -> Vec<usize> {
+        let mut indices = Vec::new();
+        if len <= 0 {
+            return indices;
+        }
+        if step > 0 {
+            let start = match args.get(1) {
+                Some(Value::Number(n)) => {
+                    let s = *n as i64;
+                    if s < 0 { (len + s).max(0) } else { s.min(len) }
+                }
+                _ => 0,
+            };
+            let end = match args.get(2) {
+                Some(Value::Number(n)) => {
+                    let e = *n as i64;
+                    if e < 0 { (len + e).max(0) } else { e.min(len) }
+                }
+                _ => len,
+            };
+            let mut i = start;
+            while i < end {
+                if i >= 0 && i < len {
+                    indices.push(i as usize);
+                }
+                i += step;
+            }
+        } else {
+            let start = match args.get(1) {
+                Some(Value::Number(n)) => {
+                    let s = *n as i64;
+                    if s < 0 { (len + s).max(-1) } else { s.min(len - 1) }
+                }
+                _ => len - 1,
+            };
+            let end = match args.get(2) {
+                Some(Value::Number(n)) => {
+                    let e = *n as i64;
+                    if e < 0 { (len + e).max(-1) } else { e.min(len - 1) }
+                }
+                _ => -1,
+            };
+            let mut i = start;
+            while i > end {
+                if i >= 0 && i < len {
+                    indices.push(i as usize);
+                }
+                i += step;
+            }
+        }
+        indices
+    };
+
+    match &args[0] {
+        Value::Array(a) => {
+            let items = a.borrow();
+            let idxs = compute_indices(items.len() as i64);
+            let sliced: Vec<Value> = idxs.into_iter().map(|i| items[i].clone()).collect();
+            Ok(Value::Array(Rc::new(RefCell::new(sliced))))
+        }
+        Value::String(s) => {
+            let chars: Vec<char> = s.chars().collect();
+            let idxs = compute_indices(chars.len() as i64);
+            let sliced: String = idxs.into_iter().map(|i| chars[i]).collect();
+            Ok(Value::String(sliced))
+        }
+        other => Err(Galat::runtime(
+            format!("Operasi iris [awal:akhir] memerlukan daftar atau teks, ditemukan '{}'", other.type_name()),
+            span,
+        )),
+    }
+}
+
+pub fn builtin_apakah_dalam(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.len() < 2 {
+        return Err(Galat::runtime("Operator 'dalam' memerlukan 2 operan", span));
+    }
+    let needle = &args[0];
+    let haystack = &args[1];
+    match haystack {
+        Value::Array(arr) => Ok(Value::Bool(arr.borrow().contains(needle))),
+        Value::String(s) => Ok(Value::Bool(s.contains(&needle.to_string_repr()))),
+        Value::Map(m) => Ok(Value::Bool(m.borrow().contains_key(&needle.to_string_repr()))),
+        Value::Range(start, end) => match needle {
+            Value::Number(n) => {
+                let v = *n as i64;
+                let lo = (*start).min(*end);
+                let hi = (*start).max(*end);
+                Ok(Value::Bool(v >= lo && v <= hi && (*n - (v as f64)).abs() < f64::EPSILON))
+            }
+            _ => Ok(Value::Bool(false)),
+        },
+        other => Err(Galat::runtime(
+            format!("Operator 'dalam' tidak didukung pada tipe '{}'", other.type_name()),
+            span,
+        )),
+    }
+}
+
+pub fn builtin_konteks_masuk(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let target = args.first().cloned().unwrap_or(Value::Nil);
+    if let Value::Map(ref m) = target {
+        let enter_fn = {
+            let map = m.borrow();
+            map.get("masuk")
+                .or_else(|| map.get("__enter__"))
+                .cloned()
+        };
+        m.borrow_mut().insert("_aktif".to_string(), Value::Bool(true));
+        if let Some(f) = enter_fn {
+            if matches!(f, Value::Function(_) | Value::Builtin(_)) {
+                let res = invoke_closure_or_fn(&f, &[target.clone()], span)?;
+                if res != Value::Nil {
+                    return Ok(res);
+                }
+            }
+        }
+    }
+    Ok(target)
+}
+
+pub fn builtin_konteks_keluar(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    let target = args.first().cloned().unwrap_or(Value::Nil);
+    if let Value::Map(ref m) = target {
+        let exit_fn = {
+            let map = m.borrow();
+            map.get("keluar")
+                .or_else(|| map.get("__exit__"))
+                .or_else(|| map.get("tutup"))
+                .cloned()
+        };
+        {
+            let mut map = m.borrow_mut();
+            map.insert("_aktif".to_string(), Value::Bool(false));
+            map.insert("_ditutup".to_string(), Value::Bool(true));
+        }
+        if let Some(f) = exit_fn {
+            if matches!(f, Value::Function(_) | Value::Builtin(_)) {
+                let _ = invoke_closure_or_fn(&f, &[target], span)?;
+            }
+        }
+    }
+    Ok(Value::Nil)
+}
+
+pub fn builtin_rentang(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() || args.len() > 3 {
+        return Err(Galat::runtime(
+            "Fungsi 'rentang'/'range' memerlukan 1 hingga 3 argumen angka",
+            span,
+        ));
+    }
+    let (start, stop, step) = match args.len() {
+        1 => match &args[0] {
+            Value::Number(n) => (0i64, *n as i64, 1i64),
+            _ => return Err(Galat::runtime("Argumen 'rentang' harus berupa angka", span)),
+        },
+        2 => match (&args[0], &args[1]) {
+            (Value::Number(a), Value::Number(b)) => (*a as i64, *b as i64, 1i64),
+            _ => return Err(Galat::runtime("Argumen 'rentang' harus berupa angka", span)),
+        },
+        _ => match (&args[0], &args[1], &args[2]) {
+            (Value::Number(a), Value::Number(b), Value::Number(c)) => {
+                let s = *c as i64;
+                if s == 0 {
+                    return Err(Galat::runtime("Langkah 'rentang' tidak boleh nol", span));
+                }
+                (*a as i64, *b as i64, s)
+            }
+            _ => return Err(Galat::runtime("Argumen 'rentang' harus berupa angka", span)),
+        },
+    };
+
+    let mut out = Vec::new();
+    let mut curr = start;
+    if step > 0 {
+        while curr < stop {
+            out.push(Value::Number(curr as f64));
+            curr += step;
+        }
+    } else {
+        while curr > stop {
+            out.push(Value::Number(curr as f64));
+            curr += step;
+        }
+    }
+    Ok(Value::Array(Rc::new(RefCell::new(out))))
+}
+
+pub fn builtin_enumerasi(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() {
+        return Err(Galat::runtime("Fungsi 'enumerasi' memerlukan daftar atau teks", span));
+    }
+    let start_idx = match args.get(1) {
+        Some(Value::Number(n)) => *n as i64,
+        _ => 0,
+    };
+    let items: Vec<Value> = match &args[0] {
+        Value::Array(a) => a.borrow().clone(),
+        Value::String(s) => s.chars().map(|c| Value::String(c.to_string())).collect(),
+        other => {
+            return Err(Galat::runtime(
+                format!("'enumerasi' memerlukan daftar atau teks, ditemukan '{}'", other.type_name()),
+                span,
+            ))
+        }
+    };
+    let mut pairs = Vec::with_capacity(items.len());
+    for (offset, item) in items.into_iter().enumerate() {
+        pairs.push(Value::Array(Rc::new(RefCell::new(vec![
+            Value::Number((start_idx + offset as i64) as f64),
+            item,
+        ]))));
+    }
+    Ok(Value::Array(Rc::new(RefCell::new(pairs))))
+}
+
+pub fn builtin_pasangkan(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() {
+        return Ok(Value::Array(Rc::new(RefCell::new(Vec::new()))));
+    }
+    let mut lists: Vec<Vec<Value>> = Vec::with_capacity(args.len());
+    let mut min_len = usize::MAX;
+    for arg in args {
+        match arg {
+            Value::Array(a) => {
+                let b = a.borrow();
+                min_len = min_len.min(b.len());
+                lists.push(b.clone());
+            }
+            other => {
+                return Err(Galat::runtime(
+                    format!("'pasangkan'/'zip' memerlukan daftar, ditemukan '{}'", other.type_name()),
+                    span,
+                ))
+            }
+        }
+    }
+    if min_len == usize::MAX {
+        min_len = 0;
+    }
+    let mut zipped = Vec::with_capacity(min_len);
+    for i in 0..min_len {
+        let tuple: Vec<Value> = lists.iter().map(|lst| lst[i].clone()).collect();
+        zipped.push(Value::Array(Rc::new(RefCell::new(tuple))));
+    }
+    Ok(Value::Array(Rc::new(RefCell::new(zipped))))
+}
+
+pub fn builtin_jumlah_koleksi(args: &[Value], span: &Span) -> Result<Value, Galat> {
+    if args.is_empty() {
+        return Err(Galat::runtime("Fungsi 'jumlah'/'sum' memerlukan daftar angka", span));
+    }
+    let init = match args.get(1) {
+        Some(Value::Number(n)) => *n,
+        _ => 0.0,
+    };
+    match &args[0] {
+        Value::Array(a) => {
+            let mut total = init;
+            for item in a.borrow().iter() {
+                if let Value::Number(n) = item {
+                    total += *n;
+                }
+            }
+            Ok(Value::Number(total))
+        }
+        Value::Range(s, e) => {
+            let total: i64 = if s <= e { (*s..=*e).sum() } else { (*e..=*s).sum() };
+            Ok(Value::Number(init + total as f64))
+        }
+        other => Err(Galat::runtime(
+            format!("'jumlah'/'sum' memerlukan daftar angka, ditemukan '{}'", other.type_name()),
+            span,
+        )),
     }
 }
 
@@ -499,30 +804,61 @@ pub fn builtin_dari_bytes_utf8(args: &[Value], span: &Span) -> Result<Value, Gal
 
 pub fn register_collections(env: &mut Environment) {
     register_fn(env, "panjang", Some(1), builtin_panjang);
+    register_fn(env, "len", Some(1), builtin_panjang);
     register_fn(env, "tambah", Some(2), builtin_tambah);
     register_fn(env, "hapus", Some(2), builtin_hapus);
     register_fn(env, "sisip", Some(3), builtin_sisip);
+    register_fn(env, "sisipkan", Some(3), builtin_sisip);
     register_fn(env, "gabung", Some(2), builtin_gabung);
     register_fn(env, "pisah", Some(2), builtin_pisah);
     register_fn(env, "huruf_besar", Some(1), builtin_huruf_besar);
     register_fn(env, "huruf_kecil", Some(1), builtin_huruf_kecil);
     register_fn(env, "potong", Some(3), builtin_potong);
     register_fn(env, "kunci", Some(1), builtin_kunci);
+    register_fn(env, "kunci_kamus", Some(1), builtin_kunci);
     register_fn(env, "nilai", Some(1), builtin_nilai);
+    register_fn(env, "nilai_kamus", Some(1), builtin_nilai);
     register_fn(env, "ada_kunci", Some(2), builtin_ada_kunci);
     register_fn(env, "urutkan", Some(1), builtin_urutkan);
+    register_fn(env, "urut", Some(1), builtin_urutkan);
+    register_fn(env, "sorted", Some(1), builtin_urutkan);
     register_fn(env, "balik", Some(1), builtin_balik);
+    register_fn(env, "balik_daftar", Some(1), builtin_balik);
+    register_fn(env, "reversed", Some(1), builtin_balik);
 
     register_fn(env, "petakan", Some(2), builtin_petakan);
+    register_fn(env, "peta", Some(2), builtin_petakan);
+    register_fn(env, "map", Some(2), builtin_petakan);
     register_fn(env, "saring", Some(2), builtin_saring);
+    register_fn(env, "filter", Some(2), builtin_saring);
     register_fn(env, "lipat", Some(3), builtin_lipat);
     register_fn(env, "untuk_setiap", Some(2), builtin_untuk_setiap);
     register_fn(env, "temukan", Some(2), builtin_temukan);
     register_fn(env, "gabungkan", Some(2), builtin_gabungkan);
+    register_fn(env, "gabung_daftar", Some(2), builtin_gabungkan);
     register_fn(env, "ambil", Some(2), builtin_ambil);
     register_fn(env, "lewati", Some(2), builtin_lewati);
-    register_fn(env, "apakah_ada", Some(2), builtin_apakah_ada);
-    register_fn(env, "semua", Some(2), builtin_semua);
+    register_fn(env, "apakah_ada", None, builtin_apakah_ada);
+    register_fn(env, "ada_yang", None, builtin_apakah_ada);
+    register_fn(env, "any", None, builtin_apakah_ada);
+    register_fn(env, "semua", None, builtin_semua);
+    register_fn(env, "all", None, builtin_semua);
+
+    register_fn(env, "_iris_koleksi", None, builtin_iris_koleksi);
+    register_fn(env, "iris", None, builtin_iris_koleksi);
+    register_fn(env, "slice", None, builtin_iris_koleksi);
+    register_fn(env, "_apakah_dalam", Some(2), builtin_apakah_dalam);
+    register_fn(env, "apakah_dalam", Some(2), builtin_apakah_dalam);
+    register_fn(env, "_konteks_masuk", Some(1), builtin_konteks_masuk);
+    register_fn(env, "_konteks_keluar", Some(1), builtin_konteks_keluar);
+    register_fn(env, "rentang", None, builtin_rentang);
+    register_fn(env, "range", None, builtin_rentang);
+    register_fn(env, "enumerasi", None, builtin_enumerasi);
+    register_fn(env, "enumerate", None, builtin_enumerasi);
+    register_fn(env, "pasangkan", None, builtin_pasangkan);
+    register_fn(env, "zip", None, builtin_pasangkan);
+    register_fn(env, "jumlah", None, builtin_jumlah_koleksi);
+    register_fn(env, "sum", None, builtin_jumlah_koleksi);
 
     register_fn(env, "panjang_byte", Some(1), builtin_panjang_byte);
     register_fn(env, "panjang_karakter", Some(1), builtin_panjang_karakter);

@@ -1,0 +1,25 @@
+{
+    "dihasilkan_pada":  "2026-11-04T00:07:32.2959931+07:00",
+    "algoritma":  "SHA-256",
+    "berkas":  {
+                   "ui/index.html":  "c6162afbc69f3ace771251185297149e962f4d25426e75852a04858f1e91b7c1",
+                   "ui/widyacalc.html":  "0e1eccdc70afdf65fef84edb8989160ae427fb67e6b493cdf4aeb0b619e75412",
+                   "ui/widyaimpress.html":  "18ec7cfe27c73a7b2e7d8635bf1b475b2109e2653c655ef2d29cf23b4844b98f",
+                   "ui/widyapdf.html":  "bf68467ef6b9df0a8697137d8bf7984034ccfe4c89d8114953d63de608e0da05",
+                   "ui/widyawriter.html":  "750012c19795722a69f00b2311f434e4c14bfc6749457f780c315bb43dbb3112",
+                   "ui/css/math_palette.css":  "c9be6ce7d8fdc21914778b1671b8febe712f043596a2741f05cae3ddf8f8173f",
+                   "ui/css/office_theme.css":  "f1600ece68f046eff2c27ec95c72ceb30f3b53a99232398053fac67480407ee2",
+                   "ui/js/calc_core.js":  "e693cb25f10f0648d4b43a962a369070c0693d1ad4e2b83e4373aca8ffc9875d",
+                   "ui/js/impress_core.js":  "bf194bedfc3b39586b5e1655a2da6d285e7b2fa864672d72e54688f09127a76d",
+                   "ui/js/mail_merge_wizard.js":  "3497ba33bf90ea640c47ffdf7afa358c8f5a42ea990b5e4122419d0fb0be92e6",
+                   "ui/js/math_editor.js":  "897c912cb4419b5be27bd09322490607063222e7e1d809bedaf2fc0ebfcffb12",
+                   "ui/js/office_commands.js":  "82db7939a15636059d4052d55a40c6853a9ab67a57b82e490dea57443c8f5c39",
+                   "ui/js/office_core.js":  "25378d4df43f3a1e6e76db8a92c21681fc4ce7d72a36785eef00205f143815a0",
+                   "ui/js/office_suite_ui.js":  "2919f5f3bcf699b7d7396c40c2fba81bfae807648652b69bb2f4210f14a37852",
+                   "ui/js/pdf_core.js":  "f98182a9fee535c9e661ffabe9cf55b2ebcfb91c1146a7803ca73e62e30f7627",
+                   "ui/js/widyacalc_ui.js":  "c07b152beafc522885194d1ccc65037beb3d72608bb0b32b6d9c684b94754bc7",
+                   "ui/js/widyaimpress_ui.js":  "3961700190d73396a4ba4a6a594c747b6247a9fd2da787c4aa1aa3f5e4490e8d",
+                   "ui/js/widyapdf_ui.js":  "f3aa7f06faf3fb722a04dc98a3b497084611fa5ae8d46e4d62a0e47e7c03d83e",
+                   "ui/js/widyawriter_ui.js":  "977fae88531a7e547548f4461d49ec01327b8b987b9dfe0fa1268d50f87cbcb8"
+               }
+}

@@ -1,0 +1,228 @@
+// packages/widya-tensor/src/lib.wya
+// Pustaka Resmi WPM: @widya/tensor (Setara NumPy untuk Widya-Lang)
+// Menyediakan komputasi Tensor N-Dimensi, Aljabar Linier, Matmul, Transpose, & Reduksi Statistik
+
+struktur Tensor {
+    data,
+    bentuk,
+    dimensi,
+    total_elemen
+}
+
+// 1. Pembuatan Tensor Baru dari Array Datar dan Bentuk (Shape)
+fungsi tensor_buat(data_flat, bentuk_list) {
+    misal total = 1;
+    untuk b in bentuk_list {
+        total = total * b;
+    }
+    kembalikan Tensor(data_flat, bentuk_list, panjang(bentuk_list), total);
+}
+
+// 2. Pembuat Tensor Konstan (Nol, Satu, dan Matriks Identitas)
+fungsi nol(bentuk_list) {
+    misal total = 1;
+    untuk b in bentuk_list { total = total * b; }
+    misal d = [];
+    misal i = 0;
+    selama i < total {
+        tambah(d, 0.0);
+        i = i + 1;
+    }
+    kembalikan Tensor(d, bentuk_list, panjang(bentuk_list), total);
+}
+
+fungsi satu(bentuk_list) {
+    misal total = 1;
+    untuk b in bentuk_list { total = total * b; }
+    misal d = [];
+    misal i = 0;
+    selama i < total {
+        tambah(d, 1.0);
+        i = i + 1;
+    }
+    kembalikan Tensor(d, bentuk_list, panjang(bentuk_list), total);
+}
+
+fungsi rentang(awal, akhir, langkah = 1) {
+    misal d = [];
+    misal curr = awal * 1.0;
+    selama curr < akhir {
+        tambah(d, curr);
+        curr = curr + langkah;
+    }
+    kembalikan tensor_buat(d, [panjang(d)]);
+}
+
+// Matriks Identitas 2D (I_n)
+fungsi identitas(n) {
+    misal d = [];
+    misal r = 0;
+    selama r < n {
+        misal c = 0;
+        selama c < n {
+            jika r == c {
+                tambah(d, 1.0);
+            } lainnya {
+                tambah(d, 0.0);
+            }
+            c = c + 1;
+        }
+        r = r + 1;
+    }
+    kembalikan tensor_buat(d, [n, n]);
+}
+
+// 3. Akses Elemen dan Reshaping
+fungsi ambil(t, baris, kolom) {
+    jika t.dimensi == 2 {
+        misal cols = t.bentuk[1];
+        kembalikan t.data[baris * cols + kolom];
+    }
+    kembalikan t.data[baris];
+}
+
+fungsi reshape(t, bentuk_baru) {
+    misal total_baru = 1;
+    untuk b in bentuk_baru {
+        total_baru = total_baru * b;
+    }
+    jika total_baru != t.total_elemen {
+        cetak("[Galat Tensor]: Ukuran elemen baru tidak sesuai dengan total elemen asal!");
+        kembalikan t;
+    }
+    kembalikan tensor_buat(t.data, bentuk_baru);
+}
+
+// 4. Operasi Aljabar Linier & Matmul 2D
+fungsi matmul(a, b) {
+    jika a.dimensi != 2 || b.dimensi != 2 {
+        cetak("[Galat Tensor]: Matmul membutuhkan matriks 2-Dimensi!");
+        kembalikan Kosong();
+    }
+    misal baris_a = a.bentuk[0];
+    misal kolom_a = a.bentuk[1];
+    misal baris_b = b.bentuk[0];
+    misal kolom_b = b.bentuk[1];
+
+    jika kolom_a != baris_b {
+        cetak("[Galat Tensor]: Dimensi kolom A tidak sama dengan baris B!");
+        kembalikan Kosong();
+    }
+
+    misal hasil_data = [];
+    misal r = 0;
+    selama r < baris_a {
+        misal c = 0;
+        selama c < kolom_b {
+            misal sum = 0.0;
+            misal k = 0;
+            selama k < kolom_a {
+                misal idx_a = r * kolom_a + k;
+                misal idx_b = k * kolom_b + c;
+                sum = sum + (a.data[idx_a] * b.data[idx_b]);
+                k = k + 1;
+            }
+            tambah(hasil_data, sum);
+            c = c + 1;
+        }
+        r = r + 1;
+    }
+    kembalikan tensor_buat(hasil_data, [baris_a, kolom_b]);
+}
+
+// Transpose Matriks 2D
+fungsi transpose(t) {
+    jika t.dimensi != 2 {
+        kembalikan t;
+    }
+    misal rows = t.bentuk[0];
+    misal cols = t.bentuk[1];
+    misal hasil_data = [];
+
+    misal c = 0;
+    selama c < cols {
+        misal r = 0;
+        selama r < rows {
+            misal idx = r * cols + c;
+            tambah(hasil_data, t.data[idx]);
+            r = r + 1;
+        }
+        c = c + 1;
+    }
+    kembalikan tensor_buat(hasil_data, [cols, rows]);
+}
+
+// Perkalian Dot 1D Vector (Mendukung Tensor 1D maupun Daftar Standar)
+fungsi dot(a, b) {
+    misal data_a = a;
+    jika tipe(a) != "daftar" {
+        data_a = a.data;
+    }
+    misal data_b = b;
+    jika tipe(b) != "daftar" {
+        data_b = b.data;
+    }
+    misal n = panjang(data_a);
+    jika n != panjang(data_b) {
+        cetak("[Galat Tensor]: Ukuran vektor untuk dot product harus sama!");
+        kembalikan 0.0;
+    }
+    misal sum = 0.0;
+    misal i = 0;
+    selama i < n {
+        sum = sum + (data_a[i] * data_b[i]);
+        i = i + 1;
+    }
+    kembalikan sum;
+}
+
+// 5. Operasi Aritmatika Elemen-demi-Elemen & Skalar
+fungsi tambah_skalar(t, skalar) {
+    misal d = [];
+    untuk x in t.data {
+        tambah(d, x + skalar);
+    }
+    kembalikan tensor_buat(d, t.bentuk);
+}
+
+fungsi kali_skalar(t, skalar) {
+    misal d = [];
+    untuk x in t.data {
+        tambah(d, x * skalar);
+    }
+    kembalikan tensor_buat(d, t.bentuk);
+}
+
+// 6. Reduksi Statistik (Sum, Mean, Min, Max, Norm L2)
+fungsi jumlah(t) {
+    misal total = 0.0;
+    untuk x in t.data {
+        total = total + x;
+    }
+    kembalikan total;
+}
+
+fungsi rata_rata(t) {
+    jika t.total_elemen == 0 {
+        kembalikan 0.0;
+    }
+    kembalikan jumlah(t) / (t.total_elemen * 1.0);
+}
+
+fungsi maksimum(t) {
+    jika t.total_elemen == 0 { kembalikan 0.0; }
+    misal m = t.data[0];
+    untuk x in t.data {
+        jika x > m { m = x; }
+    }
+    kembalikan m;
+}
+
+fungsi minimum(t) {
+    jika t.total_elemen == 0 { kembalikan 0.0; }
+    misal m = t.data[0];
+    untuk x in t.data {
+        jika x < m { m = x; }
+    }
+    kembalikan m;
+}

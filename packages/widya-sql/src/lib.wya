@@ -1,0 +1,160 @@
+// packages/widya-sql/src/lib.wya
+// Pustaka Resmi WPM: @widya/sql (Setara SQLite3 / Knex / Prisma untuk Widya-Lang)
+// Menyediakan Mesin Basis Data Relasional In-Memory & Query Builder Berkecepatan Tinggi
+
+struktur BasisData {
+    nama,
+    tabel,
+    terbuka
+}
+
+// 1. Membuka atau menginisialisasi basis data relasional
+fungsi db_buka(nama_db = ":memory:") {
+    kembalikan BasisData(
+        nama_db,
+        {},
+        true
+    );
+}
+
+// 2. Membuat skema tabel baru
+fungsi db_buat_tabel(db, nama_tabel, kolom_list = []) {
+    jika !db.terbuka {
+        kembalikan false;
+    }
+    db.tabel[nama_tabel] = [];
+    kembalikan true;
+}
+
+// 3. Menyisipkan satu baris rekaman data ke dalam tabel (INSERT INTO)
+fungsi db_sisip(db, nama_tabel, rekaman) {
+    jika !db.terbuka {
+        kembalikan false;
+    }
+    misal daftar_baris = db.tabel[nama_tabel];
+    jika daftar_baris == nil {
+        db.tabel[nama_tabel] = [];
+        daftar_baris = db.tabel[nama_tabel];
+    }
+    tambah(daftar_baris, rekaman);
+    kembalikan true;
+}
+
+// 4. Kueri data tabel dengan proyeksi kolom & predikat filter (SELECT ... WHERE ... LIMIT)
+fungsi db_pilih(db, nama_tabel, fungsi_filter = nil, kolom_terpilih = nil, batas = -1) {
+    jika !db.terbuka {
+        kembalikan [];
+    }
+    misal daftar_baris = db.tabel[nama_tabel];
+    jika daftar_baris == nil {
+        kembalikan [];
+    }
+
+    misal hasil = [];
+    misal dihitung = 0;
+
+    untuk baris in daftar_baris {
+        jika batas >= 0 && dihitung >= batas {
+            // Sudah mencapai batas LIMIT
+        } lainnya {
+            misal cocok = true;
+            jika fungsi_filter != nil {
+                cocok = fungsi_filter(baris);
+            }
+
+            jika cocok {
+                jika kolom_terpilih == nil {
+                    tambah(hasil, baris);
+                } lainnya {
+                    misal proyeksi = {};
+                    untuk k in kolom_terpilih {
+                        proyeksi[k] = baris[k];
+                    }
+                    tambah(hasil, proyeksi);
+                }
+                dihitung = dihitung + 1;
+            }
+        }
+    }
+
+    kembalikan hasil;
+}
+
+// 5. Memperbarui rekaman data yang memenuhi kondisi (UPDATE ... WHERE)
+fungsi db_perbarui(db, nama_tabel, fungsi_filter, pembaruan_kamus) {
+    jika !db.terbuka {
+        kembalikan 0;
+    }
+    misal daftar_baris = db.tabel[nama_tabel];
+    jika daftar_baris == nil {
+        kembalikan 0;
+    }
+
+    misal jumlah_terpengaruh = 0;
+    untuk baris in daftar_baris {
+        jika fungsi_filter(baris) {
+            // Timpa nilai atribut yang diberikan
+            untuk k in kunci(pembaruan_kamus) {
+                baris[k] = pembaruan_kamus[k];
+            }
+            jumlah_terpengaruh = jumlah_terpengaruh + 1;
+        }
+    }
+
+    kembalikan jumlah_terpengaruh;
+}
+
+// 6. Menghapus rekaman yang memenuhi kondisi (DELETE FROM ... WHERE)
+fungsi db_hapus(db, nama_tabel, fungsi_filter) {
+    jika !db.terbuka {
+        kembalikan 0;
+    }
+    misal daftar_baris = db.tabel[nama_tabel];
+    jika daftar_baris == nil {
+        kembalikan 0;
+    }
+
+    misal sisa_baris = [];
+    misal jumlah_terhapus = 0;
+
+    untuk baris in daftar_baris {
+        jika fungsi_filter(baris) {
+            jumlah_terhapus = jumlah_terhapus + 1;
+        } lainnya {
+            tambah(sisa_baris, baris);
+        }
+    }
+
+    db.tabel[nama_tabel] = sisa_baris;
+    kembalikan jumlah_terhapus;
+}
+
+// 7. Menghitung total rekaman yang cocok (SELECT COUNT(*))
+fungsi db_hitung(db, nama_tabel, fungsi_filter = nil) {
+    jika !db.terbuka {
+        kembalikan 0;
+    }
+    misal daftar_baris = db.tabel[nama_tabel];
+    jika daftar_baris == nil {
+        kembalikan 0;
+    }
+
+    jika fungsi_filter == nil {
+        kembalikan panjang(daftar_baris);
+    }
+
+    misal total = 0;
+    untuk baris in daftar_baris {
+        jika fungsi_filter(baris) {
+            total = total + 1;
+        }
+    }
+    kembalikan total;
+}
+
+// 8. Menutup koneksi basis data
+fungsi db_tutup(db) {
+    db.terbuka = false;
+    kembalikan true;
+}
+

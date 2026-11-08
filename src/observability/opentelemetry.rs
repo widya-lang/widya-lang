@@ -64,6 +64,7 @@ impl OtelSpan {
 }
 
 /// OpenTelemetry tracer wrapper
+#[derive(Clone)]
 pub struct OtelTracer {
     /// Internal Widya tracer
     widya_tracer: Tracer,
@@ -129,6 +130,7 @@ pub struct OtelSpanContext {
 }
 
 /// OpenTelemetry metrics exporter
+#[derive(Clone)]
 pub struct OtelMetricsExporter {
     /// Internal Widya metrics collector
     widya_collector: MetricsCollector,
@@ -202,6 +204,7 @@ impl OtelMetricsExporter {
 }
 
 /// OpenTelemetry logger wrapper
+#[derive(Clone)]
 pub struct OtelLogger {
     /// Internal Widya logger
     widya_logger: Logger,
@@ -285,6 +288,7 @@ pub enum OtelSeverity {
 }
 
 /// OpenTelemetry resource attributes
+#[derive(Clone)]
 pub struct OtelResource {
     /// Service name
     pub service_name: String,

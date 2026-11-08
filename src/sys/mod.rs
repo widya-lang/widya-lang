@@ -4,9 +4,11 @@
 pub mod syscall;
 pub mod allocator;
 pub mod pure_rtos;
+pub mod c_abi;
 
 pub use syscall::*;
 pub use allocator::*;
+pub use c_abi::*;
 pub use pure_rtos::{
     ArmCortexMVectorTable, BareMetalArch, CpuContext, RiscvVectorTable, RtMutex, SovereignRtos,
     TaskControlBlock, TaskState,

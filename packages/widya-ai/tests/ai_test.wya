@@ -1,0 +1,65 @@
+// packages/widya-ai/tests/ai_test.wya
+// Uji Unit Mandiri Pustaka @widya/ai (Autograd & Neural Networks)
+
+impor "@widya/test" sebagai test;
+impor "@widya/ai" sebagai torch;
+
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_autograd_dasar(t) {
+    // f(x) = (x + 2) * 3
+    // df/dx = 3.0
+    misal x = torch.variabel(4.0, true);
+    misal c2 = torch.variabel(2.0, false);
+    misal c3 = torch.variabel(3.0, false);
+
+    misal a = torch.tambah_var(x, c2); // 4 + 2 = 6
+    misal f = torch.kali_var(a, c3);    // 6 * 3 = 18
+
+    test.tegaskan_sama(t, f.data, 18.0, "Nilai maju f harus 18.0");
+
+    torch.mundur(f);
+    test.tegaskan_sama(t, x.grad, 3.0, "Gradien df/dx harus 3.0");
+}
+
+fungsi uji_lapisan_linear_dan_sgd(t) {
+    // Model: y = w * x + b
+    // w = 2.0, b = 1.0, x = 3.0 -> y = 7.0
+    // target = 10.0, loss = 0.5 * (7 - 10)^2 = 4.5
+    // dL/dw = -9.0, dL/db = -3.0
+    misal layer = torch.lapisan_linear(2.0, 1.0);
+    misal x = torch.variabel(3.0, false);
+
+    misal y = torch.linear_maju(layer, x);
+    test.tegaskan_sama(t, y.data, 7.0, "Hasil prediksi harus 7.0");
+
+    misal rugi = torch.mse_loss(y, 10.0);
+    test.tegaskan_sama(t, rugi.data, 4.5, "Nilai MSE Loss harus 4.5");
+
+    torch.mundur(rugi);
+    test.tegaskan_sama(t, layer.bobot.grad, -9.0, "dL/dw harus -9.0");
+    test.tegaskan_sama(t, layer.bias.grad, -3.0, "dL/db harus -3.0");
+
+    // Langkah SGD dengan lr = 0.1: w_baru = 2.0 - (0.1 * -9.0) = 2.9
+    torch.sgd_langkah([layer.bobot, layer.bias], 0.1);
+    test.tegaskan_sama(t, layer.bobot.data, 2.9, "Bobot baru setelah SGD harus 2.9");
+    test.tegaskan_sama(t, layer.bobot.grad, 0.0, "Gradien bobot harus di-reset ke 0.0");
+}
+
+fungsi uji_aktivasi_relu(t) {
+    misal v_pos = torch.variabel(5.0, true);
+    misal out_pos = torch.relu(v_pos);
+    test.tegaskan_sama(t, out_pos.data, 5.0, "ReLU(5.0) harus 5.0");
+
+    misal v_neg = torch.variabel(-3.0, true);
+    misal out_neg = torch.relu(v_neg);
+    test.tegaskan_sama(t, out_neg.data, 0.0, "ReLU(-3.0) harus 0.0");
+}
+
+test.uji_kasus(pelari, "Autograd Diferensiasi Maju & Mundur", uji_autograd_dasar);
+test.uji_kasus(pelari, "Lapisan Linear & Pengoptimal SGD", uji_lapisan_linear_dan_sgd);
+test.uji_kasus(pelari, "Fungsi Aktivasi ReLU", uji_aktivasi_relu);
+
+misal hasil = test.uji_ringkasan(pelari);
+tulis("Hasil Uji @widya/ai: " + ke_teks(hasil["lulus"]) + "/" + ke_teks(hasil["total"]) + " LULUS.");
+

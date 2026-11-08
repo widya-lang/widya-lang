@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan_Eksekutif_PQC.pdf — WidyaPDF (PDFCraft Sovereign Parity)</title>
+  <link rel="stylesheet" href="css/office_theme.css">
+  <style>
+    .app-pdf-standalone {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .pdf-main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+  </style>
+</head>
+<body class="app-pdf-standalone">
+
+  <!-- 1. WidyaPDF Titlebar (PDFCraft Crimson Red Theme #d9381e) -->
+  <header class="wc-header">
+    <div class="wc-header-left">
+      <!-- 9-Dot Sovereign Suite App Launcher -->
+      <button class="wc-waffle-btn" id="waffleBtn" onclick="toggleWaffleMenu()" title="Peluncur Aplikasi WidyaOffice Suite (ArtCraft Parity)">
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+      </button>
+
+      <!-- AutoSave Pill Switch -->
+      <div class="wc-autosave" title="Penyimpanan Otomatis Aktif">
+        <span>AutoSave</span>
+        <div class="wc-switch" id="autoSaveToggle" onclick="toggleAutoSave()">
+          <div class="wc-switch-knob"></div>
+        </div>
+      </div>
+
+      <!-- Quick Access Toolbar -->
+      <button class="wc-quick-btn" onclick="savePdf()" title="Simpan PDF (Ctrl+S)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/></svg>
+      </button>
+      <button class="wc-quick-btn" onclick="printPdf()" title="Cetak PDF (Ctrl+P)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
+      </button>
+    </div>
+
+    <!-- Center: PDF Title & Search -->
+    <div class="wc-header-center">
+      <div class="wc-doc-title-box">
+        <span class="wc-doc-title">Laporan_Eksekutif_PQC.pdf</span>
+        <span class="wc-doc-status" style="color:#107c41; font-weight:600;">— Verified PQC (FIPS 204)</span>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
+      </div>
+
+      <div class="wc-search-pill">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="#707070"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <input type="text" class="wc-search-input" placeholder="Search in PDF document (Ctrl+F)" onkeydown="if(event.key==='Enter') toggleSearchBar()" />
+      </div>
+    </div>
+
+    <!-- Right: Sign & Certify Button & Avatar -->
+    <div class="wc-header-right">
+      <button class="wc-share-pill" style="background:#d9381e;" onclick="signPdfPQC()" title="Tanda Tangani Digital Pasca-Kuantum FIPS 204">
+        <span>Sign &amp; Certify 🛡️</span>
+      </button>
+      <div class="wc-user-avatar" style="background:#8a1909;">PU</div>
+    </div>
+  </header>
+
+  <!-- Waffle Flyout App Switcher Menu -->
+  <div class="wc-waffle-dropdown" id="waffleDropdown">
+    <div style="font-size:12px; font-weight:700; color:#616161; text-transform:uppercase; letter-spacing:0.5px;">Sovereign Office Suite</div>
+    <div class="wc-waffle-grid">
+      <a class="wc-waffle-item" href="widyawriter.html">
+        <div class="wc-waffle-icon" style="background:#2b47b5;">W</div>
+        <div>
+          <div style="font-weight:700; color:#183691;">WidyaWriter</div>
+          <div style="font-size:11px; color:#555;">WordCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyacalc.html">
+        <div class="wc-waffle-icon" style="background:#107c41;">C</div>
+        <div>
+          <div style="font-weight:700; color:#0e6b37;">WidyaCalc</div>
+          <div style="font-size:11px; color:#555;">SheetCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyaimpress.html">
+        <div class="wc-waffle-icon" style="background:#c43e1c;">I</div>
+        <div>
+          <div style="font-weight:700; color:#a13014;">WidyaImpress</div>
+          <div style="font-size:11px; color:#555;">DeckCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyapdf.html" style="background:#fce8e6; border-color:#f5b8b2;">
+        <div class="wc-waffle-icon" style="background:#d9381e;">P</div>
+        <div>
+          <div style="font-weight:700; color:#b0220c;">WidyaPDF</div>
+          <div style="font-size:11px; color:#555;">PDFCraft Parity</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. PDFCraft Ribbon 9 Tabs -->
+  <nav class="wc-tab-strip">
+    <button class="wc-tab tab-file" onclick="openBackstage('home')">File</button>
+    <button class="wc-tab active" data-tab="home" onclick="switchRibbonTab('home')">Home</button>
+    <button class="wc-tab" data-tab="view" onclick="switchRibbonTab('view')">View</button>
+    <button class="wc-tab" data-tab="annotate" onclick="switchRibbonTab('annotate')">Annotate</button>
+    <button class="wc-tab" data-tab="convert" onclick="switchRibbonTab('convert')">Convert</button>
+    <button class="wc-tab" data-tab="tools" onclick="switchRibbonTab('tools')">Page Tools</button>
+    <button class="wc-tab" data-tab="redact" onclick="switchRibbonTab('redact')">Redact (UU PDP)</button>
+    <button class="wc-tab" data-tab="protect" onclick="switchRibbonTab('protect')">Protect (FIPS 204)</button>
+    <button class="wc-tab" data-tab="help" onclick="switchRibbonTab('help')">Help</button>
+  </nav>
+
+  <!-- 3. Ribbon Panel for WidyaPDF (9 Tabs) -->
+  <section class="wc-ribbon-panel" id="wcRibbonPanel">
+
+    <!-- Tab 1: HOME (Active) -->
+    <div class="wc-ribbon-tab-content active" id="tabContent-home">
+      <!-- Group: Navigation -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" onclick="goToFirstPage()" title="Halaman Pertama">⏮</button>
+          <button class="wc-tool-btn" onclick="prevPdfPage()" title="Halaman Sebelumnya">◀</button>
+          <input type="number" id="pdfPageNumberInput" value="1" min="1" max="10" style="width:38px; text-align:center; height:22px; border:1px solid #ccc; border-radius:3px;" onchange="WidyaPDF.goToPage(parseInt(this.value, 10))">
+          <span style="font-size:12px; color:#666;">/ <span id="pdfTotalPagesLabel">2</span></span>
+          <button class="wc-tool-btn" onclick="nextPdfPage()" title="Halaman Selanjutnya">▶</button>
+          <button class="wc-tool-btn" onclick="goToLastPage()" title="Halaman Terakhir">⏭</button>
+        </div>
+        <div class="wc-group-label">Navigation</div>
+      </div>
+
+      <!-- Group: Zoom & View -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoomPdfIn()" title="Perbesar Halaman (+)">
+            <span style="font-size:18px; color:#d9381e;">🔍+</span>
+            <span>Zoom In</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoomPdfOut()" title="Perkecil Halaman (-)">
+            <span style="font-size:18px; color:#d9381e;">🔍-</span>
+            <span>Zoom Out</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="zoomPdfFitWidth()">Fit Width</button>
+            <button class="wc-tool-btn" onclick="zoomPdfFitPage()">Fit Page</button>
+          </div>
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnPdfTwoUp" onclick="toggleTwoUp()" title="Dua Halaman Berdampingan">
+            <span style="font-size:18px; color:#d9381e;">📖</span>
+            <span>Two-Up</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Zoom &amp; Display</div>
+      </div>
+
+      <!-- Group: Rotate & Tools -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="rotatePdfRight()" title="Putar 90° Searah Jarum Jam">
+            <span style="font-size:18px; color:#d9381e;">⟳</span>
+            <span>Rotate</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleSearchBar()" title="Cari Kata dalam PDF (Ctrl+F)">
+            <span style="font-size:18px; color:#d9381e;">🔍</span>
+            <span>Find Text</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Page Tools</div>
+      </div>
+    </div>
+
+    <!-- Tab 2: VIEW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-view">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn active" onclick="showToast('Tampilan Halaman Tunggal', '📄')">Single Page</button>
+          <button class="wc-tool-btn" onclick="toggleTwoUp()">Two Pages</button>
+          <button class="wc-tool-btn" onclick="showToast('Pengguliran Kontinu Aktif', '📜')">Continuous</button>
+        </div>
+        <div class="wc-group-label">Page Display</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnPdfDarkMode" onclick="toggleDarkMode()">
+            <span style="font-size:18px; color:#d9381e;">🌙</span>
+            <span>Dark Mode</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleCommentsSidebar()">
+            <span style="font-size:18px; color:#d9381e;">💬</span>
+            <span>Comments</span>
+          </button>
+        </div>
+        <div class="wc-group-label">View Modes</div>
+      </div>
+    </div>
+
+    <!-- Tab 3: ANNOTATE -->
+    <div class="wc-ribbon-tab-content" id="tabContent-annotate">
+      <!-- Group: Text Markup -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="applyHighlight()" title="Stabilo Teks Terpilih">
+            <span style="font-size:18px; color:#ffff00; background:#000; padding:0 3px;">🖍️</span>
+            <span>Highlight</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="applyStrikethrough()" title="Coret Teks Terpilih">
+            <span style="font-size:18px; color:#d9381e;"><s>ab</s></span>
+            <span>Strike</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="applyUnderline()" title="Garis Bawah Teks">
+            <span style="font-size:18px; color:#d9381e;"><u>U</u></span>
+            <span>Underline</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Text Markup</div>
+      </div>
+
+      <!-- Group: Comments & Sticky Notes -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnStickyNoteTool" onclick="toggleStickyNote()">
+            <span style="font-size:18px; color:#d9381e;">📌</span>
+            <span>Sticky Note</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnTypewriterTool" onclick="WidyaPDF.toggleTypewriterTool()" title="Ketik Teks pada Halaman PDF">
+            <span style="font-size:18px; color:#d9381e;">T</span>
+            <span>Typewriter</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleCommentsSidebar()">
+            <span style="font-size:18px; color:#d9381e;">💬</span>
+            <span>Comments List</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Comments</div>
+      </div>
+
+      <!-- Group: Drawing & Stamps -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnPencilDrawTool" onclick="togglePencil()">
+            <span style="font-size:18px; color:#d9381e;">✏️</span>
+            <span>Pencil Draw</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="clearPencil()">
+            <span style="font-size:18px; color:#d9381e;">🧹</span>
+            <span>Clear Ink</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="applyRubberStamp('APPROVED')">💮 APPROVED</button>
+            <button class="wc-tool-btn" onclick="applyRubberStamp('CONFIDENTIAL')">💮 RAHASIA</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Drawing &amp; Stamps</div>
+      </div>
+    </div>
+
+    <!-- Tab 4: CONVERT -->
+    <div class="wc-ribbon-tab-content" id="tabContent-convert">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mengekspor Dokumen PDF ke Format Word (.docx)...', '📄')">
+            <span style="font-size:18px; color:#185abd;">W</span>
+            <span>To Word</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mengekspor Tabel PDF ke Format Excel (.xlsx)...', '📊')">
+            <span style="font-size:18px; color:#107c41;">X</span>
+            <span>To Excel</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mengekspor Slide PDF ke PowerPoint (.pptx)...', '📽️')">
+            <span style="font-size:18px; color:#c43e1c;">P</span>
+            <span>To PowerPoint</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mengekspor Halaman PDF ke Gambar Vektor SVG / PNG...', '🖼️')">
+            <span style="font-size:18px; color:#d9381e;">🖼️</span>
+            <span>To Image</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Export Formats</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="sanitizeMetadata()">
+            <span style="font-size:18px; color:#107c41;">🛡️</span>
+            <span>Sanitize Meta</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Privacy Sanitization</div>
+      </div>
+    </div>
+
+    <!-- Tab 5: PAGE TOOLS -->
+    <div class="wc-ribbon-tab-content" id="tabContent-tools">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertBlankPage()">
+            <span style="font-size:18px; color:#d9381e;">➕</span>
+            <span>Insert Blank</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertTemplatePage()">
+            <span style="font-size:18px; color:#d9381e;">📑</span>
+            <span>Template</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="extractCurrentPage()">
+            <span style="font-size:18px; color:#d9381e;">✂️</span>
+            <span>Extract Page</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="deleteCurrentPage()">
+            <span style="font-size:18px; color:#d9381e;">🗑️</span>
+            <span>Delete Page</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Organize Pages</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="mergePdf()">
+            <span style="font-size:18px; color:#d9381e;">📑+</span>
+            <span>Merge PDF</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="splitPdf()">
+            <span style="font-size:18px; color:#d9381e;">✂️</span>
+            <span>Split PDF</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Document Assembly</div>
+      </div>
+    </div>
+
+    <!-- Tab 6: REDACT (UU PDP) -->
+    <div class="wc-ribbon-tab-content" id="tabContent-redact">
+      <!-- Group: UU PDP Compliance -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnToggleRedaction" onclick="redactPrivacyUUPDP()" title="Sensor Otomatis NIK, Rekening, No HP (UU No. 27/2022)">
+            <span style="font-size:18px; color:#000000; background:#ffff00; padding:0 4px; font-weight:700;">⬛</span>
+            <span>Auto Sensor PDP</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnManualRedact" onclick="toggleManualRedact()" title="Tandai Area Sensor Bebas">
+            <span style="font-size:18px; color:#d9381e;">🖍️</span>
+            <span>Mark Redaction</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="clearRedactions()" title="Bersihkan Sensor">
+            <span style="font-size:18px; color:#d9381e;">🧹</span>
+            <span>Clear Redact</span>
+          </button>
+        </div>
+        <div class="wc-group-label">UU PDP No. 27/2022</div>
+      </div>
+    </div>
+
+    <!-- Tab 7: PROTECT (FIPS 204) -->
+    <div class="wc-ribbon-tab-content" id="tabContent-protect">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="signPdfPQC()" title="Bubuhkan Segel Tanda Tangan Pasca-Kuantum ML-DSA-87">
+            <span style="font-size:18px; color:#107c41;">🛡️</span>
+            <span>Tanda Tangan PQC</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="verifyPdfIntegrity()">
+            <span style="font-size:18px; color:#107c41;">✓</span>
+            <span>Verifikasi PQC</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openPasswordProtection()">
+            <span style="font-size:18px; color:#d9381e;">🔒</span>
+            <span>Sandi AES-256</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Post-Quantum Security</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="applyWatermark('RAHASIA NEGARA')">
+            <span style="font-size:18px; color:#d9381e;">💧</span>
+            <span>Watermark</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="clearWatermark()">
+            <span style="font-size:18px; color:#d9381e;">🧹</span>
+            <span>Clear Watermark</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Watermark</div>
+      </div>
+    </div>
+
+    <!-- Tab 8: HELP -->
+    <div class="wc-ribbon-tab-content" id="tabContent-help">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showPdfHelp()">
+            <span style="font-size:20px; color:#d9381e;">❓</span>
+            <span>Help (F1)</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="verifyPdfIntegrity()">
+            <span style="font-size:20px; color:#107c41;">🛡️</span>
+            <span>NIST FIPS 204</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showPdfStats()">
+            <span style="font-size:20px; color:#d9381e;">📊</span>
+            <span>Audit PDF</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Sovereignty &amp; Help</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 4. PDFCraft Main Workspace Container -->
+  <main class="pdf-main-container">
+    <!-- Left Thumbnail Navigator -->
+    <aside class="pdf-sidebar" style="width:200px; background:#ffffff; border-right:1px solid #d1d1d1; display:flex; flex-direction:column;">
+      <div style="padding:8px 12px; font-size:11px; font-weight:700; color:#64748b; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <span>PAGES</span>
+        <button onclick="insertBlankPage()" style="padding:2px 6px; background:#d9381e; color:#fff; border:none; border-radius:3px; cursor:pointer; font-size:11px;">+ Hal</button>
+      </div>
+      <div class="pdf-thumbnails-scroll" id="pdfThumbnailsList" style="flex:1; overflow-y:auto; padding:10px;"></div>
+    </aside>
+
+    <!-- Center Viewport with Interactive Canvas & Floating Search -->
+    <div class="pdf-viewport-wrapper" id="pdfViewportWrapper" style="flex:1; overflow:auto; position:relative; background:#64748b; display:flex; flex-direction:column; align-items:center; padding:24px;">
+      <!-- Floating In-Document Search Toolbar -->
+      <div class="pdf-search-bar" id="pdfSearchBar" style="display:none; position:absolute; top:12px; right:20px; background:#fff; border:1px solid #d1d1d1; border-radius:4px; box-shadow:0 4px 14px rgba(0,0,0,0.15); padding:6px 10px; display:flex; align-items:center; gap:6px; z-index:100;">
+        <span>🔍</span>
+        <input type="text" id="pdfSearchInput" placeholder="Cari dalam dokumen..." style="border:1px solid #ccc; border-radius:3px; padding:3px 6px; font-size:12px;" oninput="WidyaPDF.executeSearch(this.value)" onkeydown="if(event.key==='Enter') WidyaPDF.nextSearchResult()">
+        <span id="pdfSearchCount" style="font-size:11px; color:#64748b;">0 hasil</span>
+        <button onclick="WidyaPDF.prevSearchResult()" style="padding:2px 6px; font-size:10px;">▲</button>
+        <button onclick="WidyaPDF.nextSearchResult()" style="padding:2px 6px; font-size:10px;">▼</button>
+        <button onclick="WidyaPDF.closeSearchBar()" style="padding:2px 6px; font-size:10px;">✕</button>
+      </div>
+
+      <!-- Rendered PDF Page SVG Canvas -->
+      <div style="position:relative;">
+        <canvas id="pdfDrawCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:20;"></canvas>
+        <div id="pdfPageCanvas" style="box-shadow:0 10px 30px rgba(0,0,0,0.3); background:#ffffff;"></div>
+      </div>
+    </div>
+
+    <!-- Right Comments & Annotations Sidebar -->
+    <aside class="pdf-comments-sidebar" id="pdfCommentsSidebar" style="display:none; width:260px; background:#ffffff; border-left:1px solid #d1d1d1; display:flex; flex-direction:column;">
+      <div style="padding:8px 12px; font-size:11px; font-weight:700; color:#d9381e; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <span>💬 ANOTASI &amp; KOMENTAR</span>
+        <button onclick="toggleCommentsSidebar()" style="background:none; border:none; cursor:pointer;">✕</button>
+      </div>
+      <div class="pdf-comments-list" id="pdfCommentsList" style="flex:1; overflow-y:auto; padding:10px;"></div>
+    </aside>
+  </main>
+
+  <!-- 5. Status Bar -->
+  <footer style="height:28px; background:#ffffff; border-top:1px solid #d1d1d1; display:flex; align-items:center; justify-content:space-between; padding:0 12px; font-size:11.5px; color:#555;">
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span>Halaman <span id="pdfStatusPage">1</span> dari <span id="pdfStatusTotal">2</span></span>
+      <span style="color:#107c41; font-weight:600;">🛡️ NIST FIPS 204 PQC Active</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button onclick="toggleCommentsSidebar()" style="background:none; border:none; color:#555; cursor:pointer;">💬 Comments</button>
+      <button onclick="toggleDarkMode()" style="background:none; border:none; color:#555; cursor:pointer;">🌙 Dark</button>
+      <button onclick="zoomPdfOut()" style="background:none; border:none; color:#555; cursor:pointer;">−</button>
+      <span id="pdfZoomLabel">100%</span>
+      <button onclick="zoomPdfIn()" style="background:none; border:none; color:#555; cursor:pointer;">+</button>
+    </div>
+  </footer>
+
+  <!-- 6. PDFCraft Backstage Start Screen -->
+  <div class="wc-backstage" id="wcBackstage">
+    <div class="wc-backstage-sidebar" style="background-color:#d9381e;">
+      <button class="wc-backstage-back-btn" onclick="closeBackstage()" title="Kembali ke Dokumen (Esc)">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/></svg>
+      </button>
+
+      <div class="wc-backstage-item active" data-bstab="home" onclick="switchBackstageTab('home')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="open" onclick="switchBackstageTab('open')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10.4a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V10.4a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+        <span>Open</span>
+      </div>
+      <div class="wc-backstage-divider"></div>
+      <div class="wc-backstage-item" onclick="savePdf(); closeBackstage();">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/></svg>
+        <span>Save</span>
+      </div>
+      <div class="wc-backstage-item" onclick="openSaveAsDialog()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Save As</span>
+      </div>
+      <div class="wc-backstage-item" onclick="exportSignedPdf()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Export Signed PDF</span>
+      </div>
+      <div class="wc-backstage-item" onclick="printPdf()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
+        <span>Print</span>
+      </div>
+      <div class="wc-backstage-item" onclick="closeBackstage()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        <span>Close</span>
+      </div>
+    </div>
+
+    <!-- Backstage Content Panes -->
+    <div class="wc-backstage-content">
+      <div class="wc-backstage-pane" id="bsPane-home">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">WidyaPDF Workbench</h1>
+        <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 12px;">Open Document</div>
+        <div style="display:flex; flex-direction:column; gap:10px; max-width:600px;">
+          <div style="padding:12px; background:#fafafa; border:1px solid #eee; border-radius:4px; cursor:pointer;" onclick="closeBackstage()">
+            <strong style="color:#d9381e;">📄 Laporan_Eksekutif_PQC.pdf</strong>
+            <div style="font-size:12px; color:#666;">This PC › Documents • Terverifikasi FIPS 204</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/office_commands.js"></script>
+  <script src="js/pdf_core.js"></script>
+  <script src="js/office_suite_ui.js"></script>
+  <script src="js/widyapdf_ui.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.WidyaPDF && typeof window.WidyaPDF.init === 'function') {
+        window.WidyaPDF.init();
+      }
+    });
+  </script>
+
+  <div id="pdfActiveSheet" style="display:none;"></div>
+  <div class="wc-tellme-dropdown" id="tellMeDropdown" style="display:none;"></div>
+  <div class="wc-toast" id="wcToastNotification"></div>
+
+  <!-- Modal: Save As Format & Directory Picker Dialog -->
+  <div class="wc-modal-backdrop" id="saveAsModal">
+    <div class="wc-modal-box" style="max-width:540px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title" id="saveAsModalTitle">💾 Simpan Sebagai (Save As)</span>
+        <button class="wc-modal-close" onclick="closeModal('saveAsModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Nama Berkas:</label>
+        <input type="text" id="saveAsFileName" value="The_Open_Studio_Handbook" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px;" onkeydown="if(event.key==='Enter') confirmSaveAs()" />
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <label style="font-weight:600; font-size:12.5px;">Lokasi Direktori / Folder Penyimpanan:</label>
+          <span style="font-size:11px; color:#64748b;">Ketik path atau jelajahi folder</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('C:\\Satriyo')">📁 C:\Satriyo</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Dokumen')">📄 Dokumen</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Desktop')">🖥️ Desktop</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Unduhan')">⬇️ Unduhan</button>
+        </div>
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+          <input type="text" id="saveAsFolderLocation" value="C:\Satriyo\" style="flex:1; padding:7px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" placeholder="Contoh: C:\Satriyo\ atau D:\Arsip\" />
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="browseFolderLocation()" title="Buka Penjelajah Direktori Interaktif">📂 Pilih Direktori...</button>
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="pickNativeOsFolder()" title="Pilih Direktori via Windows Explorer">🖥️ Windows...</button>
+        </div>
+        <input type="file" id="nativeFolderPickerInput" webkitdirectory style="display:none;" onchange="onNativeFolderSelected(event)" />
+
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Format Berkas Penyimpanan:</label>
+        <select id="saveAsFileType" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px; background:#fff;">
+          <option value="docx">📄 Word Document OpenXML (*.docx) — ISO/IEC 29500</option>
+          <option value="pdf">📑 PDF Berdaulat (*.pdf) — ISO 32000-1 Vektor Murni</option>
+          <option value="odt">📝 OpenDocument Text (*.odt) — Standar Terbuka ISO 26300</option>
+          <option value="html">🌐 Halaman Web HTML (*.html)</option>
+          <option value="txt">📃 Dokumen Teks Polos (*.txt)</option>
+        </select>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('docx')">📄 Simpan Cepat sebagai Word Document (*.docx) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('pdf')">📑 Simpan Cepat sebagai PDF Vektor (*.pdf) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('odt')">📝 Simpan Cepat sebagai OpenDocument (*.odt) ke Direktori Di Atas</button>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="wc-btn-secondary" onclick="closeModal('saveAsModal')">Batal</button>
+        <button class="wc-btn-primary" onclick="confirmSaveAs()">💾 Simpan ke Direktori</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sovereign Interactive Directory Picker -->
+  <div class="wc-modal-backdrop" id="folderPickerModal" style="z-index:10005;">
+    <div class="wc-modal-box" style="max-width:620px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">📂 Pilih Direktori Penyimpanan Berkas</span>
+        <button class="wc-modal-close" onclick="closeFolderPickerModal()">✕</button>
+      </div>
+      <div class="wc-modal-body" style="padding:14px 18px;">
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; font-weight:600;" onclick="navigateFolderPickerParent()" title="Naik ke Folder Induk">⬆ Naik</button>
+          <input type="text" id="folderPickerCurrentPath" value="C:\Satriyo\" style="flex:1; padding:6px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" onkeydown="if(event.key==='Enter') loadFolderPickerPath(this.value)" />
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px;" onclick="loadFolderPickerPath(document.getElementById('folderPickerCurrentPath').value)">Buka</button>
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; color:#185abd; font-weight:600;" onclick="createFolderInPicker()">+ Folder Baru</button>
+        </div>
+        <div id="folderPickerDrivesBar" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;"></div>
+        <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <span>DAFTAR SUB-FOLDER (Klik 2x untuk membuka):</span>
+          <span id="folderPickerItemCount" style="font-weight:normal;">0 sub-folder</span>
+        </div>
+        <div id="folderPickerList" style="min-height:200px; max-height:250px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px; background:#ffffff; padding:4px;"></div>
+        <div style="margin-top:10px; padding:8px 10px; background:#f8fafc; border-radius:4px; display:flex; align-items:center; gap:8px; font-size:12px; border:1px solid #e2e8f0;">
+          <span style="font-weight:700; color:#334155;">Direktori Dipilih:</span>
+          <span id="folderPickerSelectedLabel" style="color:#185abd; font-family:monospace; font-weight:600; word-break:break-all;">C:\Satriyo\</span>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="wc-btn-secondary" onclick="pickNativeOsFolder()">🖥️ Dialog Windows Explorer...</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="wc-btn-secondary" onclick="closeFolderPickerModal()">Batal</button>
+          <button type="button" class="wc-btn-primary" onclick="selectCurrentPickerFolder()">✓ Pilih Folder Ini</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+// packages/widya-dataframe/tests/dataframe_test.wya
+// Uji Unit Mandiri Pustaka @widya/dataframe
+
+impor "@widya/test" sebagai test;
+impor "@widya/dataframe" sebagai pd;
+
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_pembuatan_dan_akses(t) {
+    misal baris = [
+        {"id": 1, "nama": "Ahmad", "skor": 85.0},
+        {"id": 2, "nama": "Budi", "skor": 92.0},
+        {"id": 3, "nama": "Citra", "skor": 78.0}
+    ];
+    misal df = pd.df_buat(["id", "nama", "skor"], baris);
+
+    test.tegaskan_sama(t, df.jumlah_baris, 3, "Jumlah baris harus 3");
+    test.tegaskan_sama(t, df.jumlah_kolom, 3, "Jumlah kolom harus 3");
+
+    misal top2 = pd.kepala(df, 2);
+    test.tegaskan_sama(t, top2.jumlah_baris, 2, "Kepala 2 baris harus 2");
+}
+
+fungsi uji_filter_dan_proyeksi(t) {
+    misal baris = [
+        {"id": 1, "departemen": "Teknik", "gaji": 15000.0},
+        {"id": 2, "departemen": "Bisnis", "gaji": 12000.0},
+        {"id": 3, "departemen": "Teknik", "gaji": 18000.0}
+    ];
+    misal df = pd.df_buat(["id", "departemen", "gaji"], baris);
+
+    misal df_teknik = pd.saring(df, "departemen", "==", "Teknik");
+    test.tegaskan_sama(t, df_teknik.jumlah_baris, 2, "Baris departemen Teknik harus 2");
+
+    misal df_proyeksi = pd.pilih_kolom(df_teknik, ["id", "gaji"]);
+    test.tegaskan_sama(t, df_proyeksi.jumlah_kolom, 2, "Kolom terproyeksi harus 2");
+}
+
+fungsi uji_agregasi_dan_groupby(t) {
+    misal baris = [
+        {"kategori": "Elektronik", "harga": 100.0},
+        {"kategori": "Pakaian", "harga": 50.0},
+        {"kategori": "Elektronik", "harga": 200.0}
+    ];
+    misal df = pd.df_buat(["kategori", "harga"], baris);
+
+    misal grup = pd.kelompokkan_dan_hitung(df, "kategori");
+    test.tegaskan_sama(t, grup.jumlah_baris, 2, "Jumlah kelompok kategori harus 2");
+
+    misal ringkasan_list = pd.ringkasan(df);
+    test.tegaskan_sama(t, ringkasan_list[0]["min"], 50.0, "Harga minimum harus 50.0");
+    test.tegaskan_sama(t, ringkasan_list[0]["max"], 200.0, "Harga maksimum harus 200.0");
+}
+
+test.uji_kasus(pelari, "Pembuatan & Akses DataFrame", uji_pembuatan_dan_akses);
+test.uji_kasus(pelari, "Filter & Proyeksi DataFrame", uji_filter_dan_proyeksi);
+test.uji_kasus(pelari, "Agregasi & GroupBy DataFrame", uji_agregasi_dan_groupby);
+
+misal hasil = test.uji_ringkasan(pelari);
+tulis("Hasil Uji @widya/dataframe: " + ke_teks(hasil["lulus"]) + "/" + ke_teks(hasil["total"]) + " LULUS.");

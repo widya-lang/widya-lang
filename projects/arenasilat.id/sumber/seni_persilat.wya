@@ -1,0 +1,83 @@
+// ==========================================================
+// Modul Aturan Penilaian Seni TGR (Tunggal, Ganda, Regu) PERSILAT 2026
+// ArenaSilat.id - Platform Digital Pencak Silat Berdaulat
+// ==========================================================
+
+misal DURASI_STANDAR_DETIK = 180; // 3 Menit
+misal TOLERANSI_BAWAH_DETIK = 175; // 2:55
+misal TOLERANSI_ATAS_DETIK = 185;  // 3:05
+
+struktur LembarNilaiJuriSeni {
+    id_juri,
+    nama_pesilat,
+    kategori, // "TUNGGAL", "GANDA", "REGU", "SOLO_KREATIF"
+    nilai_kebenaran_dasar, // Default: 9.90
+    jumlah_salah_gerak,    // -0.01 per gerakan
+    nilai_kemantapan,      // Penjiwaan, stamina, tenaga (skala 0.01 s.d. 0.10)
+    penalti_senjata_jatuh, // -0.50 per kejadian
+    penalti_keluar_gelanggang, // -0.50
+    penalti_atribut,       // -0.50
+    penalti_waktu,         // Berdasarkan deviasi durasi
+    skor_akhir_juri,
+
+    fungsi hitung_skor_juri(durasi_tampil_detik) {
+        // Hitung penalti waktu
+        ini.penalti_waktu = 0;
+        jika durasi_tampil_detik < TOLERANSI_BAWAH_DETIK {
+            misal selisih_kurang = TOLERANSI_BAWAH_DETIK - durasi_tampil_detik;
+            jika selisih_kurang <= 5 {
+                ini.penalti_waktu = 0.05;
+            } lainnya jika selisih_kurang <= 10 {
+                ini.penalti_waktu = 0.10;
+            } lainnya jika selisih_kurang <= 15 {
+                ini.penalti_waktu = 0.15;
+            } lainnya {
+                ini.penalti_waktu = 0.20;
+            }
+        } lainnya jika durasi_tampil_detik > TOLERANSI_ATAS_DETIK {
+            misal selisih_lebih = durasi_tampil_detik - TOLERANSI_ATAS_DETIK;
+            jika selisih_lebih <= 5 {
+                ini.penalti_waktu = 0.05;
+            } lainnya jika selisih_lebih <= 10 {
+                ini.penalti_waktu = 0.10;
+            } lainnya jika selisih_lebih <= 15 {
+                ini.penalti_waktu = 0.15;
+            } lainnya {
+                ini.penalti_waktu = 0.20;
+            }
+        }
+
+        misal pengurangan_gerak = ini.jumlah_salah_gerak * 0.01;
+        misal total_penalti = pengurangan_gerak + ini.penalti_senjata_jatuh + ini.penalti_keluar_gelanggang + ini.penalti_atribut + ini.penalti_waktu;
+
+        ini.skor_akhir_juri = (ini.nilai_kebenaran_dasar - total_penalti) + ini.nilai_kemantapan;
+        kembalikan ini.skor_akhir_juri;
+    }
+}
+
+struktur PertandinganSeni {
+    id_partai,
+    gelanggang,
+    kategori_seni, // "TUNGGAL", "GANDA", "REGU"
+    pesilat_merah,
+    pesilat_biru,
+    skor_akhir_merah,
+    skor_akhir_biru,
+
+    fungsi cetak_hasil_seni() {
+        cetak("\n=== HASIL PERTANDINGAN SENI (" + ini.kategori_seni + ") PARTAI " + ini.id_partai + " ===");
+        cetak("🔴 Sudut Merah [" + ini.pesilat_merah + "]: " + ke_teks(ini.skor_akhir_merah));
+        cetak("🔵 Sudut Biru  [" + ini.pesilat_biru + "]: " + ke_teks(ini.skor_akhir_biru));
+
+        jika ini.skor_akhir_merah > ini.skor_akhir_biru {
+            cetak("🏆 PEMENANG SENI: SUDUT MERAH (" + ini.pesilat_merah + ")");
+            kembalikan ini.pesilat_merah;
+        } lainnya jika ini.skor_akhir_biru > ini.skor_akhir_merah {
+            cetak("🏆 PEMENANG SENI: SUDUT BIRU (" + ini.pesilat_biru + ")");
+            kembalikan ini.pesilat_biru;
+        } lainnya {
+            cetak("⚖️ SKOR SENI IDENTIK - Evaluasi standar deviasi & waktu tercepat!");
+            kembalikan "SERI";
+        }
+    }
+}

@@ -738,7 +738,7 @@ jalankan_server();
 
     #[test]
     fn test_prompt_generation() {
-        let mut engine = WidyaCoderEngine::new();
+        let engine = WidyaCoderEngine::new();
         let embedder = LocalEmbeddingEngine::new();
         let mut id = 0;
         let chunks = WidyaCoderEngine::chunk_markdown(

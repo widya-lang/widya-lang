@@ -53,6 +53,53 @@ Mulai rilis **v2.6.0 GA**, Widya-Lang mandiri 100% dari pustaka pihak ketiga: me
 - 🖥️ **WidyaDesktop & Standalone Packagers**: Window lifecycle state machine, zero-copy IPC bridge, Mica/Acrylic visual styling, POS ESC/POS thermal bytecode generator, serta builder installer biner murni `.deb`, `.rpm`, `.tar.gz`, `.run`, dan `.wapp`.
 - 📱 **WidyaMobile & Mobile Bundler**: Pure 2D software canvas rasterizer, TrueType font parser, Three-Tree Reactive UI, serta generator paket fisik mandiri `.apk` (AXML/DEX/ARSC/v1 signature) dan `.ipa` (Mach-O ARM64).
 - 📦 **WPM (Widya Package Manager)**: Solver dependensi PubGrub, tanda tangan digital Ed25519, verifikasi checksum SHA-256, dan mode air-gapped `widya pasok` (vendor).
+- 🔄 **Kompiler Mandiri Deterministik (*Full Self-Hosting*)**: Siklus Stage-0 → Stage-1 → Stage-2 terverifikasi bit-for-bit dengan emisi kode C99 mandiri ber-Ed25519.
+
+---
+
+## 📦 Ekosistem Paket Standar Resmi WPM (Paritas Penuh Python & Node.js)
+
+Widya Package Manager (WPM) menyediakan pustaka standar berlisensi MIT yang ditulis murni dalam sintaksis Widya:
+
+| Paket Resmi | Padanan Python / Node.js | Kemampuan Utama |
+| :--- | :--- | :--- |
+| **`@widya/tensor`** | **NumPy** | Array N-Dimensi, aljabar linier, matmul 2D, transpose, dot product, reduksi statistik. |
+| **`@widya/dataframe`** | **Pandas** | Data tabular berorientasi kolom/baris, parser CSV, filter predikat, describe (`ringkasan`), groupby. |
+| **`@widya/ai`** | **PyTorch** | Autograd DAG diferensiasi otomatis reverse-mode topologis, linear layer, activation ReLU, MSE loss, optimizer SGD. |
+| **`@widya/sql`** | **SQLite3 / Prisma** | Mesin basis data relasional in-memory, query builder (CRUD), WHERE filters, update, delete, count. |
+| **`@widya/web`** | **Express / FastAPI** | Router RESTful modular berkinerja tinggi, pipeline middleware, typed HTTP response builder. |
+| **`@widya/test`** | **Jest / Pytest** | Test suite runner, assertions lengkap (`tegaskan_sama`, `tegaskan_benar`, dll.), pelaporan hasil otomatis. |
+
+### Contoh Kode: Layanan Analitika & Inferensi AI Terpadu
+```widya
+impor "@widya/web" sebagai web;
+impor "@widya/sql" sebagai sql;
+impor "@widya/dataframe" sebagai pd;
+impor "@widya/tensor" sebagai np;
+impor "@widya/ai" sebagai torch;
+
+// 1. Inisialisasi basis data relasional in-memory
+misal db = sql.db_buka();
+sql.db_buat_tabel(db, "sensor");
+sql.db_sisip(db, "sensor", {"id": 1, "beban": 14.0, "suhu": 35.0});
+
+// 2. Transformasi tabular DataFrame
+misal df = pd.df_buat(["id", "beban", "suhu"], sql.db_pilih(db, "sensor"));
+misal stat = pd.ringkasan(df);
+
+// 3. Pelatihan satu langkah Autograd Deep Learning
+misal layer = torch.lapisan_linear(1.5, 0.5);
+misal out = torch.linear_maju(layer, torch.variabel(stat[0]["mean"]));
+misal rugi = torch.mse_loss(out, 40.0);
+torch.mundur(rugi);
+torch.sgd_langkah([layer.bobot, layer.bias], 0.01);
+
+// 4. Sajikan via REST Microservice
+misal app = web.buat_router();
+web.get(app, "/api/suhu", fungsi(req) {
+    kembalikan web.respons_json({"suhu_prediksi": out.data, "status": "optimal"});
+});
+```
 
 
 ---

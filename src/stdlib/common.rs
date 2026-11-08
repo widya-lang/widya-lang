@@ -163,6 +163,13 @@ fn get_mem_pool() -> &'static Mutex<HashMap<usize, f64>> {
 }
 
 pub fn baca_memori_volatil(alamat: usize, _span: &Span) -> Result<Value, Galat> {
+    if let Ok(mgr) = crate::sys::c_abi::get_raw_memory_manager().lock() {
+        if mgr.contains_range(alamat, 4) || mgr.mmio_registers.contains_key(&alamat) {
+            if let Ok(v) = mgr.read_typed(alamat, &crate::sys::c_abi::CType::U32) {
+                return Ok(Value::Number(v));
+            }
+        }
+    }
     let pool = get_mem_pool().lock().unwrap();
     let val = pool.get(&alamat).copied().unwrap_or(0.0);
     Ok(Value::Number(val))
@@ -174,6 +181,9 @@ pub fn tulis_memori_volatil(alamat: usize, nilai: &Value, span: &Span) -> Result
         Value::Bool(b) => if *b { 1.0 } else { 0.0 },
         _ => return Err(Galat::runtime("Nilai memori volatil harus berupa angka atau boolean", span)),
     };
+    if let Ok(mut mgr) = crate::sys::c_abi::get_raw_memory_manager().lock() {
+        let _ = mgr.write_typed(alamat, num, &crate::sys::c_abi::CType::U32);
+    }
     let mut pool = get_mem_pool().lock().unwrap();
     pool.insert(alamat, num);
     Ok(Value::Nil)

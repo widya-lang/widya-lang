@@ -1,0 +1,31 @@
+[package]
+name = "widya-enterprise-service"
+version = "1.0.0"
+authors = ["Widya Cloud Architecture Team <cloud@widya-lang.id>"]
+edition = "2026"
+license = "MIT OR Apache-2.0"
+description = "High-Throughput Enterprise Microservice Reference Blueprint in Widya-Lang"
+
+[dependencies]
+widya-core = { version = "2.6.0" }
+widya-kripto = { version = "2.6.0" }
+widyabase = { version = "2.6.0" }
+
+[security.sbom]
+format = "cyclonedx-1.5"
+generate_on_build = true
+pqc_signature_required = true
+license_compliance_policy = "strict"
+allowed_licenses = ["MIT", "Apache-2.0", "BSD-3-Clause", "ISC"]
+forbidden_licenses = ["GPL-3.0", "AGPL-3.0", "SSPL-1.0"]
+
+[observability]
+prometheus_endpoint = "/metrics"
+tracing_sample_rate = 1.0
+opentelemetry_collector = "http://localhost:4317"
+
+[concurrency.supervision]
+strategy = "OneForOne"
+max_restarts = 5
+window_seconds = 10
+isolated_panic_boundary = true

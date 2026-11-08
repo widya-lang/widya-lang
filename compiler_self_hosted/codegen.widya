@@ -1,0 +1,149 @@
+// compiler_self_hosted/codegen.widya
+// Generator Kode Mesin Native / C-Emitter mandiri dalam Widya-Lang
+// Menghasilkan kode C99 mandiri murni berdaulat dengan Zero-External-Dependency
+
+// 1. Header C99 Mandiri (Bebas Runtime Luar)
+fungsi emit_c_header() {
+    misal out = "/* ========================================================= */\n";
+    out = out + "/* Widya-Lang Self-Hosted Compiler Stage-1 Native Emission   */\n";
+    out = out + "/* Zero-External-Dependency Sovereign C99 Pipeline           */\n";
+    out = out + "/* ========================================================= */\n\n";
+    out = out + "#include <stdio.h>\n";
+    out = out + "#include <stdint.h>\n";
+    out = out + "#include <stdbool.h>\n";
+    out = out + "#include <stdlib.h>\n";
+    out = out + "#include <string.h>\n\n";
+    kembalikan out;
+}
+
+// 2. Emisi Tipe Data ke C
+fungsi emit_tipe_c(tipe_widya) {
+    jika tipe_widya == "Int" {
+        kembalikan "int64_t";
+    }
+    jika tipe_widya == "Float" {
+        kembalikan "double";
+    }
+    jika tipe_widya == "Bool" {
+        kembalikan "bool";
+    }
+    jika tipe_widya == "String" {
+        kembalikan "const char*";
+    }
+    jika tipe_widya == "Void" {
+        kembalikan "void";
+    }
+    kembalikan "int64_t";
+}
+
+// 3. Emisi Ekspresi ke C
+fungsi emit_ekspresi_c(expr) {
+    jika expr == nil {
+        kembalikan "0";
+    }
+    misal jenis = expr["jenis"];
+
+    jika jenis == "EXPR_LITERAL" {
+        jika expr["tipe_literal"] == "String" {
+            kembalikan "\"" + expr["nilai"] + "\"";
+        }
+        kembalikan expr["nilai"];
+    }
+    jika jenis == "EXPR_IDENTIFIER" {
+        kembalikan expr["nama"];
+    }
+    jika jenis == "EXPR_BINER" {
+        misal kiri = emit_ekspresi_c(expr["kiri"]);
+        misal kanan = emit_ekspresi_c(expr["kanan"]);
+        kembalikan "(" + kiri + " " + expr["op"] + " " + kanan + ")";
+    }
+    jika jenis == "EXPR_PANGGIL" {
+        misal arg_strs = [];
+        untuk a in expr["argumen"] {
+            tambah(arg_strs, emit_ekspresi_c(a));
+        }
+        misal args_joined = "";
+        misal i = 0;
+        selama i < panjang(arg_strs) {
+            jika i > 0 { args_joined = args_joined + ", "; }
+            args_joined = args_joined + arg_strs[i];
+            i = i + 1;
+        }
+        kembalikan expr["nama_fungsi"] + "(" + args_joined + ")";
+    }
+    kembalikan "0";
+}
+
+// 4. Emisi Pernyataan ke C
+fungsi emit_pernyataan_c(stmt) {
+    jika stmt == nil {
+        kembalikan "";
+    }
+    misal jenis = stmt["jenis"];
+
+    jika jenis == "STMT_MISAL" {
+        misal var_name = stmt["nama"];
+        misal val_str = emit_ekspresi_c(stmt["nilai"]);
+        kembalikan "    int64_t " + var_name + " = " + val_str + ";\n";
+    }
+    jika jenis == "STMT_KEMBALIKAN" {
+        misal val_str = emit_ekspresi_c(stmt["nilai"]);
+        kembalikan "    return " + val_str + ";\n";
+    }
+    jika jenis == "STMT_FUNGSI" {
+        kembalikan emit_fungsi_c(stmt);
+    }
+    // Default ekspresi
+    kembalikan "    " + emit_ekspresi_c(stmt) + ";\n";
+}
+
+// 5. Emisi Fungsi ke C
+fungsi emit_fungsi_c(fn_node) {
+    misal ret_c = emit_tipe_c(fn_node["tipe_kembalian"]);
+    misal fn_name = fn_node["nama"];
+    misal params_c = "";
+    misal i = 0;
+    selama i < panjang(fn_node["params"]) {
+        jika i > 0 { params_c = params_c + ", "; }
+        params_c = params_c + "int64_t " + fn_node["params"][i];
+        i = i + 1;
+    }
+    jika panjang(fn_node["params"]) == 0 {
+        params_c = "void";
+    }
+
+    misal out = ret_c + " widya_self_" + fn_name + "(" + params_c + ") {\n";
+    untuk s in fn_node["body"] {
+        out = out + emit_pernyataan_c(s);
+    }
+    jika ret_c == "void" {
+        out = out + "    return;\n";
+    } lainnya jika panjang(fn_node["body"]) == 0 {
+        out = out + "    return 0;\n";
+    }
+    out = out + "}\n\n";
+    kembalikan out;
+}
+
+// 6. Emisi Seluruh Program AST ke C
+fungsi emit_program_c(ast) {
+    misal out = emit_c_header();
+    jika ada_kunci(ast, "daftar_pernyataan") {
+        untuk stmt in ast["daftar_pernyataan"] {
+            out = out + emit_pernyataan_c(stmt);
+        }
+    }
+
+    out = out + "int main(int argc, char** argv) {\n";
+    out = out + "    printf(\"[Widya-Self Stage-1] Compiler Mandiri Berjalan Bebas Libc Eksternal\\n\");\n";
+    out = out + "    return 0;\n";
+    out = out + "}\n";
+    kembalikan out;
+}
+
+// 7. Kompatibilitas Fungsi Lama
+fungsi emit_c_fungsi_utama(isi_fungsi) {
+    misal kode = emit_c_header();
+    kode = kode + "int main() {\n" + isi_fungsi + "\n    return 0;\n}\n";
+    kembalikan kode;
+}

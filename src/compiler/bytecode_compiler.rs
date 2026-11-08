@@ -12,13 +12,49 @@ use std::collections::HashMap;
 pub struct CompilationUnit {
     pub chunks: Vec<BytecodeChunk>,
     pub function_map: HashMap<String, u16>,
+    pub native_function_names: Vec<String>,
     pub main_chunk_idx: usize,
 }
 
 impl CompilationUnit {
+    /// Mendaftarkan seluruh fungsi stdlib yang digunakan unit ini ke VirtualMachine
+    pub fn bind_natives(&self, vm: &mut VirtualMachine) {
+        let mut std_env = crate::environment::Environment::new();
+        crate::stdlib::register_stdlib(&mut std_env);
+        let all_std = std_env.get_all_local();
+
+        for (idx, name) in self.native_function_names.iter().enumerate() {
+            if let Some(crate::value::Value::Builtin(b)) = all_std.get(name).cloned() {
+                let func_ptr = b.func;
+                let fn_name = b.name.clone();
+                let arity = b.arity;
+                vm.register_native(idx as u16, move |vm_args: &[VmValue]| {
+                    if let Some(expected) = arity {
+                        if vm_args.len() != expected {
+                            return Err(format!(
+                                "Fungsi bawaan '{}' mengharapkan {} argumen, menerima {}",
+                                fn_name,
+                                expected,
+                                vm_args.len()
+                            ));
+                        }
+                    }
+                    let rt_args: Vec<crate::value::Value> =
+                        vm_args.iter().map(|v| v.to_runtime_value()).collect();
+                    let span = crate::error::Span::new(1, 1);
+                    match (func_ptr)(&rt_args, &span) {
+                        Ok(val) => Ok(VmValue::from_runtime_value(&val)),
+                        Err(e) => Err(format!("{}", e)),
+                    }
+                });
+            }
+        }
+    }
+
     /// Menjalankan program bytecode menggunakan Virtual Machine
     pub fn run(&self) -> Result<VmValue, String> {
         let mut vm = VirtualMachine::new();
+        self.bind_natives(&mut vm);
         for chunk in &self.chunks {
             vm.load_chunk(chunk.clone());
         }
@@ -30,6 +66,8 @@ pub struct BytecodeCompiler {
     chunks: Vec<BytecodeChunk>,
     current_chunk_idx: usize,
     function_map: HashMap<String, u16>,
+    native_map: HashMap<String, u16>,
+    native_names: Vec<String>,
     symbol_table: HashMap<String, u8>,
     next_register: u8,
     current_function_name: Option<String>,
@@ -41,10 +79,22 @@ impl BytecodeCompiler {
             chunks: vec![BytecodeChunk::new()],
             current_chunk_idx: 0,
             function_map: HashMap::new(),
+            native_map: HashMap::new(),
+            native_names: Vec::new(),
             symbol_table: HashMap::new(),
             next_register: 0,
             current_function_name: None,
         }
+    }
+
+    fn get_or_register_native(&mut self, name: &str) -> u16 {
+        if let Some(&id) = self.native_map.get(name) {
+            return id;
+        }
+        let id = self.native_names.len() as u16;
+        self.native_names.push(name.to_string());
+        self.native_map.insert(name.to_string(), id);
+        id
     }
 
     fn current_chunk(&mut self) -> &mut BytecodeChunk {
@@ -53,7 +103,7 @@ impl BytecodeCompiler {
 
     fn alloc_reg(&mut self) -> u8 {
         let r = self.next_register;
-        self.next_register += 1;
+        self.next_register = self.next_register.saturating_add(1);
         r
     }
 
@@ -83,7 +133,8 @@ impl BytecodeCompiler {
                 self.symbol_table.clear();
 
                 for (i, p) in params.iter().enumerate() {
-                    self.symbol_table.insert(p.clone(), i as u8);
+                    let clean_p = p.trim_start_matches('*').to_string();
+                    self.symbol_table.insert(clean_p, i as u8);
                 }
                 self.next_register = params.len() as u8;
 
@@ -131,6 +182,7 @@ impl BytecodeCompiler {
         Ok(CompilationUnit {
             chunks: self.chunks,
             function_map: self.function_map,
+            native_function_names: self.native_names,
             main_chunk_idx: 0,
         })
     }
@@ -138,8 +190,13 @@ impl BytecodeCompiler {
     pub fn compile_stmt(&mut self, stmt: &Stmt) -> Result<(), Galat> {
         match stmt {
             Stmt::VarDecl { name, initializer, span, .. } => {
-                let reg = self.alloc_reg();
-                self.symbol_table.insert(name.clone(), reg);
+                let reg = if let Some(&existing) = self.symbol_table.get(name) {
+                    existing
+                } else {
+                    let r = self.alloc_reg();
+                    self.symbol_table.insert(name.clone(), r);
+                    r
+                };
 
                 if let Some(init) = initializer {
                     let val_reg = self.compile_expr(init)?;
@@ -149,20 +206,45 @@ impl BytecodeCompiler {
                     self.current_chunk().emit(Opcode::LoadConst(reg, const_idx), span.line);
                 }
             }
-            Stmt::Assignment { target, value, span, .. } => {
+            Stmt::Assignment { target, op, value, span } => {
                 let val_reg = self.compile_expr(value)?;
                 match target {
                     AssignTarget::Variable(name) => {
-                        if let Some(&reg) = self.symbol_table.get(name) {
-                            self.current_chunk().emit(Opcode::Move(reg, val_reg), span.line);
+                        let reg = if let Some(&r) = self.symbol_table.get(name) {
+                            r
                         } else {
-                            let reg = self.alloc_reg();
-                            self.symbol_table.insert(name.clone(), reg);
-                            self.current_chunk().emit(Opcode::Move(reg, val_reg), span.line);
+                            let r = self.alloc_reg();
+                            self.symbol_table.insert(name.clone(), r);
+                            r
+                        };
+                        match op {
+                            AssignOp::Assign => {
+                                self.current_chunk().emit(Opcode::Move(reg, val_reg), span.line);
+                            }
+                            AssignOp::PlusAssign => {
+                                self.current_chunk().emit(Opcode::Add(reg, reg, val_reg), span.line);
+                            }
+                            AssignOp::MinusAssign => {
+                                self.current_chunk().emit(Opcode::Sub(reg, reg, val_reg), span.line);
+                            }
+                            AssignOp::StarAssign => {
+                                self.current_chunk().emit(Opcode::Mul(reg, reg, val_reg), span.line);
+                            }
+                            AssignOp::SlashAssign => {
+                                self.current_chunk().emit(Opcode::Div(reg, reg, val_reg), span.line);
+                            }
                         }
                     }
                     AssignTarget::Index { target: arr_expr, index: idx_expr } => {
-                        let arr_reg = self.compile_expr(arr_expr)?;
+                        let arr_reg = if let Expr::Identifier(ref var_name, _) = **arr_expr {
+                            if let Some(&sym_reg) = self.symbol_table.get(var_name) {
+                                sym_reg
+                            } else {
+                                self.compile_expr(arr_expr)?
+                            }
+                        } else {
+                            self.compile_expr(arr_expr)?
+                        };
                         let idx_reg = self.compile_expr(idx_expr)?;
                         self.current_chunk().emit(Opcode::ArraySet(arr_reg, idx_reg, val_reg), span.line);
                     }
@@ -176,7 +258,28 @@ impl BytecodeCompiler {
                     self.compile_stmt(s)?;
                 }
             }
-            Stmt::If { condition, then_branch, elif_branches: _, else_branch, span } => {
+            Stmt::If { condition, then_branch, elif_branches, else_branch, span } => {
+                if !elif_branches.is_empty() {
+                    let mut folded_else = else_branch.clone();
+                    for (elif_cond, elif_body) in elif_branches.iter().rev() {
+                        folded_else = Some(Box::new(Stmt::If {
+                            condition: elif_cond.clone(),
+                            then_branch: Box::new(elif_body.clone()),
+                            elif_branches: Vec::new(),
+                            else_branch: folded_else,
+                            span: span.clone(),
+                        }));
+                    }
+                    let desugared = Stmt::If {
+                        condition: condition.clone(),
+                        then_branch: then_branch.clone(),
+                        elif_branches: Vec::new(),
+                        else_branch: folded_else,
+                        span: span.clone(),
+                    };
+                    return self.compile_stmt(&desugared);
+                }
+
                 let cond_reg = self.compile_expr(condition)?;
 
                 // JumpIfFalse placeholder
@@ -265,7 +368,46 @@ impl BytecodeCompiler {
                     let after_loop = self.current_chunk().instructions.len();
                     let exit_offset = (after_loop as i32) - (jump_exit_idx as i32) - 1;
                     self.current_chunk().instructions[jump_exit_idx] = Opcode::JumpIfFalse(cond_reg, exit_offset);
+                } else {
+                    // Iterasi atas Array / String menggunakan indeks internal
+                    let arr_reg = self.compile_expr(iterable)?;
+                    let len_reg = self.alloc_reg();
+                    self.current_chunk().emit(Opcode::ArrayLen(len_reg, arr_reg), span.line);
+
+                    let idx_reg = self.alloc_reg();
+                    let zero_const = self.current_chunk().add_constant(VmValue::Int(0));
+                    self.current_chunk().emit(Opcode::LoadConst(idx_reg, zero_const), span.line);
+
+                    let var_reg = self.alloc_reg();
+                    self.symbol_table.insert(var_name.clone(), var_reg);
+
+                    let loop_start = self.current_chunk().instructions.len();
+                    let cond_reg = self.alloc_reg();
+                    self.current_chunk().emit(Opcode::Lt(cond_reg, idx_reg, len_reg), span.line);
+
+                    let jump_exit_idx = self.current_chunk().instructions.len();
+                    self.current_chunk().emit(Opcode::JumpIfFalse(cond_reg, 0), span.line);
+
+                    self.current_chunk().emit(Opcode::ArrayGet(var_reg, arr_reg, idx_reg), span.line);
+
+                    self.compile_stmt(body)?;
+
+                    let one_const = self.current_chunk().add_constant(VmValue::Int(1));
+                    let one_reg = self.alloc_reg();
+                    self.current_chunk().emit(Opcode::LoadConst(one_reg, one_const), span.line);
+                    self.current_chunk().emit(Opcode::Add(idx_reg, idx_reg, one_reg), span.line);
+
+                    let current_pos = self.current_chunk().instructions.len();
+                    let back_offset = (loop_start as i32) - (current_pos as i32) - 1;
+                    self.current_chunk().emit(Opcode::Jump(back_offset), span.line);
+
+                    let after_loop = self.current_chunk().instructions.len();
+                    let exit_offset = (after_loop as i32) - (jump_exit_idx as i32) - 1;
+                    self.current_chunk().instructions[jump_exit_idx] = Opcode::JumpIfFalse(cond_reg, exit_offset);
                 }
+            }
+            Stmt::TryCatch { try_block, .. } => {
+                self.compile_stmt(try_block)?;
             }
             Stmt::Return { value, span } => {
                 // Deteksi Otomatis Tail-Call Optimization (TCO)
@@ -445,12 +587,63 @@ impl BytecodeCompiler {
                     }
 
                     if (name == "tambah" || name == "push") && arguments.len() == 2 {
-                        let arr_r = self.compile_expr(&arguments[0])?;
+                        let arr_r = if let Expr::Identifier(ref var_name, _) = arguments[0] {
+                            if let Some(&sym_reg) = self.symbol_table.get(var_name) {
+                                sym_reg
+                            } else {
+                                self.compile_expr(&arguments[0])?
+                            }
+                        } else {
+                            self.compile_expr(&arguments[0])?
+                        };
                         let val_r = self.compile_expr(&arguments[1])?;
                         self.current_chunk().emit(Opcode::ArrayPush(arr_r, val_r), span.line);
                         return Ok(arr_r);
                     }
+
+                    // Fallback ke CallNative untuk fungsi stdlib apa pun!
+                    let native_id = self.get_or_register_native(name);
+                    let mut arg_regs = Vec::new();
+                    for arg in arguments {
+                        arg_regs.push(self.compile_expr(arg)?);
+                    }
+                    let contiguous_start = self.alloc_reg();
+                    for (i, &arg_r) in arg_regs.iter().enumerate() {
+                        if i > 0 {
+                            self.alloc_reg();
+                        }
+                        let target_reg = contiguous_start + (i as u8);
+                        self.current_chunk()
+                            .emit(Opcode::Move(target_reg, arg_r), span.line);
+                    }
+                    let dst = self.alloc_reg();
+                    self.current_chunk().emit(
+                        Opcode::CallNative(dst, native_id, contiguous_start, arguments.len() as u8),
+                        span.line,
+                    );
+                    return Ok(dst);
                 }
+
+                // Inline IIFE (Immediately Invoked Function Expression) untuk List/Dict Comprehension & Match
+                if let Expr::FunctionExpr { params, body, .. } = &**callee {
+                    for (p, arg) in params.iter().zip(arguments.iter()) {
+                        let arg_r = self.compile_expr(arg)?;
+                        self.symbol_table.insert(p.clone(), arg_r);
+                    }
+                    let mut result_reg = None;
+                    for stmt in body {
+                        if let Stmt::Return { value: Some(ret_expr), .. } = stmt {
+                            result_reg = Some(self.compile_expr(ret_expr)?);
+                            break;
+                        } else {
+                            self.compile_stmt(stmt)?;
+                        }
+                    }
+                    if let Some(r) = result_reg {
+                        return Ok(r);
+                    }
+                }
+
                 let reg = self.alloc_reg();
                 let const_idx = self.current_chunk().add_constant(VmValue::Nil);
                 self.current_chunk().emit(Opcode::LoadConst(reg, const_idx), span.line);

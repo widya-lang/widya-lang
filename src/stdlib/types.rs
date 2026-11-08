@@ -251,11 +251,17 @@ pub fn register_types(env: &mut Environment) {
     register_fn(env, "boolean", Some(1), builtin_ke_boolean);
 
     register_fn(env, "Ok", Some(1), builtin_ok);
+    register_fn(env, "Sukses", Some(1), builtin_ok);
     register_fn(env, "Err", Some(1), builtin_err);
+    register_fn(env, "Gagal", Some(1), builtin_err);
     register_fn(env, "Ada", Some(1), builtin_ada);
+    register_fn(env, "Some", Some(1), builtin_ada);
     register_fn(env, "Kosong", Some(0), builtin_kosong);
+    register_fn(env, "None", Some(0), builtin_kosong);
     register_fn(env, "buka", Some(1), builtin_buka);
+    register_fn(env, "unwrap", Some(1), builtin_buka);
     register_fn(env, "buka_atau", Some(2), builtin_buka_atau);
+    register_fn(env, "unwrap_or", Some(2), builtin_buka_atau);
     register_fn(env, "apakah_ok", Some(1), builtin_apakah_ok);
     register_fn(env, "apakah_err", Some(1), builtin_apakah_err);
 

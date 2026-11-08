@@ -1,0 +1,120 @@
+// compiler_self_hosted/ast.widya
+// Definisi node Abstract Syntax Tree mandiri dalam Widya-Lang
+// Memodelkan struktur hierarki sintaksis program untuk kompilator berdaulat
+
+struktur NodeEkspresi {
+    jenis,
+    nilai_literal
+}
+
+struktur ProgramAST {
+    jumlah_pernyataan,
+    status
+}
+
+// 1. Pembuat AST Program Utama (Kompatibilitas Backward & Ekstensi)
+fungsi buat_program_ast(jumlah = 0, daftar_stmt = []) {
+    misal j = jumlah;
+    jika j == 0 && panjang(daftar_stmt) > 0 {
+        j = panjang(daftar_stmt);
+    }
+    misal ast = {
+        "jumlah_pernyataan": j,
+        "daftar_pernyataan": daftar_stmt,
+        "status": "VALID"
+    };
+    kembalikan ast["status"];
+}
+
+fungsi buat_ast_lengkap(daftar_stmt) {
+    kembalikan {
+        "jumlah_pernyataan": panjang(daftar_stmt),
+        "daftar_pernyataan": daftar_stmt,
+        "status": "VALID"
+    };
+}
+
+// 2. Pembuat Node Deklarasi & Pernyataan
+fungsi buat_node_fungsi(nama, params = [], tipe_kembalian = "Void", body = []) {
+    kembalikan {
+        "jenis": "STMT_FUNGSI",
+        "nama": nama,
+        "params": params,
+        "tipe_kembalian": tipe_kembalian,
+        "body": body
+    };
+}
+
+fungsi buat_node_misal(nama, nilai_ekspresi, is_konstan = false) {
+    kembalikan {
+        "jenis": "STMT_MISAL",
+        "nama": nama,
+        "nilai": nilai_ekspresi,
+        "is_konstan": is_konstan
+    };
+}
+
+fungsi buat_node_kembalikan(nilai_ekspresi) {
+    kembalikan {
+        "jenis": "STMT_KEMBALIKAN",
+        "nilai": nilai_ekspresi
+    };
+}
+
+fungsi buat_node_jika(kondisi, then_block, else_block = []) {
+    kembalikan {
+        "jenis": "STMT_JIKA",
+        "kondisi": kondisi,
+        "then_block": then_block,
+        "else_block": else_block
+    };
+}
+
+fungsi buat_node_selama(kondisi, body) {
+    kembalikan {
+        "jenis": "STMT_SELAMA",
+        "kondisi": kondisi,
+        "body": body
+    };
+}
+
+fungsi buat_node_struktur(nama, fields = []) {
+    kembalikan {
+        "jenis": "STMT_STRUKTUR",
+        "nama": nama,
+        "fields": fields
+    };
+}
+
+// 3. Pembuat Node Ekspresi
+fungsi buat_node_biner(op, kiri, kanan) {
+    kembalikan {
+        "jenis": "EXPR_BINER",
+        "op": op,
+        "kiri": kiri,
+        "kanan": kanan
+    };
+}
+
+fungsi buat_node_literal(jenis, nilai) {
+    kembalikan {
+        "jenis": "EXPR_LITERAL",
+        "tipe_literal": jenis,
+        "nilai": nilai
+    };
+}
+
+fungsi buat_node_identifier(nama) {
+    kembalikan {
+        "jenis": "EXPR_IDENTIFIER",
+        "nama": nama
+    };
+}
+
+fungsi buat_node_panggilan(nama_fungsi, argumen = []) {
+    kembalikan {
+        "jenis": "EXPR_PANGGIL",
+        "nama_fungsi": nama_fungsi,
+        "argumen": argumen
+    };
+}

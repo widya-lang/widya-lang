@@ -1,0 +1,16 @@
+[package]
+name = "@widya/ai"
+version = "0.1.0"
+description = "Automatic Differentiation Autograd Engine & Neural Network Layers (PyTorch Parity)"
+authors = ["Widya Core Team <dev@widya-lang.org>"]
+license = "MIT"
+edition = "2026"
+repository = "https://github.com/widya-lang/widya-lang"
+
+[dependencies]
+"@widya/tensor" = "^0.1.0"
+
+[keamanan]
+tanda_tangan = "Ed25519"
+airgap_compatible = true
+

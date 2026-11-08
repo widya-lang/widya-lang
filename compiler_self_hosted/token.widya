@@ -1,0 +1,91 @@
+// compiler_self_hosted/token.widya
+// Definisi struktur Token, Posisi, dan TokenKind mandiri dalam Widya-Lang
+// Digunakan oleh Scanner (Lexer) dan Parser untuk representasi aliran token kode sumber
+
+struktur Posisi {
+    baris,
+    kolom
+}
+
+struktur Token {
+    jenis,
+    nilai,
+    baris,
+    kolom
+}
+
+// 1. Konstanta Jenis Kata Kunci (Nusantara & Internasional)
+fungsi kata_kunci_daftar() {
+    kembalikan {
+        "fungsi": "KATA_KUNCI_FUNGSI",
+        "fn": "KATA_KUNCI_FUNGSI",
+        "misal": "KATA_KUNCI_MISAL",
+        "let": "KATA_KUNCI_MISAL",
+        "var": "KATA_KUNCI_MISAL",
+        "kembalikan": "KATA_KUNCI_KEMBALIKAN",
+        "return": "KATA_KUNCI_KEMBALIKAN",
+        "jika": "KATA_KUNCI_JIKA",
+        "if": "KATA_KUNCI_JIKA",
+        "lain": "KATA_KUNCI_LAIN",
+        "else": "KATA_KUNCI_LAIN",
+        "selama": "KATA_KUNCI_SELAMA",
+        "while": "KATA_KUNCI_SELAMA",
+        "untuk": "KATA_KUNCI_UNTUK",
+        "for": "KATA_KUNCI_UNTUK",
+        "struktur": "KATA_KUNCI_STRUKTUR",
+        "struct": "KATA_KUNCI_STRUKTUR",
+        "cocokkan": "KATA_KUNCI_COCOKKAN",
+        "match": "KATA_KUNCI_COCOKKAN",
+        "impor": "KATA_KUNCI_IMPOR",
+        "import": "KATA_KUNCI_IMPOR",
+        "ekspor": "KATA_KUNCI_EKSPOR",
+        "export": "KATA_KUNCI_EKSPOR",
+        "benar": "LITERAL_BOOL",
+        "salah": "LITERAL_BOOL",
+        "true": "LITERAL_BOOL",
+        "false": "LITERAL_BOOL",
+        "kosong": "LITERAL_NIL",
+        "nil": "LITERAL_NIL"
+    };
+}
+
+// 2. Pembuatan Objek Token
+fungsi buat_token(jenis, nilai, baris = 1, kolom = 1) {
+    misal tok = {
+        "jenis": jenis,
+        "nilai": nilai,
+        "baris": baris,
+        "kolom": kolom
+    };
+    kembalikan tok["jenis"];
+}
+
+fungsi buat_token_objek(jenis, nilai, baris = 1, kolom = 1) {
+    kembalikan {
+        "jenis": jenis,
+        "nilai": nilai,
+        "baris": baris,
+        "kolom": kolom
+    };
+}
+
+// 3. Utilitas Pemeriksaan Token
+fungsi apakah_kata_kunci(kata) {
+    misal daftar = kata_kunci_daftar();
+    jika ada_kunci(daftar, kata) {
+        kembalikan true;
+    }
+    kembalikan false;
+}
+
+fungsi jenis_kata_kunci(kata) {
+    misal daftar = kata_kunci_daftar();
+    jika ada_kunci(daftar, kata) {
+        kembalikan daftar[kata];
+    }
+    kembalikan "IDENTIFIER";
+}
+
+fungsi nama_token(jenis) {
+    kembalikan jenis;
+}

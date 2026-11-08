@@ -1,0 +1,256 @@
+// packages/widya-dataframe/src/lib.wya
+// Pustaka Resmi WPM: @widya/dataframe (Setara Pandas untuk Widya-Lang)
+// Menyediakan manipulasi data tabular, filtering, group by, serialisasi CSV, & ringkasan statistik
+
+struktur DataFrame {
+    kolom,
+    baris,
+    jumlah_baris,
+    jumlah_kolom
+}
+
+// Utilitas Pemeriksaan String Angka
+fungsi apakah_string_angka(s) {
+    jika panjang(s) == 0 { kembalikan false; }
+    misal i = 0;
+    selama i < panjang(s) {
+        misal ch = s[i];
+        jika !(ch >= "0" && ch <= "9") && ch != "." && ch != "-" {
+            kembalikan false;
+        }
+        i = i + 1;
+    }
+    kembalikan true;
+}
+
+// 1. Pembuatan DataFrame dari Kolom dan Baris
+fungsi df_buat(kolom_list, baris_list) {
+    kembalikan DataFrame(kolom_list, baris_list, panjang(baris_list), panjang(kolom_list));
+}
+
+// 2. Pembuatan dari Array Objek Dictionary (e.g. [{"id": 1, "nama": "A"}, ...])
+fungsi dari_array_objek(arr) {
+    jika panjang(arr) == 0 {
+        kembalikan df_buat([], []);
+    }
+    misal contoh = arr[0];
+    misal daftar_kolom = kunci(contoh);
+    kembalikan df_buat(daftar_kolom, arr);
+}
+
+// 3. Parser CSV Sederhana Mandiri ke DataFrame
+fungsi dari_csv(csv_teks) {
+    misal baris_teks = pisah(csv_teks, "\n");
+    jika panjang(baris_teks) == 0 {
+        kembalikan df_buat([], []);
+    }
+    // Baris pertama adalah Header
+    misal header_str = baris_teks[0];
+    misal kolom_raw = pisah(header_str, ",");
+    misal kolom_list = [];
+    untuk k in kolom_raw {
+        tambah(kolom_list, k);
+    }
+
+    misal baris_list = [];
+    misal i = 1;
+    selama i < panjang(baris_teks) {
+        misal b_str = baris_teks[i];
+        jika panjang(b_str) > 0 {
+            misal cell_vals = pisah(b_str, ",");
+            misal item = {};
+            misal c = 0;
+            selama c < panjang(kolom_list) && c < panjang(cell_vals) {
+                misal col_name = kolom_list[c];
+                misal val_s = cell_vals[c];
+                jika apakah_string_angka(val_s) {
+                    item[col_name] = ke_angka(val_s);
+                } lainnya {
+                    item[col_name] = val_s;
+                }
+                c = c + 1;
+            }
+            tambah(baris_list, item);
+        }
+        i = i + 1;
+    }
+    kembalikan df_buat(kolom_list, baris_list);
+}
+
+// 4. Serialisasi ke Format CSV (df.to_csv())
+fungsi ke_csv(df) {
+    jika df.jumlah_baris == 0 {
+        kembalikan "";
+    }
+    // Header
+    misal out = "";
+    misal c = 0;
+    selama c < df.jumlah_kolom {
+        jika c > 0 { out = out + ","; }
+        out = out + df.kolom[c];
+        c = c + 1;
+    }
+    out = out + "\n";
+
+    // Baris Data
+    untuk b in df.baris {
+        misal baris_str = "";
+        misal col_idx = 0;
+        selama col_idx < df.jumlah_kolom {
+            misal k = df.kolom[col_idx];
+            jika col_idx > 0 { baris_str = baris_str + ","; }
+            jika ada_kunci(b, k) {
+                baris_str = baris_str + ke_teks(b[k]);
+            } lainnya {
+                baris_str = baris_str + "";
+            }
+            col_idx = col_idx + 1;
+        }
+        out = out + baris_str + "\n";
+    }
+    kembalikan out;
+}
+
+// 5. Pemilihan Kolom (Projection)
+fungsi pilih_kolom(df, daftar_kolom_terpilih) {
+    misal hasil_baris = [];
+    untuk b in df.baris {
+        misal item_baru = {};
+        untuk k in daftar_kolom_terpilih {
+            jika ada_kunci(b, k) {
+                item_baru[k] = b[k];
+            }
+        }
+        tambah(hasil_baris, item_baru);
+    }
+    kembalikan df_buat(daftar_kolom_terpilih, hasil_baris);
+}
+
+// 6. Penyaringan Data (Filtering)
+fungsi saring(df, nama_kolom, op, nilai_acuan) {
+    misal hasil_baris = [];
+    untuk b in df.baris {
+        jika ada_kunci(b, nama_kolom) {
+            misal v = b[nama_kolom];
+            misal lolos = false;
+            jika op == "==" { lolos = (v == nilai_acuan); }
+            lainnya jika op == "!=" { lolos = (v != nilai_acuan); }
+            lainnya jika op == ">" { lolos = (v > nilai_acuan); }
+            lainnya jika op == ">=" { lolos = (v >= nilai_acuan); }
+            lainnya jika op == "<" { lolos = (v < nilai_acuan); }
+            lainnya jika op == "<=" { lolos = (v <= nilai_acuan); }
+
+            jika lolos {
+                tambah(hasil_baris, b);
+            }
+        }
+    }
+    kembalikan df_buat(df.kolom, hasil_baris);
+}
+
+// 7. Pengambilan Sampel Baris (Head & Tail)
+fungsi kepala(df, n = 5) {
+    misal h_baris = [];
+    misal limit = n;
+    jika limit > df.jumlah_baris { limit = df.jumlah_baris; }
+    misal i = 0;
+    selama i < limit {
+        tambah(h_baris, df.baris[i]);
+        i = i + 1;
+    }
+    kembalikan df_buat(df.kolom, h_baris);
+}
+
+fungsi ekor(df, n = 5) {
+    misal t_baris = [];
+    misal start = df.jumlah_baris - n;
+    jika start < 0 { start = 0; }
+    misal i = start;
+    selama i < df.jumlah_baris {
+        tambah(t_baris, df.baris[i]);
+        i = i + 1;
+    }
+    kembalikan df_buat(df.kolom, t_baris);
+}
+
+// 8. Ringkasan Statistik Deskriptif (df.describe())
+fungsi ringkasan(df) {
+    misal hasil = [];
+    untuk k in df.kolom {
+        misal angka_list = [];
+        untuk b in df.baris {
+            misal v = b[k];
+            jika tipe(v) == "angka" {
+                tambah(angka_list, v);
+            }
+        }
+        misal jml = panjang(angka_list);
+        jika jml > 0 {
+            misal total = 0.0;
+            misal min_v = angka_list[0];
+            misal max_v = angka_list[0];
+            untuk x in angka_list {
+                total = total + x;
+                jika x < min_v { min_v = x; }
+                jika x > max_v { max_v = x; }
+            }
+            misal mean_v = total / (jml * 1.0);
+            tambah(hasil, {
+                "kolom": k,
+                "count": jml,
+                "mean": bulat(mean_v * 100.0) / 100.0,
+                "min": min_v,
+                "max": max_v
+            });
+        }
+    }
+    kembalikan hasil;
+}
+
+// 9. Agregasi Kelompok (GroupBy)
+fungsi kelompokkan_dan_hitung(df, kolom_kunci) {
+    misal grup = {};
+    untuk b in df.baris {
+        jika ada_kunci(b, kolom_kunci) {
+            misal k_val = ke_teks(b[kolom_kunci]);
+            jika ada_kunci(grup, k_val) {
+                grup[k_val] = grup[k_val] + 1;
+            } lainnya {
+                grup[k_val] = 1;
+            }
+        }
+    }
+    misal hasil_baris = [];
+    misal keys = kunci(grup);
+    untuk k in keys {
+        tambah(hasil_baris, {
+            "kategori": k,
+            "jumlah": grup[k]
+        });
+    }
+    kembalikan df_buat(["kategori", "jumlah"], hasil_baris);
+}
+
+fungsi kelompokkan_dan_jumlah(df, kolom_kunci, kolom_target) {
+    misal grup = {};
+    untuk b in df.baris {
+        jika ada_kunci(b, kolom_kunci) && ada_kunci(b, kolom_target) {
+            misal k_val = ke_teks(b[kolom_kunci]);
+            misal t_val = b[kolom_target];
+            jika ada_kunci(grup, k_val) {
+                grup[k_val] = grup[k_val] + t_val;
+            } lainnya {
+                grup[k_val] = t_val;
+            }
+        }
+    }
+    misal hasil_baris = [];
+    misal keys = kunci(grup);
+    untuk k in keys {
+        tambah(hasil_baris, {
+            "kategori": k,
+            "total": grup[k]
+        });
+    }
+    kembalikan df_buat(["kategori", "total"], hasil_baris);
+}

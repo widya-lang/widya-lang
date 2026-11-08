@@ -1,0 +1,168 @@
+// ==========================================================
+// Modul Aturan Penilaian Pencak Silat Standar PERSILAT 2022/2026
+// ArenaSilat.id - Platform Digital Pencak Silat Berdaulat
+// ==========================================================
+
+misal POIN_PUKULAN = 1;
+misal POIN_TENDANGAN = 2;
+misal POIN_BANTINGAN = 3;
+
+misal HUKUMAN_TEGURAN_1 = -1;
+misal HUKUMAN_TEGURAN_2 = -2;
+misal HUKUMAN_PERINGATAN_1 = -5;
+misal HUKUMAN_PERINGATAN_2 = -10;
+
+struktur EvaluasiVAR {
+    kartu_merah_tersisa,
+    kartu_biru_tersisa,
+    total_review_sukses,
+    total_review_gagal,
+
+    fungsi ajukan_var(sudut, alasan) {
+        cetak("🚨 Pengajuan Kartu Video Review (VAR) oleh Sudut: " + sudut + " | Alasan: " + alasan);
+        jika sudut == "MERAH" {
+            jika ini.kartu_merah_tersisa <= 0 {
+                cetak("❌ Gagal: Kuota Kartu VAR Sudut Merah sudah habis!");
+                kembalikan salah;
+            }
+        } lainnya jika sudut == "BIRU" {
+            jika ini.kartu_biru_tersisa <= 0 {
+                cetak("❌ Gagal: Kuota Kartu VAR Sudut Biru sudah habis!");
+                kembalikan salah;
+            }
+        }
+        kembalikan benar;
+    }
+
+    fungsi putuskan_var(sudut, keputusan_sah) {
+        jika keputusan_sah {
+            ini.total_review_sukses += 1;
+            cetak("✅ KEPUTUSAN DEWAN HAKIM: PROTES DITERIMA (SAH)! Kuota Kartu VAR " + sudut + " Tetap Utuh.");
+        } lainnya {
+            ini.total_review_gagal += 1;
+            jika sudut == "MERAH" {
+                ini.kartu_merah_tersisa -= 1;
+            } lainnya jika sudut == "BIRU" {
+                ini.kartu_biru_tersisa -= 1;
+            }
+            cetak("❌ KEPUTUSAN DEWAN HAKIM: PROTES DITOLAK (TIDAK SAH)! 1 Kartu VAR " + sudut + " Hangus.");
+        }
+    }
+}
+
+struktur KonsensusJuri {
+    jumlah_juri,
+    kuorum_minimal,
+    jendela_toleransi_detik,
+
+    fungsi cek_kuorum(suara_juri) {
+        misal setuju = 0;
+        untuk s dalam suara_juri {
+            jika s == benar {
+                setuju += 1;
+            }
+        }
+        jika setuju >= ini.kuorum_minimal {
+            cetak("⚡ KONSENSUS TERCAPAI: " + ke_teks(setuju) + "/" + ke_teks(ini.jumlah_juri) + " Juri Sepakat -> Poin SAH!");
+            kembalikan benar;
+        } lainnya {
+            cetak("⚠️ Konsensus Gagal: Hanya " + ke_teks(setuju) + "/" + ke_teks(ini.jumlah_juri) + " Juri (Butuh min " + ke_teks(ini.kuorum_minimal) + ")");
+            kembalikan salah;
+        }
+    }
+}
+
+struktur PoinPesilat {
+    nama_pesilat,
+    sudut,
+    kontingen,
+    pukulan,
+    tendangan,
+    bantingan,
+    hukuman,
+    total_skor,
+
+    fungsi tambah_pukulan() {
+        ini.pukulan += 1;
+        ini.total_skor += POIN_PUKULAN;
+        cetak("🥊 Pukulan Masuk (" + ini.sudut + "): +1 | Total: " + ke_teks(ini.total_skor));
+    }
+
+    fungsi tambah_tendangan() {
+        ini.tendangan += 1;
+        ini.total_skor += POIN_TENDANGAN;
+        cetak("🥋 Tendangan Masuk (" + ini.sudut + "): +2 | Total: " + ke_teks(ini.total_skor));
+    }
+
+    fungsi tambah_bantingan() {
+        ini.bantingan += 1;
+        ini.total_skor += POIN_BANTINGAN;
+        cetak("💥 Bantingan Sah (" + ini.sudut + "): +3 | Total: " + ke_teks(ini.total_skor));
+    }
+
+    fungsi beri_teguran(tingkat) {
+        jika tingkat == 1 {
+            ini.hukuman += HUKUMAN_TEGURAN_1;
+            ini.total_skor += HUKUMAN_TEGURAN_1;
+            cetak("⚠️ Teguran 1 (" + ini.sudut + "): -1 Poin | Total: " + ke_teks(ini.total_skor));
+        } lainnya jika tingkat == 2 {
+            ini.hukuman += HUKUMAN_TEGURAN_2;
+            ini.total_skor += HUKUMAN_TEGURAN_2;
+            cetak("⚠️ Teguran 2 (" + ini.sudut + "): -2 Poin | Total: " + ke_teks(ini.total_skor));
+        }
+    }
+
+    fungsi beri_peringatan(tingkat) {
+        jika tingkat == 1 {
+            ini.hukuman += HUKUMAN_PERINGATAN_1;
+            ini.total_skor += HUKUMAN_PERINGATAN_1;
+            cetak("🚨 Peringatan 1 (" + ini.sudut + "): -5 Poin | Total: " + ke_teks(ini.total_skor));
+        } lainnya jika tingkat == 2 {
+            ini.hukuman += HUKUMAN_PERINGATAN_2;
+            ini.total_skor += HUKUMAN_PERINGATAN_2;
+            cetak("🚨 Peringatan 2 (" + ini.sudut + "): -10 Poin | Total: " + ke_teks(ini.total_skor));
+        }
+    }
+
+    fungsi ringkasan() {
+        kembalikan {
+            "pesilat": ini.nama_pesilat,
+            "sudut": ini.sudut,
+            "kontingen": ini.kontingen,
+            "total_skor": ini.total_skor,
+            "rincian": {
+                "pukulan": ini.pukulan,
+                "tendangan": ini.tendangan,
+                "bantingan": ini.bantingan,
+                "hukuman": ini.hukuman
+            }
+        };
+    }
+}
+
+struktur PertandinganArena {
+    id_partai,
+    gelanggang,
+    kelas_tanding,
+    pesilat_merah,
+    pesilat_biru,
+    babak_aktif,
+    status_selesai,
+
+    fungsi evaluasi_pemenang() {
+        cetak("\n=== HASIL PERTANDINGAN PARTAI " + ini.id_partai + " ===");
+        cetak("Sudut Merah [" + ini.pesilat_merah.nama_pesilat + "]: " + ke_teks(ini.pesilat_merah.total_skor));
+        cetak("Sudut Biru  [" + ini.pesilat_biru.nama_pesilat + "]: " + ke_teks(ini.pesilat_biru.total_skor));
+
+        jika ini.pesilat_merah.total_skor > ini.pesilat_biru.total_skor {
+            cetak("🏆 PEMENANG: SUDUT MERAH (" + ini.pesilat_merah.nama_pesilat + " - " + ini.pesilat_merah.kontingen + ")");
+            kembalikan ini.pesilat_merah.nama_pesilat;
+        } lainnya jika ini.pesilat_biru.total_skor > ini.pesilat_merah.total_skor {
+            cetak("🏆 PEMENANG: SUDUT BIRU (" + ini.pesilat_biru.nama_pesilat + " - " + ini.pesilat_biru.kontingen + ")");
+            kembalikan ini.pesilat_biru.nama_pesilat;
+        } lainnya {
+            cetak("⚖️ HASIL SERI - Dilanjutkan ke evaluasi selisih nilai murni / babak tambahan!");
+            kembalikan "SERI";
+        }
+    }
+}

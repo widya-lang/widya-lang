@@ -11,6 +11,7 @@ pub mod solutions;
 pub mod pure_args;
 pub mod sovereign;
 pub mod office;
+pub mod bridges;
 
 pub use frontier::*;
 pub use devops::*;
@@ -21,3 +22,5 @@ pub use solutions::*;
 pub use pure_args::*;
 pub use sovereign::*;
 pub use office::*;
+pub use bridges::*;
+

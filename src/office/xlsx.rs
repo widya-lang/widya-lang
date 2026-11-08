@@ -76,7 +76,7 @@ impl CellValue {
     }
 }
 
-fn format_idr_number(n: f64, decimals: usize) -> String {
+pub fn format_idr_number(n: f64, decimals: usize) -> String {
     let is_neg = n < 0.0;
     let abs_n = n.abs();
     let int_part = abs_n.trunc() as u64;

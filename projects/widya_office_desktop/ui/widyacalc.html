@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book1.xlsx — WidyaCalc (SheetCraft Sovereign Parity)</title>
+  <link rel="stylesheet" href="css/office_theme.css">
+  <style>
+    /* WidyaCalc specific refinements */
+    .app-calc-standalone {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .calc-table.hide-gridlines td, .calc-table.hide-gridlines th {
+      border-color: transparent !important;
+    }
+    .calc-table.hide-headings thead, .calc-table.hide-headings .calc-row-header {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="app-calc-standalone">
+
+  <!-- 1. WidyaCalc Titlebar (SheetCraft Green Theme #107c41) -->
+  <header class="wc-header">
+    <div class="wc-header-left">
+      <!-- 9-Dot Sovereign Suite App Launcher -->
+      <button class="wc-waffle-btn" id="waffleBtn" onclick="toggleWaffleMenu()" title="Peluncur Aplikasi WidyaOffice Suite (ArtCraft Parity)">
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+      </button>
+
+      <!-- AutoSave Pill Switch -->
+      <div class="wc-autosave" title="Penyimpanan Otomatis Aktif">
+        <span>AutoSave</span>
+        <div class="wc-switch" id="autoSaveToggle" onclick="toggleAutoSave()">
+          <div class="wc-switch-knob"></div>
+        </div>
+      </div>
+
+      <!-- Quick Access Toolbar (Monochrome SVG Icons) -->
+      <button class="wc-quick-btn" onclick="saveSpreadsheet()" title="Simpan Buku Kerja (Ctrl+S)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/>
+        </svg>
+      </button>
+      <button class="wc-quick-btn" onclick="document.execCommand('undo')" title="Undo (Ctrl+Z)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 3a5 5 0 0 0-5 5v1H1.5a.5.5 0 0 0-.354.854l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5A.5.5 0 0 0 6.5 9H5V8a4 4 0 1 1 4 4v1a5 5 0 0 0-1-9.9z"/>
+        </svg>
+      </button>
+      <button class="wc-quick-btn" onclick="document.execCommand('redo')" title="Redo (Ctrl+Y)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 3a5 5 0 0 1 5 5v1h1.5a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 9.5 9H11V8a4 4 0 1 0-4 4v1a5 5 0 0 1 1-9.9z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Center: Document Title & Search Pill -->
+    <div class="wc-header-center">
+      <div class="wc-doc-title-box">
+        <span class="wc-doc-title" id="wcCalcTitle">Laporan_Keuangan_2026.xlsx</span>
+        <span class="wc-doc-status">— Saved to this PC</span>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
+      </div>
+
+      <div class="wc-search-pill">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="#707070"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <input type="text" class="wc-search-input" placeholder="Search commands, formulas, and cells (Alt+Q)" />
+      </div>
+    </div>
+
+    <!-- Right: Badges & Profile -->
+    <div class="wc-header-right">
+      <button class="wc-header-btn" onclick="openFindDialog()" title="Cari Sel (Ctrl+F)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <span>Find</span>
+      </button>
+      <button class="wc-share-pill" onclick="exportXLSX()" title="Ekspor OpenXML XLSX (ISO/IEC 29500)">
+        <span>Export XLSX</span>
+      </button>
+      <div class="wc-user-avatar" style="background:#107c41;">CU</div>
+    </div>
+  </header>
+
+  <!-- Waffle Flyout App Switcher Menu -->
+  <div class="wc-waffle-dropdown" id="waffleDropdown">
+    <div style="font-size:12px; font-weight:700; color:#616161; text-transform:uppercase; letter-spacing:0.5px;">Sovereign Office Suite</div>
+    <div class="wc-waffle-grid">
+      <a class="wc-waffle-item" href="widyawriter.html">
+        <div class="wc-waffle-icon" style="background:#2b47b5;">W</div>
+        <div>
+          <div style="font-weight:700; color:#183691;">WidyaWriter</div>
+          <div style="font-size:11px; color:#555;">WordCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyacalc.html" style="background:#e6f4ea; border-color:#a8dab5;">
+        <div class="wc-waffle-icon" style="background:#107c41;">C</div>
+        <div>
+          <div style="font-weight:700; color:#0e6b37;">WidyaCalc</div>
+          <div style="font-size:11px; color:#555;">SheetCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyaimpress.html">
+        <div class="wc-waffle-icon" style="background:#c43e1c;">I</div>
+        <div>
+          <div style="font-weight:700; color:#a13014;">WidyaImpress</div>
+          <div style="font-size:11px; color:#555;">DeckCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyapdf.html">
+        <div class="wc-waffle-icon" style="background:#d9381e;">P</div>
+        <div>
+          <div style="font-weight:700; color:#b0220c;">WidyaPDF</div>
+          <div style="font-size:11px; color:#555;">PDFCraft Parity</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. SheetCraft Ribbon 10 Tabs Strip -->
+  <nav class="wc-tab-strip">
+    <button class="wc-tab tab-file" onclick="openBackstage('home')">File</button>
+    <button class="wc-tab active" data-tab="home" onclick="switchRibbonTab('home')">Home</button>
+    <button class="wc-tab" data-tab="insert" onclick="switchRibbonTab('insert')">Insert</button>
+    <button class="wc-tab" data-tab="draw" onclick="switchRibbonTab('draw')">Draw</button>
+    <button class="wc-tab" data-tab="pagelayout" onclick="switchRibbonTab('pagelayout')">Page Layout</button>
+    <button class="wc-tab" data-tab="formulas" onclick="switchRibbonTab('formulas')">Formulas</button>
+    <button class="wc-tab" data-tab="data" onclick="switchRibbonTab('data')">Data</button>
+    <button class="wc-tab" data-tab="review" onclick="switchRibbonTab('review')">Review</button>
+    <button class="wc-tab" data-tab="view" onclick="switchRibbonTab('view')">View</button>
+    <button class="wc-tab" data-tab="help" onclick="switchRibbonTab('help')">Help</button>
+  </nav>
+
+  <!-- 3. Ribbon Panel for WidyaCalc (GridCraft Parity 10 Tabs) -->
+  <section class="wc-ribbon-panel" id="wcRibbonPanel">
+
+    <!-- Tab 1: HOME (Active) -->
+    <div class="wc-ribbon-tab-content active" id="tabContent-home">
+      <!-- Group: Clipboard -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" title="Paste (Ctrl+V)" onclick="calcPaste()">
+            <svg width="22" height="22" viewBox="0 0 16 16" fill="#107c41"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3z"/></svg>
+            <span>Paste</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" title="Cut (Ctrl+X)" onclick="calcCut()">Cut</button>
+            <button class="wc-tool-btn" title="Copy (Ctrl+C)" onclick="calcCopy()">Copy</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Clipboard</div>
+      </div>
+
+      <!-- Group: Font -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <div class="wc-row" style="gap:4px;">
+            <select class="wc-select" style="width:115px;" onchange="setCalcFontFamily(this.value)">
+              <option selected>Calibri</option><option>Aptos</option><option>Segoe UI</option><option>Consolas</option>
+            </select>
+            <select class="wc-select" style="width:52px;" onchange="setCalcFontSize(this.value)">
+              <option>9</option><option>10</option><option selected>11</option><option>12</option><option>14</option><option>16</option>
+            </select>
+            <button class="wc-tool-btn" title="Bold (Ctrl+B)" onclick="toggleCalcBold()"><b>B</b></button>
+            <button class="wc-tool-btn" title="Italic (Ctrl+I)" onclick="toggleCalcItalic()"><i>I</i></button>
+            <button class="wc-tool-btn" title="Underline (Ctrl+U)" onclick="toggleCalcUnderline()"><u>U</u></button>
+          </div>
+          <div class="wc-row" style="gap:3px;">
+            <button class="wc-tool-btn" title="Border Kotak Semua" onclick="setCalcBorder('all')">田 All</button>
+            <button class="wc-tool-btn" title="Border Bawah Tebal" onclick="setCalcBorder('bottom-double')">_ Double</button>
+            <button class="wc-tool-btn" title="Tanpa Border" onclick="setCalcBorder('none')">✕ None</button>
+            <button class="wc-tool-btn" title="Warna Latar Kuning" onclick="setCalcFillColor('#fef08a')">🪣</button>
+            <button class="wc-tool-btn" title="Warna Font Hijau" onclick="setCalcFontColor('#107c41')">🎨</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Font</div>
+      </div>
+
+      <!-- Group: Alignment -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <div class="wc-row" style="gap:3px;">
+            <button class="wc-tool-btn" title="Top Align" onclick="setCalcVerticalAlign('top')">Top</button>
+            <button class="wc-tool-btn active" title="Middle Align" onclick="setCalcVerticalAlign('middle')">Mid</button>
+            <button class="wc-tool-btn" title="Bottom Align" onclick="setCalcVerticalAlign('bottom')">Bot</button>
+            <button class="wc-tool-btn" title="Wrap Text" onclick="toggleCalcWrapText()">Wrap</button>
+          </div>
+          <div class="wc-row" style="gap:3px;">
+            <button class="wc-tool-btn active" title="Align Left" onclick="setCalcAlign('left')">Left</button>
+            <button class="wc-tool-btn" title="Center" onclick="setCalcAlign('center')">Center</button>
+            <button class="wc-tool-btn" title="Align Right" onclick="setCalcAlign('right')">Right</button>
+            <button class="wc-tool-btn" title="Merge &amp; Center" onclick="toggleCalcMerge()">Merge</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Alignment</div>
+      </div>
+
+      <!-- Group: Number -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <select class="wc-select" style="width:130px;" onchange="setCalcNumberFormat(this.value)">
+            <option value="general">General</option>
+            <option value="currency_idr" selected>Currency (Rp)</option>
+            <option value="currency_usd">Currency ($)</option>
+            <option value="percent">Percentage (%)</option>
+            <option value="comma">Comma Style (,)</option>
+            <option value="date_short">Short Date</option>
+            <option value="text">Text</option>
+          </select>
+          <div class="wc-row" style="gap:3px;">
+            <button class="wc-tool-btn" title="Rupiah" onclick="setCalcNumberFormat('currency_idr')"><b>Rp</b></button>
+            <button class="wc-tool-btn" title="Persen" onclick="setCalcNumberFormat('percent')"><b>%</b></button>
+            <button class="wc-tool-btn" title="Koma" onclick="setCalcNumberFormat('comma')"><b>,</b></button>
+            <button class="wc-tool-btn" title="Tambah Desimal" onclick="increaseCalcDecimal()">.00</button>
+            <button class="wc-tool-btn" title="Kurangi Desimal" onclick="decreaseCalcDecimal()">.0</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Number</div>
+      </div>
+
+      <!-- Group: Styles -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" title="Format Bersyarat" onclick="showToast('Format Bersyarat Diterapkan', '🎨')">
+            <span style="font-size:18px; color:#107c41;">📊</span>
+            <span>Cond. Format</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" title="Format sebagai Tabel" onclick="insertTable()">
+            <span style="font-size:18px; color:#107c41;">▦</span>
+            <span>Format Table</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Styles</div>
+      </div>
+
+      <!-- Group: Cells -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="insertCalcRow()">+ Baris</button>
+            <button class="wc-tool-btn" onclick="insertCalcCol()">+ Kolom</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="deleteCalcRow()">- Baris</button>
+            <button class="wc-tool-btn" onclick="deleteCalcCol()">- Kolom</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="autoFitCol()" title="AutoFit Kolom">AutoFit</button>
+            <button class="wc-tool-btn" onclick="promptRowHeight()" title="Tinggi Baris">Tinggi</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Cells</div>
+      </div>
+
+      <!-- Group: Editing -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="autoSum('SUM')" title="AutoSum (=SUM)">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">Σ</span>
+            <span>AutoSum</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="applyAutoFill()" title="Isi Otomatis Deret (Fill)">Fill</button>
+            <button class="wc-tool-btn" onclick="clearSelectedCell()" title="Bersihkan Isi Sel">Clear</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="sortCalcSelected(true)" title="Urutkan A-Z">Sort A-Z</button>
+            <button class="wc-tool-btn" onclick="toggleAutoFilter()" title="Filter Kolom">Filter</button>
+          </div>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openFindDialog()" title="Cari &amp; Ganti (Ctrl+F)">
+            <span style="font-size:18px; color:#107c41;">🔍</span>
+            <span>Find</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Editing</div>
+      </div>
+    </div>
+
+    <!-- Tab 2: INSERT -->
+    <div class="wc-ribbon-tab-content" id="tabContent-insert">
+      <!-- Group: Tables -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertTable()" title="Sisipkan Tabel">
+            <span style="font-size:18px; color:#107c41;">▦</span>
+            <span>Table</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertPivotTable()" title="Sisipkan PivotTable">
+            <span style="font-size:18px; color:#107c41;">📑</span>
+            <span>PivotTable</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Tables</div>
+      </div>
+
+      <!-- Group: Illustrations -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertCalcPicture()" title="Sisipkan Gambar">
+            <span style="font-size:18px; color:#107c41;">🖼️</span>
+            <span>Pictures</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertCalcShape('rect')" title="Sisipkan Bentuk">
+            <span style="font-size:18px; color:#107c41;">▭</span>
+            <span>Shapes</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Illustrations</div>
+      </div>
+
+      <!-- Group: Charts -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertCalcChart('bar')" title="Bagan Kolom / Batang SVG">
+            <span style="font-size:18px; color:#107c41;">📊</span>
+            <span>Column</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertCalcChart('line')" title="Bagan Garis Tren SVG">
+            <span style="font-size:18px; color:#107c41;">📈</span>
+            <span>Line</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertCalcChart('pie')" title="Bagan Lingkaran (Pie) SVG">
+            <span style="font-size:18px; color:#107c41;">🥧</span>
+            <span>Pie Chart</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Charts (SVG Native)</div>
+      </div>
+
+      <!-- Group: Sparklines -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" onclick="insertSparkline('line')">Line Sparkline</button>
+          <button class="wc-tool-btn" onclick="insertSparkline('column')">Column Sparkline</button>
+        </div>
+        <div class="wc-group-label">Sparklines</div>
+      </div>
+
+      <!-- Group: Filters & Links -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertSlicer()" title="Sisipkan Slicer">
+            <span style="font-size:18px; color:#107c41;">🎛️</span>
+            <span>Slicer</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Sisipkan Tautan Hyperlink', '🔗')">
+            <span style="font-size:18px; color:#107c41;">🔗</span>
+            <span>Link</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Filters &amp; Links</div>
+      </div>
+
+      <!-- Group: Text & Symbols -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Sisipkan Kotak Teks Spreadsheet', '📝')">
+            <span style="font-size:18px; color:#107c41;">T</span>
+            <span>Text Box</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('OMML')" title="Sisipkan Rumus Matematika OMML">
+            <span style="font-size:18px; color:#107c41;">π</span>
+            <span>Equation</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Text &amp; Symbols</div>
+      </div>
+    </div>
+
+    <!-- Tab 3: DRAW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-draw">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg active" onclick="showToast('Mode Seleksi Sel Aktif', '👆')">
+            <span style="font-size:18px; color:#107c41;">👆</span>
+            <span>Select</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mode Gambar dengan Pena Aktif', '✏️')">
+            <span style="font-size:18px; color:#107c41;">✏️</span>
+            <span>Draw</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mode Penghapus Aktif', '🧹')">
+            <span style="font-size:18px; color:#107c41;">🧹</span>
+            <span>Eraser</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Tools</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" style="border-bottom:3px solid #000000;" onclick="showToast('Pena Hitam', '🖊️')">Hitam 0.5mm</button>
+          <button class="wc-tool-btn" style="border-bottom:3px solid #185abd;" onclick="showToast('Pena Biru', '🖊️')">Biru 0.5mm</button>
+          <button class="wc-tool-btn" style="border-bottom:3px solid #ffff00;" onclick="showToast('Stabilo Kuning', '🖍️')">Stabilo Kuning</button>
+        </div>
+        <div class="wc-group-label">Pens</div>
+      </div>
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Konversi Tulisan Tangan ke Rumus OMML', '📐')">
+            <span style="font-size:18px; color:#107c41;">📐</span>
+            <span>Ink to Math</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Convert</div>
+      </div>
+    </div>
+
+    <!-- Tab 4: PAGE LAYOUT -->
+    <div class="wc-ribbon-tab-content" id="tabContent-pagelayout">
+      <!-- Group: Themes -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Tema Spreadsheet: Excel Office Klasik', '🎨')">
+            <span style="font-size:18px; color:#107c41;">🎨</span>
+            <span>Themes</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Themes</div>
+      </div>
+
+      <!-- Group: Page Setup -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="setPageMargins('Normal')">Margin Normal</button>
+            <button class="wc-tool-btn" onclick="setPageMargins('Narrow')">Margin Sempit</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="setPageOrientation('Portrait')">Potret</button>
+            <button class="wc-tool-btn" onclick="setPageOrientation('Landscape')">Lanskap</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="setPageSize('A4')">A4 (21x29.7cm)</button>
+            <button class="wc-tool-btn" onclick="setPrintArea()">Set Print Area</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Page Setup</div>
+      </div>
+
+      <!-- Group: Sheet Options -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; font-size:11px;">
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" checked onchange="toggleGridlinesView(this)"> Garis Kisi (Gridlines)
+          </label>
+          <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" checked onchange="toggleHeadingsView(this)"> Judul Kolom &amp; Baris (Headings)
+          </label>
+        </div>
+        <div class="wc-group-label">Sheet Options</div>
+      </div>
+    </div>
+
+    <!-- Tab 5: FORMULAS -->
+    <div class="wc-ribbon-tab-content" id="tabContent-formulas">
+      <!-- Group: Function Library -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('SUM')" title="Fungsi Matematika SUM">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">Σ</span>
+            <span>=SUM</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('AVERAGE')" title="Fungsi Statistik AVERAGE">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">x̄</span>
+            <span>=AVERAGE</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('IF')" title="Fungsi Logika IF">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">?</span>
+            <span>=IF</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('VLOOKUP')" title="Fungsi Pencarian VLOOKUP">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">🔍</span>
+            <span>=VLOOKUP</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('XLOOKUP')" title="Fungsi Modern XLOOKUP">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">⚡</span>
+            <span>=XLOOKUP</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFormula('PMT')" title="Fungsi Finansial PMT">
+            <span style="font-size:18px; font-weight:700; color:#107c41;">💰</span>
+            <span>=PMT</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Function Library</div>
+      </div>
+
+      <!-- Group: Formula Auditing -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" id="btnShowFormulas" onclick="toggleShowFormulas()" title="Tampilkan Rumus di Sel (Ctrl+`)">
+            <span style="font-size:18px; color:#107c41;">fx</span>
+            <span>Show Formulas</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn" onclick="calcAuditTracePrecedents()">Trace Precedents</button>
+            <button class="wc-tool-btn" onclick="calcAuditTraceDependents()">Trace Dependents</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Formula Auditing</div>
+      </div>
+
+      <!-- Group: Calculation -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="calcCalculateNow()" title="Kalkulasi Seluruh Rumus (F9)">
+            <span style="font-size:18px; color:#107c41;">⚡</span>
+            <span>Calculate Now</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Calculation</div>
+      </div>
+    </div>
+
+    <!-- Tab 6: DATA -->
+    <div class="wc-ribbon-tab-content" id="tabContent-data">
+      <!-- Group: Get & Transform Data -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Impor Data dari CSV / Teks', '📄')">
+            <span style="font-size:18px; color:#107c41;">📄</span>
+            <span>From CSV</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="exportCSV()" title="Ekspor ke CSV">
+            <span style="font-size:18px; color:#107c41;">📤</span>
+            <span>Export CSV</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Get &amp; Transform</div>
+      </div>
+
+      <!-- Group: Sort & Filter -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="sortCalcSelected(true)" title="Urutkan A-Z">
+            <span style="font-size:18px; color:#107c41;">🔤</span>
+            <span>Sort A-Z</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="sortCalcSelected(false)" title="Urutkan Z-A">
+            <span style="font-size:18px; color:#107c41;">🔤</span>
+            <span>Sort Z-A</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleAutoFilter()" title="Filter Otomatis">
+            <span style="font-size:18px; color:#107c41;">⚡</span>
+            <span>Filter ▾</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Sort &amp; Filter</div>
+      </div>
+
+      <!-- Group: Data Tools -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="textToColumns()" title="Pisahkan Teks ke Kolom">
+            <span style="font-size:18px; color:#107c41;">✂️</span>
+            <span>Text to Cols</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="flashFill()" title="Flash Fill Cerdas">
+            <span style="font-size:18px; color:#107c41;">⚡</span>
+            <span>Flash Fill</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="removeDuplicates()" title="Hapus Data Duplikat">
+            <span style="font-size:18px; color:#107c41;">🧹</span>
+            <span>Duplicates</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openDataValidationDialog()" title="Atur Validasi Data Sel">
+            <span style="font-size:18px; color:#107c41;">🛡️</span>
+            <span>Validation</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Data Tools</div>
+      </div>
+    </div>
+
+    <!-- Tab 7: REVIEW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-review">
+      <!-- Group: Proofing -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="checkSpellingKBBI()">
+            <span style="font-size:18px; color:#107c41;">✓</span>
+            <span>Spelling KBBI</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showWorkbookStats()">
+            <span style="font-size:18px; color:#107c41;">📊</span>
+            <span>Workbook Stats</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Proofing &amp; Stats</div>
+      </div>
+
+      <!-- Group: Protect & Security -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="protectSheet()">
+            <span style="font-size:18px; color:#107c41;">🔒</span>
+            <span>Protect Sheet</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="protectWorkbook()">
+            <span style="font-size:18px; color:#107c41;">🛡️</span>
+            <span>Protect Book</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Protect</div>
+      </div>
+    </div>
+
+    <!-- Tab 8: VIEW -->
+    <div class="wc-ribbon-tab-content" id="tabContent-view">
+      <!-- Group: Workbook Views -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn active" onclick="showToast('Tampilan Kisi Normal', '▦')">Normal</button>
+          <button class="wc-tool-btn" onclick="showToast('Pratinjau Batas Halaman (Page Break)', '📄')">Page Break</button>
+          <button class="wc-tool-btn" onclick="showToast('Tata Letak Halaman Cetak', '📐')">Page Layout</button>
+        </div>
+        <div class="wc-group-label">Workbook Views</div>
+      </div>
+
+      <!-- Group: Freeze Panes & Window -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleFreezeHeader()" title="Bekukan Baris Atas">
+            <span style="font-size:18px; color:#107c41;">❄️</span>
+            <span>Freeze Rows</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleFreezeFirstColumn()" title="Bekukan Kolom Pertama">
+            <span style="font-size:18px; color:#107c41;">❄️</span>
+            <span>Freeze Cols</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Freeze Panes</div>
+      </div>
+
+      <!-- Group: Zoom -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn" onclick="setCalcZoom(100)">100%</button>
+          <button class="wc-tool-btn" onclick="setCalcZoom(125)">125%</button>
+          <button class="wc-tool-btn" onclick="setCalcZoom(150)">150%</button>
+        </div>
+        <div class="wc-group-label">Zoom</div>
+      </div>
+    </div>
+
+    <!-- Tab 9: HELP -->
+    <div class="wc-ribbon-tab-content" id="tabContent-help">
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showCalcHelp()">
+            <span style="font-size:20px; color:#107c41;">❓</span>
+            <span>Help (F1)</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="verifyCalcIntegrity()">
+            <span style="font-size:20px; color:#107c41;">🛡️</span>
+            <span>NIST FIPS 204</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showWorkbookStats()">
+            <span style="font-size:20px; color:#107c41;">📊</span>
+            <span>Audit XLSX</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Sovereignty &amp; Help</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 4. Excel Formula Bar (fx) -->
+  <div style="height:32px; background:#ffffff; border-bottom:1px solid #d1d1d1; display:flex; align-items:center; padding:0 8px; gap:8px;">
+    <!-- Active Cell Name Box -->
+    <input type="text" id="calcNameBox" class="calc-name-box" value="B4" style="width:64px; height:22px; border:1px solid #c8c8c8; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#242424; text-align:center; outline:none;" title="Kotak Nama (Name Box) - Ketik koordinat sel lalu tekan Enter" />
+    <div style="color:#707070; font-size:12px; font-style:italic; font-weight:700; width:20px; text-align:center;">fx</div>
+    <!-- Formula Input -->
+    <input type="text" id="calcFormulaInput" data-bar="calcFormulaBar" class="calc-formula-input" style="flex:1; height:22px; border:1px solid #c8c8c8; border-radius:2px; padding:0 8px; font-size:12px; font-family:'Consolas', monospace; outline:none;" placeholder="Masukkan nilai atau rumus (misal: =SUM(B4:E4))" onkeydown="if(event.key==='Enter') evaluateActiveFormula()" />
+  </div>
+
+  <!-- 5. Spreadsheet Reactive Grid Container -->
+  <div id="workspace-calc" style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative;">
+  <main style="flex:1; overflow:auto; background:#ffffff; position:relative;" class="calc-grid-wrapper" id="calcGridContainer">
+    <div id="activeCalcChartCard" style="display:none;"></div>
+    <table class="calc-table" id="calcGridTable"></table>
+
+    <!-- AutoFilter Popover Dropdown -->
+    <div class="calc-filter-popover" id="calcFilterPopover" style="display:none;">
+      <div class="calc-filter-header">
+        <span id="calcFilterColTitle" style="font-weight:700; color:#107c41;">Filter Kolom</span>
+        <span style="cursor:pointer; font-weight:700; padding:0 4px;" onclick="WidyaCalc.closeFilterPopover()">✕</span>
+      </div>
+      <div class="calc-filter-actions">
+        <button class="calc-filter-action-btn" onclick="WidyaCalc.sortColumnFromFilter(true)">↑ Urutkan Terkecil ke Terbesar (A-Z)</button>
+        <button class="calc-filter-action-btn" onclick="WidyaCalc.sortColumnFromFilter(false)">↓ Urutkan Terbesar ke Terkecil (Z-A)</button>
+      </div>
+      <div class="calc-filter-search-box">
+        <input type="text" id="calcFilterSearchInput" placeholder="Cari nilai unik..." oninput="WidyaCalc.filterChecklistSearch(this.value)">
+      </div>
+      <div class="calc-filter-checklist" id="calcFilterChecklist"></div>
+      <div class="calc-filter-footer">
+        <button class="mini-btn" onclick="WidyaCalc.clearColumnFilter()">Hapus Filter</button>
+        <button class="btn-primary" onclick="WidyaCalc.applyColumnFilter()" style="padding:2px 8px; font-size:0.75rem; background:#107c41; color:#fff; border:none; border-radius:3px;">Terapkan</button>
+      </div>
+    </div>
+
+    <!-- Floating Find & Replace Dialog -->
+    <div class="calc-find-dialog" id="calcFindDialog" style="display:none; position:absolute; top:20px; right:20px; background:#fff; border:1px solid #d1d1d1; border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,0.15); padding:14px; width:340px; z-index:100;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700; color:#107c41;">🔍 Cari dan Ganti Data</span>
+        <span style="cursor:pointer; font-weight:700; padding:0 4px;" onclick="WidyaCalc.closeFindDialog()">✕</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <input type="text" id="calcFindInput" placeholder="Teks atau nilai pencarian..." style="padding:4px 8px; border:1px solid #c8c8c8; border-radius:3px;" onkeydown="if(event.key==='Enter') WidyaCalc.findNext()">
+        <input type="text" id="calcReplaceInput" placeholder="Nilai pengganti..." style="padding:4px 8px; border:1px solid #c8c8c8; border-radius:3px;">
+      </div>
+      <div style="font-size:0.75rem; color:#605e5c; display:flex; gap:12px; margin-top:8px;">
+        <label style="cursor:pointer;"><input type="checkbox" id="calcFindMatchCase"> Cocokkan Huruf Besar/Kecil</label>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:12px;">
+        <button class="mini-btn" onclick="WidyaCalc.findNext()" style="padding:4px 8px;">Berikutnya</button>
+        <button class="mini-btn" onclick="WidyaCalc.replaceOne()" style="padding:4px 8px;">Ganti</button>
+        <button class="mini-btn" onclick="WidyaCalc.replaceAll()" style="padding:4px 8px;">Ganti Semua</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+  <!-- 6. Bottom Sheet Tabs & Status Bar -->
+  <footer style="height:56px; display:flex; flex-direction:column; border-top:1px solid #d1d1d1;">
+    <!-- Sheet Tabs -->
+    <div class="calc-sheet-tabs-bar" id="calcSheetTabs" style="height:28px; background:#f8f8f8; display:flex; align-items:center; padding:0 8px; gap:4px; border-bottom:1px solid #e1e1e1;"></div>
+
+    <!-- Status Bar -->
+    <div class="wc-statusbar">
+      <div class="wc-statusbar-left">
+        <div class="wc-status-item">Ready</div>
+        <div class="wc-status-item" id="calcStatCoord">B4</div>
+        <div class="wc-status-item" id="calcStatVal"></div>
+        <div class="wc-status-item" id="calcCalcSum">SUM: 0</div>
+        <div class="wc-status-item" id="calcCalcAvg">AVERAGE: 0</div>
+        <div class="wc-status-item" id="calcCalcCount">COUNT: 0</div>
+        <div class="wc-status-item" id="calcAutoSummary" style="color:#107c41; font-weight:600;"></div>
+      </div>
+      <div class="wc-statusbar-right">
+        <div class="wc-zoom-slider">
+          <input type="range" class="wc-zoom-range" min="50" max="200" value="100" oninput="setCalcZoom(this.value)" />
+          <span id="calcZoomVal">100%</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 7. SheetCraft Backstage Start Screen -->
+  <div class="wc-backstage" id="wcBackstage">
+    <div class="wc-backstage-sidebar" style="background-color:#107c41;">
+      <button class="wc-backstage-back-btn" onclick="closeBackstage()" title="Kembali ke Lembar Kerja (Esc)">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+          <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+        </svg>
+      </button>
+
+      <div class="wc-backstage-item active" data-bstab="home" onclick="switchBackstageTab('home')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="new" onclick="switchBackstageTab('new')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+        <span>New</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="open" onclick="switchBackstageTab('open')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10.4a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V10.4a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+        <span>Open</span>
+      </div>
+
+      <div class="wc-backstage-divider"></div>
+
+      <div class="wc-backstage-item" data-bstab="info" onclick="switchBackstageTab('info')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        <span>Info</span>
+      </div>
+      <div class="wc-backstage-item" onclick="saveSpreadsheet(); closeBackstage();">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/></svg>
+        <span>Save</span>
+      </div>
+      <div class="wc-backstage-item" onclick="openSaveAsDialog()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Save As</span>
+      </div>
+      <div class="wc-backstage-item" onclick="exportXLSX()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Export XLSX</span>
+      </div>
+      <div class="wc-backstage-item" onclick="closeBackstage()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        <span>Close</span>
+      </div>
+    </div>
+
+    <!-- Backstage Content Panes -->
+    <div class="wc-backstage-content">
+      <div class="wc-backstage-pane" id="bsPane-home">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">WidyaCalc Spreadsheet</h1>
+        <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 12px;">New Workbook</div>
+        <div class="wc-template-grid">
+          <div class="wc-template-card" onclick="closeBackstage()">
+            <div class="wc-template-preview" style="align-items:center; justify-content:center;">
+              <span style="font-size:32px; color:#107c41;">▦</span>
+            </div>
+            <div class="wc-template-label">Blank Workbook</div>
+          </div>
+          <div class="wc-template-card" onclick="closeBackstage()">
+            <div class="wc-template-preview" style="background:#e6f4ea; border-color:#107c41;">
+              <div style="height:4px; background:#107c41; width:100%; margin-bottom:6px;"></div>
+              <div style="font-size:7px; font-weight:700; color:#0e6b37;">Anggaran 2026</div>
+              <div style="font-size:5px; color:#555; margin-top:4px;">Model Keuangan Nasional</div>
+            </div>
+            <div class="wc-template-label">Financial Budget</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wc-backstage-pane" id="bsPane-new" style="display:none;">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">New Workbook</h1>
+        <div class="wc-template-grid">
+          <div class="wc-template-card" onclick="closeBackstage()">
+            <div class="wc-template-preview" style="align-items:center; justify-content:center;">
+              <span style="font-size:36px; color:#107c41;">▦</span>
+            </div>
+            <div class="wc-template-label">Blank Workbook</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wc-backstage-pane" id="bsPane-open" style="display:none;">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">Open Workbook</h1>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="padding:12px; background:#fafafa; border:1px solid #eee; border-radius:4px; cursor:pointer;" onclick="closeBackstage()">
+            <strong style="color:#107c41;">📊 Laporan_Keuangan_2026.xlsx</strong>
+            <div style="font-size:12px; color:#666;">This PC › Documents</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wc-backstage-pane" id="bsPane-info" style="display:none;">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">Workbook Information</h1>
+        <div style="border:1px solid #e1e1e1; border-radius:6px; padding:16px;">
+          <div style="font-weight:700; font-size:14px; margin-bottom:8px;">Standard OpenXML XLSX (ISO/IEC 29500)</div>
+          <div style="font-size:12.5px; color:#555;">Kalkulasi reaktif berdaulat dengan 100% native math & formula parser.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/office_commands.js"></script>
+  <script src="js/calc_core.js"></script>
+  <script src="js/office_suite_ui.js"></script>
+  <script src="js/widyacalc_ui.js"></script>
+  <script>
+    // Inisialisasi Engine Spreadsheet WidyaCalc
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.WidyaCalc && typeof window.WidyaCalc.init === 'function') {
+        window.WidyaCalc.init();
+      }
+    });
+  </script>
+
+  <!-- WidyaCalc Modals -->
+<div class="modal-backdrop" id="calcFormatCellsModal">
+    <div class="modal-dialog" style="width: 540px; max-width:95vw;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>▦✍️</span>
+          <span style="font-weight:700;">Format Sel (Format Cells - Ctrl+1)</span>
+        </div>
+        <div class="win-btn" onclick="WidyaCalc.closeFormatCellsModal()">✕</div>
+      </div>
+
+      <div class="modal-tabs" style="display:flex; border-bottom:1px solid var(--border-medium); background:#f8fafc; padding:0 12px;">
+        <button class="modal-tab-btn active" id="tabBtnCellNumber" onclick="WidyaCalc.switchFormatCellTab('number')" style="padding:8px 14px; border:none; background:transparent; font-weight:700; color:var(--accent-calc); border-bottom:2px solid var(--accent-calc); cursor:pointer;">Angka</button>
+        <button class="modal-tab-btn" id="tabBtnCellAlign" onclick="WidyaCalc.switchFormatCellTab('align')" style="padding:8px 14px; border:none; background:transparent; font-weight:600; color:var(--text-secondary); cursor:pointer;">Perataan</button>
+        <button class="modal-tab-btn" id="tabBtnCellFont" onclick="WidyaCalc.switchFormatCellTab('font')" style="padding:8px 14px; border:none; background:transparent; font-weight:600; color:var(--text-secondary); cursor:pointer;">Font</button>
+        <button class="modal-tab-btn" id="tabBtnCellBorder" onclick="WidyaCalc.switchFormatCellTab('border')" style="padding:8px 14px; border:none; background:transparent; font-weight:600; color:var(--text-secondary); cursor:pointer;">Garis Tepi</button>
+        <button class="modal-tab-btn" id="tabBtnCellFill" onclick="WidyaCalc.switchFormatCellTab('fill')" style="padding:8px 14px; border:none; background:transparent; font-weight:600; color:var(--text-secondary); cursor:pointer;">Warna Sel</button>
+      </div>
+
+      <div class="modal-body" style="padding:16px 20px;">
+        <!-- TAB 1: NUMBER -->
+        <div id="formatCellTabNumber">
+          <label class="form-label" style="font-weight:700; margin-bottom:8px; display:block;">Kategori Format Angka:</label>
+          <div style="display:grid; grid-template-columns: 160px 1fr; gap:16px; border:1px solid var(--border-medium); border-radius:4px; padding:10px;">
+            <div style="display:flex; flex-direction:column; gap:4px; border-right:1px solid var(--border-light); padding-right:8px;">
+              <button class="btn-tool active" onclick="WidyaCalc.selectCellCategory('general')" style="justify-content:flex-start;">Umum (General)</button>
+              <button class="btn-tool" onclick="WidyaCalc.selectCellCategory('currency')" style="justify-content:flex-start;">Mata Uang (Rp)</button>
+              <button class="btn-tool" onclick="WidyaCalc.selectCellCategory('percentage')" style="justify-content:flex-start;">Persentase (%)</button>
+              <button class="btn-tool" onclick="WidyaCalc.selectCellCategory('number')" style="justify-content:flex-start;">Angka Desimal</button>
+            </div>
+            <div style="font-size:0.8rem; color:#475569;">
+              <div style="font-weight:700; margin-bottom:6px;">Contoh Tampilan:</div>
+              <div id="cellFormatSample" style="padding:8px 12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; font-family:monospace; font-weight:700; color:#0f172a; margin-bottom:10px;">12345.67</div>
+              <div style="font-size:0.75rem; color:#64748b;">Format sel mengubah cara penyajian data numerik di kisi tanpa mengubah nilai formula asli.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: ALIGNMENT -->
+        <div id="formatCellTabAlign" style="display:none;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:14px;">
+            <div class="form-group">
+              <label class="form-label" style="font-weight:600;">Perataan Horizontal:</label>
+              <select class="ribbon-select" id="cellAlignH" style="width:100%; height:30px;">
+                <option value="left" selected>Rata Kiri</option>
+                <option value="center">Rata Tengah</option>
+                <option value="right">Rata Kanan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-weight:600;">Perataan Vertikal:</label>
+              <select class="ribbon-select" id="cellAlignV" style="width:100%; height:30px;">
+                <option value="top">Rata Atas</option>
+                <option value="middle" selected>Rata Tengah</option>
+                <option value="bottom">Rata Bawah</option>
+              </select>
+            </div>
+          </div>
+          <label style="display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer;">
+            <input type="checkbox" id="cellWrapText" />
+            <span>Bungkus Teks Otomatis (Wrap Text)</span>
+          </label>
+        </div>
+
+        <!-- TAB 3: FONT -->
+        <div id="formatCellTabFont" style="display:none;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:12px;">
+            <div class="form-group">
+              <label class="form-label" style="font-weight:600;">Gaya Font:</label>
+              <div style="display:flex; gap:8px;">
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="cellFontBold" /> <b>Tebal</b></label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="cellFontItalic" /> <i>Miring</i></label>
+                <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" id="cellFontUnderline" /> <u>Garis</u></label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-weight:600;">Warna Teks:</label>
+              <input type="color" id="cellFontColor" value="#0f172a" class="ribbon-color-picker" style="width:40px; height:28px;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: BORDER -->
+        <div id="formatCellTabBorder" style="display:none;">
+          <label class="form-label" style="font-weight:600; margin-bottom:8px; display:block;">Pilih Garis Tepi:</label>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">
+            <button class="btn-tool" onclick="WidyaCalc.setCellBorderPreset('all')">⊞ Semua</button>
+            <button class="btn-tool" onclick="WidyaCalc.setCellBorderPreset('box-thick')">⎍ Kotak Tebal</button>
+            <button class="btn-tool" onclick="WidyaCalc.setCellBorderPreset('bottom-double')">⎏ Bawah Ganda</button>
+            <button class="btn-tool" onclick="WidyaCalc.setCellBorderPreset('none')">⊘ Hapus</button>
+          </div>
+        </div>
+
+        <!-- TAB 5: FILL -->
+        <div id="formatCellTabFill" style="display:none;">
+          <label class="form-label" style="font-weight:600; margin-bottom:8px; display:block;">Warna Latar Belakang Sel (Fill Shading):</label>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <input type="color" id="cellBgColor" value="#ffffff" class="ribbon-color-picker" style="width:50px; height:34px;" />
+            <button class="btn-tool" onclick="document.getElementById('cellBgColor').value='#ffffff'">Reset Putih</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-tool" onclick="WidyaCalc.closeFormatCellsModal()" style="padding:6px 14px;">Batal</button>
+        <button class="btn-primary" onclick="WidyaCalc.applyFormatCellsModal()" style="padding:6px 18px; font-weight:700;">Terapkan Format</button>
+      </div>
+    </div>
+  </div>
+<div class="modal-backdrop" id="calcTemplatesModal">
+    <div class="modal-dialog" style="width:700px; max-width:95vw;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>📊</span>
+          <span>Katalog Template Spreadsheet Finansial & Operasional</span>
+        </div>
+        <div class="win-btn" onclick="WidyaCalc.closeTemplatesModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
+          Pilih model lembar kerja siap pakai berikut dengan formula otomatis, format mata uang, dan garis tepi terstruktur:
+        </p>
+        <div class="template-modal-grid">
+          <!-- Template 1: Cashflow -->
+          <div class="template-card" onclick="WidyaCalc.loadTemplate('cashflow')">
+            <div>
+              <span class="template-card-badge badge-calc">Keuangan</span>
+              <div class="template-card-icon">💰</div>
+              <div class="template-card-title">Laporan Arus Kas Bulanan</div>
+              <div class="template-card-desc">Pencatatan kas masuk, kas keluar operasional, formula saldo kumulatif otomatis =SUM(), dan format Rupiah (IDR).</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 2: RAB Proyek -->
+          <div class="template-card" onclick="WidyaCalc.loadTemplate('rab')">
+            <div>
+              <span class="template-card-badge badge-biz">Anggaran Proyek</span>
+              <div class="template-card-icon">🏗️</div>
+              <div class="template-card-title">Rencana Anggaran Biaya (RAB) TI</div>
+              <div class="template-card-desc">Struktur pengadaan perangkat, lisensi, volume, satuan, harga satuan, subtotal otomatis, dan perhitungan pajak PPN 11%.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 3: Scorecard KPI -->
+          <div class="template-card" onclick="WidyaCalc.loadTemplate('kpi')">
+            <div>
+              <span class="template-card-badge badge-formal">Evaluasi Kinerja</span>
+              <div class="template-card-icon">🎯</div>
+              <div class="template-card-title">Matriks Skor KPI & Sasaran Strategis</div>
+              <div class="template-card-desc">Indikator kinerja utama, persentase bobot, target kuartal, realisasi capaian, dan formula skor tertimbang otomatis.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="WidyaCalc.closeTemplatesModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popovers & Toast Notifications -->
+  <div class="calc-validation-popover" id="calcValidationPopover" style="display:none;"></div>
+  <div class="wc-tellme-dropdown" id="tellMeDropdown" style="display:none;"></div>
+  <div class="wc-toast" id="wcToastNotification"></div>
+
+  <!-- Modal: Save As Format & Directory Picker Dialog -->
+  <div class="wc-modal-backdrop" id="saveAsModal">
+    <div class="wc-modal-box" style="max-width:540px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title" id="saveAsModalTitle">💾 Simpan Sebagai (Save As)</span>
+        <button class="wc-modal-close" onclick="closeModal('saveAsModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Nama Berkas:</label>
+        <input type="text" id="saveAsFileName" value="The_Open_Studio_Handbook" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px;" onkeydown="if(event.key==='Enter') confirmSaveAs()" />
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <label style="font-weight:600; font-size:12.5px;">Lokasi Direktori / Folder Penyimpanan:</label>
+          <span style="font-size:11px; color:#64748b;">Ketik path atau jelajahi folder</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('C:\\Satriyo')">📁 C:\Satriyo</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Dokumen')">📄 Dokumen</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Desktop')">🖥️ Desktop</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Unduhan')">⬇️ Unduhan</button>
+        </div>
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+          <input type="text" id="saveAsFolderLocation" value="C:\Satriyo\" style="flex:1; padding:7px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" placeholder="Contoh: C:\Satriyo\ atau D:\Arsip\" />
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="browseFolderLocation()" title="Buka Penjelajah Direktori Interaktif">📂 Pilih Direktori...</button>
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="pickNativeOsFolder()" title="Pilih Direktori via Windows Explorer">🖥️ Windows...</button>
+        </div>
+        <input type="file" id="nativeFolderPickerInput" webkitdirectory style="display:none;" onchange="onNativeFolderSelected(event)" />
+
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Format Berkas Penyimpanan:</label>
+        <select id="saveAsFileType" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px; background:#fff;">
+          <option value="docx">📄 Word Document OpenXML (*.docx) — ISO/IEC 29500</option>
+          <option value="pdf">📑 PDF Berdaulat (*.pdf) — ISO 32000-1 Vektor Murni</option>
+          <option value="odt">📝 OpenDocument Text (*.odt) — Standar Terbuka ISO 26300</option>
+          <option value="html">🌐 Halaman Web HTML (*.html)</option>
+          <option value="txt">📃 Dokumen Teks Polos (*.txt)</option>
+        </select>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('docx')">📄 Simpan Cepat sebagai Word Document (*.docx) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('pdf')">📑 Simpan Cepat sebagai PDF Vektor (*.pdf) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('odt')">📝 Simpan Cepat sebagai OpenDocument (*.odt) ke Direktori Di Atas</button>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="wc-btn-secondary" onclick="closeModal('saveAsModal')">Batal</button>
+        <button class="wc-btn-primary" onclick="confirmSaveAs()">💾 Simpan ke Direktori</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sovereign Interactive Directory Picker -->
+  <div class="wc-modal-backdrop" id="folderPickerModal" style="z-index:10005;">
+    <div class="wc-modal-box" style="max-width:620px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">📂 Pilih Direktori Penyimpanan Berkas</span>
+        <button class="wc-modal-close" onclick="closeFolderPickerModal()">✕</button>
+      </div>
+      <div class="wc-modal-body" style="padding:14px 18px;">
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; font-weight:600;" onclick="navigateFolderPickerParent()" title="Naik ke Folder Induk">⬆ Naik</button>
+          <input type="text" id="folderPickerCurrentPath" value="C:\Satriyo\" style="flex:1; padding:6px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" onkeydown="if(event.key==='Enter') loadFolderPickerPath(this.value)" />
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px;" onclick="loadFolderPickerPath(document.getElementById('folderPickerCurrentPath').value)">Buka</button>
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; color:#185abd; font-weight:600;" onclick="createFolderInPicker()">+ Folder Baru</button>
+        </div>
+        <div id="folderPickerDrivesBar" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;"></div>
+        <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <span>DAFTAR SUB-FOLDER (Klik 2x untuk membuka):</span>
+          <span id="folderPickerItemCount" style="font-weight:normal;">0 sub-folder</span>
+        </div>
+        <div id="folderPickerList" style="min-height:200px; max-height:250px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px; background:#ffffff; padding:4px;"></div>
+        <div style="margin-top:10px; padding:8px 10px; background:#f8fafc; border-radius:4px; display:flex; align-items:center; gap:8px; font-size:12px; border:1px solid #e2e8f0;">
+          <span style="font-weight:700; color:#334155;">Direktori Dipilih:</span>
+          <span id="folderPickerSelectedLabel" style="color:#185abd; font-family:monospace; font-weight:600; word-break:break-all;">C:\Satriyo\</span>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="wc-btn-secondary" onclick="pickNativeOsFolder()">🖥️ Dialog Windows Explorer...</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="wc-btn-secondary" onclick="closeFolderPickerModal()">Batal</button>
+          <button type="button" class="wc-btn-primary" onclick="selectCurrentPickerFolder()">✓ Pilih Folder Ini</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

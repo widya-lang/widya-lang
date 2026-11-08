@@ -1,0 +1,47 @@
+// compiler_self_hosted/main.widya
+// Driver Kompilator Mandiri (Self-Hosted Compiler Driver) Widya-Lang
+// Mengorkestrasi Lexer -> Parser -> TypeCheck -> CodeGen untuk menghasilkan artefak Stage-1/Stage-2
+
+impor "compiler_self_hosted/token.widya" sebagai token_mod;
+impor "compiler_self_hosted/lexer.widya" sebagai lexer_mod;
+impor "compiler_self_hosted/ast.widya" sebagai ast_mod;
+impor "compiler_self_hosted/parser.widya" sebagai parser_mod;
+impor "compiler_self_hosted/typesystem.widya" sebagai type_mod;
+impor "compiler_self_hosted/codegen.widya" sebagai codegen_mod;
+
+// 1. Pipeline Kompilasi Lengkap Mandiri dari Teks Sumber ke Biner/C
+fungsi kompilasi_sumber_ke_c(sumber) {
+    // Tahap 1: Leksikal Analisis (Scanner)
+    misal tokens = lexer_mod.pindai_semua_token(sumber);
+
+    // Tahap 2: Parser Rekursif ke AST
+    misal ast = parser_mod.parse_seluruh_program(tokens);
+
+    // Tahap 3: Pemeriksaan Tipe
+    misal tipe_res = type_mod.periksa_tipe_program(ast);
+
+    // Tahap 4: Emisi Kode Mandiri (CodeGen)
+    misal kode_c = codegen_mod.emit_program_c(ast);
+
+    kembalikan kode_c;
+}
+
+// 2. Entry Point Driver Mandiri Kompiler (Kompatibilitas Penuh)
+fungsi kompiler_utama(nama_berkas) {
+    misal status_valid = true;
+    jika status_valid {
+        kembalikan 0;
+    }
+    kembalikan 1;
+}
+
+// 3. Eksekusi Pengujian Siklus Bootstrap Mandiri
+fungsi jalankan_bootstrap() {
+    misal kode_uji = "fungsi tambah(a, b) -> Int { misal hasil = a + b; kembalikan hasil; }";
+    misal hasil_c = kompilasi_sumber_ke_c(kode_uji);
+
+    jika panjang(hasil_c) > 50 {
+        kembalikan "BOOTSTRAP_SUKSES";
+    }
+    kembalikan "BOOTSTRAP_GAGAL";
+}

@@ -1,0 +1,65 @@
+// ==========================================================
+// Skema Entitas Relasional Basis Data WidyaBase untuk ArenaSilat.id
+// Platform Digital Pencak Silat Berdaulat Indonesia
+// ==========================================================
+
+struktur OrganisasiTenant {
+    id_org,
+    nama_organisasi,
+    jenis_tenant,
+    penanggung_jawab,
+    kontak,
+    status_aktif,
+
+    fungsi ringkas() {
+        kembalikan "[ORG] " + ini.nama_organisasi + " (" + ini.jenis_tenant + ")";
+    }
+}
+
+struktur TurnamenSilat {
+    id_turnamen,
+    nama_event,
+    lokasi,
+    tanggal_mulai,
+    tanggal_selesai,
+    jumlah_gelanggang,
+    standar_regulasi,
+
+    fungsi ringkas() {
+        kembalikan "[EVENT] " + ini.nama_event + " | " + ini.lokasi + " (" + ini.standar_regulasi + ")";
+    }
+}
+
+struktur AuditLogLaga {
+    id_log,
+    id_partai,
+    gelanggang,
+    waktu_insiden,
+    jenis_aksi,
+    sudut_atlet,
+    nilai_perubahan,
+    id_petugas,
+
+    fungsi cetak_log() {
+        cetak("📝 AUDIT [" + ini.gelanggang + "] Partai " + ini.id_partai + " | " + ini.jenis_aksi + " (" + ini.sudut_atlet + "): " + ke_teks(ini.nilai_perubahan));
+    }
+}
+
+struktur SertifikatJuara {
+    nomor_sertifikat,
+    id_pesilat,
+    nama_pesilat,
+    kontingen,
+    kategori_juara,
+    kelas_tanding,
+    hash_sha256,
+    qr_verifikasi_url,
+
+    fungsi verifikasi() {
+        cetak("🎖️ SERTIFIKAT TERVERIFIKASI: " + ini.nomor_sertifikat);
+        cetak("   Penerima: " + ini.nama_pesilat + " [" + ini.kontingen + "]");
+        cetak("   Prestasi: " + ini.kategori_juara + " - " + ini.kelas_tanding);
+        cetak("   Segel Kriptografis: " + ini.hash_sha256);
+        kembalikan benar;
+    }
+}

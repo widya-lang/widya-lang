@@ -60,6 +60,43 @@ fn test_stage_hashes_are_cryptographic_and_deterministic() {
 }
 
 #[test]
+fn test_self_hosted_compiler_executes_internal_bootstrap_verification() {
+    let bootstrapper = SelfHostingBootstrap::new("compiler_self_hosted");
+    let res = bootstrapper.execute_compiler_driver_test()
+        .expect("Eksekusi driver compiler mandiri harus berhasil");
+    assert_eq!(res, "BOOTSTRAP_SUKSES", "Kompilator mandiri harus menghasilkan status BOOTSTRAP_SUKSES");
+}
+
+#[test]
+fn test_self_hosted_compiler_full_deterministic_convergence_and_ed25519() {
+    let bootstrapper = SelfHostingBootstrap::new("compiler_self_hosted");
+    let report = bootstrapper.verify_deterministic_convergence()
+        .expect("Verifikasi konvergensi deterministik Stage-1 == Stage-2 harus sukses");
+
+    assert!(report.is_deterministic_match, "Kompilasi Stage-2 harus konvergen identik dengan Stage-1");
+    assert_eq!(report.total_modules_count, 7, "Harus mencakup tepat 7 modul penyusun kompilator mandiri");
+    assert!(report.total_source_lines > 100, "Total baris kode kompilator mandiri harus signifikan (> 100)");
+    assert!(report.emitted_lines_count > 30, "Baris biner/C native emisi harus valid");
+    
+    // Tanda tangan kriptografis Ed25519 rantai pasok
+    assert_eq!(report.signature_ed25519_hex.len(), 128, "Tanda tangan Ed25519 harus tepat 64 byte (128 karakter hex)");
+    assert_eq!(report.public_key_ed25519_hex.len(), 64, "Kunci publik Ed25519 harus tepat 32 byte (64 karakter hex)");
+}
+
+#[test]
+fn test_self_hosted_compiler_generates_valid_c_emission() {
+    let bootstrapper = SelfHostingBootstrap::new("compiler_self_hosted");
+    let (code, digest) = bootstrapper.emit_stage1_native_compiler()
+        .expect("Emisi C99 Stage-1 harus berhasil");
+
+    assert!(code.contains("#include <stdio.h>"), "Emisi harus memuat header C standar");
+    assert!(code.contains("#include <stdint.h>"), "Emisi harus memuat header tipe data standar");
+    assert!(code.contains("widya_self_"), "Emisi harus memuat simbol fungsi terkompilasi mandiri");
+    assert!(code.contains("int main("), "Emisi harus memuat driver biner eksekusi mandiri");
+    assert!(digest.starts_with("sha256:"), "Digest harus terformat sha256:");
+}
+
+#[test]
 fn test_jit_engine_bytecode_execution_and_metrics() {
     use widya::tools::jit::JitEngine;
 
@@ -81,4 +118,3 @@ fn test_jit_engine_bytecode_execution_and_metrics() {
         assert!(rep.instructions_executed > 10, "Total instruksi VM harus dieksekusi");
     }
 }
-

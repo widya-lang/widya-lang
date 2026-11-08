@@ -1,6 +1,6 @@
 [package]
 name = "widyabase"
-version = "2.6.0"
+version = "0.1.0"
 edition = "2024"
 description = "WidyaBase: Embedded High-Performance Hybrid SQL, Vector HNSW, Document, WAL, Raft Consensus, and pgwire Server"
 

@@ -7,6 +7,7 @@ pub mod logging;
 pub mod instrumentation;
 pub mod opentelemetry;
 pub mod debugging;
+pub mod prometheus_exporter;
 
 // Re-export commonly used types
 pub use tracing::{Trace, Span, Tracer, SpanContext};
@@ -22,6 +23,7 @@ pub use opentelemetry::{
     OtelSeverity, OtelResource, OtelLogRecord,
 };
 pub use debugging::{TraceAnalyzer, TraceVisualizer, TraceDebugger, TraceAnalysisReport};
+pub use prometheus_exporter::{PrometheusRegistry, PrometheusMetric, PrometheusSample};
 
 /// Observability errors
 #[derive(Debug, thiserror::Error)]
@@ -199,6 +201,7 @@ pub fn init(config: ObservabilityConfig) -> Result<ObservabilitySystem> {
 }
 
 /// Observability system
+#[derive(Clone)]
 pub struct ObservabilitySystem {
     config: ObservabilityConfig,
     tracer: Option<tracing::Tracer>,

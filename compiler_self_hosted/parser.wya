@@ -1,0 +1,200 @@
+// compiler_self_hosted/parser.widya
+// Parser rekursif mandiri (Recursive Descent Parser) dalam bahasa Widya-Lang
+// Mengonversi aliran token leksikal menjadi pohon sintaksis abstrak (AST)
+
+impor "compiler_self_hosted/ast.widya" sebagai ast_mod;
+
+// 1. Fungsi Kompatibilitas Parser Lama
+fungsi validasi_sintaks(jumlah_token) {
+    jika jumlah_token > 0 {
+        kembalikan true;
+    }
+    kembalikan false;
+}
+
+fungsi parsing_pernyataan_misal(nama_var, nilai_int) {
+    misal hasil = nilai_int * 1;
+    kembalikan hasil;
+}
+
+fungsi parsing_blok(jumlah_pernyataan) {
+    jika jumlah_pernyataan >= 0 {
+        kembalikan true;
+    }
+    kembalikan false;
+}
+
+// 2. Mesin Parser Rekursif Mandiri
+fungsi buat_parser(daftar_token) {
+    kembalikan {
+        "tokens": daftar_token,
+        "posisi": 0,
+        "total": panjang(daftar_token)
+    };
+}
+
+fungsi parser_saat_ini(p) {
+    jika p["posisi"] < p["total"] {
+        kembalikan p["tokens"][p["posisi"]];
+    }
+    kembalikan {"jenis": "AKHIR_BERKAS", "nilai": "", "baris": 0, "kolom": 0};
+}
+
+fungsi parser_maju(p) {
+    misal tok = parser_saat_ini(p);
+    jika p["posisi"] < p["total"] {
+        p["posisi"] = p["posisi"] + 1;
+    }
+    kembalikan tok;
+}
+
+fungsi parser_cocok(p, jenis) {
+    misal curr = parser_saat_ini(p);
+    jika curr["jenis"] == jenis {
+        parser_maju(p);
+        kembalikan true;
+    }
+    kembalikan false;
+}
+
+// 3. Parsing Ekspresi (Literals, Identifiers, Operasi Biner)
+fungsi parse_ekspresi_primer(p) {
+    misal curr = parser_saat_ini(p);
+
+    jika curr["jenis"] == "LITERAL_ANGKA" {
+        parser_maju(p);
+        kembalikan ast_mod.buat_node_literal("Int", curr["nilai"]);
+    }
+    jika curr["jenis"] == "LITERAL_TEKS" {
+        parser_maju(p);
+        kembalikan ast_mod.buat_node_literal("String", curr["nilai"]);
+    }
+    jika curr["jenis"] == "LITERAL_BOOL" {
+        parser_maju(p);
+        kembalikan ast_mod.buat_node_literal("Bool", curr["nilai"]);
+    }
+    jika curr["jenis"] == "IDENTIFIER" {
+        misal nama = curr["nilai"];
+        parser_maju(p);
+        // Cek apakah panggilan fungsi: foo(arg1, arg2)
+        jika parser_saat_ini(p)["jenis"] == "KURUNG_BUKA" {
+            parser_maju(p); // lewati (
+            misal args = [];
+            selama parser_saat_ini(p)["jenis"] != "KURUNG_TUTUP" && parser_saat_ini(p)["jenis"] != "AKHIR_BERKAS" {
+                tambah(args, parse_ekspresi_dasar(p));
+                jika parser_saat_ini(p)["jenis"] == "KOMA" {
+                    parser_maju(p);
+                }
+            }
+            parser_cocok(p, "KURUNG_TUTUP");
+            kembalikan ast_mod.buat_node_panggilan(nama, args);
+        }
+        kembalikan ast_mod.buat_node_identifier(nama);
+    }
+    jika curr["jenis"] == "KURUNG_BUKA" {
+        parser_maju(p);
+        misal sub = parse_ekspresi_dasar(p);
+        parser_cocok(p, "KURUNG_TUTUP");
+        kembalikan sub;
+    }
+
+    parser_maju(p);
+    kembalikan ast_mod.buat_node_literal("Nil", "kosong");
+}
+
+fungsi parse_ekspresi_dasar(p) {
+    misal kiri = parse_ekspresi_primer(p);
+    misal curr = parser_saat_ini(p);
+
+    selama curr["jenis"] == "OP_PLUS" || curr["jenis"] == "OP_MINUS" || 
+          curr["jenis"] == "OP_BINTANG" || curr["jenis"] == "OP_GARIS_MIRING" ||
+          curr["jenis"] == "OP_SAMA_PERSIS" || curr["jenis"] == "OP_TIDAK_SAMA" ||
+          curr["jenis"] == "OP_KURANG_DARI" || curr["jenis"] == "OP_LEBIH_DARI" {
+        misal op_tok = parser_maju(p);
+        misal kanan = parse_ekspresi_primer(p);
+        kiri = ast_mod.buat_node_biner(op_tok["nilai"], kiri, kanan);
+        curr = parser_saat_ini(p);
+    }
+
+    kembalikan kiri;
+}
+
+// 4. Parsing Pernyataan (Statements)
+fungsi parse_pernyataan_sumber(p) {
+    misal curr = parser_saat_ini(p);
+
+    // 1. Pernyataan Misal / Let
+    jika curr["jenis"] == "KATA_KUNCI_MISAL" {
+        parser_maju(p);
+        misal id_tok = parser_saat_ini(p);
+        parser_maju(p);
+        misal nilai_expr = ast_mod.buat_node_literal("Int", "0");
+        jika parser_cocok(p, "OP_SAMA") {
+            nilai_expr = parse_ekspresi_dasar(p);
+        }
+        parser_cocok(p, "TITIK_KOMA");
+        kembalikan ast_mod.buat_node_misal(id_tok["nilai"], nilai_expr);
+    }
+
+    // 2. Pernyataan Kembalikan / Return
+    jika curr["jenis"] == "KATA_KUNCI_KEMBALIKAN" {
+        parser_maju(p);
+        misal nilai_expr = parse_ekspresi_dasar(p);
+        parser_cocok(p, "TITIK_KOMA");
+        kembalikan ast_mod.buat_node_kembalikan(nilai_expr);
+    }
+
+    // 3. Deklarasi Fungsi
+    jika curr["jenis"] == "KATA_KUNCI_FUNGSI" {
+        parser_maju(p);
+        misal nama_fn = parser_saat_ini(p)["nilai"];
+        parser_maju(p);
+        parser_cocok(p, "KURUNG_BUKA");
+        misal params = [];
+        selama parser_saat_ini(p)["jenis"] != "KURUNG_TUTUP" && parser_saat_ini(p)["jenis"] != "AKHIR_BERKAS" {
+            misal ptok = parser_saat_ini(p);
+            parser_maju(p);
+            tambah(params, ptok["nilai"]);
+            // lewati anotasi tipe jika ada (: Tipe)
+            jika parser_cocok(p, "TITIK_DUA") {
+                parser_maju(p);
+            }
+            jika parser_saat_ini(p)["jenis"] == "KOMA" {
+                parser_maju(p);
+            }
+        }
+        parser_cocok(p, "KURUNG_TUTUP");
+
+        misal ret_type = "Void";
+        jika parser_cocok(p, "OP_PANAH") {
+            ret_type = parser_saat_ini(p)["nilai"];
+            parser_maju(p);
+        }
+
+        parser_cocok(p, "KURAWAL_BUKA");
+        misal body = [];
+        selama parser_saat_ini(p)["jenis"] != "KURAWAL_TUTUP" && parser_saat_ini(p)["jenis"] != "AKHIR_BERKAS" {
+            tambah(body, parse_pernyataan_sumber(p));
+        }
+        parser_cocok(p, "KURAWAL_TUTUP");
+
+        kembalikan ast_mod.buat_node_fungsi(nama_fn, params, ret_type, body);
+    }
+
+    // 4. Ekspresi sebagai pernyataan
+    misal expr = parse_ekspresi_dasar(p);
+    parser_cocok(p, "TITIK_KOMA");
+    kembalikan expr;
+}
+
+// 5. Parsing Seluruh Program Menjadi AST
+fungsi parse_seluruh_program(daftar_token) {
+    misal p = buat_parser(daftar_token);
+    misal stmts = [];
+
+    selama parser_saat_ini(p)["jenis"] != "AKHIR_BERKAS" {
+        tambah(stmts, parse_pernyataan_sumber(p));
+    }
+
+    kembalikan ast_mod.buat_ast_lengkap(stmts);
+}

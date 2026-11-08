@@ -1,0 +1,312 @@
+// compiler_self_hosted/lexer.widya
+// Scanner / Lexer mandiri berkinerja tinggi dalam bahasa Widya-Lang
+// Mengonversi aliran karakter kode sumber menjadi aliran token leksikal terstruktur
+
+impor "compiler_self_hosted/token.widya" sebagai token_mod;
+
+// 1. Pindai Kata Kunci (Kompatibilitas Penuh Bahasa Nusantara & Internasional)
+fungsi pindai_kata_kunci(kata) {
+    jika kata == "fungsi" || kata == "fn" {
+        kembalikan "KATA_KUNCI_FUNGSI";
+    }
+    jika kata == "misal" || kata == "let" || kata == "var" {
+        kembalikan "KATA_KUNCI_MISAL";
+    }
+    jika kata == "kembalikan" || kata == "return" {
+        kembalikan "KATA_KUNCI_KEMBALIKAN";
+    }
+    jika kata == "jika" || kata == "if" {
+        kembalikan "KATA_KUNCI_JIKA";
+    }
+    jika kata == "lainnya" || kata == "lain" || kata == "else" || kata == "selain" {
+        kembalikan "KATA_KUNCI_LAIN";
+    }
+    jika kata == "struktur" || kata == "struct" {
+        kembalikan "KATA_KUNCI_STRUKTUR";
+    }
+    jika kata == "selama" || kata == "while" {
+        kembalikan "KATA_KUNCI_SELAMA";
+    }
+    jika kata == "untuk" || kata == "for" {
+        kembalikan "KATA_KUNCI_UNTUK";
+    }
+    jika kata == "cocokkan" || kata == "match" {
+        kembalikan "KATA_KUNCI_COCOKKAN";
+    }
+    jika kata == "impor" || kata == "import" {
+        kembalikan "KATA_KUNCI_IMPOR";
+    }
+    jika kata == "ekspor" || kata == "export" {
+        kembalikan "KATA_KUNCI_EKSPOR";
+    }
+    jika kata == "benar" || kata == "true" || kata == "salah" || kata == "false" {
+        kembalikan "LITERAL_BOOL";
+    }
+    jika kata == "kosong" || kata == "nil" {
+        kembalikan "LITERAL_NIL";
+    }
+    kembalikan "IDENTIFIER";
+}
+
+// 2. Utilitas Karakter
+fungsi apakah_huruf(ch) {
+    kembalikan (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch == "_";
+}
+
+fungsi apakah_angka(ch) {
+    kembalikan ch >= "0" && ch <= "9";
+}
+
+fungsi apakah_huruf_angka(ch) {
+    kembalikan apakah_huruf(ch) || apakah_angka(ch);
+}
+
+fungsi apakah_spasi(ch) {
+    kembalikan ch == " " || ch == "\t" || ch == "\r";
+}
+
+// 3. Scanner Lengkap Aliran Kode Sumber
+fungsi pindai_semua_token(sumber) {
+    misal tokens = [];
+    misal n = panjang(sumber);
+    misal pos = 0;
+    misal baris = 1;
+    misal kolom = 1;
+
+    selama pos < n {
+        misal ch = sumber[pos];
+
+        // 1. Lewati Spasi
+        jika apakah_spasi(ch) {
+            pos = pos + 1;
+            kolom = kolom + 1;
+        } 
+        // 2. Baris Baru
+        lainnya jika ch == "\n" {
+            pos = pos + 1;
+            baris = baris + 1;
+            kolom = 1;
+        }
+        // 3. Komentar Baris Tunggal '//'
+        lainnya jika ch == "/" && (pos + 1 < n) && sumber[pos + 1] == "/" {
+            pos = pos + 2;
+            kolom = kolom + 2;
+            selama pos < n && sumber[pos] != "\n" {
+                pos = pos + 1;
+            }
+        }
+        // 4. Komentar Multi Baris '/* ... */'
+        lainnya jika ch == "/" && (pos + 1 < n) && sumber[pos + 1] == "*" {
+            pos = pos + 2;
+            kolom = kolom + 2;
+            selama pos + 1 < n && !(sumber[pos] == "*" && sumber[pos + 1] == "/") {
+                jika sumber[pos] == "\n" {
+                    baris = baris + 1;
+                    kolom = 1;
+                } lainnya {
+                    kolom = kolom + 1;
+                }
+                pos = pos + 1;
+            }
+            jika pos + 1 < n {
+                pos = pos + 2; // lewati */
+                kolom = kolom + 2;
+            }
+        }
+        // 5. Operator Multi-Karakter
+        lainnya jika ch == "=" && (pos + 1 < n) && sumber[pos + 1] == "=" {
+            tambah(tokens, {"jenis": "OP_SAMA_PERSIS", "nilai": "==", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == "!" && (pos + 1 < n) && sumber[pos + 1] == "=" {
+            tambah(tokens, {"jenis": "OP_TIDAK_SAMA", "nilai": "!=", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == "<" && (pos + 1 < n) && sumber[pos + 1] == "=" {
+            tambah(tokens, {"jenis": "OP_KURANG_SAMA", "nilai": "<=", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == ">" && (pos + 1 < n) && sumber[pos + 1] == "=" {
+            tambah(tokens, {"jenis": "OP_LEBIH_SAMA", "nilai": ">=", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == "-" && (pos + 1 < n) && sumber[pos + 1] == ">" {
+            tambah(tokens, {"jenis": "OP_PANAH", "nilai": "->", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == ":" && (pos + 1 < n) && sumber[pos + 1] == ":" {
+            tambah(tokens, {"jenis": "OP_TITIK_DUA_GANDA", "nilai": "::", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == "&" && (pos + 1 < n) && sumber[pos + 1] == "&" {
+            tambah(tokens, {"jenis": "OP_DAN", "nilai": "&&", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        lainnya jika ch == "|" && (pos + 1 < n) && sumber[pos + 1] == "|" {
+            tambah(tokens, {"jenis": "OP_ATAU", "nilai": "||", "baris": baris, "kolom": kolom});
+            pos = pos + 2;
+            kolom = kolom + 2;
+        }
+        // 6. Operator & Delimiter Tunggal
+        lainnya jika ch == "+" {
+            tambah(tokens, {"jenis": "OP_PLUS", "nilai": "+", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "-" {
+            tambah(tokens, {"jenis": "OP_MINUS", "nilai": "-", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "*" {
+            tambah(tokens, {"jenis": "OP_BINTANG", "nilai": "*", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "/" {
+            tambah(tokens, {"jenis": "OP_GARIS_MIRING", "nilai": "/", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "%" {
+            tambah(tokens, {"jenis": "OP_PERSEN", "nilai": "%", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "=" {
+            tambah(tokens, {"jenis": "OP_SAMA", "nilai": "=", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "<" {
+            tambah(tokens, {"jenis": "OP_KURANG_DARI", "nilai": "<", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == ">" {
+            tambah(tokens, {"jenis": "OP_LEBIH_DARI", "nilai": ">", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "(" {
+            tambah(tokens, {"jenis": "KURUNG_BUKA", "nilai": "(", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == ")" {
+            tambah(tokens, {"jenis": "KURUNG_TUTUP", "nilai": ")", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "{" {
+            tambah(tokens, {"jenis": "KURAWAL_BUKA", "nilai": "{", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "}" {
+            tambah(tokens, {"jenis": "KURAWAL_TUTUP", "nilai": "}", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "[" {
+            tambah(tokens, {"jenis": "SIKU_BUKA", "nilai": "[", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "]" {
+            tambah(tokens, {"jenis": "SIKU_TUTUP", "nilai": "]", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == ";" {
+            tambah(tokens, {"jenis": "TITIK_KOMA", "nilai": ";", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == ":" {
+            tambah(tokens, {"jenis": "TITIK_DUA", "nilai": ":", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "," {
+            tambah(tokens, {"jenis": "KOMA", "nilai": ",", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        lainnya jika ch == "." {
+            tambah(tokens, {"jenis": "TITIK", "nilai": ".", "baris": baris, "kolom": kolom});
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+        // 7. Literal String "..."
+        lainnya jika ch == "\"" {
+            misal str_val = "";
+            pos = pos + 1;
+            kolom = kolom + 1;
+            selama pos < n && sumber[pos] != "\"" {
+                jika sumber[pos] == "\\" && pos + 1 < n {
+                    pos = pos + 1;
+                    jika sumber[pos] == "n" { str_val = str_val + "\n"; }
+                    lainnya jika sumber[pos] == "t" { str_val = str_val + "\t"; }
+                    lainnya jika sumber[pos] == "\"" { str_val = str_val + "\""; }
+                    lainnya { str_val = str_val + sumber[pos]; }
+                } lainnya {
+                    str_val = str_val + sumber[pos];
+                }
+                pos = pos + 1;
+                kolom = kolom + 1;
+            }
+            jika pos < n {
+                pos = pos + 1; // Lewati petik penutup
+                kolom = kolom + 1;
+            }
+            tambah(tokens, {"jenis": "LITERAL_TEKS", "nilai": str_val, "baris": baris, "kolom": kolom});
+        }
+        // 8. Literal Angka
+        lainnya jika apakah_angka(ch) {
+            misal num_str = "";
+            selama pos < n && (apakah_angka(sumber[pos]) || sumber[pos] == ".") {
+                num_str = num_str + sumber[pos];
+                pos = pos + 1;
+                kolom = kolom + 1;
+            }
+            tambah(tokens, {"jenis": "LITERAL_ANGKA", "nilai": num_str, "baris": baris, "kolom": kolom});
+        }
+        // 9. Identifier atau Kata Kunci
+        lainnya jika apakah_huruf(ch) {
+            misal ident_str = "";
+            selama pos < n && apakah_huruf_angka(sumber[pos]) {
+                ident_str = ident_str + sumber[pos];
+                pos = pos + 1;
+                kolom = kolom + 1;
+            }
+            misal kkind = pindai_kata_kunci(ident_str);
+            tambah(tokens, {"jenis": kkind, "nilai": ident_str, "baris": baris, "kolom": kolom});
+        }
+        // 10. Karakter Tak Dikenal
+        lainnya {
+            pos = pos + 1;
+            kolom = kolom + 1;
+        }
+    }
+
+    tambah(tokens, {"jenis": "AKHIR_BERKAS", "nilai": "", "baris": baris, "kolom": kolom});
+    kembalikan tokens;
+}
+
+// 4. Pengujian Lexer Mandiri
+fungsi uji_lexer() {
+    misal contoh = "fungsi utama() -> Int { misal x = 42; kembalikan x; }";
+    misal daftar = pindai_semua_token(contoh);
+    jika panjang(daftar) > 0 {
+        kembalikan daftar[0]["jenis"];
+    }
+    kembalikan "GAGAL";
+}

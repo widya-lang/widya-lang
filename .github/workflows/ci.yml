@@ -1,0 +1,54 @@
+name: Widya-Lang CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build-and-test:
+    name: Build & Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check Workspace
+        run: cargo check --workspace
+
+      - name: Run Core Test Suites
+        run: cargo test --workspace
+
+      - name: Verify Self-Hosting Compiler Pipeline
+        run: cargo test --test self_hosting_tests
+
+      - name: Verify WPM Official Packages Parity
+        run: cargo test --test wpm_packages_parity_test
+
+      - name: Verify WPM Developer Experience & Audit
+        run: cargo test --test wpm_devex_test
+
+      - name: Validate Deterministic Stage-0 -> Stage-1 -> Stage-2 Self-Hosting
+        run: cargo run --bin widya -- bootstrap
+
+      - name: Execute End-to-End Showcase (AI Analytics Service)
+        run: cargo run --bin widya -- run contoh/18_layanan_ai_analitika.wya
+

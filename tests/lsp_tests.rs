@@ -80,3 +80,26 @@ fn test_lsp_document_symbols() {
     assert!(names.contains(&"hitung_luas".to_string()));
     assert!(names.contains(&"Titik".to_string()));
 }
+
+#[test]
+fn test_lsp_inlay_hints_type_inference() {
+    let lsp = WidyaLsp::new();
+    let source = "misal umur = 25\nmisal nama = \"Widya\"\nmisal aktif = benar\n";
+    let hints = lsp.get_inlay_hints(source);
+
+    assert_eq!(hints.len(), 3);
+    assert_eq!(hints[0].label, ": Int");
+    assert_eq!(hints[1].label, ": String");
+    assert_eq!(hints[2].label, ": Bool");
+}
+
+#[test]
+fn test_lsp_semantic_tokens() {
+    let lsp = WidyaLsp::new();
+    let source = "fungsi hitung(Titik) { kembalikan 10 }\n";
+    let tokens = lsp.get_semantic_tokens(source);
+
+    let types: Vec<&str> = tokens.iter().map(|t| t.token_type.as_str()).collect();
+    assert!(types.contains(&"keyword"), "Harus mendeteksi token keyword 'fungsi'");
+    assert!(types.contains(&"type"), "Harus mendeteksi token tipe 'Titik'");
+}

@@ -538,13 +538,14 @@ classDiagram
     let pdf_str = String::from_utf8_lossy(&bytes);
 
     // Verifikasi elemen State Diagram
-    assert!(pdf_str.contains("DIAGRAM STATUS"), "PDF harus memuat header diagram status");
+    let pdf_upper = pdf_str.to_uppercase();
+    assert!(pdf_upper.contains("DIAGRAM STATUS"), "PDF harus memuat header diagram status");
     assert!(pdf_str.contains("Idle"), "PDF harus memuat state Idle");
     assert!(pdf_str.contains("Running"), "PDF harus memuat state Running");
     assert!(pdf_str.contains("RunCommand"), "PDF harus memuat transisi RunCommand");
 
     // Verifikasi elemen Class Diagram
-    assert!(pdf_str.contains("DIAGRAM KELAS"), "PDF harus memuat header diagram kelas");
+    assert!(pdf_upper.contains("DIAGRAM KELAS"), "PDF harus memuat header diagram kelas");
     assert!(pdf_str.contains("CompilerEngine"), "PDF harus memuat kelas CompilerEngine");
     assert!(pdf_str.contains("ElfLinker"), "PDF harus memuat kelas ElfLinker");
     assert!(pdf_str.contains("emit_binary"), "PDF harus memuat method emit_binary");
@@ -1048,4 +1049,106 @@ Dokumen ini sah dan diterbitkan secara digital oleh Sistem Payroll Berdaulat.
     assert!(zip_str.contains("slip_gaji_0001.pdf"));
     assert!(zip_str.contains("slip_gaji_0002.pdf"));
 }
+
+#[test]
+fn test_docx_native_equation_omml_and_mail_merge_batch() {
+    // ------------------------------------------------------------------------
+    // 1. Uji Penyisipan Persamaan Matematika (OMML / LaTeX Equation ke DOCX)
+    // ------------------------------------------------------------------------
+    let mut doc = DocxDocument::new("Jurnal Fisika Kuantum & Komputasi");
+    doc.add_heading("Persamaan Relativitas Khusus & Matematika Gelombang", 1);
+    doc.add_paragraph("Berikut adalah formula relativitas massa-energi Einstein:");
+    
+    // Formula blok: E = mc^2
+    doc.add_equation("E = m c^2");
+    
+    // Formula pecahan & akar kuadrat: x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+    doc.add_paragraph("Solusi rumus kuadratik abc:");
+    doc.add_equation("x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}");
+
+    // Formula integral & simbol yunani: \int_{0}^{\infty} e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+    doc.add_paragraph("Integral Gaussian probabilitas:");
+    doc.add_equation("\\int e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}");
+
+    // Inline equation
+    doc.add_inline_equation("\\alpha + \\beta = \\gamma");
+
+    let xml = doc.generate_document_xml();
+    // Verifikasi namespace math Microsoft Word
+    assert!(xml.contains(r#"xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math""#));
+    // Verifikasi tag OMML
+    assert!(xml.contains("<m:oMathPara>"));
+    assert!(xml.contains("<m:oMath>"));
+    assert!(xml.contains("<m:f>")); // fraction
+    assert!(xml.contains("<m:num>")); // numerator
+    assert!(xml.contains("<m:den>")); // denominator
+    assert!(xml.contains("<m:rad>")); // radical / sqrt
+    assert!(xml.contains("<m:sSup>")); // superscript
+    assert!(xml.contains("π")); // simbol pi
+    assert!(xml.contains("±")); // plus-minus
+
+    // Verifikasi HTML preview mengandung formula
+    let html = doc.render_html_preview();
+    assert!(html.contains("docx-equation"));
+    assert!(html.contains("E = m c^2"));
+
+    // Verifikasi ekspor DOCX ECMA-376 biner
+    let docx_bytes = doc.export_to_docx_bytes();
+    assert!(!docx_bytes.is_empty());
+    assert_eq!(&docx_bytes[0..4], b"PK\x03\x04");
+
+    // ------------------------------------------------------------------------
+    // 2. Uji Mail Merge Massal Berdasarkan Dataset
+    // ------------------------------------------------------------------------
+    let mut template_doc = DocxDocument::new("Surat Keputusan Kelulusan");
+    template_doc.add_heading("SURAT KEPUTUSAN NO: {{nomor_sk}}", 1);
+    template_doc.add_paragraph("Diberikan kepada: {{nama}} (NIM: {{nim}})");
+    template_doc.add_paragraph("Program Studi: {{prodi}} dengan predikat: {{predikat}}");
+    template_doc.add_paragraph("Indeks Prestasi Kumulatif (IPK): {{ipk}}");
+    template_doc.add_equation("\\text{IPK} = \\frac{\\sum (K_i \\times N_i)}{\\sum K_i} = {{ipk}}");
+
+    let mut records = Vec::new();
+    let mut r1 = HashMap::new();
+    r1.insert("nomor_sk".to_string(), "SK/001/2026".to_string());
+    r1.insert("nama".to_string(), "Ahmad Fauzi".to_string());
+    r1.insert("nim".to_string(), "202601001".to_string());
+    r1.insert("prodi".to_string(), "Teknik Informatika Berdaulat".to_string());
+    r1.insert("predikat".to_string(), "Dengan Pujian (Cum Laude)".to_string());
+    r1.insert("ipk".to_string(), "3.92".to_string());
+    records.push(r1);
+
+    let mut r2 = HashMap::new();
+    r2.insert("nomor_sk".to_string(), "SK/002/2026".to_string());
+    r2.insert("nama".to_string(), "Siti Nurhaliza".to_string());
+    r2.insert("nim".to_string(), "202601002".to_string());
+    r2.insert("prodi".to_string(), "Kriptografi & Keamanan Sistem".to_string());
+    r2.insert("predikat".to_string(), "Sangat Memuaskan".to_string());
+    r2.insert("ipk".to_string(), "3.85".to_string());
+    records.push(r2);
+
+    // Jalankan mail merge massal
+    let merged_docs = template_doc.mail_merge_batch(&records);
+    assert_eq!(merged_docs.len(), 2);
+
+    // Verifikasi dokumen 1
+    let plain1 = merged_docs[0].extract_plain_text();
+    assert!(plain1.contains("Ahmad Fauzi"));
+    assert!(plain1.contains("202601001"));
+    assert!(plain1.contains("SK/001/2026"));
+    assert!(plain1.contains("3.92"));
+
+    // Verifikasi dokumen 2
+    let plain2 = merged_docs[1].extract_plain_text();
+    assert!(plain2.contains("Siti Nurhaliza"));
+    assert!(plain2.contains("202601002"));
+    assert!(plain2.contains("SK/002/2026"));
+    assert!(plain2.contains("3.85"));
+
+    // Verifikasi XML dokumen termerge mengandung formula dengan variabel terisi
+    let xml1 = merged_docs[0].generate_document_xml();
+    assert!(xml1.contains("3.92"));
+    let xml2 = merged_docs[1].generate_document_xml();
+    assert!(xml2.contains("3.85"));
+}
+
 

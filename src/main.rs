@@ -22,7 +22,7 @@ use cli::*;
 #[derive(ClapParser)]
 #[command(name = "widya")]
 #[command(author = "Widya-Lang Team")]
-#[command(version = "2.6.0")]
+#[command(version = "0.1.0")]
 #[command(about = "Interpreter dan Kompiler Bahasa Pemrograman Widya-Lang", long_about = None)]
 struct Cli {
     #[command(subcommand)]
@@ -663,7 +663,28 @@ enum Commands {
         #[command(subcommand)]
         aksi: UnikernelSubcommands,
     },
+    /// Widya Model Context Protocol (MCP v2024-11-05) Server & Tools Inspector
+    Mcp {
+        #[command(subcommand)]
+        aksi: McpSubcommands,
+    },
+    /// Widya Software Bill of Materials (SBOM) & Supply Chain Security Auditor
+    Sbom {
+        #[command(subcommand)]
+        aksi: SbomSubcommands,
+    },
+    /// Widya Concurrency & Jepsen Chaos Simulator (Split-Brain & Packet Drops)
+    Chaos {
+        #[command(subcommand)]
+        aksi: ChaosSubcommands,
+    },
+    /// Widya Hardware Security Module (HSM) PKCS#11 v2.40 & Post-Quantum Key Enclave
+    Hsm {
+        #[command(subcommand)]
+        aksi: HsmSubcommands,
+    },
 }
+
 
 
 
@@ -985,6 +1006,19 @@ fn run_main() {
         Some(Commands::Unikernel { aksi }) => {
             handle_unikernel_command(&aksi);
         }
+        Some(Commands::Mcp { aksi }) => {
+            handle_mcp_command(&aksi);
+        }
+        Some(Commands::Sbom { aksi }) => {
+            handle_sbom_command(&aksi);
+        }
+        Some(Commands::Chaos { aksi }) => {
+            handle_chaos_command(&aksi);
+        }
+        Some(Commands::Hsm { aksi }) => {
+            handle_hsm_command(&aksi);
+        }
+
         None => {
             if let Some(berkas) = cli.berkas {
                 jalankan_berkas(&berkas, cli.profil.as_deref());

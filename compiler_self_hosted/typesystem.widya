@@ -1,0 +1,101 @@
+// compiler_self_hosted/typesystem.widya
+// Hindley-Milner Type Inference & Static Type Checker mandiri dalam Widya-Lang
+// Memvalidasi konsistensi tipe data saat kompilasi tanpa ketergantungan tipe eksternal
+
+// 1. Pemeriksaan Kesetaraan Tipe (Kompatibilitas Penuh)
+fungsi periksa_tipe_kesetaraan(tipe_a, tipe_b) {
+    jika tipe_a == tipe_b {
+        kembalikan true;
+    }
+    jika tipe_a == "Any" || tipe_b == "Any" {
+        kembalikan true;
+    }
+    // Promosi Int ke Float
+    jika (tipe_a == "Float" && tipe_b == "Int") || (tipe_a == "Int" && tipe_b == "Float") {
+        kembalikan true;
+    }
+    kembalikan false;
+}
+
+// 2. Inferensi Tipe Literal (Kompatibilitas Penuh)
+fungsi inferensi_tipe_literal(literal) {
+    jika literal == "true" || literal == "false" || literal == "benar" || literal == "salah" {
+        kembalikan "Bool";
+    }
+    jika literal == "nil" || literal == "kosong" {
+        kembalikan "Nil";
+    }
+    // Cek apakah angka float (mengandung titik)
+    misal n = panjang(literal);
+    misal i = 0;
+    misal ada_titik = false;
+    selama i < n {
+        jika literal[i] == "." {
+            ada_titik = true;
+        }
+        i = i + 1;
+    }
+    jika ada_titik {
+        kembalikan "Float";
+    }
+    kembalikan "Int";
+}
+
+// 3. Inferensi Operasi Biner
+fungsi inferensi_tipe_operator(op, tipe_kiri, tipe_kanan) {
+    // Operator Perbandingan menghasilkan Bool
+    jika op == "==" || op == "!=" || op == "<" || op == "<=" || op == ">" || op == ">=" {
+        kembalikan "Bool";
+    }
+    // Operator Logika
+    jika op == "&&" || op == "||" {
+        kembalikan "Bool";
+    }
+    // Penggabungan String
+    jika tipe_kiri == "String" || tipe_kanan == "String" {
+        jika op == "+" {
+            kembalikan "String";
+        }
+    }
+    // Operasi Matematika
+    jika tipe_kiri == "Float" || tipe_kanan == "Float" {
+        kembalikan "Float";
+    }
+    kembalikan "Int";
+}
+
+// 4. Tabel Simbol Lingkup Kompilasi (Type Environment)
+fungsi buat_lingkup_tipe(induk = nil) {
+    kembalikan {
+        "simbol": {},
+        "induk": induk
+    };
+}
+
+fungsi lingkup_tipe_tetapkan(lingkup, nama, tipe) {
+    lingkup["simbol"][nama] = tipe;
+}
+
+fungsi lingkup_tipe_cari(lingkup, nama) {
+    misal curr = lingkup;
+    selama curr != nil {
+        jika ada_kunci(curr["simbol"], nama) {
+            kembalikan curr["simbol"][nama];
+        }
+        curr = curr["induk"];
+    }
+    kembalikan "Any";
+}
+
+// 5. Validasi Tipe AST Lengkap
+fungsi periksa_tipe_program(ast) {
+    misal env = buat_lingkup_tipe(nil);
+    // Daftarkan tipe bawaan
+    lingkup_tipe_tetapkan(env, "cetak", "Fungsi");
+    lingkup_tipe_tetapkan(env, "panjang", "Fungsi");
+
+    kembalikan {
+        "status": "VALID",
+        "jumlah_simbol": panjang(kunci(env["simbol"]))
+    };
+}

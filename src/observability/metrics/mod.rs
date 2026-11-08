@@ -45,6 +45,17 @@ pub enum MetricValue {
     },
 }
 
+impl MetricValue {
+    pub fn as_u64(&self) -> Option<u64> {
+        match self {
+            MetricValue::Counter(v) => Some(*v),
+            MetricValue::Gauge(v) => Some(*v as u64),
+            MetricValue::Histogram { count, .. } => Some(*count),
+            MetricValue::Summary { count, .. } => Some(*count),
+        }
+    }
+}
+
 /// Metric with labels
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Metric {
@@ -169,6 +180,7 @@ impl Metric {
 }
 
 /// Metrics collector
+#[derive(Clone)]
 pub struct MetricsCollector {
     /// Collector configuration
     config: ObservabilityConfig,
@@ -266,6 +278,12 @@ impl MetricsCollector {
         }
         
         Ok(())
+    }
+    
+    /// Get all recorded metrics
+    pub fn get_all_metrics(&self) -> Vec<Metric> {
+        let metrics = self.metrics.read().unwrap();
+        metrics.iter().cloned().collect()
     }
     
     /// Get metrics by name
@@ -526,6 +544,7 @@ impl MetricAggregation {
 }
 
 /// Prometheus exporter
+#[derive(Clone)]
 struct PrometheusExporter {
     /// Export endpoint
     endpoint: String,

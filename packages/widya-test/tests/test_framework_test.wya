@@ -1,0 +1,19 @@
+// packages/widya-test/tests/test_framework_test.wya
+// Uji Unit Mandiri Pustaka @widya/test (Test Runner & Assertions)
+
+impor "@widya/test" sebagai test;
+
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_seluruh_assertion(t) {
+    test.tegaskan_sama(t, 5 * 5, 25, "5*5 harus 25");
+    test.tegaskan_tidak_sama(t, 1, 2, "1 != 2");
+    test.tegaskan_benar(t, true, "Kondisi harus benar");
+    test.tegaskan_salah(t, false, "Kondisi harus salah");
+}
+
+test.uji_kasus(pelari, "Integritas Seluruh Penegasan Assertion", uji_seluruh_assertion);
+
+misal hasil = test.uji_ringkasan(pelari);
+tulis("Hasil Uji @widya/test: " + ke_teks(hasil["lulus"]) + "/" + ke_teks(hasil["total"]) + " LULUS.");
+

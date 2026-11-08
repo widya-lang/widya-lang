@@ -60,6 +60,7 @@ pub mod orchestrator;
 pub mod streaming;
 pub mod iam;
 pub mod apm;
+pub mod observability;
 pub mod shield;
 pub mod microvm;
 pub mod adengine;

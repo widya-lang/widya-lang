@@ -15,13 +15,25 @@ pub mod workspace;
 pub mod xlsx;
 pub mod zip;
 pub mod odf;
+pub mod dsl;
+pub mod calc_dsl;
+pub mod impress_dsl;
+pub mod pdf_dsl;
 
-pub use batch::{BatchDocumentEngine, BatchGenerationMetrics};
+pub use batch::{
+    BatchDocumentEngine, BatchGenerationMetrics, BatchPqcDocumentItem, BatchPqcSignedItem,
+    BatchPqcSigner, BatchPqcSigningMetrics,
+};
 pub use converter::DocumentConverter;
 pub use diagram::WidyaDiagramEngine;
+pub use dsl::{WidyaDocumentDsl, DslElement, DslFootnote, DslRun, DocumentMargins};
+pub use calc_dsl::{WidyaWorkbookDsl, DslSheet, DslChart};
+pub use impress_dsl::{WidyaPresentationDsl, DslSlide, DslKpiCard};
+pub use pdf_dsl::{WidyaPdfDsl, DslPdfPage, DslPdfItem, RubberStampType, PqcSignatureMeta};
 pub use crdt::{
-    ChangeType, ClientId, CollabSession, CollabUser, CrdtChar, DocumentReviewSession,
-    FractionalIndex, LogicalClock, LwwRegister, TextCrdt, ThreadedComment, TrackChange,
+    ChangeType, ClientId, CollabSession, CollabUser, CrdtChar, CrdtSimulationResult,
+    CrdtSimulator, DocumentReviewSession, FractionalIndex, LogicalClock, LwwRegister,
+    TextCrdt, ThreadedComment, TrackChange,
 };
 pub use docx::{DocxDocument, DocxElement, TextStyle, TextRun, parse_markdown_runs};
 pub use epub::{EpubChapter, EpubDocument, markdown_to_epub_doc};
@@ -37,7 +49,7 @@ pub use xlsx::{
     col_name_to_index, index_to_col_name, parse_cell_reference, CellFormat, CellValue, Worksheet,
     XlsxWorkbook,
 };
-pub use zip::{crc32, ZipEntry, ZipPackage};
+pub use zip::{crc32, OpenXmlValidationReport, ZipEntry, ZipPackage};
 pub use odf::{
     ODF_MIME_PRESENTATION, ODF_MIME_SPREADSHEET, ODF_MIME_TEXT,
     OdpDocument, OdpSlide, OdsCellValue, OdsDocument, OdsSheet, OdtBlock, OdtDocument,

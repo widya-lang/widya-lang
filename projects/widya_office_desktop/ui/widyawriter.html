@@ -1,0 +1,3079 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Open Studio Handbook — WidyaWriter (WordCraft Sovereign Parity)</title>
+  <link rel="stylesheet" href="css/office_theme.css">
+  <link rel="stylesheet" href="css/math_palette.css">
+</head>
+<body class="app-writer">
+
+  <!-- 1. WordCraft Pixel-Perfect Titlebar / Header -->
+  <header class="wc-header">
+    <div class="wc-header-left">
+      <!-- 9-Dot Sovereign Suite App Launcher -->
+      <button class="wc-waffle-btn" id="waffleBtn" onclick="toggleWaffleMenu()" title="Peluncur Aplikasi WidyaOffice Suite (ArtCraft Parity)">
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+        <span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span><span class="wc-waffle-dot"></span>
+      </button>
+
+      <!-- AutoSave Pill Switch -->
+      <div class="wc-autosave" title="Penyimpanan Otomatis Aktif">
+        <span>AutoSave</span>
+        <div class="wc-switch" id="autoSaveToggle" onclick="toggleAutoSave()">
+          <div class="wc-switch-knob"></div>
+        </div>
+      </div>
+
+      <!-- Quick Access Toolbar (Monochrome SVG Icons) -->
+      <button class="wc-quick-btn" onclick="saveDocument()" title="Simpan (Ctrl+S)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/>
+        </svg>
+      </button>
+      <button class="wc-quick-btn" onclick="document.execCommand('undo')" title="Batalkan / Undo (Ctrl+Z)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 3a5 5 0 0 0-5 5v1H1.5a.5.5 0 0 0-.354.854l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5A.5.5 0 0 0 6.5 9H5V8a4 4 0 1 1 4 4v1a5 5 0 0 0-1-9.9z"/>
+        </svg>
+      </button>
+      <button class="wc-quick-btn" onclick="document.execCommand('redo')" title="Ulangi / Redo (Ctrl+Y)">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 3a5 5 0 0 1 5 5v1h1.5a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 9.5 9H11V8a4 4 0 1 0-4 4v1a5 5 0 0 1 1-9.9z"/>
+        </svg>
+      </button>
+      <button class="wc-quick-btn" title="Sesuaikan Bilah Alat Akses Cepat">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Center: Document Title & Search Pill Bar -->
+    <div class="wc-header-center">
+      <div class="wc-doc-title-box" onclick="openDocProperties()" title="Informasi Dokumen & Lokasi Penyimpanan">
+        <span class="wc-doc-title" id="wcDocTitle">The Open Studio Handbook</span>
+        <span class="wc-doc-status">— Saved to this PC</span>
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+        </svg>
+      </div>
+
+      <div class="wc-search-pill" style="position:relative;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="#707070">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+        <input type="text" class="wc-search-input" id="wcSearchInput" placeholder="Search commands and help (Alt+Q)" oninput="filterCommands(this.value)" autocomplete="off" />
+        <div id="cmdSearchDropdown" style="display:none; position:absolute; top:32px; left:0; width:340px; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,0.15); z-index:99999; max-height:260px; overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- Right: Comments, Editing, Share, Avatar -->
+    <div class="wc-header-right">
+
+      <button class="wc-header-btn" onclick="toggleCommentsPane()" title="Komentar Dokumen">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a1 1 0 0 1 .707.293l2.414 2.414a.5.5 0 0 0 .854-.354V2a1 1 0 0 0-1-1H2z"/>
+        </svg>
+        <span>Comments</span>
+      </button>
+
+      <button class="wc-header-btn" title="Mode Pengeditan">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10z"/>
+        </svg>
+        <span>Editing ▾</span>
+      </button>
+
+      <button class="wc-share-pill" onclick="shareDocument()" title="Bagikan Dokumen">
+        <span>Share</span>
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+          <path d="M6.586 1a2 2 0 0 0-2.828 0l-.793.793a4.02 4.02 0 0 1 1.287.128L5.623 3.29a2 2 0 0 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 0 0 0-4.242L7.388 1.053A2 2 0 0 0 6.586 1z"/>
+        </svg>
+      </button>
+
+      <div class="wc-user-avatar" title="Akun: WordCraft User (Sovereign)">WU</div>
+    </div>
+  </header>
+
+  <!-- Waffle Flyout App Switcher Menu -->
+  <div class="wc-waffle-dropdown" id="waffleDropdown">
+    <div style="font-size:12px; font-weight:700; color:#616161; text-transform:uppercase; letter-spacing:0.5px;">Sovereign Office Suite</div>
+    <div class="wc-waffle-grid">
+      <a class="wc-waffle-item" href="widyawriter.html" style="background:#e8effd; border-color:#b5cffe;">
+        <div class="wc-waffle-icon" style="background:#2b47b5;">W</div>
+        <div>
+          <div style="font-weight:700; color:#183691;">WidyaWriter</div>
+          <div style="font-size:11px; color:#555;">WordCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyacalc.html">
+        <div class="wc-waffle-icon" style="background:#107c41;">C</div>
+        <div>
+          <div style="font-weight:700; color:#0e6b37;">WidyaCalc</div>
+          <div style="font-size:11px; color:#555;">SheetCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyaimpress.html">
+        <div class="wc-waffle-icon" style="background:#c43e1c;">I</div>
+        <div>
+          <div style="font-weight:700; color:#a13014;">WidyaImpress</div>
+          <div style="font-size:11px; color:#555;">DeckCraft Parity</div>
+        </div>
+      </a>
+      <a class="wc-waffle-item" href="widyapdf.html">
+        <div class="wc-waffle-icon" style="background:#d9381e;">P</div>
+        <div>
+          <div style="font-weight:700; color:#b0220c;">WidyaPDF</div>
+          <div style="font-size:11px; color:#555;">PDFCraft Parity</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. WordCraft Ribbon Tabs Strip (100% WordCraft Parity: 12 Tabs) -->
+  <nav class="wc-tab-strip">
+    <button class="wc-tab tab-file" onclick="openBackstage('home')">File</button>
+    <button class="wc-tab active" data-tab="home" onclick="switchRibbonTab('home')">Home</button>
+    <button class="wc-tab" data-tab="insert" onclick="switchRibbonTab('insert')">Insert</button>
+    <button class="wc-tab" data-tab="draw" onclick="switchRibbonTab('draw')">Draw</button>
+    <button class="wc-tab" data-tab="design" onclick="switchRibbonTab('design')">Design</button>
+    <button class="wc-tab" data-tab="layout" onclick="switchRibbonTab('layout')">Layout</button>
+    <button class="wc-tab" data-tab="references" onclick="switchRibbonTab('references')">References</button>
+    <button class="wc-tab" data-tab="mailings" onclick="switchRibbonTab('mailings')">Mailings</button>
+    <button class="wc-tab" data-tab="review" onclick="switchRibbonTab('review')">Review</button>
+    <button class="wc-tab" data-tab="view" onclick="switchRibbonTab('view')">View</button>
+    <button class="wc-tab" data-tab="developer" onclick="switchRibbonTab('developer')">Developer</button>
+    <button class="wc-tab" data-tab="zotero" onclick="switchRibbonTab('zotero')">Zotero</button>
+    <button class="wc-tab" data-tab="help" onclick="switchRibbonTab('help')">Help</button>
+  </nav>
+
+      <!-- 3. WordCraft Ribbon Toolbar Panels (100% WordCraft Rust Parity: 12 Tabs) -->
+  <section class="wc-ribbon-panel" id="wcRibbonPanel">
+
+    <!-- 3.1 Tab Panel: HOME (Active) -->
+    <!-- WordCraft ribbon/home.rs: Clipboard, Font, Paragraph, Styles, Editing, Voice, Editor -->
+    <div class="wc-ribbon-tab-content active" id="tabContent-home">
+      <!-- 1. Clipboard Group (dialog: edit.clipboardPane) -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-split-btn">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="pasteClipboard()" title="Paste (Ctrl+V)">
+              <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+              </svg>
+              <span>Paste</span>
+            </button>
+            <div class="wc-dropdown" style="display:inline-block;">
+              <button class="wc-tool-btn" style="height:100%; padding:0 3px;" onclick="toggleRibbonDropdown('menu-paste-split', event)" title="Paste Options">▾</button>
+              <div class="wc-dropdown-menu" id="menu-paste-split">
+                <div class="wc-menu-item" onclick="pasteClipboard()">📋 Paste</div>
+                <div class="wc-menu-item" onclick="pasteClipboardText()">📄 Keep Text Only</div>
+                <div class="wc-menu-item" onclick="pasteClipboard()">📑 Merge Formatting</div>
+                <div class="wc-menu-item" onclick="pasteSpecial()">📋 Paste Special…</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="document.execCommand('cut')" title="Cut (Ctrl+X)">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 3.5c-.614-.884-.074-1.962.858-2.5 1.21-.7 2.68.21 2.37 1.58-.2 1-1.32 1.4-2.18.96l4.67 4.67-4.67 4.67c.86-.44 1.98-.04 2.18.96.31 1.37-1.16 2.28-2.37 1.58-.932-.538-1.472-1.616-.858-2.5l5.06-5.06-5.06-5.06z"/></svg>
+              <span>Cut</span>
+            </button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="document.execCommand('copy')" title="Copy (Ctrl+C)">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"/></svg>
+              <span>Copy</span>
+            </button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="copyFormatPainter()" title="Format Painter">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M1 0 0 1l2 2h3v1a1 1 0 0 0 1 1h1v3a1 1 0 0 0 1 1h1v6a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-6h1a1 1 0 0 0 1-1V5h1a1 1 0 0 0 1-1V3h3l2-2-1-1H1z"/></svg>
+              <span>Format Painter</span>
+            </button>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Clipboard</div>
+          <button class="wc-group-dialog-btn" onclick="showToast('Clipboard Pane', '📋')" title="Clipboard Pane">↘</button>
+        </div>
+      </div>
+
+      <!-- 2. Font Group (dialog: format.fontDialog) -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <!-- Row 1: Font, Size, Grow, Shrink, Change Case, Clear, Phonetic -->
+          <div class="wc-row">
+            <select class="wc-select" id="wcFontSelect" style="width:130px;" onchange="applyFontFamily(this.value)">
+              <option value="Aptos" selected>Aptos</option>
+              <option value="Segoe UI">Segoe UI</option>
+              <option value="Calibri">Calibri</option>
+              <option value="Arial">Arial</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Georgia">Georgia</option>
+              <option value="Consolas">Consolas</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
+              <option value="Verdana">Verdana</option>
+            </select>
+            <select class="wc-select" id="wcFontSize" style="width:48px;" onchange="applyFontSize(this.value)">
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12" selected>12</option>
+              <option value="14">14</option>
+              <option value="16">16</option>
+              <option value="18">18</option>
+              <option value="20">20</option>
+              <option value="24">24</option>
+              <option value="28">28</option>
+              <option value="36">36</option>
+              <option value="48">48</option>
+              <option value="72">72</option>
+            </select>
+            <button class="wc-tool-btn" onclick="growFont()" title="Increase Font Size (Ctrl+Shift+>)">A<sup>▲</sup></button>
+            <button class="wc-tool-btn" onclick="shrinkFont()" title="Decrease Font Size (Ctrl+Shift+<)">A<sup>▼</sup></button>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-font-case', event)" title="Change Case">Aa ▾</button>
+              <div class="wc-dropdown-menu" id="menu-font-case">
+                <div class="wc-menu-item" onclick="changeCase('sentence')">Sentence case.</div>
+                <div class="wc-menu-item" onclick="changeCase('lower')">lowercase</div>
+                <div class="wc-menu-item" onclick="changeCase('upper')">UPPERCASE</div>
+                <div class="wc-menu-item" onclick="changeCase('title')">Capitalize Each Word</div>
+                <div class="wc-menu-item" onclick="changeCase('toggle')">tOGGLE cASE</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn" onclick="clearFormatting()" title="Clear All Formatting">A⌫</button>
+            <button class="wc-tool-btn" onclick="showToast('Phonetic Guide', '🔤')" title="Phonetic Guide">文/A</button>
+          </div>
+          <!-- Row 2: Bold, Italic, Underline, Strike, Sub, Super, CharBorder, Enclose, TextEffects, Highlight, FontColor -->
+          <div class="wc-row">
+            <button class="wc-tool-btn" onclick="formatDoc('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+            <button class="wc-tool-btn" onclick="formatDoc('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-underline', event)" title="Underline (Ctrl+U)"><u>U</u> ▾</button>
+              <div class="wc-dropdown-menu" id="menu-underline">
+                <div class="wc-menu-item" onclick="setUnderlineStyle('single')">― Single</div>
+                <div class="wc-menu-item" onclick="setUnderlineStyle('double')">═ Double</div>
+                <div class="wc-menu-item" onclick="setUnderlineStyle('thick')">━ Thick</div>
+                <div class="wc-menu-item" onclick="setUnderlineStyle('dotted')">⋯ Dotted</div>
+                <div class="wc-menu-item" onclick="setUnderlineStyle('dashed')">--- Dashed</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn" onclick="formatDoc('strikeThrough')" title="Strikethrough"><s>ab</s></button>
+            <button class="wc-tool-btn" onclick="formatDoc('subscript')" title="Subscript (Ctrl+=)">x<sub>2</sub></button>
+            <button class="wc-tool-btn" onclick="formatDoc('superscript')" title="Superscript (Ctrl+Shift++)">x<sup>2</sup></button>
+            <button class="wc-tool-btn" onclick="showToast('Character Border', '🔲')" title="Character Border">A⃞</button>
+            <button class="wc-tool-btn" onclick="showToast('Enclose Characters', '⭕')" title="Enclose Characters">Ⓐ</button>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-text-effects', event)" title="Text Effects and Typography" style="color:#2b47b5; font-weight:bold;">A✦</button>
+              <div class="wc-dropdown-menu" id="menu-text-effects">
+                <div class="wc-menu-item" onclick="applyTextEffect('outline')">Outline</div>
+                <div class="wc-menu-item" onclick="applyTextEffect('shadow')">Shadow</div>
+                <div class="wc-menu-item" onclick="applyTextEffect('reflection')">Reflection</div>
+                <div class="wc-menu-item" onclick="showToast('Small Caps Diterapkan', 'A')">Small Caps</div>
+                <div class="wc-menu-item" onclick="showToast('All Caps Diterapkan', 'A')">All Caps</div>
+                <div class="wc-menu-item" onclick="showToast('Double Strikethrough Diterapkan', 'A')">Double Strikethrough</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-highlight', event)" title="Text Highlight Color">
+                <span style="background:#ffeb3b; padding:0 3px; border-radius:2px;">ab</span>▾
+              </button>
+              <div class="wc-dropdown-menu" id="menu-highlight">
+                <div class="wc-menu-item" onclick="applyHighlightColor('#ffff00')"><span style="background:#ffff00; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Yellow</div>
+                <div class="wc-menu-item" onclick="applyHighlightColor('#00ff00')"><span style="background:#00ff00; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Bright Green</div>
+                <div class="wc-menu-item" onclick="applyHighlightColor('#00ffff')"><span style="background:#00ffff; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Turquoise</div>
+                <div class="wc-menu-item" onclick="applyHighlightColor('#ff00ff')"><span style="background:#ff00ff; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Pink</div>
+                <div class="wc-menu-item" onclick="applyHighlightColor('#ff0000')"><span style="background:#ff0000; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Red</div>
+                <div class="wc-menu-item" onclick="applyHighlightColor('transparent')">🚫 No Color</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-font-color', event)" title="Font Color">
+                <span style="color:#c00000; font-weight:bold; border-bottom:3px solid #c00000;">A</span>▾
+              </button>
+              <div class="wc-dropdown-menu" id="menu-font-color">
+                <div class="wc-menu-item" onclick="applyFontColor('#000000')"><span style="background:#000000; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Automatic</div>
+                <div class="wc-menu-item" onclick="applyFontColor('#2b47b5')"><span style="background:#2b47b5; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> WordCraft Blue</div>
+                <div class="wc-menu-item" onclick="applyFontColor('#c00000')"><span style="background:#c00000; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Dark Red</div>
+                <div class="wc-menu-item" onclick="applyFontColor('#70ad47')"><span style="background:#70ad47; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Green</div>
+                <div class="wc-menu-item" onclick="applyFontColor('#7030a0')"><span style="background:#7030a0; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Purple</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Font</div>
+          <button class="wc-group-dialog-btn" onclick="openFontDialog()" title="Font Dialog">↘</button>
+        </div>
+      </div>
+
+      <!-- 3. Paragraph Group (dialog: para.dialog) -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <!-- Row 1: Bullets, Numbering, Multilevel, Outdent, Indent, Sort, Show/Hide ¶ -->
+          <div class="wc-row">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-bullets', event)" title="Bullets">•≡ ▾</button>
+              <div class="wc-dropdown-menu" id="menu-bullets">
+                <div class="wc-menu-item" onclick="insertCustomBullet('•')">• Bullet</div>
+                <div class="wc-menu-item" onclick="insertCustomBullet('○')">○ Hollow Round</div>
+                <div class="wc-menu-item" onclick="insertCustomBullet('▪')">▪ Square</div>
+                <div class="wc-menu-item" onclick="insertCustomBullet('◆')">◆ Diamond</div>
+                <div class="wc-menu-item" onclick="insertCustomBullet('➢')">➢ Arrowhead</div>
+                <div class="wc-menu-item" onclick="insertCustomBullet('✓')">✓ Checkmark</div>
+                <div class="wc-menu-item" onclick="insertCustomBullet('–')">– Dash</div>
+                <div class="wc-menu-item" onclick="document.execCommand('insertUnorderedList')">None</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-numbering', event)" title="Numbering">1≡ ▾</button>
+              <div class="wc-dropdown-menu" id="menu-numbering">
+                <div class="wc-menu-item" onclick="insertCustomNumbering('numbered')">1. 2. 3.</div>
+                <div class="wc-menu-item" onclick="insertCustomNumbering('numberedParen')">1) 2) 3)</div>
+                <div class="wc-menu-item" onclick="insertCustomNumbering('outline')">I. II. III.</div>
+                <div class="wc-menu-item" onclick="insertCustomNumbering('upperLetter')">A. B. C.</div>
+                <div class="wc-menu-item" onclick="insertCustomNumbering('lowerLetter')">a) b) c)</div>
+                <div class="wc-menu-item" onclick="insertCustomNumbering('lowerRoman')">i. ii. iii.</div>
+                <div class="wc-menu-item" onclick="showToast('Restart numbering at 1', '1≡')">Restart at 1</div>
+                <div class="wc-menu-item" onclick="document.execCommand('insertOrderedList')">None</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-multilevel', event)" title="Multilevel List">1a. ▾</button>
+              <div class="wc-dropdown-menu" id="menu-multilevel">
+                <div class="wc-menu-item" onclick="showToast('Multilevel: 1. 1.1. 1.1.1.', '1a.')">1. 1.1. 1.1.1. (Legal)</div>
+                <div class="wc-menu-item" onclick="showToast('Multilevel: I. A. 1. a.', '1a.')">I. A. 1. a. (Outline)</div>
+                <div class="wc-menu-item" onclick="showToast('Multilevel Headings', '1a.')">1 Heading 1 / 1.1 Heading 2</div>
+                <div class="wc-menu-item" onclick="showToast('Define New Multilevel List', '1a.')">Define New Multilevel List…</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn" onclick="document.execCommand('outdent')" title="Decrease Indent">⇤</button>
+            <button class="wc-tool-btn" onclick="document.execCommand('indent')" title="Increase Indent">⇥</button>
+            <button class="wc-tool-btn" onclick="sortParagraphs()" title="Sort">A→Z</button>
+            <button class="wc-tool-btn" onclick="toggleFormattingMarks()" title="Show/Hide ¶">¶</button>
+          </div>
+          <!-- Row 2: Align Left, Center, Align Right, Justify, LTR, RTL, Line Spacing, Shading, Borders -->
+          <div class="wc-row">
+            <button class="wc-tool-btn active" onclick="formatDoc('justifyLeft')" title="Align Left">≡<sub>L</sub></button>
+            <button class="wc-tool-btn" onclick="formatDoc('justifyCenter')" title="Center">≡<sub>C</sub></button>
+            <button class="wc-tool-btn" onclick="formatDoc('justifyRight')" title="Align Right">≡<sub>R</sub></button>
+            <button class="wc-tool-btn" onclick="formatDoc('justifyFull')" title="Justify">≡<sub>J</sub></button>
+            <button class="wc-tool-btn" onclick="showToast('Left-to-Right Text Direction', '¶')" title="Left-to-Right Text Direction">¶→</button>
+            <button class="wc-tool-btn" onclick="showToast('Right-to-Left Text Direction', '¶')" title="Right-to-Left Text Direction">←¶</button>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-line-spacing', event)" title="Line and Paragraph Spacing">↕≡ ▾</button>
+              <div class="wc-dropdown-menu" id="menu-line-spacing">
+                <div class="wc-menu-item" onclick="setLineSpacing(1.0)">1.0</div>
+                <div class="wc-menu-item" onclick="setLineSpacing(1.15)">1.15</div>
+                <div class="wc-menu-item" onclick="setLineSpacing(1.5)">1.5</div>
+                <div class="wc-menu-item" onclick="setLineSpacing(2.0)">2.0</div>
+                <div class="wc-menu-item" onclick="setLineSpacing(2.5)">2.5</div>
+                <div class="wc-menu-item" onclick="setLineSpacing(3.0)">3.0</div>
+                <div class="wc-menu-item" onclick="addParaSpace('before')">Add Space Before Paragraph</div>
+                <div class="wc-menu-item" onclick="addParaSpace('after')">Remove Space After Paragraph</div>
+                <div class="wc-menu-item" onclick="openParaDialog()">Line Spacing Options…</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-shading', event)" title="Shading">🪣▾</button>
+              <div class="wc-dropdown-menu" id="menu-shading">
+                <div class="wc-menu-item" onclick="applyParaShading('transparent')">No Color</div>
+                <div class="wc-menu-item" onclick="applyParaShading('#f2f2f2')"><span style="background:#f2f2f2; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Light Gray</div>
+                <div class="wc-menu-item" onclick="applyParaShading('#deebf7')"><span style="background:#deebf7; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Soft Blue</div>
+                <div class="wc-menu-item" onclick="applyParaShading('#e2efda')"><span style="background:#e2efda; width:14px; height:14px; display:inline-block; margin-right:6px;"></span> Soft Green</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn" onclick="toggleRibbonDropdown('menu-borders', event)" title="Borders">田▾</button>
+              <div class="wc-dropdown-menu" id="menu-borders">
+                <div class="wc-menu-item" onclick="applyParaBorder('bottom')">Bottom Border</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('top')">Top Border</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('left')">Left Border</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('right')">Right Border</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('none')">No Border</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('all')">All Borders</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('outside')">Outside Borders</div>
+                <div class="wc-menu-item" onclick="applyParaBorder('inside')">Inside Borders</div>
+                <div class="wc-menu-item" onclick="showToast('Horizontal Line Disisipkan', '―')">Horizontal Line</div>
+                <div class="wc-menu-item" onclick="openPageBorderDialog()">Borders and Shading…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Paragraph</div>
+          <button class="wc-group-dialog-btn" onclick="openParaDialog()" title="Paragraph Settings Dialog">↘</button>
+        </div>
+      </div>
+
+      <!-- 4. Styles Group (dialog: styles.pane) -->
+      <div class="wc-group">
+        <div class="wc-styles-gallery">
+          <div class="wc-styles-cards" id="wcStylesCards">
+            <div class="wc-style-card active" onclick="applyDocStyle('normal', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-family:'Aptos', sans-serif;">AaBbCcDd</div>
+              <div class="wc-style-label">Normal</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('no-spacing', this)">
+              <div class="wc-style-preview" style="font-size:12px; line-height:1;">AaBbCcDd</div>
+              <div class="wc-style-label">No Spacing</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('h1', this)">
+              <div class="wc-style-preview" style="font-size:15px; font-weight:700; color:#2b47b5;">AaBbCc</div>
+              <div class="wc-style-label">Heading 1</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('h2', this)">
+              <div class="wc-style-preview" style="font-size:13px; font-weight:700; color:#2b47b5;">AaBbCc</div>
+              <div class="wc-style-label">Heading 2</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('h3', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-weight:700; color:#3b5998;">AaBbCc</div>
+              <div class="wc-style-label">Heading 3</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('title', this)">
+              <div class="wc-style-preview" style="font-size:18px; font-weight:300;">AaBbCc</div>
+              <div class="wc-style-label">Title</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('subtitle', this)">
+              <div class="wc-style-preview" style="font-size:12px; color:#555; letter-spacing:0.5px;">AaBbCc</div>
+              <div class="wc-style-label">Subtitle</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('subtle-emphasis', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-style:italic; color:#666;">AaBbCc</div>
+              <div class="wc-style-label">Subtle Emphasis</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('emphasis', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-style:italic; color:#2b47b5;">AaBbCc</div>
+              <div class="wc-style-label">Emphasis</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('strong', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-weight:bold;">AaBbCc</div>
+              <div class="wc-style-label">Strong</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('quote', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-style:italic; color:#2b47b5;">“AaBbCc”</div>
+              <div class="wc-style-label">Quote</div>
+            </div>
+            <div class="wc-style-card" onclick="applyDocStyle('intense-quote', this)">
+              <div class="wc-style-preview" style="font-size:12px; font-style:italic; font-weight:600; color:#2b47b5;">“AaBbCc”</div>
+              <div class="wc-style-label">Intense Quote</div>
+            </div>
+          </div>
+          <div class="wc-stack" style="margin-left:4px;">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showStylesDrawer()" title="Styles Pane">More ▾</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="clearFormatting()" title="Clear Styles">Clear</button>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Styles</div>
+          <button class="wc-group-dialog-btn" onclick="showStylesDrawer()" title="Styles Pane">↘</button>
+        </div>
+      </div>
+
+      <!-- 5. Editing Group -->
+      <div class="wc-group">
+        <div class="wc-stack">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-find-split', event)" title="Find (Ctrl+F)">🔍 Find ▾</button>
+            <div class="wc-dropdown-menu" id="menu-find-split">
+              <div class="wc-menu-item" onclick="openFindReplaceDialog(false)">🔍 Find</div>
+              <div class="wc-menu-item" onclick="openFindReplaceDialog(false)">🔎 Advanced Find…</div>
+              <div class="wc-menu-item" onclick="toggleNavPane()">📑 Go To…</div>
+            </div>
+          </div>
+          <button class="wc-tool-btn wc-btn-sm" onclick="openFindReplaceDialog(true)" title="Replace (Ctrl+H)">Replace</button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-select-split', event)" title="Select">Select ▾</button>
+            <div class="wc-dropdown-menu" id="menu-select-split">
+              <div class="wc-menu-item" onclick="document.execCommand('selectAll')">Select All</div>
+              <div class="wc-menu-item" onclick="showToast('Select Paragraph', '¶')">Select Paragraph</div>
+              <div class="wc-menu-item" onclick="showToast('Select Sentence', '📄')">Select Sentence</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Editing</div>
+      </div>
+
+      <!-- 6. Voice Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="startDictation()" title="Dictate (tools.dictate)">
+            <span style="font-size:20px; color:#c00000;">🎤</span>
+            <span>Dictate</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Voice</div>
+      </div>
+
+      <!-- 7. Editor Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openSpellingModal()" title="Editor / Spelling & Grammar (review.spelling)">
+            <span style="font-size:18px; color:#107c41;">📝</span>
+            <span>Editor</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Editor</div>
+      </div>
+    </div>
+
+    <!-- 3.2 Tab Panel: INSERT -->
+    <!-- WordCraft ribbon/insert.rs: Pages, Tables, Illustrations, Links, Comments, Header & Footer, Text, Symbols -->
+    <div class="wc-ribbon-tab-content" id="tabContent-insert">
+      <!-- Pages Group -->
+      <div class="wc-group">
+        <div class="wc-stack">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-cover-page', event)" title="Cover Page">Cover Page ▾</button>
+            <div class="wc-dropdown-menu" id="menu-cover-page">
+              <div class="wc-menu-item" onclick="insertCoverPage('academic')">Studio cover</div>
+            </div>
+          </div>
+          <button class="wc-tool-btn wc-btn-sm" onclick="insertBlankPage()" title="Blank Page">Blank Page</button>
+          <button class="wc-tool-btn wc-btn-sm" onclick="insertPageBreak()" title="Page Break (Ctrl+Enter)">Page Break</button>
+        </div>
+        <div class="wc-group-label">Pages</div>
+      </div>
+
+      <!-- Tables Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-insert-table', event)" title="Add a Table">
+              <span style="font-size:20px; color:#2b47b5;">▦</span>
+              <span>Table ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-insert-table">
+              <div class="wc-menu-item" onclick="insertQuickTable(3, 3)">Grid Picker (3x3)</div>
+              <div class="wc-menu-item" onclick="insertQuickTable(4, 4)">Grid Picker (4x4)</div>
+              <div class="wc-menu-item" onclick="insertQuickTable(5, 5)">Grid Picker (5x5)</div>
+              <div class="wc-menu-item" onclick="openInsertTableModal()">Insert Table…</div>
+              <div class="wc-menu-item" onclick="showToast('Draw Table Tool Aktif', '✏️')">Draw Table</div>
+              <div class="wc-menu-item" onclick="showToast('Konversi Teks ke Tabel', '▦')">Convert Text to Table…</div>
+              <div class="wc-menu-item" onclick="insertQuickTable(4, 3)">Quick Tables (Tabular, Matrix, Calendar)</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Tables</div>
+      </div>
+
+      <!-- Illustrations Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertLocalImage()" title="Pictures">
+            <span style="font-size:20px; color:#107c41;">🖼️</span>
+            <span>Pictures</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-insert-shapes', event)" title="Shapes">
+              <span style="font-size:20px; color:#2b47b5;">🔷</span>
+              <span>Shapes ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-insert-shapes">
+              <div class="wc-menu-item" onclick="insertDocShape('rect')">Rectangle</div>
+              <div class="wc-menu-item" onclick="insertDocShape('rounded')">Rounded Rectangle</div>
+              <div class="wc-menu-item" onclick="insertDocShape('circle')">Oval / Ellipse</div>
+              <div class="wc-menu-item" onclick="insertDocShape('triangle')">Triangle</div>
+              <div class="wc-menu-item" onclick="insertDocShape('arrow')">Arrow</div>
+              <div class="wc-menu-item" onclick="insertDocShape('star')">Star</div>
+              <div class="wc-menu-item" onclick="showToast('New Drawing Canvas Disisipkan', '🎨')">New Drawing Canvas</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Icons', '⭐')">Icons</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('SmartArt', '📊')">SmartArt</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Chart', '📈')">Chart</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Illustrations</div>
+      </div>
+
+      <!-- Links Group -->
+      <div class="wc-group">
+        <div class="wc-stack">
+          <button class="wc-tool-btn wc-btn-sm" onclick="insertHyperlink()" title="Link (Ctrl+K)">Link</button>
+          <button class="wc-tool-btn wc-btn-sm" onclick="insertBookmark()" title="Bookmark">Bookmark</button>
+          <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Cross-reference', '🔀')">Cross-reference</button>
+        </div>
+        <div class="wc-group-label">Links</div>
+      </div>
+
+      <!-- Comments Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertDocComment()" title="Comment">
+            <span style="font-size:20px; color:#2b47b5;">💬</span>
+            <span>Comment</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Comments</div>
+      </div>
+
+      <!-- Header & Footer Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-header', event)">
+              <span style="font-size:18px;">📄</span>
+              <span>Header ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-header">
+              <div class="wc-menu-item" onclick="insertHeaderFooter('header', 'blank')">Blank</div>
+              <div class="wc-menu-item" onclick="insertHeaderFooter('header', 'three-col')">Blank (Three Columns)</div>
+              <div class="wc-menu-item" onclick="insertHeaderFooter('header', 'title')">Document Title</div>
+              <div class="wc-menu-item" onclick="insertHeaderFooter('header', 'edit')">Edit Header</div>
+              <div class="wc-menu-item" onclick="showToast('Header Dihapus', '🚫')">Remove Header</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-footer', event)">
+              <span style="font-size:18px;">📄</span>
+              <span>Footer ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-footer">
+              <div class="wc-menu-item" onclick="insertHeaderFooter('footer', 'blank')">Blank</div>
+              <div class="wc-menu-item" onclick="insertHeaderFooter('footer', 'three-col')">Blank (Three Columns)</div>
+              <div class="wc-menu-item" onclick="insertHeaderFooter('footer', 'pageNum')">Page Number</div>
+              <div class="wc-menu-item" onclick="insertHeaderFooter('footer', 'edit')">Edit Footer</div>
+              <div class="wc-menu-item" onclick="showToast('Footer Dihapus', '🚫')">Remove Footer</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-page-num', event)">
+              <span style="font-size:18px;">🔢</span>
+              <span>Page<br>Number ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-page-num">
+              <div class="wc-menu-item" onclick="insertPageNumber('top')">Top of Page</div>
+              <div class="wc-menu-item" onclick="insertPageNumber('bottom')">Bottom of Page</div>
+              <div class="wc-menu-item" onclick="insertPageNumber('x-of-y')">Page X of Y</div>
+              <div class="wc-menu-item" onclick="insertPageNumber('current')">Current Position</div>
+              <div class="wc-menu-item" onclick="showToast('Format Page Numbers Dialog', '⚙️')">Format Page Numbers…</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Header & Footer</div>
+      </div>
+
+      <!-- Text Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertTextBox()" title="Text Box">
+            <span style="font-size:18px;">🔲</span>
+            <span>Text<br>Box</span>
+          </button>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-quick-parts', event)">Quick Parts ▾</button>
+              <div class="wc-dropdown-menu" id="menu-quick-parts">
+                <div class="wc-menu-item" onclick="showToast('Field Dialog', '📋')">Field…</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="showToast('WordArt Gallery', '🎨')">WordArt ▾</button>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-drop-cap', event)">Drop Cap ▾</button>
+              <div class="wc-dropdown-menu" id="menu-drop-cap">
+                <div class="wc-menu-item" onclick="showToast('None', 'Aa')">None</div>
+                <div class="wc-menu-item" onclick="showToast('Dropped', 'Aa')">Dropped</div>
+                <div class="wc-menu-item" onclick="showToast('In margin', 'Aa')">In margin</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Signature Line', '✍️')">Signature Line</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="insertDateTime()">Date & Time</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Insert Object', '📦')">Object</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Text</div>
+      </div>
+
+      <!-- Symbols Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openMathPaletteModal()" title="Equation">
+            <span style="font-size:20px; color:#2b47b5;">π</span>
+            <span>Equation</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-symbols', event)" title="Symbol">
+              <span style="font-size:20px; color:#2b47b5;">Ω</span>
+              <span>Symbol ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-symbols" style="width:240px;">
+              <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:4px; padding:6px;">
+                <button class="wc-tool-btn" onclick="insertSymbol('©')">©</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('®')">®</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('™')">™</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('§')">§</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('¶')">¶</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('€')">€</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('£')">£</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('¥')">¥</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('°')">°</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('±')">±</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('≠')">≠</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('≤')">≤</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('≥')">≥</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('÷')">÷</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('×')">×</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('∞')">∞</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('µ')">µ</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('α')">α</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('β')">β</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('π')">π</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('Ω')">Ω</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('∑')">∑</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('√')">√</button>
+                <button class="wc-tool-btn" onclick="insertSymbol('→')">→</button>
+              </div>
+              <div class="wc-menu-item" style="border-top:1px solid #eee;" onclick="showToast('More Symbols Dialog', 'Ω')">More Symbols…</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Symbols</div>
+      </div>
+    </div>
+
+    <!-- 3.3 Tab Panel: DRAW -->
+    <!-- WordCraft ribbon/draw.rs: Drawing Tools, Convert, Insert, Replay -->
+    <div class="wc-ribbon-tab-content" id="tabContent-draw">
+      <!-- Drawing Tools Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg active" onclick="activateDrawTool('select')">
+            <span style="font-size:18px;">🖱️</span>
+            <span>Select</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="activateDrawTool('lasso')">
+            <span style="font-size:18px;">➰</span>
+            <span>Lasso</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="activateDrawTool('eraser')">
+            <span style="font-size:18px;">🧹</span>
+            <span>Eraser</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="selectPen('#000000', 2)">
+            <span style="font-size:18px;">✒️</span>
+            <span>Pen</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="selectPen('#666666', 1)">
+            <span style="font-size:18px;">✏️</span>
+            <span>Pencil</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="selectPen('#ffff00', 12)">
+            <span style="font-size:18px;">🖊️</span>
+            <span>Highlighter</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-add-pen', event)">
+              <span style="font-size:18px;">➕</span>
+              <span>Add<br>Pen ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-add-pen">
+              <div class="wc-menu-item" onclick="selectPen('#000000', 2)">Pen</div>
+              <div class="wc-menu-item" onclick="selectPen('#888888', 1)">Pencil</div>
+              <div class="wc-menu-item" onclick="selectPen('#ffff00', 12)">Highlighter</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Palet Warna Pena', '🎨')">Color ▾</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Ketebalan Garis Pena: 0.5pt, 1pt, 2pt...', '📏')">Thickness ▾</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Drawing Tools</div>
+      </div>
+
+      <!-- Convert Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="inkToShape()" title="Ink to Shape">
+            <span style="font-size:18px;">📐</span>
+            <span>Ink to<br>Shape</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="inkToMath()" title="Ink to Math">
+            <span style="font-size:18px;">🧮</span>
+            <span>Ink to<br>Math</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Convert</div>
+      </div>
+
+      <!-- Insert Canvas Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Drawing Canvas Disisipkan', '🎨')" title="Drawing Canvas">
+            <span style="font-size:18px;">🖼️</span>
+            <span>Drawing<br>Canvas</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Insert</div>
+      </div>
+
+      <!-- Replay Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="inkReplay()" title="Ink Replay">
+            <span style="font-size:18px;">▶</span>
+            <span>Ink<br>Replay</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Replay</div>
+      </div>
+    </div>
+
+    <!-- 3.4 Tab Panel: DESIGN -->
+    <!-- WordCraft ribbon/design.rs: Themes, Document Formatting, Page Background -->
+    <div class="wc-ribbon-tab-content" id="tabContent-design">
+      <!-- Themes Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-doc-themes', event)" title="Themes">
+              <span style="font-size:20px; color:#2b47b5;">🎨</span>
+              <span>Themes ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-doc-themes">
+              <div class="wc-menu-item" onclick="applyDocTheme('office')">Office</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('facet')">Facet</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('integral')">Integral</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('ion')">Ion</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('organic')">Organic</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('retrospect')">Retrospect</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('slice')">Slice</div>
+              <div class="wc-menu-item" onclick="applyDocTheme('wisp')">Wisp</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Themes</div>
+      </div>
+
+      <!-- Document Formatting Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-styles-gallery" style="max-width:320px;">
+            <div class="wc-styles-cards">
+              <div class="wc-style-card active" onclick="applyDocTheme('office')">
+                <div class="wc-style-preview" style="font-weight:bold; color:#2b47b5;">Title</div>
+                <div class="wc-style-label">Default</div>
+              </div>
+              <div class="wc-style-card" onclick="applyDocTheme('casual')">
+                <div class="wc-style-preview" style="font-weight:300; color:#333;">Title</div>
+                <div class="wc-style-label">Casual</div>
+              </div>
+              <div class="wc-style-card" onclick="applyDocTheme('formal')">
+                <div class="wc-style-preview" style="text-transform:uppercase; font-size:11px;">Title</div>
+                <div class="wc-style-label">Formal</div>
+              </div>
+              <div class="wc-style-card" onclick="applyDocTheme('modern')">
+                <div class="wc-style-preview" style="letter-spacing:1px; color:#107c41;">Title</div>
+                <div class="wc-style-label">Modern</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-theme-colors', event)">Colors ▾</button>
+              <div class="wc-dropdown-menu" id="menu-theme-colors">
+                <div class="wc-menu-item" onclick="applyThemeColors('office')">Office</div>
+                <div class="wc-menu-item" onclick="applyThemeColors('warm')">Warm Earth</div>
+                <div class="wc-menu-item" onclick="applyThemeColors('cool')">Cool Blue</div>
+                <div class="wc-menu-item" onclick="applyThemeColors('grayscale')">Grayscale</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-theme-fonts', event)">Fonts ▾</button>
+              <div class="wc-dropdown-menu" id="menu-theme-fonts">
+                <div class="wc-menu-item" onclick="applyThemeFonts('Aptos')">Aptos / Aptos Display</div>
+                <div class="wc-menu-item" onclick="applyThemeFonts('Calibri')">Calibri / Calibri Light</div>
+                <div class="wc-menu-item" onclick="applyThemeFonts('Times New Roman')">Times New Roman</div>
+              </div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-para-spacing', event)">Paragraph Spacing ▾</button>
+              <div class="wc-dropdown-menu" id="menu-para-spacing">
+                <div class="wc-menu-item" onclick="setDocSpacing('default')">Default</div>
+                <div class="wc-menu-item" onclick="setDocSpacing('tight')">No Paragraph Space</div>
+                <div class="wc-menu-item" onclick="setDocSpacing('compact')">Compact</div>
+                <div class="wc-menu-item" onclick="setDocSpacing('tight')">Tight</div>
+                <div class="wc-menu-item" onclick="setDocSpacing('open')">Open</div>
+                <div class="wc-menu-item" onclick="setDocSpacing('relaxed')">Relaxed</div>
+                <div class="wc-menu-item" onclick="setDocSpacing('relaxed')">Double</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Effects', '✨')">Effects</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Set as Default', '💾')">Set as Default</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Document Formatting</div>
+      </div>
+
+      <!-- Page Background Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-watermark', event)" title="Watermark">
+              <span style="font-size:20px; color:#666;">🌫️</span>
+              <span>Watermark ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-watermark">
+              <div class="wc-menu-item" onclick="applyWatermark('DRAFT')">DRAFT</div>
+              <div class="wc-menu-item" onclick="applyWatermark('CONFIDENTIAL')">CONFIDENTIAL</div>
+              <div class="wc-menu-item" onclick="applyWatermark('DO NOT COPY')">DO NOT COPY</div>
+              <div class="wc-menu-item" onclick="applyWatermark('SAMPLE')">SAMPLE</div>
+              <div class="wc-menu-item" onclick="applyWatermark('ASAP')">ASAP</div>
+              <div class="wc-menu-item" onclick="applyWatermark('URGENT')">URGENT</div>
+              <div class="wc-menu-item" onclick="removeWatermark()">🚫 Remove Watermark</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-page-color', event)" title="Page Color">
+              <span style="font-size:20px; color:#2b47b5;">📄</span>
+              <span>Page Color ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-page-color">
+              <div class="wc-menu-item" onclick="applyPageBgColor('#ffffff')">No Color (White)</div>
+              <div class="wc-menu-item" onclick="applyPageBgColor('#fffdf5')">Sepia</div>
+              <div class="wc-menu-item" onclick="applyPageBgColor('#f4f4f4')">Light Gray</div>
+              <div class="wc-menu-item" onclick="applyPageBgColor('#eef4fb')">Soft Blue</div>
+            </div>
+          </div>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openPageBorderDialog()" title="Page Borders">
+            <span style="font-size:20px; color:#2b47b5;">🔲</span>
+            <span>Page Borders</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Page Background</div>
+      </div>
+    </div>
+
+    <!-- 3.5 Tab Panel: LAYOUT -->
+    <!-- WordCraft ribbon/layout.rs: Page Setup, Paragraph, Arrange -->
+    <div class="wc-ribbon-tab-content" id="tabContent-layout">
+      <!-- Page Setup Group (dialog: layout.pageSetup) -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-text-dir', event)" title="Text Direction">
+              <span style="font-size:18px;">🔄</span>
+              <span>Text<br>Direction ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-text-dir">
+              <div class="wc-menu-item" onclick="showToast('Horizontal Text', '↔')">Horizontal</div>
+              <div class="wc-menu-item" onclick="showToast('Rotate all text 90°', '🔄')">Rotate all text 90°</div>
+              <div class="wc-menu-item" onclick="showToast('Rotate all text 270°', '🔄')">Rotate all text 270°</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-margins', event)" title="Margins">
+              <span style="font-size:18px;">📐</span>
+              <span>Margins ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-margins">
+              <div class="wc-menu-item" onclick="setDocMargins('normal')">Normal (2.54 cm all)</div>
+              <div class="wc-menu-item" onclick="setDocMargins('narrow')">Narrow (1.27 cm all)</div>
+              <div class="wc-menu-item" onclick="setDocMargins('moderate')">Moderate</div>
+              <div class="wc-menu-item" onclick="setDocMargins('wide')">Wide</div>
+              <div class="wc-menu-item" onclick="setDocMargins('mirrored')">Mirrored</div>
+              <div class="wc-menu-item" onclick="setDocMargins('normal')">Office 2003 Default</div>
+              <div class="wc-menu-item" onclick="openPageSetupDialog()">Custom Margins…</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-orientation', event)" title="Orientation">
+              <span style="font-size:18px;">📄</span>
+              <span>Orientation ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-orientation">
+              <div class="wc-menu-item" onclick="setDocOrientation('portrait')">Portrait</div>
+              <div class="wc-menu-item" onclick="setDocOrientation('landscape')">Landscape</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-paper-size', event)" title="Size">
+              <span style="font-size:18px;">📏</span>
+              <span>Size ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-paper-size">
+              <div class="wc-menu-item" onclick="setPaperSize('Letter')">Letter (21.59 x 27.94 cm)</div>
+              <div class="wc-menu-item" onclick="setPaperSize('Legal')">Legal (21.59 x 35.56 cm)</div>
+              <div class="wc-menu-item" onclick="setPaperSize('A4')">A4 (21 x 29.7 cm)</div>
+              <div class="wc-menu-item" onclick="setPaperSize('A3')">A3 (29.7 x 42.0 cm)</div>
+              <div class="wc-menu-item" onclick="setPaperSize('A5')">A5 (14.8 x 21.0 cm)</div>
+              <div class="wc-menu-item" onclick="openPageSetupDialog()">More Paper Sizes…</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-columns', event)" title="Columns">
+              <span style="font-size:18px;">📰</span>
+              <span>Columns ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-columns">
+              <div class="wc-menu-item" onclick="setColumns(1)">One</div>
+              <div class="wc-menu-item" onclick="setColumns(2)">Two</div>
+              <div class="wc-menu-item" onclick="setColumns(3)">Three</div>
+              <div class="wc-menu-item" onclick="setColumns(2)">Left</div>
+              <div class="wc-menu-item" onclick="setColumns(2)">Right</div>
+              <div class="wc-menu-item" onclick="openPageSetupDialog()">More Columns…</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-breaks', event)">Breaks ▾</button>
+              <div class="wc-dropdown-menu" id="menu-breaks">
+                <div style="font-size:10px; font-weight:bold; color:#777; padding:4px 8px;">PAGE BREAKS</div>
+                <div class="wc-menu-item" onclick="insertPageBreak()">Page</div>
+                <div class="wc-menu-item" onclick="insertPageBreak()">Column</div>
+                <div class="wc-menu-item" onclick="insertPageBreak()">Text Wrapping</div>
+                <div style="font-size:10px; font-weight:bold; color:#777; padding:4px 8px;">SECTION BREAKS</div>
+                <div class="wc-menu-item" onclick="insertSectionBreak()">Next Page</div>
+                <div class="wc-menu-item" onclick="insertSectionBreak()">Continuous</div>
+                <div class="wc-menu-item" onclick="insertSectionBreak()">Even Page</div>
+                <div class="wc-menu-item" onclick="insertSectionBreak()">Odd Page</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-line-nums', event)">Line Numbers ▾</button>
+              <div class="wc-dropdown-menu" id="menu-line-nums">
+                <div class="wc-menu-item" onclick="showToast('Line Numbers: None', '🔢')">None</div>
+                <div class="wc-menu-item" onclick="showToast('Line Numbers: Continuous', '🔢')">Continuous</div>
+                <div class="wc-menu-item" onclick="showToast('Line Numbers: Restart Each Page', '🔢')">Restart Each Page</div>
+                <div class="wc-menu-item" onclick="showToast('Line Numbers: Restart Each Section', '🔢')">Restart Each Section</div>
+              </div>
+            </div>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-hyphen', event)">Hyphenation ▾</button>
+              <div class="wc-dropdown-menu" id="menu-hyphen">
+                <div class="wc-menu-item" onclick="showToast('Hyphenation: None', '✂️')">None</div>
+                <div class="wc-menu-item" onclick="showToast('Hyphenation: Automatic', '✂️')">Automatic</div>
+                <div class="wc-menu-item" onclick="showToast('Hyphenation: Manual', '✂️')">Manual…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Page Setup</div>
+          <button class="wc-group-dialog-btn" onclick="openPageSetupDialog()" title="Page Setup Dialog">↘</button>
+        </div>
+      </div>
+
+      <!-- Paragraph Group (dialog: para.dialog) -->
+      <div class="wc-group">
+        <div class="wc-group-content" style="flex-direction:column; gap:4px; align-items:flex-start;">
+          <div class="wc-row">
+            <span style="font-size:11px; font-weight:bold; width:50px; color:#333;">Indent</span>
+            <div class="wc-num-field">
+              <span class="wc-num-label">Left:</span>
+              <input type="text" class="wc-num-input" value="0 cm" onchange="setIndentValue('left', this.value)" />
+            </div>
+            <span style="font-size:11px; font-weight:bold; width:50px; color:#333; margin-left:8px;">Spacing</span>
+            <div class="wc-num-field">
+              <span class="wc-num-label">Before:</span>
+              <input type="text" class="wc-num-input" value="0 pt" onchange="setSpacingValue('before', this.value)" />
+            </div>
+          </div>
+          <div class="wc-row">
+            <span style="font-size:11px; width:50px; color:#555;"></span>
+            <div class="wc-num-field">
+              <span class="wc-num-label">Right:</span>
+              <input type="text" class="wc-num-input" value="0 cm" onchange="setIndentValue('right', this.value)" />
+            </div>
+            <span style="font-size:11px; width:50px; color:#555; margin-left:8px;"></span>
+            <div class="wc-num-field">
+              <span class="wc-num-label">After:</span>
+              <input type="text" class="wc-num-input" value="8 pt" onchange="setSpacingValue('after', this.value)" />
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Paragraph</div>
+          <button class="wc-group-dialog-btn" onclick="openParaDialog()" title="Paragraph Spacing Dialog">↘</button>
+        </div>
+      </div>
+
+      <!-- Arrange Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Position Dialog', '📐')" title="Position">
+            <span style="font-size:18px;">📐</span>
+            <span>Position</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-wrap-text', event)" title="Wrap Text">
+              <span style="font-size:18px;">📦</span>
+              <span>Wrap<br>Text ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-wrap-text">
+              <div class="wc-menu-item" onclick="showToast('In Line with Text', '📦')">In Line with Text</div>
+              <div class="wc-menu-item" onclick="showToast('Square', '📦')">Square</div>
+              <div class="wc-menu-item" onclick="showToast('Tight', '📦')">Tight</div>
+              <div class="wc-menu-item" onclick="showToast('Behind Text', '📦')">Behind Text</div>
+              <div class="wc-menu-item" onclick="showToast('In Front of Text', '📦')">In Front of Text</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Bring Forward', '⬆️')">Bring Forward</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Send Backward', '⬇️')">Send Backward</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Selection Pane', '📋')">Selection Pane</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Align Options', '📐')">Align ▾</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Group Objects', '📦')">Group ▾</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Rotate Objects', '🔄')">Rotate ▾</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Arrange</div>
+      </div>
+    </div>
+
+    <!-- 3.6 Tab Panel: REFERENCES -->
+    <!-- WordCraft ribbon/references.rs: Table of Contents, Footnotes, Research, Citations & Bibliography, Captions, Index, Table of Authorities -->
+    <div class="wc-ribbon-tab-content" id="tabContent-references">
+      <!-- Table of Contents Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-toc', event)" title="Table of Contents">
+              <span style="font-size:20px; color:#2b47b5;">📑</span>
+              <span>Table of<br>Contents ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-toc">
+              <div class="wc-menu-item" onclick="insertTOC('auto1')">Automatic Table 1 (3 levels)</div>
+              <div class="wc-menu-item" onclick="insertTOC('auto2')">Automatic Table 2 (2 levels)</div>
+              <div class="wc-menu-item" onclick="openPageSetupDialog()">Custom Table of Contents…</div>
+              <div class="wc-menu-item" onclick="removeTOC()">Remove Table of Contents</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-toc-addtext', event)">Add Text ▾</button>
+              <div class="wc-dropdown-menu" id="menu-toc-addtext">
+                <div class="wc-menu-item" onclick="showToast('Do Not Show in TOC', 'ℹ️')">Do Not Show in TOC</div>
+                <div class="wc-menu-item" onclick="showToast('Level 1', 'ℹ️')">Level 1</div>
+                <div class="wc-menu-item" onclick="showToast('Level 2', 'ℹ️')">Level 2</div>
+                <div class="wc-menu-item" onclick="showToast('Level 3', 'ℹ️')">Level 3</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn wc-btn-sm" onclick="updateTOC()" title="Update Table">Update Table</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Table of Contents</div>
+      </div>
+
+      <!-- Footnotes Group (dialog: references.noteOptions) -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertFootnote()" title="Insert Footnote (Alt+Ctrl+F)">
+            <span style="font-size:18px; color:#2b47b5;">AB¹</span>
+            <span>Insert<br>Footnote</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="insertEndnote()" title="Insert Endnote (Alt+Ctrl+D)">Insert Endnote</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Next Footnote', '⏩')">Next Footnote</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Show Notes', '👁️')">Show Notes</button>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Footnotes</div>
+          <button class="wc-group-dialog-btn" onclick="openNoteOptions()" title="Footnote Options Dialog">↘</button>
+        </div>
+      </div>
+
+      <!-- Research Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openResearcherPane()" title="Researcher">
+            <span style="font-size:20px; color:#2b47b5;">📚</span>
+            <span>Researcher</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Research</div>
+      </div>
+
+      <!-- Citations & Bibliography Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-insert-cite', event)" title="Insert Citation">
+              <span style="font-size:20px; color:#2b47b5;">🏷️</span>
+              <span>Insert<br>Citation ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-insert-cite">
+              <div class="wc-menu-item" onclick="insertCitationModal()">Add New Source…</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="manageSourcesModal()">Manage Sources</button>
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-cite-style', event)">Style: APA ▾</button>
+              <div class="wc-dropdown-menu" id="menu-cite-style">
+                <div class="wc-menu-item" onclick="setCiteStyle('APA')">APA 7th Edition</div>
+                <div class="wc-menu-item" onclick="setCiteStyle('Chicago')">Chicago 17th Edition</div>
+                <div class="wc-menu-item" onclick="setCiteStyle('Harvard')">Harvard</div>
+                <div class="wc-menu-item" onclick="setCiteStyle('IEEE')">IEEE</div>
+                <div class="wc-menu-item" onclick="setCiteStyle('MLA')">MLA 9th Edition</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn wc-btn-sm" onclick="insertBibliography()">Bibliography</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Citations & Bibliography</div>
+      </div>
+
+      <!-- Captions Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertCaption()" title="Insert Caption">
+            <span style="font-size:18px;">🏷️</span>
+            <span>Insert<br>Caption</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Insert Table of Figures', '📊')">Insert Table of Figures</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Update Table of Figures', '🔄')">Update Table</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Cross-reference', '🔀')">Cross-reference</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Captions</div>
+      </div>
+
+      <!-- Index Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mark Entry (references.markEntry)', '🏷️')">
+            <span style="font-size:18px;">🔤</span>
+            <span>Mark<br>Entry</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Insert Index', '📖')">Insert Index</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Update Index', '🔄')">Update Index</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Index</div>
+      </div>
+
+      <!-- Table of Authorities Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Mark Citation (references.markCitation)', '⚖️')">
+            <span style="font-size:18px;">⚖️</span>
+            <span>Mark<br>Citation</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Insert Table of Authorities', '📖')">Insert Table of Authorities</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Update Table of Authorities', '🔄')">Update Table</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Table of Authorities</div>
+      </div>
+    </div>
+
+    <!-- 3.7 Tab Panel: MAILINGS -->
+    <!-- WordCraft ribbon/mailings.rs: Create, Start Mail Merge, Write & Insert Fields, Preview Results, Finish -->
+    <div class="wc-ribbon-tab-content" id="tabContent-mailings">
+      <!-- Create Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="mailingsCreateEnvelope()" title="Envelopes">
+            <span style="font-size:20px; color:#2b47b5;">✉️</span>
+            <span>Envelopes</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="mailingsCreateLabel()" title="Labels">
+            <span style="font-size:20px; color:#2b47b5;">🏷️</span>
+            <span>Labels</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Create</div>
+      </div>
+
+      <!-- Start Mail Merge Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-start-merge', event)" title="Start Mail Merge">
+              <span style="font-size:20px; color:#2b47b5;">📬</span>
+              <span>Start Mail<br>Merge ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-start-merge">
+              <div class="wc-menu-item" onclick="startMailMergeType('letters')">Letters</div>
+              <div class="wc-menu-item" onclick="startMailMergeType('emails')">E-mail Messages</div>
+              <div class="wc-menu-item" onclick="startMailMergeType('envelopes')">Envelopes</div>
+              <div class="wc-menu-item" onclick="startMailMergeType('labels')">Labels</div>
+              <div class="wc-menu-item" onclick="startMailMergeType('directory')">Directory</div>
+              <div class="wc-menu-item" onclick="startMailMergeType('normal')">Normal Word Document</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-recipients', event)" title="Select Recipients">
+              <span style="font-size:20px; color:#2b47b5;">👥</span>
+              <span>Select<br>Recipients ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-recipients">
+              <div class="wc-menu-item" onclick="openMailMergeWizardModal()">Type a New List…</div>
+              <div class="wc-menu-item" onclick="openMailMergeWizardModal()">Use an Existing List…</div>
+            </div>
+          </div>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Edit Recipient List Dialog', '📋')" title="Edit Recipient List">
+            <span style="font-size:20px;">📝</span>
+            <span>Edit<br>Recipient List</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Start Mail Merge</div>
+      </div>
+
+      <!-- Write & Insert Fields Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Sorot Bidang Gabungan Aktif', '✨')" title="Highlight Merge Fields">
+            <span style="font-size:18px;">✨</span>
+            <span>Highlight<br>Merge Fields</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="mailingsInsertAddressBlock()" title="Address Block">
+            <span style="font-size:18px;">🏠</span>
+            <span>Address<br>Block</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="mailingsInsertGreeting()" title="Greeting Line">
+            <span style="font-size:18px;">👋</span>
+            <span>Greeting<br>Line</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="mailingsInsertField()" title="Insert Merge Field">
+            <span style="font-size:18px; color:#107c41;">«»</span>
+            <span>Insert Merge<br>Field</span>
+          </button>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-merge-rules', event)">Rules ▾</button>
+              <div class="wc-dropdown-menu" id="menu-merge-rules">
+                <div class="wc-menu-item" onclick="showToast('If…Then…Else… Rule', '⚙️')">If…Then…Else…</div>
+                <div class="wc-menu-item" onclick="showToast('Merge Record # Rule', '⚙️')">Merge Record #</div>
+                <div class="wc-menu-item" onclick="showToast('Next Record Rule', '⚙️')">Next Record</div>
+                <div class="wc-menu-item" onclick="showToast('Skip Record If… Rule', '⚙️')">Skip Record If…</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Match Fields', '🔗')">Match Fields</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Write & Insert Fields</div>
+      </div>
+
+      <!-- Preview Results Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleMailMergePreview()" title="Preview Results">
+            <span style="font-size:18px; color:#2b47b5;">«ABC»</span>
+            <span>Preview<br>Results</span>
+          </button>
+          <div class="wc-stack">
+            <div class="wc-row">
+              <button class="wc-tool-btn" onclick="mailingsNav('first')" title="First Record">|◀</button>
+              <button class="wc-tool-btn" onclick="mailingsNav('prev')" title="Previous Record">◀</button>
+              <input type="text" value="1" style="width:28px; text-align:center; border:1px solid #ccc; font-size:11px;" />
+              <button class="wc-tool-btn" onclick="mailingsNav('next')" title="Next Record">▶</button>
+              <button class="wc-tool-btn" onclick="mailingsNav('last')" title="Last Record">▶|</button>
+            </div>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Find Recipient Dialog', '🔍')">Find Recipient</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Check for Errors', '⚠️')">Check for Errors</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Preview Results</div>
+      </div>
+
+      <!-- Finish Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-finish-merge', event)" title="Finish & Merge">
+              <span style="font-size:20px; color:#107c41;">🏁</span>
+              <span>Finish &<br>Merge ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-finish-merge">
+              <div class="wc-menu-item" onclick="mailingsFinish()">Edit Individual Documents…</div>
+              <div class="wc-menu-item" onclick="mailingsFinish()">Print Documents…</div>
+              <div class="wc-menu-item" onclick="mailingsFinish()">Send Email Messages…</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Finish</div>
+      </div>
+    </div>
+
+    <!-- 3.8 Tab Panel: REVIEW -->
+    <!-- WordCraft ribbon/review.rs: Proofing, Speech, Accessibility, Language, Comments, Tracking, Changes, Compare, Protect, Ink -->
+    <div class="wc-ribbon-tab-content" id="tabContent-review">
+      <!-- Proofing Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openSpellingModal()" title="Spelling & Grammar">
+            <span style="font-size:20px; color:#107c41;">✓</span>
+            <span>Spelling &<br>Grammar</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Thesaurus (Shift+F7)', '📖')">Thesaurus</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Word Count Dialog', '🔢')">Word Count</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Proofing</div>
+      </div>
+
+      <!-- Speech Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="speechReadAloud()" title="Read Aloud">
+            <span style="font-size:20px; color:#2b47b5;">🔊</span>
+            <span>Read<br>Aloud</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Speech</div>
+      </div>
+
+      <!-- Accessibility Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="checkAccessibility()" title="Check Accessibility">
+            <span style="font-size:20px; color:#107c41;">♿</span>
+            <span>Check<br>Accessibility</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Accessibility</div>
+      </div>
+
+      <!-- Language Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="translateDoc()" title="Translate">
+            <span style="font-size:20px; color:#2b47b5;">🌐</span>
+            <span>Translate</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-language', event)" title="Language">
+              <span style="font-size:20px; color:#2b47b5;">🗣️</span>
+              <span>Language ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-language">
+              <div class="wc-menu-item" onclick="showToast('Set Proofing Language', '🌐')">Set Proofing Language…</div>
+              <div class="wc-menu-item" onclick="showToast('Language Preferences', '🌐')">Language Preferences…</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Language</div>
+      </div>
+
+      <!-- Comments Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="insertDocComment()" title="New Comment">
+            <span style="font-size:18px; color:#2b47b5;">💬</span>
+            <span>New<br>Comment</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Delete Comment', '🗑️')">Delete</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Previous Comment', '◀')">Previous</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Next Comment', '▶')">Next</button>
+          </div>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleCommentsPane()" title="Show Comments">
+            <span style="font-size:18px;">👁️</span>
+            <span>Show<br>Comments</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Comments</div>
+      </div>
+
+      <!-- Tracking Group (dialog: review.trackingOptions) -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="trackChangesToggle()" title="Track Changes">
+            <span style="font-size:18px; color:#c00000;">📝</span>
+            <span>Track<br>Changes</span>
+          </button>
+          <div class="wc-stack">
+            <div class="wc-dropdown">
+              <button class="wc-tool-btn wc-btn-sm" onclick="toggleRibbonDropdown('menu-markup', event)">All Markup ▾</button>
+              <div class="wc-dropdown-menu" id="menu-markup">
+                <div class="wc-menu-item" onclick="showToast('Display for Review: All Markup', '📑')">All Markup</div>
+                <div class="wc-menu-item" onclick="showToast('Display for Review: No Markup', '📑')">No Markup</div>
+              </div>
+            </div>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Reviewing Pane', '📋')">Reviewing Pane</button>
+          </div>
+        </div>
+        <div class="wc-group-footer">
+          <div class="wc-group-label">Tracking</div>
+          <button class="wc-group-dialog-btn" onclick="openTrackingOptions()" title="Tracking Options Dialog">↘</button>
+        </div>
+      </div>
+
+      <!-- Changes Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-accept', event)" title="Accept">
+              <span style="font-size:18px; color:#107c41;">✅</span>
+              <span>Accept ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-accept">
+              <div class="wc-menu-item" onclick="acceptChange(false)">Accept and Move to Next</div>
+              <div class="wc-menu-item" onclick="acceptChange(false)">Accept This Change</div>
+              <div class="wc-menu-item" onclick="acceptChange(true)">Accept All Changes</div>
+              <div class="wc-menu-item" onclick="acceptChange(true)">Accept All Changes and Stop Tracking</div>
+            </div>
+          </div>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-reject', event)" title="Reject">
+              <span style="font-size:18px; color:#c00000;">❌</span>
+              <span>Reject ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-reject">
+              <div class="wc-menu-item" onclick="rejectChange(false)">Reject and Move to Next</div>
+              <div class="wc-menu-item" onclick="rejectChange(false)">Reject Change</div>
+              <div class="wc-menu-item" onclick="rejectChange(true)">Reject All Changes</div>
+              <div class="wc-menu-item" onclick="rejectChange(true)">Reject All Changes and Stop Tracking</div>
+            </div>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Previous Change', '◀')">Previous</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Next Change', '▶')">Next</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Changes</div>
+      </div>
+
+      <!-- Compare Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="compareDocs()" title="Compare">
+            <span style="font-size:18px;">⚖️</span>
+            <span>Compare</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Compare</div>
+      </div>
+
+      <!-- Protect Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Block Authors', '👤')" title="Block Authors">
+            <span style="font-size:18px;">👤</span>
+            <span>Block<br>Authors</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="restrictEditing()" title="Restrict Editing">
+            <span style="font-size:18px;">🔒</span>
+            <span>Restrict<br>Editing</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Protect</div>
+      </div>
+
+      <!-- Ink Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="hideInkToggle()" title="Hide Ink">
+            <span style="font-size:18px;">👁️</span>
+            <span>Hide<br>Ink</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Ink</div>
+      </div>
+
+      <!-- Sovereign Security & Collaboration Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="OfficeCore.openBatchPqcModal()" title="Batch PQC Signer NIST FIPS 204">
+            <span style="font-size:20px; color:#2563eb;">⚡</span>
+            <span>Batch PQC<br>Signer</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="OfficeCore.openCrdtModal()" title="CRDT Collaboration Simulator">
+            <span style="font-size:20px; color:#0284c7;">🌐</span>
+            <span>CRDT P2P<br>Kolaborasi</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="OfficeCore.openOpenXmlValidatorModal()" title="Validasi Standar OpenXML ISO/IEC 29500">
+            <span style="font-size:20px; color:#8b5cf6;">📑</span>
+            <span>Validasi<br>OpenXML</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Kedaulatan & Standar</div>
+      </div>
+    </div>
+
+    <!-- 3.9 Tab Panel: VIEW -->
+    <!-- WordCraft ribbon/view.rs: Views, Immersive, Page Movement, Show, Zoom, Dark Mode, Window, Macros, Templates -->
+    <div class="wc-ribbon-tab-content" id="tabContent-view">
+      <!-- Views Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="setReadMode()" title="Read Mode">
+            <span style="font-size:18px;">📖</span>
+            <span>Read<br>Mode</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg active" onclick="setPrintLayout()" title="Print Layout">
+            <span style="font-size:18px;">📄</span>
+            <span>Print<br>Layout</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="setWebLayout()" title="Web Layout">
+            <span style="font-size:18px;">🌐</span>
+            <span>Web<br>Layout</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Outline View', '📋')">Outline</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="showToast('Draft View', '📝')">Draft</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Views</div>
+      </div>
+
+      <!-- Immersive Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleFocusMode()" title="Focus">
+            <span style="font-size:18px;">🎯</span>
+            <span>Focus</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Immersive Reader', '👓')" title="Immersive Reader">
+            <span style="font-size:18px;">👓</span>
+            <span>Immersive<br>Reader</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Immersive</div>
+      </div>
+
+      <!-- Page Movement Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg active" onclick="showToast('Vertical Page Movement', '↕️')" title="Vertical">
+            <span style="font-size:18px;">↕️</span>
+            <span>Vertical</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Side to Side Page Movement', '↔️')" title="Side to Side">
+            <span style="font-size:18px;">↔️</span>
+            <span>Side<br>to Side</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Page Movement</div>
+      </div>
+
+      <!-- Show Group -->
+      <div class="wc-group">
+        <div class="wc-stack">
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" checked onchange="toggleRuler(this)" /> Ruler
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" onchange="toggleGridlines(this)" /> Gridlines
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" checked onchange="toggleNavPane()" /> Navigation Pane
+          </label>
+        </div>
+        <div class="wc-stack">
+          <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer;">
+            <input type="checkbox" onchange="showToast('Hide White Space', '👁️')" /> Hide White Space
+          </label>
+        </div>
+        <div class="wc-group-label">Show</div>
+      </div>
+
+      <!-- Zoom Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Zoom Dialog', '🔍')" title="Zoom">
+            <span style="font-size:18px;">🔍</span>
+            <span>Zoom</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="applyZoom(100)" title="100%">
+            <span style="font-size:18px;">100%</span>
+            <span>100%</span>
+          </button>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="adjustZoom(10)" title="Zoom In">Zoom In</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="adjustZoom(-10)" title="Zoom Out">Zoom Out</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="applyZoom(80)">One Page</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="applyZoom(60)">Multiple Pages</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="applyZoom(120)">Page Width</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Zoom</div>
+      </div>
+
+      <!-- Dark Mode Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleDarkMode()" title="Switch Modes">
+            <span style="font-size:18px;">🌓</span>
+            <span>Switch<br>Modes</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-interface-theme', event)" title="Interface Theme">
+              <span style="font-size:18px;">🎨</span>
+              <span>Interface<br>Theme ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-interface-theme">
+              <div class="wc-menu-item" onclick="setInterfaceTheme('colorful')">Colorful</div>
+              <div class="wc-menu-item" onclick="setInterfaceTheme('dark-gray')">Dark Gray</div>
+              <div class="wc-menu-item" onclick="setInterfaceTheme('black')">Black</div>
+              <div class="wc-menu-item" onclick="setInterfaceTheme('white')">White</div>
+            </div>
+          </div>
+        </div>
+        <div class="wc-group-label">Dark Mode</div>
+      </div>
+
+      <!-- Window Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="windowNew()" title="New Window">
+            <span style="font-size:18px;">🗔</span>
+            <span>New<br>Window</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Arrange All Windows', '🗔')" title="Arrange All">
+            <span style="font-size:18px;">🗗</span>
+            <span>Arrange<br>All</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="windowSplit()" title="Split">
+            <span style="font-size:18px;">⬒</span>
+            <span>Split</span>
+          </button>
+          <div class="wc-dropdown">
+            <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleRibbonDropdown('menu-switch-win', event)" title="Switch Windows">
+              <span style="font-size:18px;">🔄</span>
+              <span>Switch<br>Windows ▾</span>
+            </button>
+            <div class="wc-dropdown-menu" id="menu-switch-win">
+              <div class="wc-menu-item" onclick="showToast('Window 1: Active', '📄')">The Open Studio Handbook</div>
+            </div>
+          </div>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="toggleFocusMode()" title="Full Screen">
+            <span style="font-size:18px;">⛶</span>
+            <span>Full<br>Screen</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Window</div>
+      </div>
+
+      <!-- Macros Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Macros Dialog (Alt+F8)', '📜')" title="Macros">
+            <span style="font-size:20px; color:#2b47b5;">📜</span>
+            <span>Macros</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Macros</div>
+      </div>
+
+      <!-- Templates Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Document Template Dialog', '📄')" title="Templates">
+            <span style="font-size:20px; color:#2b47b5;">📄</span>
+            <span>Templates</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Templates</div>
+      </div>
+    </div>
+
+    <!-- 3.10 Tab Panel: DEVELOPER -->
+    <!-- WordCraft ribbon/review.rs: developer(Controls) -->
+    <div class="wc-ribbon-tab-content" id="tabContent-developer">
+      <!-- Controls Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <div class="wc-tiles-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:3px;">
+            <button class="wc-tool-btn" onclick="developerInsertControl('richText')" title="Rich Text Content Control">Aa</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('plainText')" title="Plain Text Content Control">Tt</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('picture')" title="Picture Content Control">📷</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('buildingBlock')" title="Building Block Gallery Content Control">🏛️</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('checkbox')" title="Check Box Content Control">☑️</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('combobox')" title="Combo Box Content Control">📋</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('dropdown')" title="Drop-Down List Content Control">▾</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('date')" title="Date Picker Content Control">📅</button>
+            <button class="wc-tool-btn" onclick="developerInsertControl('repeating')" title="Repeating Section Content Control">🔁</button>
+          </div>
+          <div class="wc-stack">
+            <button class="wc-tool-btn wc-btn-sm" onclick="developerToggleDesign()" title="Design Mode">Design Mode</button>
+            <button class="wc-tool-btn wc-btn-sm" onclick="developerProperties()" title="Properties">Properties</button>
+          </div>
+        </div>
+        <div class="wc-group-label">Controls</div>
+      </div>
+    </div>
+
+    <!-- 3.11 Tab Panel: ZOTERO -->
+    <!-- WordCraft ribbon/references.rs: zotero(Citations, Bibliography, Document) -->
+    <div class="wc-ribbon-tab-content" id="tabContent-zotero">
+      <!-- Citations Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroAddEditCitation()" title="Add/Edit Citation (Ctrl+Alt+A)">
+            <span style="font-size:20px; color:#c00000; font-weight:bold;">Z</span>
+            <span>Add/Edit<br>Citation</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroAddNote()" title="Add Note">
+            <span style="font-size:20px; color:#2b47b5;">📝</span>
+            <span>Add<br>Note</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroMovePastCitation()" title="Move Past Citation">
+            <span style="font-size:20px; color:#555;">➡️</span>
+            <span>Move Past<br>Citation</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Citations</div>
+      </div>
+
+      <!-- Bibliography Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroAddEditBibliography()" title="Add/Edit Bibliography">
+            <span style="font-size:20px; color:#107c41;">📚</span>
+            <span>Add/Edit<br>Bibliography</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Bibliography</div>
+      </div>
+
+      <!-- Document Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroRefresh()" title="Refresh">
+            <span style="font-size:20px; color:#2b47b5;">🔄</span>
+            <span>Refresh</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroDocPrefs()" title="Document Preferences">
+            <span style="font-size:20px; color:#555;">⚙️</span>
+            <span>Document<br>Preferences</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="zoteroUnlink()" title="Unlink Citations">
+            <span style="font-size:20px; color:#c00000;">🔗</span>
+            <span>Unlink<br>Citations</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Document</div>
+      </div>
+    </div>
+
+    <!-- 3.12 Tab Panel: HELP -->
+    <!-- WordCraft ribbon/review.rs: help(Help, Agents) + Widya Sovereign Office -->
+    <div class="wc-ribbon-tab-content" id="tabContent-help">
+      <!-- Help Group -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openOfficeCommandPalette()" title="Help (F1)">
+            <span style="font-size:20px; color:#2b47b5;">❓</span>
+            <span>Help</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="showToast('Check for Updates: WidyaWriter Up-to-Date (Sovereign Edition)', '🚀')" title="Check for Updates…">
+            <span style="font-size:20px; color:#107c41;">🚀</span>
+            <span>Check for<br>Updates…</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Help</div>
+      </div>
+
+      <!-- Agents Group (WordCraft ui.dialog: commands) -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="openOfficeCommandPalette()" title="Commands Palette & AI Agent Bus">
+            <span style="font-size:20px; color:#2b47b5;">⚡</span>
+            <span>Commands</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Agents</div>
+      </div>
+
+      <!-- Sovereign Office & Cryptography -->
+      <div class="wc-group">
+        <div class="wc-group-content">
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="signDocumentPQC()" title="NIST FIPS 204 PQC Digital Signature">
+            <span style="font-size:20px; color:#107c41;">🛡️</span>
+            <span>NIST FIPS 204</span>
+          </button>
+          <button class="wc-tool-btn wc-tool-btn-lg" onclick="verifyDocumentIntegrity()" title="Verify SHA-256 Cryptographic Integrity">
+            <span style="font-size:20px; color:#2b47b5;">🔒</span>
+            <span>Verify Integrity</span>
+          </button>
+        </div>
+        <div class="wc-group-label">Sovereign Office</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 4. WordCraft Horizontal Ruler -->
+  <div class="wc-ruler-h-bar">
+    <div class="wc-ruler-h-track">
+      <div class="wc-ruler-ticks" id="wcRulerTicks">
+        <!-- Rulers ticks dynamically filled by JS -->
+      </div>
+      <!-- Indent Sliders -->
+      <div class="wc-ruler-marker-top" style="left:0px;" title="First Line Indent"></div>
+      <div class="wc-ruler-marker-bottom" style="left:0px;" title="Hanging Indent"></div>
+      <div class="wc-ruler-marker-right" style="right:0px;" title="Right Margin"></div>
+    </div>
+  </div>
+
+  <!-- 5. WordCraft Workspace Layout (Navigation Pane + Canvas) -->
+  <main class="wc-workspace">
+    <!-- Left Navigation Pane (WordCraft Parity) -->
+    <aside class="wc-nav-pane" id="wcNavPane">
+      <div class="wc-nav-header">
+        <span>Navigation</span>
+        <button class="wc-quick-btn" onclick="toggleNavPane()" title="Tutup Panel Navigasi">✕</button>
+      </div>
+      <div class="wc-nav-search">
+        <input type="text" class="wc-nav-search-input" placeholder="Search document..." oninput="filterNavSearch(this.value)" />
+      </div>
+      <div class="wc-nav-tabs">
+        <button class="wc-nav-tab-btn active" id="tabNavHeadings" onclick="switchNavTab('headings')">Headings</button>
+        <button class="wc-nav-tab-btn" id="tabNavPages" onclick="switchNavTab('pages')">Pages</button>
+        <button class="wc-nav-tab-btn" id="tabNavResults" onclick="switchNavTab('results')">Results</button>
+      </div>
+      <div class="wc-nav-body" id="wcNavBody">
+        <div class="wc-tree-item active" onclick="scrollToSection('sec-title')">
+          <span>▾</span> <span>The Open Studio Handbook</span>
+        </div>
+        <div class="wc-tree-item lvl-2" onclick="scrollToSection('sec-exec-summary')">
+          <span>•</span> <span>1. Executive Summary &amp; Vision</span>
+        </div>
+        <div class="wc-tree-item lvl-2" onclick="scrollToSection('sec-pure-rust')">
+          <span>•</span> <span>2. Pure Rust Engine Stack</span>
+        </div>
+        <div class="wc-tree-item lvl-2" onclick="scrollToSection('sec-pqc')">
+          <span>•</span> <span>3. Kedaulatan Digital &amp; FIPS 204</span>
+        </div>
+        <div class="wc-tree-item lvl-2" onclick="scrollToSection('sec-benchmarks')">
+          <span>•</span> <span>4. Benchmark &amp; Performa</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Document Scroll Canvas -->
+    <section class="wc-doc-canvas" id="wcDocCanvas">
+      <!-- Authentic Page Sheet ("The Open Studio Handbook") -->
+      <article class="wc-page-sheet" id="wcPageSheet" contenteditable="true" spellcheck="false">
+        <header id="sec-title" style="margin-bottom: 24px;">
+          <h1 style="font-size: 28pt; font-weight: 700; color: #1b365d; line-height: 1.15; margin-bottom: 8px;">The Open Studio Handbook</h1>
+          <p style="font-size: 13pt; font-style: italic; color: #4a5568; margin-bottom: 14px;">Principles, Patterns, and Practices for Sovereign Software Studios</p>
+          <div style="height: 3px; background-color: #2b47b5; width: 100%; margin-bottom: 12px;"></div>
+          <div style="font-size: 10pt; color: #718096;">By Widya Architecture Team • October 2026 • Sovereign Edition</div>
+        </header>
+
+        <section id="sec-exec-summary" style="margin-bottom: 22px;">
+          <h2 style="font-size: 16pt; font-weight: 700; color: #2b47b5; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">1. Executive Summary &amp; Vision</h2>
+          <p style="font-size: 11pt; line-height: 1.6; color: #2d3748; margin-bottom: 12px;">
+            The modern digital landscape demands absolute independence from fragile external dependencies. By marrying native systems programming with sovereign cryptographic assurance, we establish an enterprise desktop suite that operates with zero Chromium bloat, zero foreign telemetry, and mathematical certainty.
+          </p>
+          <div style="background-color: #f7fafc; border-left: 4px solid #3b5bdb; padding: 12px 16px; margin: 16px 0; font-size: 10.5pt; font-style: italic; color: #2d3748;">
+            "Sovereignty is not merely a legal status; it is an architectural commitment to understand, control, and verify every single byte that executes on our citizens' hardware."
+          </div>
+        </section>
+
+        <section id="sec-pure-rust" style="margin-bottom: 22px;">
+          <h2 style="font-size: 16pt; font-weight: 700; color: #2b47b5; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">2. Pure Rust Engine Stack</h2>
+          <p style="font-size: 11pt; line-height: 1.6; color: #2d3748; margin-bottom: 12px;">
+            Unlike conventional desktop suites built atop massive browser runtimes, WidyaWriter leverages a 100% pure Rust backend. Memory safety is guaranteed at compile time, eliminating an entire class of security vulnerabilities including buffer overflows and use-after-free bugs.
+          </p>
+          <!-- Structured Table Identik WordCraft Sample -->
+          <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 10pt;">
+            <thead>
+              <tr style="background-color: #004f80; color: #ffffff;">
+                <th style="padding: 8px 12px; text-align: left; border: 1px solid #003a5e;">Subsystem</th>
+                <th style="padding: 8px 12px; text-align: left; border: 1px solid #003a5e;">Implementation Architecture</th>
+                <th style="padding: 8px 12px; text-align: center; border: 1px solid #003a5e;">Memory Footprint</th>
+                <th style="padding: 8px 12px; text-align: center; border: 1px solid #003a5e;">Security Standard</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background-color: #f8fafc;">
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; font-weight: 600;">Text Layout Engine</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1;">Pure Rust HarfRust &amp; Skrifa Shaper</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center;">4.2 MB</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center;">Zero Unsafe Code</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; font-weight: 600;">Mathematical OMML</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1;">ISO/IEC 29500-1 MathML to OpenXML</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center;">1.8 MB</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center;">Deterministic AST</td>
+              </tr>
+              <tr style="background-color: #f8fafc;">
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; font-weight: 600;">Post-Quantum Cryptography</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1;">NIST FIPS 204 ML-DSA-87 Digital Signatures</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center;">2.5 MB</td>
+                <td style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center;">Quantum-Resistant A+</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="sec-pqc" style="margin-bottom: 22px;">
+          <h2 style="font-size: 16pt; font-weight: 700; color: #2b47b5; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">3. Kedaulatan Digital &amp; FIPS 204</h2>
+          <p style="font-size: 11pt; line-height: 1.6; color: #2d3748; margin-bottom: 12px;">
+            Setiap dokumen yang dihasilkan WidyaWriter dapat ditandatangani secara kriptografis menggunakan algoritma pasca-kuantum NIST FIPS 204 (ML-DSA-87). Hal ini menjamin bahwa dokumen kenegaraan dan riset strategis tidak dapat dipalsukan bahkan dengan kehadiran superkomputer kuantum di masa mendatang.
+          </p>
+        </section>
+
+        <!-- Dynamic Table of Contents Container -->
+        <div id="wcDocTOC" style="display:none; margin:16px 0; padding:14px; border:1px solid #e2e8f0; border-radius:4px; background:#f8fafc;"></div>
+
+        <!-- Dynamic Watermark Overlay -->
+        <div id="wcWatermarkOverlay" style="display:none; position:absolute; top:35%; left:15%; font-size:52pt; color:rgba(0,0,0,0.06); transform:rotate(-40deg); pointer-events:none; font-weight:800; user-select:none;"></div>
+
+        <!-- Dynamic Footnotes Container -->
+        <div id="wcDocFootnotes" style="display:none; margin-top:32px; border-top:1px solid #cbd5e1; padding-top:12px; font-size:9pt; color:#64748b;"></div>
+      </article>
+    </section>
+  </main>
+
+  <!-- 6. WordCraft Status Bar -->
+  <footer class="wc-statusbar">
+    <div class="wc-statusbar-left">
+      <div class="wc-status-item" onclick="toggleNavPane()" title="Alihkan Panel Navigasi">Page 1 of 2</div>
+      <div class="wc-status-item" id="wcWordCount" onclick="openWordCountModal()" style="cursor:pointer;" title="Statistik Kata (Klik untuk Rincian)">357 words</div>
+      <div class="wc-status-item">Bahasa Indonesia</div>
+      <div class="wc-status-item" id="wcSignatureInspector" onclick="openSignatureInspector()" style="color:#1b6b42; cursor:pointer;" title="Pemeriksa Sertifikat Kriptografi FIPS 204">Accessibility: Good to go ✓ (FIPS 204 Valid)</div>
+    </div>
+
+    <div class="wc-statusbar-right">
+      <button class="wc-status-item" onclick="toggleFocusMode()" title="Focus Mode (Sembunyikan Pita Perintah)">Focus ⛶</button>
+      <div style="display:flex; gap:2px; margin:0 6px;">
+        <button class="wc-status-item" title="Read Mode">📖</button>
+        <button class="wc-status-item active" style="font-weight:700; color:#2b47b5;" title="Print Layout">📄</button>
+        <button class="wc-status-item" title="Web Layout">🌐</button>
+      </div>
+      <div class="wc-zoom-slider">
+        <button class="wc-quick-btn" onclick="adjustZoom(-10)" style="width:16px; height:16px;">−</button>
+        <input type="range" class="wc-zoom-range" id="wcZoomRange" min="50" max="200" value="100" oninput="applyZoom(this.value)" />
+        <button class="wc-quick-btn" onclick="adjustZoom(10)" style="width:16px; height:16px;">+</button>
+        <span id="wcZoomLabel" style="width:36px; text-align:right;">100%</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 7. WordCraft Backstage Start Screen (Full Overlay) -->
+  <div class="wc-backstage" id="wcBackstage">
+    <div class="wc-backstage-sidebar">
+      <button class="wc-backstage-back-btn" onclick="closeBackstage()" title="Kembali ke Dokumen (Esc)">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+          <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+        </svg>
+      </button>
+
+      <div class="wc-backstage-item active" data-bstab="home" onclick="switchBackstageTab('home')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="new" onclick="switchBackstageTab('new')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+        <span>New</span>
+      </div>
+      <div class="wc-backstage-item" data-bstab="open" onclick="switchBackstageTab('open')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10.4a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V10.4a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+        <span>Open</span>
+      </div>
+
+      <div class="wc-backstage-divider"></div>
+
+      <div class="wc-backstage-item" data-bstab="info" onclick="switchBackstageTab('info')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+        <span>Info</span>
+      </div>
+      <div class="wc-backstage-item" onclick="saveDocument(); closeBackstage();">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2zm2 0v3h7V2H4zm8 12V8H4v6h8z"/></svg>
+        <span>Save</span>
+      </div>
+      <div class="wc-backstage-item" onclick="openSaveAsDialog()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a1 1 0 0 1 1-1h8.586a1 1 0 0 1 .707.293l2.414 2.414a1 1 0 0 1 .293.707V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2z"/></svg>
+        <span>Save As</span>
+      </div>
+      <div class="wc-backstage-item" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
+        <span>Print</span>
+      </div>
+      <div class="wc-backstage-item" onclick="exportVectorPDF()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/></svg>
+        <span>Export</span>
+      </div>
+      <div class="wc-backstage-item" onclick="closeBackstage()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        <span>Close</span>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <div class="wc-backstage-divider"></div>
+      <div class="wc-backstage-item" onclick="alert('WidyaWriter Sovereign Edition v1.0.0 (WordCraft Parity)')">
+        <span>Options</span>
+      </div>
+    </div>
+
+    <!-- Right Backstage Content (Multi-Pane) -->
+    <div class="wc-backstage-content">
+
+      <!-- Pane 1: Home (Default) -->
+      <div class="wc-backstage-pane" id="bsPane-home">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">Good morning</h1>
+
+        <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 12px;">New</div>
+        <div class="wc-template-grid">
+          <!-- Template 1: Blank Document -->
+          <div class="wc-template-card" onclick="createNewDoc()">
+            <div class="wc-template-preview" style="align-items:center; justify-content:center;">
+              <svg width="32" height="32" viewBox="0 0 16 16" fill="#a8a8a8"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+            </div>
+            <div class="wc-template-label">Blank document</div>
+          </div>
+
+          <!-- Template 2: The Open Studio Handbook (Sample) -->
+          <div class="wc-template-card" onclick="loadSampleDoc('handbook')">
+            <div class="wc-template-preview" style="background:#f0f4ff; border-color:#3b5bdb;">
+              <div style="height:4px; background:#2b47b5; width:100%; margin-bottom:6px;"></div>
+              <div style="font-size:7px; font-weight:700; color:#1b365d;">The Open Studio Handbook</div>
+              <div style="font-size:5px; color:#555; margin-top:4px;">Principles and Patterns...</div>
+            </div>
+            <div class="wc-template-label">Open Studio Handbook</div>
+          </div>
+
+          <!-- Template 3: Academic Research Paper -->
+          <div class="wc-template-card" onclick="loadSampleDoc('academic')">
+            <div class="wc-template-preview">
+              <div style="font-size:7px; font-weight:700; text-align:center;">DRAF DISERTASI</div>
+              <div style="font-size:5px; text-align:center; color:#666;">Model Kausalitas Makro</div>
+              <div style="height:1px; background:#e1e1e1; margin:6px 0;"></div>
+              <div style="font-size:4px; color:#888;">Bab 3: Metode Penelitian...</div>
+            </div>
+            <div class="wc-template-label">Academic Paper</div>
+          </div>
+
+          <!-- Template 4: Executive Letterhead -->
+          <div class="wc-template-card" onclick="loadSampleDoc('letter')">
+            <div class="wc-template-preview">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <div style="font-size:6px; font-weight:700; color:#004f80;">REPUBLIK INDONESIA</div>
+                <div style="font-size:5px; color:#888;">2026</div>
+              </div>
+              <div style="height:1px; background:#004f80; margin-bottom:6px;"></div>
+              <div style="font-size:5px; color:#444;">SURAT KEPUTUSAN...</div>
+            </div>
+            <div class="wc-template-label">Executive Letterhead</div>
+          </div>
+        </div>
+
+        <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 12px;">Recent Documents</div>
+        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+          <thead>
+            <tr style="border-bottom:1px solid #e1e1e1; color:#707070; text-align:left;">
+              <th style="padding:8px 0; font-weight:500;">Name</th>
+              <th style="padding:8px 0; font-weight:500;">Date modified</th>
+              <th style="padding:8px 0; font-weight:500;">Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f0f0f0; cursor:pointer;" onclick="loadSampleDoc('handbook')">
+              <td style="padding:10px 0; font-weight:600; color:#242424; display:flex; align-items:center; gap:8px;">
+                <span style="color:#2b47b5;">📄</span> The Open Studio Handbook.docx
+              </td>
+              <td style="padding:10px 0; color:#616161;">Just now</td>
+              <td style="padding:10px 0; color:#616161;">This PC › Documents</td>
+            </tr>
+            <tr style="border-bottom:1px solid #f0f0f0; cursor:pointer;" onclick="loadSampleDoc('academic')">
+              <td style="padding:10px 0; font-weight:600; color:#242424; display:flex; align-items:center; gap:8px;">
+                <span style="color:#2b47b5;">📄</span> Draf_Disertasi_Satriyo_Bab3.docx
+              </td>
+              <td style="padding:10px 0; color:#616161;">Today, 14:22</td>
+              <td style="padding:10px 0; color:#616161;">This PC › Disertasi</td>
+            </tr>
+            <tr style="border-bottom:1px solid #f0f0f0; cursor:pointer;" onclick="loadSampleDoc('letter')">
+              <td style="padding:10px 0; font-weight:600; color:#242424; display:flex; align-items:center; gap:8px;">
+                <span style="color:#2b47b5;">📄</span> SK_Menteri_Kedaulatan_Digital.docx
+              </td>
+              <td style="padding:10px 0; color:#616161;">Yesterday, 09:15</td>
+              <td style="padding:10px 0; color:#616161;">This PC › Arsip Resmi</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pane 2: New -->
+      <div class="wc-backstage-pane" id="bsPane-new" style="display:none;">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">New Document</h1>
+        <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 16px;">Featured Templates</div>
+        <div class="wc-template-grid">
+          <div class="wc-template-card" onclick="createNewDoc()">
+            <div class="wc-template-preview" style="align-items:center; justify-content:center;">
+              <svg width="36" height="36" viewBox="0 0 16 16" fill="#2b47b5"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+            </div>
+            <div class="wc-template-label">Blank Document</div>
+          </div>
+          <div class="wc-template-card" onclick="loadSampleDoc('handbook')">
+            <div class="wc-template-preview" style="background:#f0f4ff; border-color:#3b5bdb;">
+              <div style="height:4px; background:#2b47b5; width:100%; margin-bottom:6px;"></div>
+              <div style="font-size:8px; font-weight:700; color:#1b365d;">Open Studio Handbook</div>
+              <div style="font-size:6px; color:#555; margin-top:4px;">Standard Operating Procedure</div>
+            </div>
+            <div class="wc-template-label">Studio Handbook</div>
+          </div>
+          <div class="wc-template-card" onclick="loadSampleDoc('academic')">
+            <div class="wc-template-preview">
+              <div style="font-size:8px; font-weight:700; text-align:center; color:#2b47b5;">DRAF DISERTASI</div>
+              <div style="font-size:6px; text-align:center; color:#666;">Model Ekonometrika Makro</div>
+              <div style="height:1px; background:#e1e1e1; margin:6px 0;"></div>
+              <div style="font-size:5px; color:#888;">Standar APA 7th Edition</div>
+            </div>
+            <div class="wc-template-label">Academic Thesis</div>
+          </div>
+          <div class="wc-template-card" onclick="loadSampleDoc('letter')">
+            <div class="wc-template-preview">
+              <div style="font-size:7px; font-weight:700; color:#004f80; margin-bottom:4px;">REPUBLIK INDONESIA</div>
+              <div style="height:1px; background:#004f80; margin-bottom:6px;"></div>
+              <div style="font-size:5.5px; color:#444;">Surat Keputusan Resmi Negara</div>
+            </div>
+            <div class="wc-template-label">Official Letterhead</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pane 3: Open -->
+      <div class="wc-backstage-pane" id="bsPane-open" style="display:none;">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">Open Document</h1>
+        <div style="display:flex; gap:20px; align-items:flex-start;">
+          <div style="width:200px; display:flex; flex-direction:column; gap:8px;">
+            <button class="wc-btn-primary" style="text-align:left; padding:10px 14px;" onclick="loadSampleDoc('handbook')">📁 Recent Documents</button>
+            <button class="wc-btn-secondary" style="text-align:left; padding:10px 14px;" onclick="showToast('Membuka penjelajah berkas PC lokal...', '💻')">💻 This PC (Browse...)</button>
+            <button class="wc-btn-secondary" style="text-align:left; padding:10px 14px;" onclick="showToast('Brankas Kedaulatan Siap Diakses', '🛡️')">🛡️ Sovereign Vault</button>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14pt; font-weight:600; color:#242424; margin-bottom: 12px;">Recent Files</div>
+            <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+              <tr style="border-bottom:1px solid #eee; cursor:pointer;" onclick="loadSampleDoc('handbook')">
+                <td style="padding:10px; font-weight:600; color:#2b47b5;">The Open Studio Handbook.docx</td>
+                <td style="padding:10px; color:#666;">This PC › Documents</td>
+              </tr>
+              <tr style="border-bottom:1px solid #eee; cursor:pointer;" onclick="loadSampleDoc('academic')">
+                <td style="padding:10px; font-weight:600; color:#2b47b5;">Draf_Disertasi_Satriyo_Bab3.docx</td>
+                <td style="padding:10px; color:#666;">This PC › Disertasi</td>
+              </tr>
+              <tr style="border-bottom:1px solid #eee; cursor:pointer;" onclick="loadSampleDoc('letter')">
+                <td style="padding:10px; font-weight:600; color:#2b47b5;">SK_Menteri_Kedaulatan_Digital.docx</td>
+                <td style="padding:10px; color:#666;">This PC › Arsip Resmi</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pane 4: Info -->
+      <div class="wc-backstage-pane" id="bsPane-info" style="display:none;">
+        <h1 style="font-size:26pt; font-weight:400; color:#242424; margin-bottom: 24px;">Document Information</h1>
+        <div style="display:flex; gap:32px; align-items:flex-start;">
+          <!-- Left: Big Actions -->
+          <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+            <div style="border:1px solid #e1e1e1; border-radius:6px; padding:16px; display:flex; gap:16px; align-items:center;">
+              <div style="font-size:32px;">🛡️</div>
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:14px; color:#242424;">Protect Document</div>
+                <div style="font-size:12px; color:#616161;">Dokumen ini dilindungi kriptografi pasca-kuantum NIST FIPS 204 (ML-DSA-87).</div>
+              </div>
+              <button class="wc-btn-primary" onclick="signDocumentPQC()">Verify PQC</button>
+            </div>
+
+            <div style="border:1px solid #e1e1e1; border-radius:6px; padding:16px; display:flex; gap:16px; align-items:center;">
+              <div style="font-size:32px;">🔍</div>
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:14px; color:#242424;">Inspect Document</div>
+                <div style="font-size:12px; color:#616161;">Periksa metadata, data pribadi UU PDP No. 27/2022, dan kompatibilitas format.</div>
+              </div>
+              <button class="wc-btn-secondary" onclick="openDocProperties()">Inspect</button>
+            </div>
+
+            <div style="border:1px solid #e1e1e1; border-radius:6px; padding:16px; display:flex; gap:16px; align-items:center;">
+              <div style="font-size:32px;">💾</div>
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:14px; color:#242424;">Format Ekspor Standar Terbuka</div>
+                <div style="font-size:12px; color:#616161;">Simpan ke OpenXML DOCX (ISO/IEC 29500), PDF Vektor ISO 32000-1, atau ODT.</div>
+              </div>
+              <button class="wc-btn-secondary" onclick="openSaveAsDialog()">Save As</button>
+            </div>
+          </div>
+
+          <!-- Right: Document Properties Table -->
+          <div style="width:280px; background:#fafafa; border:1px solid #e1e1e1; border-radius:6px; padding:16px;">
+            <div style="font-weight:700; font-size:13px; margin-bottom:12px; color:#242424;">Properties</div>
+            <table style="width:100%; font-size:12px; border-collapse:collapse;">
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Size:</td><td style="font-weight:600; text-align:right;">68.4 KB</td></tr>
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Pages:</td><td style="font-weight:600; text-align:right;">2 pages</td></tr>
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Words:</td><td style="font-weight:600; text-align:right;" id="bsInfoWords">357 words</td></tr>
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Total Edit Time:</td><td style="font-weight:600; text-align:right;">14 Minutes</td></tr>
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Title:</td><td style="font-weight:600; text-align:right;">The Open Studio Handbook</td></tr>
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Author:</td><td style="font-weight:600; text-align:right;">Satriyo (Sovereign)</td></tr>
+              <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Security:</td><td style="font-weight:600; color:#107c41; text-align:right;">ML-DSA-87</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 8. Interactive Dialog Modals (WordCraft Parity) -->
+
+  <!-- Modal: Document Properties -->
+  <div class="wc-modal-backdrop" id="docPropertiesModal">
+    <div class="wc-modal-box">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">Informasi & Metadata Dokumen</span>
+        <button class="wc-modal-close" onclick="closeModal('docPropertiesModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <div style="display:flex; gap:16px; margin-bottom:16px;">
+          <div style="width:48px; height:48px; background:#e8effd; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#2b47b5;">📄</div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#183691;" id="propDocName">The Open Studio Handbook</div>
+            <div style="font-size:12px; color:#616161;">Format: OpenXML DOCX / PDF ISO 32000-1 Sovereign</div>
+          </div>
+        </div>
+        <table style="width:100%; font-size:12.5px; border-collapse:collapse;">
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Jumlah Kata:</td><td style="font-weight:600;" id="propDocWords">357 words</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Keamanan Kriptografi:</td><td style="font-weight:600; color:#107c41;">NIST FIPS 204 (ML-DSA-87 Pasca-Kuantum)</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Standar Matematika:</td><td style="font-weight:600; color:#2b47b5;">OpenXML Math (OMML) ISO/IEC 29500-1</td></tr>
+          <tr style="border-bottom:1px solid #eee;"><td style="padding:6px 0; color:#777;">Status Kepatuhan:</td><td style="font-weight:600; color:#0e6b37;">UU PDP No. 27/2022 (Terproteksi)</td></tr>
+        </table>
+      </div>
+      <div class="wc-modal-footer">
+        <button class="wc-btn-primary" onclick="closeModal('docPropertiesModal')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Share Document -->
+  <div class="wc-modal-backdrop" id="shareModal">
+    <div class="wc-modal-box">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">Bagikan Dokumen</span>
+        <button class="wc-modal-close" onclick="closeModal('shareModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <p style="margin-bottom:12px;">Salin tautan atau bagikan dokumen berdaulat ini secara aman dengan token enkripsi:</p>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="input-field" value="widya://doc/open-studio-handbook-sovereign-v1" readonly style="flex:1; padding:8px; border:1px solid #ccc; border-radius:4px; font-size:12px;" />
+          <button class="wc-btn-primary" onclick="showToast('Tautan berhasil disalin ke papan klip!', '📋'); closeModal('shareModal');">Salin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal: Save As Format & Directory Picker Dialog -->
+  <div class="wc-modal-backdrop" id="saveAsModal">
+    <div class="wc-modal-box" style="max-width:540px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title" id="saveAsModalTitle">💾 Simpan Sebagai (Save As)</span>
+        <button class="wc-modal-close" onclick="closeModal('saveAsModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Nama Berkas:</label>
+        <input type="text" id="saveAsFileName" value="The_Open_Studio_Handbook" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px;" onkeydown="if(event.key==='Enter') confirmSaveAs()" />
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <label style="font-weight:600; font-size:12.5px;">Lokasi Direktori / Folder Penyimpanan:</label>
+          <span style="font-size:11px; color:#64748b;">Ketik path atau jelajahi folder</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('C:\\Satriyo')">📁 C:\Satriyo</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Dokumen')">📄 Dokumen</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Desktop')">🖥️ Desktop</button>
+          <button type="button" class="wc-btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="setSaveAsQuickFolder('Unduhan')">⬇️ Unduhan</button>
+        </div>
+        <div style="display:flex; gap:6px; margin-bottom:14px;">
+          <input type="text" id="saveAsFolderLocation" value="C:\Satriyo\" style="flex:1; padding:7px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" placeholder="Contoh: C:\Satriyo\ atau D:\Arsip\" />
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="browseFolderLocation()" title="Buka Penjelajah Direktori Interaktif">📂 Pilih Direktori...</button>
+          <button type="button" class="wc-btn-secondary" style="padding:7px 10px; font-weight:600; white-space:nowrap;" onclick="pickNativeOsFolder()" title="Pilih Direktori via Windows Explorer">🖥️ Windows...</button>
+        </div>
+        <input type="file" id="nativeFolderPickerInput" webkitdirectory style="display:none;" onchange="onNativeFolderSelected(event)" />
+
+        <label style="display:block; font-weight:600; margin-bottom:5px; font-size:12.5px;">Format Berkas Penyimpanan:</label>
+        <select id="saveAsFileType" style="width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:13px; margin-bottom:12px; background:#fff;">
+          <option value="docx">📄 Word Document OpenXML (*.docx) — ISO/IEC 29500</option>
+          <option value="pdf">📑 PDF Berdaulat (*.pdf) — ISO 32000-1 Vektor Murni</option>
+          <option value="odt">📝 OpenDocument Text (*.odt) — Standar Terbuka ISO 26300</option>
+          <option value="html">🌐 Halaman Web HTML (*.html)</option>
+          <option value="txt">📃 Dokumen Teks Polos (*.txt)</option>
+        </select>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('docx')">📄 Simpan Cepat sebagai Word Document (*.docx) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('pdf')">📑 Simpan Cepat sebagai PDF Vektor (*.pdf) ke Direktori Di Atas</button>
+          <button class="wc-btn-secondary" style="text-align:left; padding:8px 12px; font-size:12px;" onclick="confirmSaveAs('odt')">📝 Simpan Cepat sebagai OpenDocument (*.odt) ke Direktori Di Atas</button>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="wc-btn-secondary" onclick="closeModal('saveAsModal')">Batal</button>
+        <button class="wc-btn-primary" onclick="confirmSaveAs()">💾 Simpan ke Direktori</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Sovereign Interactive Directory Picker -->
+  <div class="wc-modal-backdrop" id="folderPickerModal" style="z-index:10005;">
+    <div class="wc-modal-box" style="max-width:620px; width:95vw;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">📂 Pilih Direktori Penyimpanan Berkas</span>
+        <button class="wc-modal-close" onclick="closeFolderPickerModal()">✕</button>
+      </div>
+      <div class="wc-modal-body" style="padding:14px 18px;">
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px;">
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; font-weight:600;" onclick="navigateFolderPickerParent()" title="Naik ke Folder Induk">⬆ Naik</button>
+          <input type="text" id="folderPickerCurrentPath" value="C:\Satriyo\" style="flex:1; padding:6px 10px; border:1px solid #cbd5e1; border-radius:4px; font-size:12.5px; font-family:monospace;" onkeydown="if(event.key==='Enter') loadFolderPickerPath(this.value)" />
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px;" onclick="loadFolderPickerPath(document.getElementById('folderPickerCurrentPath').value)">Buka</button>
+          <button type="button" class="wc-btn-secondary" style="padding:6px 10px; color:#185abd; font-weight:600;" onclick="createFolderInPicker()">+ Folder Baru</button>
+        </div>
+        <div id="folderPickerDrivesBar" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;"></div>
+        <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <span>DAFTAR SUB-FOLDER (Klik 2x untuk membuka):</span>
+          <span id="folderPickerItemCount" style="font-weight:normal;">0 sub-folder</span>
+        </div>
+        <div id="folderPickerList" style="min-height:200px; max-height:250px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px; background:#ffffff; padding:4px;"></div>
+        <div style="margin-top:10px; padding:8px 10px; background:#f8fafc; border-radius:4px; display:flex; align-items:center; gap:8px; font-size:12px; border:1px solid #e2e8f0;">
+          <span style="font-weight:700; color:#334155;">Direktori Dipilih:</span>
+          <span id="folderPickerSelectedLabel" style="color:#185abd; font-family:monospace; font-weight:600; word-break:break-all;">C:\Satriyo\</span>
+        </div>
+      </div>
+      <div class="wc-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="wc-btn-secondary" onclick="pickNativeOsFolder()">🖥️ Dialog Windows Explorer...</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="wc-btn-secondary" onclick="closeFolderPickerModal()">Batal</button>
+          <button type="button" class="wc-btn-primary" onclick="selectCurrentPickerFolder()">✓ Pilih Folder Ini</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Word Count Statistics -->
+  <div class="wc-modal-backdrop" id="wordCountModal">
+    <div class="wc-modal-box" style="max-width:400px;">
+      <div class="wc-modal-header">
+        <span class="wc-modal-title">Statistik Dokumen</span>
+        <button class="wc-modal-close" onclick="closeModal('wordCountModal')">✕</button>
+      </div>
+      <div class="wc-modal-body">
+        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+          <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:8px 0; color:#666;">Halaman:</td><td style="font-weight:700; text-align:right;" id="statPages">2</td></tr>
+          <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:8px 0; color:#666;">Kata:</td><td style="font-weight:700; text-align:right;" id="statWords">357</td></tr>
+          <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:8px 0; color:#666;">Karakter (tanpa spasi):</td><td style="font-weight:700; text-align:right;" id="statCharsNoSpace">1,820</td></tr>
+          <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:8px 0; color:#666;">Karakter (dengan spasi):</td><td style="font-weight:700; text-align:right;" id="statCharsWithSpace">2,185</td></tr>
+          <tr style="border-bottom:1px solid #f0f0f0;"><td style="padding:8px 0; color:#666;">Paragraf:</td><td style="font-weight:700; text-align:right;" id="statParagraphs">12</td></tr>
+        </table>
+      </div>
+      <div class="wc-modal-footer">
+        <button class="wc-btn-primary" onclick="closeModal('wordCountModal')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Comments Sidepane -->
+  <aside class="wc-comments-pane" id="wcCommentsPane">
+    <div class="wc-comments-header">
+      <span>Komentar & Catatan Dokumen</span>
+      <button class="wc-quick-btn" onclick="toggleCommentsPane()">✕</button>
+    </div>
+    <div class="wc-comments-list" id="wcCommentsList">
+      <div class="wc-comment-card">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <strong style="color:#2b47b5;">Dr. Satriyo</strong>
+          <span style="color:#888; font-size:11px;">10:30 WIB</span>
+        </div>
+        <div style="color:#333;">Dokumen siap diajukan untuk audit kedaulatan teknologi nasional. Tanda tangan PQC ML-DSA-87 telah sah.</div>
+      </div>
+    </div>
+    <div style="padding:12px; border-top:1px solid #eee;">
+      <button class="wc-btn-primary" style="width:100%;" onclick="newComment()">+ Tambah Komentar</button>
+    </div>
+  </aside>
+
+  <!-- Scripts -->
+  <script src="js/office_commands.js"></script>
+  <script src="js/office_core.js"></script>
+  <script src="js/math_editor.js"></script>
+  <script src="js/mail_merge_wizard.js"></script>
+  <script src="js/widyawriter_ui.js"></script>
+  <script>
+    // Inisialisasi WordCraft Rulers & Interaktivitas
+    function initWordCraftUI() {
+      // 1. Render Tick Marks Rulers (16 cm)
+      const ticksContainer = document.getElementById('wcRulerTicks');
+      if (ticksContainer) {
+        let html = '';
+        for (let i = 0; i <= 16; i++) {
+          const leftPercent = (i / 16) * 100;
+          html += `<div class="wc-ruler-tick major" style="left:${leftPercent}%;"></div>`;
+          html += `<div class="wc-ruler-tick-num" style="left:${leftPercent}%;">${i}</div>`;
+          if (i < 16) {
+            html += `<div class="wc-ruler-tick" style="left:${leftPercent + (100 / 32)}%;"></div>`;
+          }
+        }
+        ticksContainer.innerHTML = html;
+      }
+
+      // 2. Word Count Update
+      const sheet = document.getElementById('wcPageSheet');
+      if (sheet) {
+        sheet.addEventListener('input', updateWordCount);
+        updateWordCount();
+      }
+    }
+
+    function updateWordCount() {
+      const text = document.getElementById('wcPageSheet')?.innerText || '';
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+      const countEl = document.getElementById('wcWordCount');
+      if (countEl) countEl.innerText = `${words} words`;
+    }
+
+    function toggleWaffleMenu() {
+      const menu = document.getElementById('waffleDropdown');
+      if (menu) menu.classList.toggle('active');
+    }
+
+    function toggleAutoSave() {
+      const sw = document.getElementById('autoSaveToggle');
+      if (sw) sw.classList.toggle('off');
+    }
+
+    function toggleNavPane() {
+      const pane = document.getElementById('wcNavPane');
+      if (pane) pane.classList.toggle('collapsed');
+    }
+
+    function switchNavTab(tab) {
+      document.querySelectorAll('.wc-nav-tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'headings') document.getElementById('tabNavHeadings')?.classList.add('active');
+      if (tab === 'pages') document.getElementById('tabNavPages')?.classList.add('active');
+      if (tab === 'results') document.getElementById('tabNavResults')?.classList.add('active');
+    }
+
+    function scrollToSection(id) {
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function applyDocStyle(styleName, el) {
+      document.querySelectorAll('.wc-style-card').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      if (styleName === 'h1') document.execCommand('formatBlock', false, 'H1');
+      else if (styleName === 'h2') document.execCommand('formatBlock', false, 'H2');
+      else if (styleName === 'title') document.execCommand('formatBlock', false, 'H1');
+      else document.execCommand('formatBlock', false, 'P');
+    }
+
+
+    function applyZoom(val) {
+      const sheet = document.getElementById('wcPageSheet');
+      const label = document.getElementById('wcZoomLabel');
+      if (sheet) sheet.style.transform = `scale(${val / 100})`;
+      if (sheet) sheet.style.transformOrigin = 'top center';
+      if (label) label.innerText = `${val}%`;
+    }
+
+    function adjustZoom(delta) {
+      const range = document.getElementById('wcZoomRange');
+      if (range) {
+        let current = parseInt(range.value, 10) + delta;
+        current = Math.max(50, Math.min(200, current));
+        range.value = current;
+        applyZoom(current);
+      }
+    }
+
+    function toggleFocusMode() {
+      const header = document.querySelector('.wc-header');
+      const tabs = document.querySelector('.wc-tab-strip');
+      const ribbon = document.getElementById('wcRibbonPanel');
+      const ruler = document.querySelector('.wc-ruler-h-bar');
+      const isHidden = header.style.display === 'none';
+      const displayVal = isHidden ? 'flex' : 'none';
+      header.style.display = displayVal;
+      tabs.style.display = displayVal;
+      ribbon.style.display = displayVal;
+      ruler.style.display = displayVal;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initWordCraftUI();
+    });
+
+    // Close waffle menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const waffle = document.getElementById('waffleDropdown');
+      const btn = document.getElementById('waffleBtn');
+      if (waffle && btn && !btn.contains(e.target) && !waffle.contains(e.target)) {
+        waffle.classList.remove('active');
+      }
+    });
+
+    // Escape key closes Backstage
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeBackstage();
+      }
+    });
+  </script>
+
+  <!-- Hidden File Input for Local Image Insertion -->
+  <input type="file" id="wcLocalImageInput" style="display:none;" accept="image/*" onchange="handleLocalImageUpload(this)">
+
+  <!-- WidyaWriter Integrated Modals -->
+
+<div class="modal-backdrop" id="mathModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>🧮</span>
+          <span>Editor Persamaan Matematika OpenXML OMML</span>
+        </div>
+        <div class="win-btn" onclick="MathEditor.closeDialog()">✕</div>
+      </div>
+
+      <div class="modal-body">
+        <div class="math-palette-grid">
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\frac{a}{b}')" title="Pecahan">\frac{a}{b}</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\sqrt{x}')" title="Akar Kuadrat">\sqrt{x}</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\int_{a}^{b}')" title="Integral Tertentu">\int_{a}^{b}</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\sum_{i=1}^{n}')" title="Notasi Sigma">\sum_{i=1}^{n}</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\alpha')" title="Alfa">\alpha</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\beta')" title="Beta">\beta</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\pi')" title="Pi">\pi</div>
+          <div class="math-sym-btn" onclick="MathEditor.insertSymbol('\\pm')" title="Plus-Minus">\pm</div>
+        </div>
+
+        <div>
+          <label class="form-label">Sintaks LaTeX Persamaan:</label>
+          <textarea id="latexInput" class="math-input-area" placeholder="Contoh: \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}">\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</textarea>
+          <div style="margin-top:8px;"><label><input type="checkbox" id="isBlockEquation" checked> Persamaan Blok (Tengah / Display Mode)</label></div>
+          <div id="mathPreview" style="display:none;"></div>
+        </div>
+
+        <div>
+          <label class="form-label">Pratinjau Rendisi Formula:</label>
+          <div class="math-preview-box" id="mathPreviewBox">
+            <span style="color:#94a3b8;">Pratinjau formula...</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">OpenXML OMML Markup (Format Asli Microsoft Word):</label>
+          <div class="omml-code-preview" id="ommlRawOutput">
+            &lt;m:oMathPara&gt;&lt;m:oMath&gt;...&lt;/m:oMath&gt;&lt;/m:oMathPara&gt;
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="MathEditor.closeDialog()">Batal</button>
+        <button class="btn-primary" onclick="MathEditor.applyEquation()">Sisipkan Persamaan (OMML)</button>
+      </div>
+    </div>
+  </div>
+
+<div class="modal-backdrop" id="mailMergeModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>📬</span>
+          <span>Wisaya Surat Massal (Mail Merge Engine)</span>
+        </div>
+        <div class="win-btn" onclick="MailMergeWizard.closeWizard()">✕</div>
+      </div>
+
+      <div class="modal-body">
+        <div id="mmStep1">
+          <h4 style="margin-bottom:8px;">Langkah 1: Tentukan Sumber Data Penerima</h4>
+          <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">
+            Impor daftar penerima dokumen massal dari berkas CSV lokal atau tabel database:
+          </p>
+          <textarea id="mmCsvInput" class="math-input-area" style="height:120px; font-family:monospace;">Nama,Instansi,NomorSurat,Insentif
+Budi Santoso,Kemdikbud,UND-001,5000000
+Siti Aminah,Kominfo,UND-002,7500000
+Agus Wijaya,BRIN,UND-003,6200000</textarea>
+          <div style="margin-top:8px;"><label><input type="checkbox" id="isBlockEquation" checked> Persamaan Blok (Tengah / Display Mode)</label></div>
+          <div id="mathPreview" style="display:none;"></div>
+        </div>
+
+        <div id="mmStep2" style="display:none;">
+          <h4 style="margin-bottom:8px;">Langkah 2: Kolom Data Terdeteksi</h4>
+          <div id="mmFieldsList" style="display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;"></div>
+        </div>
+
+        <div id="mmStep3" style="display:none;">
+          <h4 style="margin-bottom:8px;">Langkah 3: Pemetaan Tag</h4>
+          <p style="font-size:0.85rem; color:var(--text-secondary);">
+            Gunakan tombol tag di Ribbon Surat untuk menyisipkan tanda <code>{{nama_kolom}}</code> ke dokumen Anda.
+          </p>
+        </div>
+
+        <div id="mmStep4" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="margin:0;">Langkah 4: Pratinjau Rekaman Data</h4>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn-secondary" id="recFirst" style="padding:4px 8px;">|&lt;</button>
+              <button class="btn-secondary" id="recPrev" style="padding:4px 8px;">&lt;</button>
+              <span id="recordIndicator" style="font-size:0.8rem; font-weight:600; padding:0 8px;">Rekaman 1 dari 3</span>
+              <button class="btn-secondary" id="recNext" style="padding:4px 8px;">&gt;</button>
+              <button class="btn-secondary" id="recLast" style="padding:4px 8px;">&gt;|</button>
+            </div>
+          </div>
+          <div id="recordPreviewContainer"></div>
+        </div>
+
+        <div id="mmStep5" style="display:none;">
+          <h4 style="margin-bottom:8px;">Langkah 5: Opsi Ekspor Batch</h4>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="background:#f0f9ff; border:1px solid #0284c7; padding:12px; border-radius:4px; cursor:pointer;">
+              <input type="radio" name="exportMode" checked> <b>Berkas Mandiri Terpisah</b> (Satu berkas .docx per penerima)
+            </label>
+            <label style="background:#f8fafc; border:1px solid var(--border-medium); padding:12px; border-radius:4px; cursor:pointer;">
+              <input type="radio" name="exportMode"> <b>Satu Berkas Konsolidasi</b> (Digabung dengan Pemisah Halaman)
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" id="mmPrevBtn">Kembali</button>
+        <button class="btn-primary" id="mmNextBtn">Lanjut &gt;</button>
+      </div>
+    </div>
+  </div>
+
+<div class="modal-backdrop" id="findReplaceModal">
+    <div class="modal-dialog" style="width:460px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>🔍</span>
+          <span>Cari dan Ganti Teks</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeFindReplaceModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; gap:8px; border-bottom:1px solid var(--border-light); padding-bottom:8px;">
+          <button class="btn-secondary active" id="frTabFind" onclick="OfficeCore.openFindReplaceModal('find')">Cari</button>
+          <button class="btn-secondary" id="frTabReplace" onclick="OfficeCore.openFindReplaceModal('replace')">Ganti</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Teks yang dicari:</label>
+          <input type="text" class="form-input" id="frFindInput" placeholder="Ketik kata yang dicari..." oninput="OfficeCore.findNext()" />
+        </div>
+
+        <div class="form-group" id="frReplaceGroup" style="display:none;">
+          <label class="form-label">Ganti dengan:</label>
+          <input type="text" class="form-input" id="frReplaceInput" placeholder="Ketik kata pengganti..." />
+        </div>
+
+        <div id="frMatchCount" style="font-size:0.8rem; color:#64748b; font-style:italic;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.findNext()">Cari Selanjutnya</button>
+        <button class="btn-secondary" onclick="OfficeCore.replaceCurrent()">Ganti</button>
+        <button class="btn-primary" onclick="OfficeCore.replaceAll()">Ganti Semua</button>
+      </div>
+    </div>
+  </div>
+
+<div class="modal-backdrop" id="pqcModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>🛡️</span>
+          <span>Inspektur Keamanan & Tanda Tangan Pasca-Kuantum (PQC)</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeSignatureInspector()">✕</div>
+      </div>
+
+      <div class="modal-body">
+        <div style="background:#ecfdf5; border:1px solid #10b981; padding:14px; border-radius:4px;">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#047857; margin-bottom:6px;">
+            <span>✓</span>
+            <span>DOKUMEN TERLINDUNGI SECARA HUKUM & ANTI-TAMPER</span>
+          </div>
+          <div style="font-size:0.85rem; color:#334155; line-height:1.5;">
+            Dokumen ini ditandatangani secara digital menggunakan standar internasional <b>NIST FIPS 204 (ML-DSA-87)</b> yang kebal terhadap dekripsi komputasi kuantum masa depan.
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid var(--border-medium); border-radius:4px; padding:14px; font-size:0.85rem; display:flex; flex-direction:column; gap:8px;">
+          <div><b>Penandatangan :</b> Dr. Ir. Widya Daniswara, M.T.</div>
+          <div><b>Lembaga / BUMN :</b> Badan Keamanan Siber Nasional</div>
+          <div><b>Algoritma Kunci:</b> Post-Quantum ML-DSA-87 + Ed25519 Hybrid</div>
+          <div><b>Perangkat HSM  :</b> Sovereign Cryptoki Token PKCS#11 v2.40</div>
+          <div><b>Status Integritas:</b> Cocok 100% (Tidak ada manipulasi data setelah tanda tangan)</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.closeSignatureInspector()">Tutup</button>
+        <button class="btn-primary" onclick="OfficeCore.applyPqcSignature()">Bubuhkan Tanda Tangan Baru</button>
+      </div>
+    </div>
+  </div>
+
+<div class="modal-backdrop" id="insertTableModal">
+    <div class="modal-dialog" style="width:380px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>⊞</span>
+          <span>Sisipkan Tabel</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeInsertTableModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Jumlah Kolom:</label>
+          <input type="number" class="form-input" id="tblColsInput" min="1" max="15" value="3" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jumlah Baris:</label>
+          <input type="number" class="form-input" id="tblRowsInput" min="1" max="50" value="3" />
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+          <input type="checkbox" id="tblZebraInput" checked />
+          <label for="tblZebraInput" style="font-size:0.82rem; cursor:pointer;">Gunakan warna baris berselang-seling (Zebra)</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.closeInsertTableModal()">Batal</button>
+        <button class="btn-primary" onclick="OfficeCore.applyInsertTable()">Sisipkan Tabel</button>
+      </div>
+    </div>
+  </div>
+
+<div class="modal-backdrop" id="documentTemplatesModal">
+    <div class="modal-dialog" style="width:780px; max-width:95vw;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>📑</span>
+          <span>Katalog Template Gaya Dokumen Resmi</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeDocumentTemplatesModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
+          Pilih salah satu template gaya dokumen profesional di bawah ini. Semua format gaya, tabel, dan tipografi akan langsung disiapkan secara otomatis.
+        </p>
+        <div class="template-modal-grid">
+          <!-- Template 1: Laporan Strategis -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('laporan-strategis')">
+            <div>
+              <span class="template-card-badge badge-formal">Laporan Resmi</span>
+              <div class="template-card-icon">🏛️</div>
+              <div class="template-card-title">Laporan Strategis Kedaulatan Digital</div>
+              <div class="template-card-desc">Format laporan eksekutif lengkap dengan kop lembaga, ringkasan eksekutif, tabel matriks KPI, kotak catatan info, dan kutipan intens.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 2: Surat Dinas Kementerian -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('surat-dinas')">
+            <div>
+              <span class="template-card-badge badge-gov">Tata Naskah Dinas RI</span>
+              <div class="template-card-icon">📜</div>
+              <div class="template-card-title">Surat Dinas Resmi Kementerian</div>
+              <div class="template-card-desc">Standar resmi naskah dinas pemerintah RI dengan kop lambang, nomor surat, sifat, lampiran, perihal, dan blok tanda tangan pejabat NIP.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 3: Nota Dinas BUMN -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('nota-dinas')">
+            <div>
+              <span class="template-card-badge badge-biz">Memo Internal</span>
+              <div class="template-card-icon">📋</div>
+              <div class="template-card-title">Nota Dinas Internal BUMN</div>
+              <div class="template-card-desc">Format nota dinas internal korporat: Kepada, Dari, Tanggal, Sifat, Nomor, Perihal, Analisis Kebijakan, dan Usulan Tindak Lanjut.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 4: Proposal Riset & Kerjasama -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('proposal-riset')">
+            <div>
+              <span class="template-card-badge badge-formal">Proposal & Kerjasama</span>
+              <div class="template-card-icon">🔬</div>
+              <div class="template-card-title">Proposal Riset & Kerjasama Teknologi</div>
+              <div class="template-card-desc">Struktur proposal inovasi ilmiah: latar belakang, rumusan masalah, tujuan, metodologi, linimasa milestone, dan tabel RAB penganggaran.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 5: Perjanjian Kerahasiaan (NDA) -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('perjanjian-kerjasama')">
+            <div>
+              <span class="template-card-badge badge-legal">Kontrak Hukum</span>
+              <div class="template-card-icon">⚖️</div>
+              <div class="template-card-title">Perjanjian Kerahasiaan (NDA / MoU)</div>
+              <div class="template-card-desc">Perjanjian hukum perlindungan data dwipihak, pasal definisi kerahasiaan, kewajiban para pihak, sanksi, dan kolom tanda tangan bermaterai.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 6: CV Eksekutif -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('cv-eksekutif')">
+            <div>
+              <span class="template-card-badge badge-formal">Portofolio Karir</span>
+              <div class="template-card-icon">👤</div>
+              <div class="template-card-title">Curriculum Vitae / Riwayat Hidup Eksekutif</div>
+              <div class="template-card-desc">Format CV modern elegan: profil ringkas eksekutif, rekam jejak kepemimpinan, riwayat pendidikan tinggi, dan matriks keahlian utama.</div>
+            </div>
+            <button class="btn-primary" style="font-size:0.75rem; padding:4px 8px;">Gunakan Template</button>
+          </div>
+
+          <!-- Template 7: Dokumen Bersih Kosong -->
+          <div class="template-card" onclick="OfficeCore.loadDocumentTemplate('kosong')">
+            <div>
+              <span class="template-card-badge badge-biz">Halaman Baru</span>
+              <div class="template-card-icon">📄</div>
+              <div class="template-card-title">Dokumen Bersih Kosong</div>
+              <div class="template-card-desc">Mulai dari lembar kosong standar A4 dengan gaya default untuk penulisan bebas tanpa format awal.</div>
+            </div>
+            <button class="btn-secondary" style="font-size:0.75rem; padding:4px 8px;">Mulai Baru</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.closeDocumentTemplatesModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: Penandatanganan Massal Kriptografi Pasca-Kuantum (Batch PQC Signer) -->
+  <div class="modal-backdrop" id="batchPqcModal">
+    <div class="modal-dialog" style="width:720px; max-width:95vw;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>⚡</span>
+          <span>Batch PQC Signer — NIST FIPS 204 (ML-DSA-87)</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeBatchPqcModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:12px; border-radius:4px; margin-bottom:12px; font-size:0.85rem; color:#1e40af;">
+          🛡️ Penandatanganan dokumen elektronik massal berkecepatan tinggi dengan modul kriptografi pasca-kuantum murni (100% Rust Zero-Dependency). Kebal terhadap serangan komputer kuantum dan terintegrasi standar HSM PKCS#11 v2.40.
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div>
+            <b>Jumlah Dokumen Target:</b> <span class="badge" style="background:#e0e7ff; color:#3730a3; padding:2px 8px; border-radius:12px; font-weight:bold;">50 Berkas</span>
+          </div>
+          <button class="btn-primary" onclick="OfficeCore.runBatchPqcSigning()">⚡ Jalankan Penandatanganan Massal</button>
+        </div>
+        <div id="batchPqcStatus" style="font-size:0.85rem; margin-bottom:10px; min-height:20px;"></div>
+        <div style="max-height:240px; overflow-y:auto; border:1px solid #cbd5e1; border-radius:4px;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.82rem; text-align:left;">
+            <thead>
+              <tr style="background:#f1f5f9; border-bottom:1px solid #cbd5e1;">
+                <th style="padding:6px 10px;">ID Dokumen</th>
+                <th style="padding:6px 10px;">Judul Berkas</th>
+                <th style="padding:6px 10px;">Algoritma PQC</th>
+                <th style="padding:6px 10px;">Status Segel</th>
+              </tr>
+            </thead>
+            <tbody id="batchPqcTableBody">
+              <tr>
+                <td colspan="4" style="padding:20px; text-align:center; color:#94a3b8;">Klik tombol di atas untuk menjalankan batch signing 50 dokumen secara instan.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.closeBatchPqcModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Simulator Kolaborasi CRDT Real-Time Peer-to-Peer -->
+  <div class="modal-backdrop" id="crdtCollabModal">
+    <div class="modal-dialog" style="width:680px; max-width:95vw;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>🌐</span>
+          <span>Simulator Kolaborasi Real-Time CRDT (Offline-First P2P)</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeCrdtModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:4px; margin-bottom:12px; font-size:0.85rem; color:#166534;">
+          🤝 Simulasi sinkronisasi naskah bebas konflik (Conflict-Free Replicated Data Type - Sequence CRDT) antar rekanan jaringan lokal tanpa perantara cloud asing. Urutan operasi dijamin dengan Stempel Waktu Lamport & Indeks Pecahan (Fractional Index).
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:4px;">
+            <div style="font-weight:700; color:#0284c7; font-size:0.85rem; margin-bottom:4px;">Simpul Alpha (Klien 1)</div>
+            <div style="font-size:0.8rem; color:#64748b;">Menyunting di akhir naskah:</div>
+            <div style="font-family:monospace; background:#fff; padding:6px; border:1px solid #cbd5e1; border-radius:3px; margin-top:4px; font-size:0.8rem;">+ " - Solusi Berdaulat Tanpa Cloud Asing."</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:4px;">
+            <div style="font-weight:700; color:#16a34a; font-size:0.85rem; margin-bottom:4px;">Simpul Beta (Klien 2)</div>
+            <div style="font-size:0.8rem; color:#64748b;">Menyunting di awal naskah:</div>
+            <div style="font-family:monospace; background:#fff; padding:6px; border:1px solid #cbd5e1; border-radius:3px; margin-top:4px; font-size:0.8rem;">+ "Resmi: "</div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-bottom:12px;">
+          <button class="btn-primary" onclick="OfficeCore.runCrdtSimulation()">🔄 Jalankan Sinkronisasi P2P Bebas Konflik</button>
+        </div>
+        <div id="crdtStatus" style="font-size:0.85rem; margin-bottom:8px; min-height:20px; text-align:center;"></div>
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; padding:10px;">
+          <div style="font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:4px;">HASIL TEKS KONVERGEN DETERMINISTIK:</div>
+          <div id="crdtResultBox" style="font-family:monospace; font-size:0.88rem; color:#0f172a; min-height:36px; padding:8px; background:#fff; border-radius:3px; border:1px solid #e2e8f0;">
+            (Menunggu simulasi konkurensi...)
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.closeCrdtModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Validasi Format Ekspor OpenXML Native (ISO/IEC 29500) -->
+  <div class="modal-backdrop" id="openXmlValidatorModal">
+    <div class="modal-dialog" style="width:640px; max-width:95vw;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span>📑</span>
+          <span>Inspektur Validasi Format OpenXML (ISO/IEC 29500)</span>
+        </div>
+        <div class="win-btn" onclick="OfficeCore.closeOpenXmlValidatorModal()">✕</div>
+      </div>
+      <div class="modal-body">
+        <div style="background:#faf5ff; border:1px solid #e9d5ff; padding:12px; border-radius:4px; margin-bottom:12px; font-size:0.85rem; color:#6b21a8;">
+          🔬 Validasi kepatuhan paket biner ZIP & struktur skema XML OpenXML murni tanpa library C eksternal. Memastikan kompatibilitas mutlak dengan ISO/IEC 29500-1:2016 dan ECMA-376 4th Edition.
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="btn-secondary" style="flex:1;" onclick="OfficeCore.runOpenXmlValidation('docx')">📄 Uji Word (.docx)</button>
+          <button class="btn-secondary" style="flex:1;" onclick="OfficeCore.runOpenXmlValidation('xlsx')">📊 Uji Excel (.xlsx)</button>
+          <button class="btn-secondary" style="flex:1;" onclick="OfficeCore.runOpenXmlValidation('pptx')">📽️ Uji PowerPoint (.pptx)</button>
+        </div>
+        <div id="openXmlStatus" style="font-size:0.85rem; margin-bottom:8px; min-height:20px;"></div>
+        <div id="openXmlReportBox" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; padding:12px; font-size:0.85rem;">
+          Pilih salah satu format dokumen di atas untuk menguji kepatuhan struktur arsip secara langsung.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="OfficeCore.closeOpenXmlValidatorModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TellMe Dropdown & Toast Notification Elements -->
+  <div class="wc-tellme-dropdown" id="tellMeDropdown" style="display:none;"></div>
+  <div class="wc-toast" id="wcToastNotification"></div>
+  <div id="wcToast" style="display:none;"></div>
+  <div id="wcDocWatermark" style="display:none;"></div>
+
+</body>
+</html>

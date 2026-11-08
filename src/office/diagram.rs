@@ -114,7 +114,18 @@ impl WidyaDiagram {
                 let parts: Vec<&str> = line.split(arrow_pattern).collect();
                 if parts.len() >= 2 {
                     let from_str = parts[0].trim();
-                    let to_str = parts[1].trim();
+                    let raw_to_str = parts[1].trim();
+
+                    let (edge_label, to_str) = if raw_to_str.starts_with('|') {
+                        if let Some(end_bar) = raw_to_str[1..].find('|') {
+                            let lbl = raw_to_str[1..1 + end_bar].trim().trim_matches('"');
+                            (Some(lbl.to_string()), raw_to_str[1 + end_bar + 1..].trim())
+                        } else {
+                            (None, raw_to_str)
+                        }
+                    } else {
+                        (None, raw_to_str)
+                    };
 
                     let from_node = Self::extract_or_create_node(from_str, &current_subgraph);
                     let to_node = Self::extract_or_create_node(to_str, &current_subgraph);
@@ -126,7 +137,7 @@ impl WidyaDiagram {
                     edges.push(DiagramEdge {
                         from: from_node.id,
                         to: to_node.id,
-                        label: None,
+                        label: edge_label,
                         has_arrow: arrow_pattern != "---",
                     });
                     continue;
@@ -179,6 +190,38 @@ impl WidyaDiagram {
 
     fn parse_single_node(s: &str, current_subgraph: &Option<String>) -> Option<DiagramNode> {
         let trimmed = s.trim();
+        // ID(["Label"]) atau ID([Label]) - stadium shape
+        if let Some(b_start) = trimmed.find("([") {
+            if trimmed.ends_with("])") {
+                let id = trimmed[..b_start].trim().to_string();
+                let mut label = trimmed[b_start + 2..trimmed.len() - 2].trim();
+                if label.starts_with('"') && label.ends_with('"') && label.len() >= 2 {
+                    label = &label[1..label.len() - 1];
+                }
+                return Some(DiagramNode {
+                    id,
+                    label: clean_markdown_inline(label),
+                    shape: NodeShape::Rounded,
+                    subgraph_id: current_subgraph.clone(),
+                });
+            }
+        }
+        // ID((Label)) - circle shape
+        if let Some(b_start) = trimmed.find("((") {
+            if trimmed.ends_with("))") {
+                let id = trimmed[..b_start].trim().to_string();
+                let mut label = trimmed[b_start + 2..trimmed.len() - 2].trim();
+                if label.starts_with('"') && label.ends_with('"') && label.len() >= 2 {
+                    label = &label[1..label.len() - 1];
+                }
+                return Some(DiagramNode {
+                    id,
+                    label: clean_markdown_inline(label),
+                    shape: NodeShape::Rounded,
+                    subgraph_id: current_subgraph.clone(),
+                });
+            }
+        }
         // ID["Label"]
         if let Some(b_start) = trimmed.find('[') {
             if trimmed.ends_with(']') {
@@ -1143,21 +1186,8 @@ impl WidyaDiagramEngine {
 
         let diagram = WidyaDiagram::parse(source);
 
-        // 4. Jika diagram memiliki Subgraph (Diagram Arsitektur Sistem)
-        if !diagram.subgraphs.is_empty() {
-            return Self::render_subgraph_architecture(
-                pdf,
-                &diagram,
-                margin_x,
-                current_y,
-                content_width,
-                page_height,
-            );
-        }
-
-        // 3. Jika diagram flowchart sederhana tanpa Subgraph
         if !diagram.nodes.is_empty() {
-            return Self::render_simple_flowchart(
+            return Self::render_flowchart(
                 pdf,
                 &diagram,
                 margin_x,
@@ -1171,129 +1201,8 @@ impl WidyaDiagramEngine {
         current_y
     }
 
-    /// Render Diagram Arsitektur Berbasis Kartu Subgraph & Relasi Vektor
-    fn render_subgraph_architecture(
-        pdf: &mut PdfDocument,
-        diagram: &WidyaDiagram,
-        margin_x: f32,
-        mut current_y: f32,
-        content_width: f32,
-        page_height: f32,
-    ) -> f32 {
-        // Banner Judul Diagram
-        if current_y < 90.0 {
-            pdf.add_page();
-            current_y = page_height - 70.0;
-        }
-
-        let banner_h = 22.0;
-        let page = pdf.current_page_mut();
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
-        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
-        page.add_styled_text(
-            "DIAGRAM ARSITEKTUR & ALUR KEDAULATAN SISTEM",
-            margin_x + 12.0,
-            current_y - 15.0,
-            9.5,
-            true,
-            (0.08, 0.22, 0.48),
-        );
-        current_y -= banner_h + 8.0;
-
-        // Tampilkan Alur Relasi jika ada edge antar Subgraph
-        let mut rel_text = String::new();
-        for (idx, edge) in diagram.edges.iter().enumerate() {
-            if idx > 0 {
-                rel_text.push_str("  |  ");
-            }
-            rel_text.push_str(&format!("{} -> {}", edge.from, edge.to));
-        }
-
-        if !rel_text.is_empty() {
-            let rel_lines = wrap_text(&format!("Alur Relasi: {}", rel_text), content_width - 20.0, 8.0, false);
-            for line in rel_lines {
-                if current_y < 80.0 {
-                    pdf.add_page();
-                    current_y = page_height - 70.0;
-                }
-                pdf.current_page_mut().add_styled_text(&line, margin_x + 6.0, current_y - 8.0, 8.0, false, (0.35, 0.45, 0.55));
-                current_y -= 12.0;
-            }
-            current_y -= 4.0;
-        }
-
-        let node_map: HashMap<String, &DiagramNode> = diagram.nodes.iter().map(|n| (n.id.clone(), n)).collect();
-
-        // Render Tiap Kartu Subgraph
-        let total_subgraphs = diagram.subgraphs.len();
-        for (sg_idx, sg) in diagram.subgraphs.iter().enumerate() {
-            // Hitung tinggi yang dibutuhkan kartu ini
-            let header_h = 18.0;
-            let mut items_lines: Vec<Vec<String>> = Vec::new();
-
-            for node_id in &sg.node_ids {
-                if let Some(node) = node_map.get(node_id) {
-                    let wrapped = wrap_text(&node.label, content_width - 36.0, 8.5, false);
-                    items_lines.push(wrapped);
-                }
-            }
-
-            let mut body_h = 8.0;
-            for lines in &items_lines {
-                body_h += (lines.len() as f32 * 11.5) + 3.0;
-            }
-            let total_card_h = header_h + body_h;
-
-            // Pemisah halaman jika kartu melebihi batas bawah
-            if current_y - total_card_h < 75.0 {
-                pdf.add_page();
-                current_y = page_height - 70.0;
-            }
-
-            let page = pdf.current_page_mut();
-
-            // 1. Header Kartu Subgraph
-            page.add_rect(margin_x, current_y - header_h, content_width, header_h, true, (0.12, 0.28, 0.52));
-            page.add_styled_line(margin_x, current_y - header_h, margin_x, current_y, 4.0, (0.20, 0.65, 0.95));
-            page.add_styled_text(&sg.title, margin_x + 12.0, current_y - 12.5, 9.0, true, (1.0, 1.0, 1.0));
-
-            // 2. Body Kartu Subgraph
-            page.add_rect(margin_x, current_y - total_card_h, content_width, body_h, true, (0.975, 0.985, 1.0));
-            page.add_rect(margin_x, current_y - total_card_h, content_width, total_card_h, false, (0.25, 0.45, 0.75));
-
-            // 3. Butir Isi di dalam Subgraph
-            let mut item_y = current_y - header_h - 11.0;
-            for lines in items_lines {
-                for (l_idx, line) in lines.iter().enumerate() {
-                    let page = pdf.current_page_mut();
-                    if l_idx == 0 {
-                        page.add_styled_text("*", margin_x + 12.0, item_y, 9.0, true, (0.15, 0.45, 0.85));
-                    }
-                    if !line.is_empty() {
-                        page.add_styled_text(line, margin_x + 22.0, item_y, 8.5, false, (0.15, 0.20, 0.25));
-                    }
-                    item_y -= 11.5;
-                }
-                item_y -= 3.0;
-            }
-
-            current_y -= total_card_h;
-
-            // Panah vektor penghubung ke kartu berikutnya jika ada
-            if sg_idx + 1 < total_subgraphs {
-                current_y -= 4.0;
-                let mid_x = margin_x + content_width / 2.0;
-                pdf.current_page_mut().add_arrow(mid_x, current_y, mid_x, current_y - 12.0, 1.5, (0.2, 0.5, 0.85));
-                current_y -= 16.0;
-            }
-        }
-
-        current_y
-    }
-
-    /// Render Diagram Flowchart Node-Edge Sederhana
-    fn render_simple_flowchart(
+    /// Render Diagram Alir (Flowchart) Mermaid dengan Tampilan Asli Mermaid.js
+    fn render_flowchart(
         pdf: &mut PdfDocument,
         diagram: &WidyaDiagram,
         margin_x: f32,
@@ -1305,7 +1214,7 @@ impl WidyaDiagramEngine {
             return current_y;
         }
 
-        // Hitung in-degree dan layer topological untuk tiap node
+        // 1. Hitung In-Degree dan Relasi Topological Sort untuk Rank Layering
         let mut in_degree: HashMap<String, usize> = HashMap::new();
         let mut adj: HashMap<String, Vec<String>> = HashMap::new();
 
@@ -1319,7 +1228,6 @@ impl WidyaDiagramEngine {
             adj.entry(edge.from.clone()).or_default().push(edge.to.clone());
         }
 
-        // Hitung level rank untuk tiap node
         let mut ranks: HashMap<String, usize> = HashMap::new();
         for node in &diagram.nodes {
             if in_degree.get(&node.id).copied().unwrap_or(0) == 0 {
@@ -1327,7 +1235,7 @@ impl WidyaDiagramEngine {
             }
         }
 
-        // Propagasi rank
+        // Propagasi rank (panjang lintasan terjauh)
         for _ in 0..diagram.nodes.len() {
             for edge in &diagram.edges {
                 let from_rank = ranks.get(&edge.from).copied().unwrap_or(0);
@@ -1338,7 +1246,10 @@ impl WidyaDiagramEngine {
             }
         }
 
-        // Kelompokkan node per rank
+        for node in &diagram.nodes {
+            ranks.entry(node.id.clone()).or_insert(0);
+        }
+
         let mut max_rank = 0;
         let mut rank_groups: HashMap<usize, Vec<&DiagramNode>> = HashMap::new();
         for node in &diagram.nodes {
@@ -1349,79 +1260,295 @@ impl WidyaDiagramEngine {
             rank_groups.entry(r).or_default().push(node);
         }
 
-        let layer_height = 42.0;
-        let total_chart_h = (max_rank as f32 + 1.0) * layer_height + 20.0;
+        // 2. Dimensi Simpul Dinamis & Bebas Pemotongan Kalimat
+        let is_lr = diagram.direction == DiagramDirection::LeftToRight;
+        let font_size = 8.0;
+        let available_w = content_width - 16.0;
+
+        // Hitung baris teks dan dimensi untuk setiap simpul (node_id -> (lines, node_w, node_h))
+        let mut node_dim_info: HashMap<String, (Vec<String>, f32, f32)> = HashMap::new();
+        let mut layer_heights: HashMap<usize, f32> = HashMap::new();
+        let mut layer_widths: HashMap<usize, f32> = HashMap::new();
+
+        if is_lr {
+            let num_cols = max_rank + 1;
+            let col_w = (content_width / num_cols as f32).min(150.0).max(75.0);
+            let node_w = (col_w - 14.0).max(60.0);
+
+            for r in 0..=max_rank {
+                let layer_nodes = rank_groups.get(&r).cloned().unwrap_or_default();
+                for node in &layer_nodes {
+                    let lines = wrap_text(&node.label, node_w - 12.0, font_size, true);
+                    let line_count = lines.len().max(1);
+                    let nh = match line_count {
+                        1 => 26.0,
+                        2 => 38.0,
+                        _ => 24.0 + (line_count as f32) * 11.5,
+                    };
+                    node_dim_info.insert(node.id.clone(), (lines, node_w, nh));
+                }
+            }
+        } else {
+            for r in 0..=max_rank {
+                let layer_nodes = rank_groups.get(&r).cloned().unwrap_or_default();
+                let count = layer_nodes.len();
+                if count == 0 {
+                    continue;
+                }
+
+                // Tentukan lebar simpul per lapisan agar proporsional dan teks tidak terpotong
+                let layer_node_w = if count == 1 {
+                    let node = layer_nodes[0];
+                    let full_tw = crate::office::pdf::styled_string_width(&node.label, font_size, true, false);
+                    let desired = (full_tw + 28.0).max(140.0);
+                    desired.min(available_w.min(380.0))
+                } else if count == 2 {
+                    (available_w / 2.0 - 16.0).min(220.0).max(95.0)
+                } else {
+                    (available_w / count as f32 - 12.0).max(65.0)
+                };
+
+                layer_widths.insert(r, layer_node_w);
+
+                let mut max_nh: f32 = 26.0;
+                for node in &layer_nodes {
+                    let inner_w = layer_node_w - 14.0;
+                    let lines = wrap_text(&node.label, inner_w, font_size, true);
+                    let line_count = lines.len().max(1);
+                    let nh = match line_count {
+                        1 => 26.0,
+                        2 => 38.0,
+                        _ => 24.0 + (line_count as f32) * 11.5,
+                    };
+                    if nh > max_nh {
+                        max_nh = nh;
+                    }
+                    node_dim_info.insert(node.id.clone(), (lines, layer_node_w, nh));
+                }
+                layer_heights.insert(r, max_nh);
+            }
+        }
+
+        // 3. Hitung Total Tinggi Diagram & Alokasi Halaman
+        let arrow_gap = 20.0;
+        let total_chart_h = if is_lr {
+            let max_col_h = (0..=max_rank)
+                .map(|r| {
+                    let layer_nodes = rank_groups.get(&r).cloned().unwrap_or_default();
+                    let sum_h: f32 = layer_nodes
+                        .iter()
+                        .map(|n| node_dim_info.get(&n.id).map(|info| info.2).unwrap_or(26.0) + 14.0)
+                        .sum();
+                    sum_h
+                })
+                .fold(60.0f32, f32::max);
+            (max_col_h + 24.0).max(75.0)
+        } else {
+            let mut sum_h: f32 = 16.0;
+            for r in 0..=max_rank {
+                sum_h += layer_heights.get(&r).copied().unwrap_or(26.0);
+                if r < max_rank {
+                    sum_h += arrow_gap;
+                }
+            }
+            sum_h + 16.0
+        };
 
         if current_y - total_chart_h < 75.0 {
             pdf.add_page();
             current_y = page_height - 70.0;
         }
 
-        // Simpan posisi tengah tiap node untuk menggambar edge nanti
-        let mut node_positions: HashMap<String, (f32, f32, f32, f32)> = HashMap::new(); // (center_x, center_y, width, height)
+        let mut node_positions: HashMap<String, (f32, f32, f32, f32)> = HashMap::new(); // (x, y, w, h)
 
-        let node_h = 26.0;
+        // 4. Tata Letak Koordinat Simpul (Topological Grid)
+        if is_lr {
+            let num_cols = max_rank + 1;
+            let col_w = (content_width / num_cols as f32).min(150.0).max(75.0);
+            let total_w = num_cols as f32 * col_w;
+            let start_x = margin_x + (content_width - total_w).max(0.0) / 2.0;
 
-        for r in 0..=max_rank {
-            let layer_nodes = rank_groups.get(&r).cloned().unwrap_or_default();
-            let count = layer_nodes.len();
-            if count == 0 {
-                continue;
+            for r in 0..=max_rank {
+                let layer_nodes = rank_groups.get(&r).cloned().unwrap_or_default();
+                let count = layer_nodes.len();
+                if count == 0 {
+                    continue;
+                }
+                let total_col_h: f32 = layer_nodes
+                    .iter()
+                    .map(|n| node_dim_info.get(&n.id).map(|i| i.2).unwrap_or(26.0))
+                    .sum::<f32>()
+                    + (count.saturating_sub(1) as f32 * 14.0);
+                let col_start_y = current_y - (total_chart_h - total_col_h) / 2.0;
+
+                let mut cur_y = col_start_y;
+                for node in &layer_nodes {
+                    let (_, nw, nh) = node_dim_info.get(&node.id).cloned().unwrap_or((Vec::new(), 70.0, 26.0));
+                    let col_x = start_x + (r as f32 * col_w) + (col_w - nw) / 2.0;
+                    let y = cur_y - nh;
+                    node_positions.insert(node.id.clone(), (col_x, y, nw, nh));
+                    cur_y = y - 14.0;
+                }
             }
+        } else {
+            let mut cur_layer_y = current_y - 8.0;
+            for r in 0..=max_rank {
+                let layer_nodes = rank_groups.get(&r).cloned().unwrap_or_default();
+                let count = layer_nodes.len();
+                if count == 0 {
+                    continue;
+                }
 
-            let available_w = content_width - 20.0;
-            let node_w = (available_w / count as f32 - 16.0).min(180.0).max(65.0);
-            let total_layer_w = count as f32 * node_w + (count.saturating_sub(1) as f32 * 16.0);
-            let start_x = margin_x + (content_width - total_layer_w) / 2.0;
+                let layer_h = layer_heights.get(&r).copied().unwrap_or(26.0);
+                let row_y = cur_layer_y - layer_h;
 
-            let row_y = current_y - (r as f32 * layer_height);
+                let layer_node_w = layer_widths.get(&r).copied().unwrap_or(120.0);
+                let total_layer_w = count as f32 * layer_node_w + (count.saturating_sub(1) as f32 * 14.0);
+                let start_x = margin_x + (content_width - total_layer_w) / 2.0;
 
-            for (i, node) in layer_nodes.iter().enumerate() {
-                let x = start_x + (i as f32 * (node_w + 16.0));
-                let page = pdf.current_page_mut();
+                for (i, node) in layer_nodes.iter().enumerate() {
+                    let x = start_x + (i as f32 * (layer_node_w + 14.0));
+                    node_positions.insert(node.id.clone(), (x, row_y, layer_node_w, layer_h));
+                }
 
-                // Latar belakang dan border node
-                let bg_color = match node.shape {
-                    NodeShape::Diamond => (0.98, 0.95, 1.0),
-                    NodeShape::Rounded => (0.94, 0.98, 0.95),
-                    NodeShape::Rectangle => (0.93, 0.96, 1.0),
-                };
-                let border_color = match node.shape {
-                    NodeShape::Diamond => (0.5, 0.2, 0.8),
-                    NodeShape::Rounded => (0.1, 0.6, 0.3),
-                    NodeShape::Rectangle => (0.18, 0.42, 0.76),
-                };
-
-                page.add_rect(x, row_y - node_h, node_w, node_h, true, bg_color);
-                page.add_rect(x, row_y - node_h, node_w, node_h, false, border_color);
-
-                // Teks label node (dipusatkan)
-                let label_text = if node.label.chars().count() > 24 {
-                    let trunc: String = node.label.chars().take(22).collect();
-                    format!("{}..", trunc)
-                } else {
-                    node.label.clone()
-                };
-
-                let text_x = x + 6.0;
-                let text_y = row_y - 16.5;
-                page.add_styled_text(&label_text, text_x, text_y, 8.5, true, (0.08, 0.20, 0.45));
-
-                node_positions.insert(node.id.clone(), (x + node_w / 2.0, row_y - node_h / 2.0, node_w, node_h));
+                cur_layer_y = row_y - arrow_gap;
             }
         }
 
-        // Gambar Garis & Panah Edge antar node
+        // 5. Render Kontainer Subgraph jika Ada (Gaya Boks Mermaid)
+        for sg in &diagram.subgraphs {
+            let mut min_x = f32::MAX;
+            let mut min_y = f32::MAX;
+            let mut max_x = f32::MIN;
+            let mut max_y = f32::MIN;
+            let mut has_nodes = false;
+
+            for nid in &sg.node_ids {
+                if let Some(&(nx, ny, nw, nh)) = node_positions.get(nid) {
+                    has_nodes = true;
+                    if nx < min_x { min_x = nx; }
+                    if ny < min_y { min_y = ny; }
+                    if nx + nw > max_x { max_x = nx + nw; }
+                    if ny + nh > max_y { max_y = ny + nh; }
+                }
+            }
+
+            if has_nodes {
+                let pad_x = 10.0;
+                let pad_y_bottom = 8.0;
+                let pad_y_top = 18.0;
+                let sg_x = (min_x - pad_x).max(margin_x);
+                let sg_y = min_y - pad_y_bottom;
+                let sg_w = (max_x - min_x + 2.0 * pad_x).min(content_width);
+                let sg_h = max_y - min_y + pad_y_bottom + pad_y_top;
+
+                let page = pdf.current_page_mut();
+                page.add_rounded_rect(sg_x, sg_y, sg_w, sg_h, 6.0, true, (0.975, 0.98, 0.988));
+                page.add_rounded_rect(sg_x, sg_y, sg_w, sg_h, 6.0, false, (0.78, 0.82, 0.88));
+                page.add_styled_text(&sg.title, sg_x + 8.0, sg_y + sg_h - 12.0, 8.5, true, (0.18, 0.24, 0.35));
+            }
+        }
+
+        // 6. Render Node & Teks Penuh Tanpa Pemotongan
+        for node in &diagram.nodes {
+            if let Some(&(x, y, w, h)) = node_positions.get(&node.id) {
+                let page = pdf.current_page_mut();
+                let cx = x + w / 2.0;
+                let cy = y + h / 2.0;
+
+                match node.shape {
+                    NodeShape::Diamond => {
+                        let poly = vec![
+                            (cx, y + h),
+                            (x + w, cy),
+                            (cx, y),
+                            (x, cy),
+                        ];
+                        page.add_polygon(poly.clone(), true, (1.0, 0.97, 0.88));
+                        page.add_polygon(poly, false, (0.95, 0.65, 0.15));
+                    }
+                    NodeShape::Rounded => {
+                        let radius = (h / 2.0).min(12.0);
+                        page.add_rounded_rect(x, y, w, h, radius, true, (0.91, 0.96, 0.92));
+                        page.add_rounded_rect(x, y, w, h, radius, false, (0.30, 0.69, 0.31));
+                    }
+                    NodeShape::Rectangle => {
+                        page.add_rounded_rect(x, y, w, h, 4.5, true, (0.925, 0.925, 1.0));
+                        page.add_rounded_rect(x, y, w, h, 4.5, false, (0.576, 0.439, 0.859));
+                    }
+                }
+
+                let text_color = match node.shape {
+                    NodeShape::Diamond => (0.20, 0.20, 0.20),
+                    NodeShape::Rounded => (0.12, 0.32, 0.16),
+                    NodeShape::Rectangle => (0.18, 0.18, 0.22),
+                };
+
+                let fallback = vec![node.label.clone()];
+                let lines = if let Some(info) = node_dim_info.get(&node.id) {
+                    &info.0
+                } else {
+                    &fallback
+                };
+                let line_count = lines.len().max(1);
+                let line_spacing = 10.5;
+                let total_text_h = (line_count.saturating_sub(1) as f32) * line_spacing;
+                let start_ty = cy + (total_text_h / 2.0) - 2.8;
+
+                for (idx, line_str) in lines.iter().enumerate() {
+                    let tw = crate::office::pdf::styled_string_width(line_str, font_size, true, false);
+                    let tx = (cx - tw / 2.0).max(x + 3.0);
+                    let ty = start_ty - (idx as f32 * line_spacing);
+                    page.add_styled_text(line_str, tx, ty, font_size, true, text_color);
+                }
+            }
+        }
+
+        // 6. Render Panah Pengarah dan Label Relasi
         let page = pdf.current_page_mut();
         for edge in &diagram.edges {
-            if let (Some(&(x1, y1, _w1, h1)), Some(&(x2, y2, _w2, h2))) = (node_positions.get(&edge.from), node_positions.get(&edge.to)) {
-                let start_point = (x1, y1 - h1 / 2.0);
-                let end_point = (x2, y2 + h2 / 2.0);
+            if let (Some(&(x1, y1, w1, h1)), Some(&(x2, y2, w2, h2))) =
+                (node_positions.get(&edge.from), node_positions.get(&edge.to))
+            {
+                let edge_color = (0.28, 0.30, 0.35);
+                let start_pt;
+                let end_pt;
+
+                if is_lr {
+                    start_pt = (x1 + w1, y1 + h1 / 2.0);
+                    end_pt = (x2, y2 + h2 / 2.0);
+                } else {
+                    if y1 > y2 {
+                        start_pt = (x1 + w1 / 2.0, y1);
+                        end_pt = (x2 + w2 / 2.0, y2 + h2);
+                    } else if (y1 - y2).abs() < 5.0 {
+                        start_pt = (x1 + w1, y1 + h1 / 2.0);
+                        end_pt = (x2, y2 + h2 / 2.0);
+                    } else {
+                        start_pt = (x1 + w1 / 2.0, y1 + h1);
+                        end_pt = (x2 + w2 / 2.0, y2);
+                    }
+                }
 
                 if edge.has_arrow {
-                    page.add_arrow(start_point.0, start_point.1, end_point.0, end_point.1, 1.2, (0.25, 0.45, 0.75));
+                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.2, edge_color);
                 } else {
-                    page.add_styled_line(start_point.0, start_point.1, end_point.0, end_point.1, 1.2, (0.25, 0.45, 0.75));
+                    page.add_styled_line(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.2, edge_color);
+                }
+
+                if let Some(ref lbl) = edge.label {
+                    let mid_x = (start_pt.0 + end_pt.0) / 2.0;
+                    let mid_y = (start_pt.1 + end_pt.1) / 2.0;
+                    let l_clean = clean_markdown_inline(lbl);
+                    let lw = crate::office::pdf::styled_string_width(&l_clean, 7.5, true, false);
+                    let badge_w = lw + 8.0;
+                    let badge_h = 13.0;
+                    let bx = mid_x - badge_w / 2.0;
+                    let by = mid_y - badge_h / 2.0;
+
+                    page.add_rounded_rect(bx, by, badge_w, badge_h, 2.5, true, (1.0, 1.0, 1.0));
+                    page.add_rounded_rect(bx, by, badge_w, badge_h, 2.5, false, (0.80, 0.84, 0.88));
+                    page.add_styled_text(&l_clean, bx + 4.0, by + 3.0, 7.5, true, (0.25, 0.28, 0.35));
                 }
             }
         }
@@ -1443,31 +1570,23 @@ impl WidyaDiagramEngine {
             return current_y;
         }
 
-        let banner_h = 22.0;
+        let title_h = if diag.title.is_some() { 22.0 } else { 0.0 };
         let box_h = 20.0;
         let msg_h = 24.0;
-        let total_diag_h = banner_h + 10.0 + box_h + 10.0 + (diag.messages.len() as f32 * msg_h) + 12.0 + box_h + 14.0;
+        let total_diag_h = title_h + box_h + 10.0 + (diag.messages.len() as f32 * msg_h) + 12.0 + box_h + 14.0;
 
         if current_y - total_diag_h < 75.0 {
             pdf.add_page();
             current_y = page_height - 70.0;
         }
 
-        // 1. Banner Judul Sequence Diagram
-        let page = pdf.current_page_mut();
-        let title_text = diag.title.as_deref().unwrap_or("DIAGRAM URUTAN (SEQUENCE DIAGRAM) & ALUR PESAN");
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
-        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
-        page.add_styled_text(
-            title_text,
-            margin_x + 12.0,
-            current_y - 15.0,
-            9.5,
-            true,
-            (0.08, 0.22, 0.48),
-        );
-        current_y -= banner_h + 10.0;
+        if let Some(ref t) = diag.title {
+            let page = pdf.current_page_mut();
+            let tw = crate::office::pdf::styled_string_width(t, 9.5, true, false);
+            let tx = margin_x + (content_width - tw) / 2.0;
+            page.add_styled_text(t, tx, current_y - 14.0, 9.5, true, (0.2, 0.22, 0.28));
+            current_y -= title_h;
+        }
 
         // 2. Hitung Posisi Partisipan
         let n = diag.participants.len();
@@ -1487,18 +1606,19 @@ impl WidyaDiagramEngine {
             if let Some(&cx) = x_centers.get(&p.id) {
                 let bx = cx - box_w / 2.0;
                 let page = pdf.current_page_mut();
-                page.add_rect(bx, current_y - box_h, box_w, box_h, true, (0.12, 0.28, 0.52));
-                page.add_rect(bx, current_y - box_h, box_w, box_h, false, (0.2, 0.45, 0.75));
+                page.add_rounded_rect(bx, current_y - box_h, box_w, box_h, 4.0, true, (0.925, 0.925, 1.0));
+                page.add_rounded_rect(bx, current_y - box_h, box_w, box_h, 4.0, false, (0.576, 0.439, 0.859));
 
-                let label_text = if p.label.chars().count() > 16 {
-                    let tr: String = p.label.chars().take(14).collect();
-                    format!("{}..", tr)
+                let req_w = crate::office::pdf::styled_string_width(&p.label, 8.5, true, false);
+                let (font_sz, label_text) = if req_w > box_w - 6.0 {
+                    let sz = (8.5 * (box_w - 6.0) / req_w).max(6.8);
+                    (sz, p.label.clone())
                 } else {
-                    p.label.clone()
+                    (8.5, p.label.clone())
                 };
-                let tw = crate::office::pdf::styled_string_width(&label_text, 8.5, true, false);
+                let tw = crate::office::pdf::styled_string_width(&label_text, font_sz, true, false);
                 let tx = (cx - tw / 2.0).max(bx + 2.0);
-                page.add_styled_text(&label_text, tx, current_y - 13.5, 8.5, true, (1.0, 1.0, 1.0));
+                page.add_styled_text(&label_text, tx, current_y - 13.5, font_sz, true, (0.2, 0.2, 0.2));
             }
         }
         current_y -= box_h + 10.0;
@@ -1510,7 +1630,7 @@ impl WidyaDiagramEngine {
         // 3. Render Garis Hidup Vertikal (Lifeline)
         for p in &diag.participants {
             if let Some(&cx) = x_centers.get(&p.id) {
-                Self::draw_dashed_vertical_line(pdf.current_page_mut(), cx, lifeline_start_y, lifeline_end_y, 0.8, (0.65, 0.70, 0.78));
+                Self::draw_dashed_vertical_line(pdf.current_page_mut(), cx, lifeline_start_y, lifeline_end_y, 0.8, (0.70, 0.75, 0.82));
             }
         }
 
@@ -1525,12 +1645,12 @@ impl WidyaDiagramEngine {
                     let mid_x = (x1 + x2) / 2.0;
                     let tw = crate::office::pdf::styled_string_width(&msg.text, 8.0, false, false);
                     let tx = (mid_x - tw / 2.0).max(margin_x + 4.0).min(margin_x + content_width - tw - 4.0);
-                    page.add_styled_text(&msg.text, tx, arrow_y + 3.0, 8.0, false, (0.12, 0.20, 0.35));
+                    page.add_styled_text(&msg.text, tx, arrow_y + 3.0, 8.0, false, (0.2, 0.22, 0.28));
                 }
 
                 // Garis Panah
                 let is_dashed = msg.arrow == SequenceArrowType::DashedArrow || msg.arrow == SequenceArrowType::DashedLine;
-                let color = (0.2, 0.45, 0.75);
+                let color = (0.28, 0.30, 0.35);
 
                 if is_dashed {
                     Self::draw_dashed_horizontal_line(page, x1, x2, arrow_y, 1.0, color);
@@ -1557,18 +1677,19 @@ impl WidyaDiagramEngine {
             if let Some(&cx) = x_centers.get(&p.id) {
                 let bx = cx - box_w / 2.0;
                 let page = pdf.current_page_mut();
-                page.add_rect(bx, current_y - box_h, box_w, box_h, true, (0.92, 0.95, 0.99));
-                page.add_rect(bx, current_y - box_h, box_w, box_h, false, (0.2, 0.45, 0.75));
+                page.add_rounded_rect(bx, current_y - box_h, box_w, box_h, 4.0, true, (0.925, 0.925, 1.0));
+                page.add_rounded_rect(bx, current_y - box_h, box_w, box_h, 4.0, false, (0.576, 0.439, 0.859));
 
-                let label_text = if p.label.chars().count() > 16 {
-                    let tr: String = p.label.chars().take(14).collect();
-                    format!("{}..", tr)
+                let req_w = crate::office::pdf::styled_string_width(&p.label, 8.5, true, false);
+                let (font_sz, label_text) = if req_w > box_w - 6.0 {
+                    let sz = (8.5 * (box_w - 6.0) / req_w).max(6.8);
+                    (sz, p.label.clone())
                 } else {
-                    p.label.clone()
+                    (8.5, p.label.clone())
                 };
-                let tw = crate::office::pdf::styled_string_width(&label_text, 8.5, true, false);
+                let tw = crate::office::pdf::styled_string_width(&label_text, font_sz, true, false);
                 let tx = (cx - tw / 2.0).max(bx + 2.0);
-                page.add_styled_text(&label_text, tx, current_y - 13.5, 8.5, true, (0.12, 0.28, 0.52));
+                page.add_styled_text(&label_text, tx, current_y - 13.5, font_sz, true, (0.2, 0.2, 0.2));
             }
         }
         current_y -= box_h + 12.0;
@@ -1627,23 +1748,22 @@ impl WidyaDiagramEngine {
             return current_y;
         }
 
-        let banner_h = 22.0;
+        let title_h = if diag.title.is_some() { 22.0 } else { 0.0 };
         let layer_h = 44.0;
-        let total_diag_h = banner_h + 12.0 + (diag.states.len() as f32 + 2.0) * layer_h;
+        let total_diag_h = title_h + 12.0 + (diag.states.len() as f32 + 2.0) * layer_h;
 
         if current_y - total_diag_h < 75.0 {
             pdf.add_page();
             current_y = page_height - 70.0;
         }
 
-        // Banner Judul
-        let page = pdf.current_page_mut();
-        let title_text = diag.title.as_deref().unwrap_or("DIAGRAM STATUS SISTEM (STATE MACHINE DIAGRAM)");
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
-        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
-        page.add_styled_text(title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
-        current_y -= banner_h + 16.0;
+        if let Some(ref t) = diag.title {
+            let page = pdf.current_page_mut();
+            let tw = crate::office::pdf::styled_string_width(t, 9.5, true, false);
+            let tx = margin_x + (content_width - tw) / 2.0;
+            page.add_styled_text(t, tx, current_y - 14.0, 9.5, true, (0.2, 0.22, 0.28));
+            current_y -= title_h;
+        }
 
         // Hitung posisi vertikal untuk tiap state
         let mid_x = margin_x + content_width / 2.0;
@@ -1655,8 +1775,7 @@ impl WidyaDiagramEngine {
         // 1. Initial State [*]
         let initial_y = current_y - 10.0;
         let page = pdf.current_page_mut();
-        // Lingkaran awal hitam terisi kecil (diameter 12.0)
-        page.add_rect(mid_x - 6.0, initial_y - 6.0, 12.0, 12.0, true, (0.15, 0.2, 0.3));
+        page.add_rounded_rect(mid_x - 6.0, initial_y - 6.0, 12.0, 12.0, 6.0, true, (0.2, 0.22, 0.28));
         state_positions.insert("[*]".to_string(), (mid_x, initial_y));
         current_y -= 36.0;
 
@@ -1666,13 +1785,13 @@ impl WidyaDiagramEngine {
             let sx = mid_x - state_w / 2.0;
             let page = pdf.current_page_mut();
 
-            // Kapsul state rounded/rect
-            page.add_rect(sx, current_y - state_h, state_w, state_h, true, (0.94, 0.97, 1.0));
-            page.add_rect(sx, current_y - state_h, state_w, state_h, false, (0.18, 0.45, 0.78));
+            // Kapsul state rounded
+            page.add_rounded_rect(sx, current_y - state_h, state_w, state_h, 6.0, true, (0.925, 0.925, 1.0));
+            page.add_rounded_rect(sx, current_y - state_h, state_w, state_h, 6.0, false, (0.576, 0.439, 0.859));
 
             let tw = crate::office::pdf::styled_string_width(state_name, 9.0, true, false);
             let tx = mid_x - tw / 2.0;
-            page.add_styled_text(state_name, tx, current_y - 16.0, 9.0, true, (0.10, 0.25, 0.50));
+            page.add_styled_text(state_name, tx, current_y - 16.0, 9.0, true, (0.2, 0.2, 0.2));
 
             state_positions.insert(state_name.clone(), (mid_x, sy));
             current_y -= layer_h;
@@ -1681,9 +1800,8 @@ impl WidyaDiagramEngine {
         // 3. Final State [*]_end
         let final_y = current_y - 10.0;
         let page = pdf.current_page_mut();
-        // Lingkaran akhir: lingkaran luar border dan dalam terisi
-        page.add_rect(mid_x - 8.0, final_y - 8.0, 16.0, 16.0, false, (0.15, 0.2, 0.3));
-        page.add_rect(mid_x - 4.5, final_y - 4.5, 9.0, 9.0, true, (0.15, 0.2, 0.3));
+        page.add_rounded_rect(mid_x - 8.0, final_y - 8.0, 16.0, 16.0, 8.0, false, (0.2, 0.22, 0.28));
+        page.add_rounded_rect(mid_x - 4.5, final_y - 4.5, 9.0, 9.0, 4.5, true, (0.2, 0.22, 0.28));
         current_y -= 24.0;
 
         // 4. Gambar panah transisi
@@ -1697,22 +1815,21 @@ impl WidyaDiagramEngine {
             };
 
             if let (Some(&(x1, y1)), Some(&(x2, y2))) = (from_pos, to_pos) {
+                let arrow_color = (0.28, 0.30, 0.35);
                 if y1 > y2 {
-                    // Panah ke bawah
                     let start_pt = (x1, y1 - state_h / 2.0);
                     let end_pt = (x2, y2 + state_h / 2.0);
-                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.2, (0.2, 0.45, 0.75));
+                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.2, arrow_color);
 
                     if let Some(ref lbl) = tr.label {
-                        page.add_styled_text(lbl, (x1 + x2) / 2.0 + 8.0, (start_pt.1 + end_pt.1) / 2.0 - 3.0, 7.5, false, (0.35, 0.42, 0.52));
+                        page.add_styled_text(lbl, (x1 + x2) / 2.0 + 8.0, (start_pt.1 + end_pt.1) / 2.0 - 3.0, 7.5, false, (0.35, 0.38, 0.45));
                     }
                 } else {
-                    // Transisi balik / menyamping
                     let start_pt = (x1 + state_w / 2.0, y1);
                     let end_pt = (x2 + state_w / 2.0, y2);
-                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.0, (0.25, 0.45, 0.75));
+                    page.add_arrow(start_pt.0, start_pt.1, end_pt.0, end_pt.1, 1.0, arrow_color);
                     if let Some(ref lbl) = tr.label {
-                        page.add_styled_text(lbl, start_pt.0 + 6.0, (y1 + y2) / 2.0, 7.5, false, (0.35, 0.42, 0.52));
+                        page.add_styled_text(lbl, start_pt.0 + 6.0, (y1 + y2) / 2.0, 7.5, false, (0.35, 0.38, 0.45));
                     }
                 }
             }
@@ -1735,8 +1852,8 @@ impl WidyaDiagramEngine {
             return current_y;
         }
 
-        let banner_h = 22.0;
-        let mut total_diag_h = banner_h + 20.0;
+        let title_h = if diag.title.is_some() { 22.0 } else { 0.0 };
+        let mut total_diag_h = title_h + 20.0;
         for c in &diag.classes {
             total_diag_h += 24.0 + (c.members.len() as f32 * 12.0) + 16.0;
         }
@@ -1746,14 +1863,13 @@ impl WidyaDiagramEngine {
             current_y = page_height - 70.0;
         }
 
-        // Banner Judul
-        let page = pdf.current_page_mut();
-        let title_text = diag.title.as_deref().unwrap_or("DIAGRAM KELAS & MODEL DATA (CLASS DIAGRAM)");
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, true, (0.92, 0.95, 0.99));
-        page.add_rect(margin_x, current_y - banner_h, content_width, banner_h, false, (0.18, 0.42, 0.76));
-        page.add_styled_line(margin_x, current_y - banner_h, margin_x, current_y, 3.5, (0.1, 0.45, 0.9));
-        page.add_styled_text(title_text, margin_x + 12.0, current_y - 15.0, 9.5, true, (0.08, 0.22, 0.48));
-        current_y -= banner_h + 14.0;
+        if let Some(ref t) = diag.title {
+            let page = pdf.current_page_mut();
+            let tw = crate::office::pdf::styled_string_width(t, 9.5, true, false);
+            let tx = margin_x + (content_width - tw) / 2.0;
+            page.add_styled_text(t, tx, current_y - 14.0, 9.5, true, (0.2, 0.22, 0.28));
+            current_y -= title_h;
+        }
 
         let num_classes = diag.classes.len();
         let col_count = if num_classes >= 2 { 2 } else { 1 };
@@ -1788,20 +1904,19 @@ impl WidyaDiagramEngine {
             let page = pdf.current_page_mut();
 
             // 1. Header Kotak Kelas (Nama Kelas)
-            page.add_rect(bx, row_start_y - header_h, col_w, header_h, true, (0.12, 0.28, 0.52));
-            page.add_rect(bx, row_start_y - total_box_h, col_w, total_box_h, false, (0.2, 0.45, 0.75));
+            page.add_rounded_rect(bx, row_start_y - total_box_h, col_w, total_box_h, 4.0, true, (1.0, 1.0, 1.0));
+            page.add_rounded_rect(bx, row_start_y - header_h, col_w, header_h, 4.0, true, (0.925, 0.925, 1.0));
+            page.add_rounded_rect(bx, row_start_y - total_box_h, col_w, total_box_h, 4.0, false, (0.576, 0.439, 0.859));
+            page.add_styled_line(bx, row_start_y - header_h, bx + col_w, row_start_y - header_h, 1.0, (0.576, 0.439, 0.859));
 
             let name_w = crate::office::pdf::styled_string_width(&cls.name, 9.0, true, false);
             let name_x = bx + (col_w - name_w) / 2.0;
-            page.add_styled_text(&cls.name, name_x, row_start_y - 14.0, 9.0, true, (1.0, 1.0, 1.0));
+            page.add_styled_text(&cls.name, name_x, row_start_y - 14.0, 9.0, true, (0.2, 0.2, 0.2));
 
             // 2. Body Kompartemen Anggota (Fields & Methods)
-            page.add_rect(bx, row_start_y - total_box_h, col_w, body_h, true, (0.975, 0.985, 1.0));
-            page.add_styled_line(bx, row_start_y - header_h, bx + col_w, row_start_y - header_h, 1.0, (0.2, 0.45, 0.75));
-
             let mut member_y = row_start_y - header_h - 11.0;
             for m in &cls.members {
-                let color = if m.is_method { (0.05, 0.35, 0.55) } else { (0.15, 0.20, 0.25) };
+                let color = if m.is_method { (0.10, 0.35, 0.55) } else { (0.20, 0.22, 0.26) };
                 page.add_formatted_text(&m.text, bx + 8.0, member_y, 8.0, false, false, true, color);
                 member_y -= 12.0;
             }
@@ -1817,7 +1932,7 @@ impl WidyaDiagramEngine {
             if let (Some(&(x1, y1, w1, h1)), Some(&(x2, y2, w2, h2))) = (class_positions.get(&rel.from), class_positions.get(&rel.to)) {
                 let p1 = (x1 + w1 / 2.0, y1 - h1);
                 let p2 = (x2 + w2 / 2.0, y2);
-                page.add_arrow(p1.0, p1.1, p2.0, p2.1, 1.2, (0.2, 0.45, 0.75));
+                page.add_arrow(p1.0, p1.1, p2.0, p2.1, 1.2, (0.28, 0.30, 0.35));
             }
         }
 
@@ -2166,13 +2281,13 @@ impl WidyaDiagramEngine {
                 GanttStatus::Normal => (0.40, 0.52, 0.65), // Abu netral
             };
 
-            let task_display = if task.name.chars().count() > 22 {
-                let tr: String = task.name.chars().take(20).collect();
-                format!("{}..", tr)
+            let task_w = crate::office::pdf::styled_string_width(&task.name, 8.0, false, false);
+            let task_sz = if task_w > 115.0 {
+                (8.0 * 115.0 / task_w).max(6.5)
             } else {
-                task.name.clone()
+                8.0
             };
-            page.add_styled_text(&task_display, margin_x + 8.0, row_y, 8.0, false, (0.15, 0.20, 0.28));
+            page.add_styled_text(&task.name, margin_x + 8.0, row_y, task_sz, false, (0.15, 0.20, 0.28));
 
             let start_frac = (task.start / max_time).clamp(0.0, 1.0);
             let dur_frac = (task.duration / max_time).clamp(0.02, 1.0 - start_frac);

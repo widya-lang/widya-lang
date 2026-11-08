@@ -1,0 +1,56 @@
+// packages/widya-sql/tests/sql_test.wya
+// Uji Unit Mandiri Pustaka @widya/sql (Database Relasional In-Memory)
+
+impor "@widya/test" sebagai test;
+impor "@widya/sql" sebagai sql;
+
+misal pelari = test.uji_buat_pelari();
+
+fungsi uji_siklus_crud_sql(t) {
+    misal db = sql.db_buka("test_store");
+    test.tegaskan_benar(t, db.terbuka, "Database harus berstatus terbuka");
+
+    // CREATE TABLE
+    sql.db_buat_tabel(db, "produk");
+
+    // INSERT INTO
+    sql.db_sisip(db, "produk", {"id": 1, "nama": "Laptop", "harga": 15000.0, "stok": 10});
+    sql.db_sisip(db, "produk", {"id": 2, "nama": "Mouse", "harga": 200.0, "stok": 50});
+    sql.db_sisip(db, "produk", {"id": 3, "nama": "Monitor", "harga": 3000.0, "stok": 5});
+
+    // COUNT
+    test.tegaskan_sama(t, sql.db_hitung(db, "produk"), 3, "Total produk harus 3");
+
+    // SELECT WHERE
+    fungsi harga_mahal(row) {
+        kembalikan row["harga"] >= 3000.0;
+    }
+    misal produk_mahal = sql.db_pilih(db, "produk", harga_mahal, ["id", "nama"]);
+    test.tegaskan_sama(t, panjang(produk_mahal), 2, "Produk mahal harus berjumlah 2");
+    test.tegaskan_sama(t, produk_mahal[0]["nama"], "Laptop", "Nama produk pertama harus Laptop");
+
+    // UPDATE WHERE
+    fungsi cari_mouse(row) {
+        kembalikan row["id"] == 2;
+    }
+    misal terupdate = sql.db_perbarui(db, "produk", cari_mouse, {"stok": 75});
+    test.tegaskan_sama(t, terupdate, 1, "Jumlah baris terupdate harus 1");
+
+    // DELETE WHERE
+    fungsi cari_monitor(row) {
+        kembalikan row["id"] == 3;
+    }
+    misal terhapus = sql.db_hapus(db, "produk", cari_monitor);
+    test.tegaskan_sama(t, terhapus, 1, "Jumlah baris terhapus harus 1");
+    test.tegaskan_sama(t, sql.db_hitung(db, "produk"), 2, "Sisa produk harus 2");
+
+    // CLOSE
+    sql.db_tutup(db);
+    test.tegaskan_salah(t, db.terbuka, "Database harus berstatus tertutup");
+}
+
+test.uji_kasus(pelari, "Operasi CRUD Relasional & Status Koneksi", uji_siklus_crud_sql);
+
+misal hasil = test.uji_ringkasan(pelari);
+tulis("Hasil Uji @widya/sql: " + ke_teks(hasil["lulus"]) + "/" + ke_teks(hasil["total"]) + " LULUS.");
+

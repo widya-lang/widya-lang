@@ -1,6 +1,6 @@
 [package]
 name = "widya-compiler"
-version = "2.6.0"
+version = "0.1.0"
 edition = "2024"
 description = "Widya-Lang Compiler Infrastructure: SSA IR, Tiered JIT, Arena Allocation, LLVM Backend, and Bare-Metal Unikernel MicroVM Builder"
 

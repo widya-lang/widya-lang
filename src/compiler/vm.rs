@@ -69,6 +69,71 @@ impl VmValue {
             VmValue::Map(_) => "map",
         }
     }
+
+    pub fn to_runtime_value(&self) -> crate::value::Value {
+        use crate::value::Value;
+        use std::cell::RefCell;
+        use std::rc::Rc;
+        match self {
+            VmValue::Nil => Value::Nil,
+            VmValue::Bool(b) => Value::Bool(*b),
+            VmValue::Int(i) => Value::Number(*i as f64),
+            VmValue::Float(f) => Value::Number(*f),
+            VmValue::Decimal(d) => Value::Number(d.ke_f64()),
+            VmValue::String(s) => Value::String(s.clone()),
+            VmValue::Bytes(b) => Value::Array(Rc::new(RefCell::new(
+                b.iter().map(|byte| Value::Number(*byte as f64)).collect(),
+            ))),
+            VmValue::Array(arr) => Value::Array(Rc::new(RefCell::new(
+                arr.iter().map(|v| v.to_runtime_value()).collect(),
+            ))),
+            VmValue::Map(m) => {
+                let mut map = HashMap::new();
+                for (k, v) in m {
+                    map.insert(k.clone(), v.to_runtime_value());
+                }
+                Value::Map(Rc::new(RefCell::new(map)))
+            }
+        }
+    }
+
+    pub fn from_runtime_value(val: &crate::value::Value) -> Self {
+        use crate::value::Value;
+        match val {
+            Value::Nil => VmValue::Nil,
+            Value::Bool(b) => VmValue::Bool(*b),
+            Value::Number(n) => {
+                if n.fract() == 0.0 && *n >= (i64::MIN as f64) && *n <= (i64::MAX as f64) {
+                    VmValue::Int(*n as i64)
+                } else {
+                    VmValue::Float(*n)
+                }
+            }
+            Value::String(s) => VmValue::String(s.clone()),
+            Value::Array(arr) => VmValue::Array(
+                arr.borrow()
+                    .iter()
+                    .map(Self::from_runtime_value)
+                    .collect(),
+            ),
+            Value::Map(m) => {
+                let mut map = HashMap::new();
+                for (k, v) in m.borrow().iter() {
+                    map.insert(k.clone(), Self::from_runtime_value(v));
+                }
+                VmValue::Map(map)
+            }
+            Value::Range(s, e) => {
+                let items: Vec<VmValue> = if s <= e {
+                    (*s..=*e).map(VmValue::Int).collect()
+                } else {
+                    (*e..=*s).rev().map(VmValue::Int).collect()
+                };
+                VmValue::Array(items)
+            }
+            other => VmValue::String(other.to_string_repr()),
+        }
+    }
 }
 
 /// Representasi NaN-Boxing 64-bit untuk nilai instan tanpa alokasi heap
@@ -439,7 +504,13 @@ impl VirtualMachine {
                         (VmValue::Float(x), VmValue::Float(y)) => VmValue::Float(x + y),
                         (VmValue::Int(x), VmValue::Float(y)) => VmValue::Float(*x as f64 + y),
                         (VmValue::Float(x), VmValue::Int(y)) => VmValue::Float(x + *y as f64),
-                        (VmValue::String(x), VmValue::String(y)) => VmValue::String(format!("{}{}", x, y)),
+                        (VmValue::String(x), y) => VmValue::String(format!("{}{}", x, y)),
+                        (x, VmValue::String(y)) => VmValue::String(format!("{}{}", x, y)),
+                        (VmValue::Array(x), VmValue::Array(y)) => {
+                            let mut combined = x.clone();
+                            combined.extend(y.iter().cloned());
+                            VmValue::Array(combined)
+                        }
                         _ => return Err(format!("Operasi Add tidak kompatibel: {:?} + {:?}", a, b)),
                     };
                     self.registers[dst as usize] = res;
@@ -450,6 +521,8 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => VmValue::Int(x - y),
                         (VmValue::Float(x), VmValue::Float(y)) => VmValue::Float(x - y),
+                        (VmValue::Int(x), VmValue::Float(y)) => VmValue::Float(*x as f64 - y),
+                        (VmValue::Float(x), VmValue::Int(y)) => VmValue::Float(x - *y as f64),
                         _ => return Err(format!("Operasi Sub tidak kompatibel: {:?} - {:?}", a, b)),
                     };
                     self.registers[dst as usize] = res;
@@ -460,6 +533,11 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => VmValue::Int(x * y),
                         (VmValue::Float(x), VmValue::Float(y)) => VmValue::Float(x * y),
+                        (VmValue::Int(x), VmValue::Float(y)) => VmValue::Float(*x as f64 * y),
+                        (VmValue::Float(x), VmValue::Int(y)) => VmValue::Float(x * (*y as f64)),
+                        (VmValue::String(s), VmValue::Int(n)) | (VmValue::Int(n), VmValue::String(s)) => {
+                            VmValue::String(s.repeat((*n).max(0) as usize))
+                        }
                         _ => return Err("Operasi Mul tidak kompatibel".into()),
                     };
                     self.registers[dst as usize] = res;
@@ -470,11 +548,23 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => {
                             if *y == 0 { return Err("Pembagian dengan nol".into()); }
-                            VmValue::Int(x / y)
+                            if x % y == 0 {
+                                VmValue::Int(x / y)
+                            } else {
+                                VmValue::Float((*x as f64) / (*y as f64))
+                            }
                         }
                         (VmValue::Float(x), VmValue::Float(y)) => {
                             if *y == 0.0 { return Err("Pembagian dengan nol".into()); }
                             VmValue::Float(x / y)
+                        }
+                        (VmValue::Int(x), VmValue::Float(y)) => {
+                            if *y == 0.0 { return Err("Pembagian dengan nol".into()); }
+                            VmValue::Float((*x as f64) / y)
+                        }
+                        (VmValue::Float(x), VmValue::Int(y)) => {
+                            if *y == 0 { return Err("Pembagian dengan nol".into()); }
+                            VmValue::Float(x / (*y as f64))
                         }
                         _ => return Err("Operasi Div tidak kompatibel".into()),
                     };
@@ -488,22 +578,42 @@ impl VirtualMachine {
                             if *y == 0 { return Err("Modulo dengan nol".into()); }
                             VmValue::Int(x % y)
                         }
-                        _ => return Err("Operasi Modulo hanya mendukung bilangan bulat (Int)".into()),
+                        (VmValue::Float(x), VmValue::Float(y)) => {
+                            if *y == 0.0 { return Err("Modulo dengan nol".into()); }
+                            VmValue::Float(x % y)
+                        }
+                        (VmValue::Int(x), VmValue::Float(y)) => {
+                            if *y == 0.0 { return Err("Modulo dengan nol".into()); }
+                            VmValue::Float((*x as f64) % y)
+                        }
+                        (VmValue::Float(x), VmValue::Int(y)) => {
+                            if *y == 0 { return Err("Modulo dengan nol".into()); }
+                            VmValue::Float(x % (*y as f64))
+                        }
+                        _ => return Err("Operasi Modulo hanya mendukung bilangan".into()),
                     };
                     self.registers[dst as usize] = res;
                 }
                 Opcode::BitAnd(dst, lhs, rhs) => {
-                    if let (VmValue::Int(x), VmValue::Int(y)) = (&self.registers[lhs as usize], &self.registers[rhs as usize]) {
-                        self.registers[dst as usize] = VmValue::Int(x & y);
-                    } else {
-                        return Err("Operasi BitAnd memerlukan tipe Int".into());
+                    match (&self.registers[lhs as usize], &self.registers[rhs as usize]) {
+                        (VmValue::Int(x), VmValue::Int(y)) => {
+                            self.registers[dst as usize] = VmValue::Int(x & y);
+                        }
+                        (VmValue::Bool(x), VmValue::Bool(y)) => {
+                            self.registers[dst as usize] = VmValue::Bool(*x && *y);
+                        }
+                        _ => return Err("Operasi BitAnd memerlukan tipe Int atau Bool".into()),
                     }
                 }
                 Opcode::BitOr(dst, lhs, rhs) => {
-                    if let (VmValue::Int(x), VmValue::Int(y)) = (&self.registers[lhs as usize], &self.registers[rhs as usize]) {
-                        self.registers[dst as usize] = VmValue::Int(x | y);
-                    } else {
-                        return Err("Operasi BitOr memerlukan tipe Int".into());
+                    match (&self.registers[lhs as usize], &self.registers[rhs as usize]) {
+                        (VmValue::Int(x), VmValue::Int(y)) => {
+                            self.registers[dst as usize] = VmValue::Int(x | y);
+                        }
+                        (VmValue::Bool(x), VmValue::Bool(y)) => {
+                            self.registers[dst as usize] = VmValue::Bool(*x || *y);
+                        }
+                        _ => return Err("Operasi BitOr memerlukan tipe Int atau Bool".into()),
                     }
                 }
                 Opcode::BitXor(dst, lhs, rhs) => {
@@ -558,7 +668,12 @@ impl VirtualMachine {
                 Opcode::Eq(dst, lhs, rhs) => {
                     let a = &self.registers[lhs as usize];
                     let b = &self.registers[rhs as usize];
-                    self.registers[dst as usize] = VmValue::Bool(a == b);
+                    let is_eq = match (a, b) {
+                        (VmValue::Int(x), VmValue::Float(y)) => (*x as f64) == *y,
+                        (VmValue::Float(x), VmValue::Int(y)) => *x == (*y as f64),
+                        _ => a == b,
+                    };
+                    self.registers[dst as usize] = VmValue::Bool(is_eq);
                 }
                 Opcode::Lt(dst, lhs, rhs) => {
                     let a = &self.registers[lhs as usize];
@@ -566,6 +681,9 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => x < y,
                         (VmValue::Float(x), VmValue::Float(y)) => x < y,
+                        (VmValue::Int(x), VmValue::Float(y)) => (*x as f64) < *y,
+                        (VmValue::Float(x), VmValue::Int(y)) => *x < (*y as f64),
+                        (VmValue::String(x), VmValue::String(y)) => x < y,
                         (VmValue::Decimal(x), VmValue::Decimal(y)) => x < y,
                         _ => false,
                     };
@@ -577,6 +695,9 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => x <= y,
                         (VmValue::Float(x), VmValue::Float(y)) => x <= y,
+                        (VmValue::Int(x), VmValue::Float(y)) => (*x as f64) <= *y,
+                        (VmValue::Float(x), VmValue::Int(y)) => *x <= (*y as f64),
+                        (VmValue::String(x), VmValue::String(y)) => x <= y,
                         (VmValue::Decimal(x), VmValue::Decimal(y)) => x <= y,
                         _ => false,
                     };
@@ -588,6 +709,9 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => x > y,
                         (VmValue::Float(x), VmValue::Float(y)) => x > y,
+                        (VmValue::Int(x), VmValue::Float(y)) => (*x as f64) > *y,
+                        (VmValue::Float(x), VmValue::Int(y)) => *x > (*y as f64),
+                        (VmValue::String(x), VmValue::String(y)) => x > y,
                         (VmValue::Decimal(x), VmValue::Decimal(y)) => x > y,
                         _ => false,
                     };
@@ -599,6 +723,9 @@ impl VirtualMachine {
                     let res = match (a, b) {
                         (VmValue::Int(x), VmValue::Int(y)) => x >= y,
                         (VmValue::Float(x), VmValue::Float(y)) => x >= y,
+                        (VmValue::Int(x), VmValue::Float(y)) => (*x as f64) >= *y,
+                        (VmValue::Float(x), VmValue::Int(y)) => *x >= (*y as f64),
+                        (VmValue::String(x), VmValue::String(y)) => x >= y,
                         (VmValue::Decimal(x), VmValue::Decimal(y)) => x >= y,
                         _ => false,
                     };
@@ -610,32 +737,61 @@ impl VirtualMachine {
                 Opcode::ArrayGet(dst, arr_reg, idx_reg) => {
                     let arr = &self.registers[arr_reg as usize];
                     let idx_val = &self.registers[idx_reg as usize];
-                    if let (VmValue::Array(list), VmValue::Int(idx)) = (arr, idx_val) {
-                        if *idx >= 0 && (*idx as usize) < list.len() {
-                            self.registers[dst as usize] = list[*idx as usize].clone();
-                        } else {
-                            return Err(format!("Index out of bounds: {} (len: {})", idx, list.len()));
+                    match (arr, idx_val) {
+                        (VmValue::Array(list), VmValue::Int(idx)) => {
+                            let actual = if *idx < 0 {
+                                (list.len() as i64) + *idx
+                            } else {
+                                *idx
+                            };
+                            if actual >= 0 && (actual as usize) < list.len() {
+                                self.registers[dst as usize] = list[actual as usize].clone();
+                            } else {
+                                return Err(format!("Index out of bounds: {} (len: {})", idx, list.len()));
+                            }
                         }
-                    } else {
-                        return Err("ArrayGet memerlukan register Array dan index Int".into());
+                        (VmValue::String(s), VmValue::Int(idx)) => {
+                            let chars: Vec<char> = s.chars().collect();
+                            let actual = if *idx < 0 {
+                                (chars.len() as i64) + *idx
+                            } else {
+                                *idx
+                            };
+                            if actual >= 0 && (actual as usize) < chars.len() {
+                                self.registers[dst as usize] =
+                                    VmValue::String(chars[actual as usize].to_string());
+                            } else {
+                                return Err(format!("String index out of bounds: {}", idx));
+                            }
+                        }
+                        (VmValue::Map(m), VmValue::String(k)) => {
+                            self.registers[dst as usize] = m.get(k).cloned().unwrap_or(VmValue::Nil);
+                        }
+                        _ => {
+                            return Err("ArrayGet memerlukan register Array/String/Map dan index yang valid".into());
+                        }
                     }
                 }
                 Opcode::ArraySet(arr_reg, idx_reg, val_reg) => {
                     let val = self.registers[val_reg as usize].clone();
-                    let idx_val = &self.registers[idx_reg as usize];
-                    if let VmValue::Int(idx) = idx_val {
-                        let i = *idx as usize;
-                        if let VmValue::Array(list) = &mut self.registers[arr_reg as usize] {
-                            if i < list.len() {
-                                list[i] = val;
+                    let idx_val = self.registers[idx_reg as usize].clone();
+                    match (&mut self.registers[arr_reg as usize], idx_val) {
+                        (VmValue::Array(list), VmValue::Int(idx)) => {
+                            let actual = if idx < 0 {
+                                (list.len() as i64) + idx
                             } else {
-                                return Err(format!("Index out of bounds saat ArraySet: {}", i));
+                                idx
+                            };
+                            if actual >= 0 && (actual as usize) < list.len() {
+                                list[actual as usize] = val;
+                            } else {
+                                return Err(format!("Index out of bounds saat ArraySet: {}", idx));
                             }
-                        } else {
-                            return Err("ArraySet target bukan Array".into());
                         }
-                    } else {
-                        return Err("ArraySet index harus Int".into());
+                        (VmValue::Map(m), VmValue::String(k)) => {
+                            m.insert(k, val);
+                        }
+                        _ => return Err("ArraySet target bukan Array/Map".into()),
                     }
                 }
                 Opcode::ArrayPush(arr_reg, val_reg) => {
@@ -647,10 +803,17 @@ impl VirtualMachine {
                     }
                 }
                 Opcode::ArrayLen(dst, arr_reg) => {
-                    if let VmValue::Array(list) = &self.registers[arr_reg as usize] {
-                        self.registers[dst as usize] = VmValue::Int(list.len() as i64);
-                    } else {
-                        return Err("ArrayLen target bukan Array".into());
+                    match &self.registers[arr_reg as usize] {
+                        VmValue::Array(list) => {
+                            self.registers[dst as usize] = VmValue::Int(list.len() as i64);
+                        }
+                        VmValue::String(s) => {
+                            self.registers[dst as usize] = VmValue::Int(s.chars().count() as i64);
+                        }
+                        VmValue::Map(m) => {
+                            self.registers[dst as usize] = VmValue::Int(m.len() as i64);
+                        }
+                        _ => return Err("ArrayLen target bukan Array/String/Map".into()),
                     }
                 }
                 Opcode::VecDot(dst, vec_a, vec_b) => {

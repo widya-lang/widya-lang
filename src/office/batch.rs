@@ -4,7 +4,9 @@ use crate::office::converter::DocumentConverter;
 use crate::office::pdf::PdfDocument;
 use crate::office::qrcode::WidyaQrCode;
 use crate::office::zip::ZipPackage;
+use crate::kripto::pqc::{PqcEngine, PqcSignature};
 use serde::{Deserialize, Serialize};
+use sha2::Digest;
 use std::collections::HashMap;
 use std::time::Instant;
 
@@ -233,3 +235,113 @@ impl BatchDocumentEngine {
         (zip_bytes, metrics)
     }
 }
+
+/// Item Dokumen untuk Penandatanganan Massal Kriptografi Pasca-Kuantum
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchPqcDocumentItem {
+    pub id: String,
+    pub title: String,
+    pub content: String,
+}
+
+/// Hasil Penandatanganan PQC Per Dokumen
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchPqcSignedItem {
+    pub id: String,
+    pub title: String,
+    pub signature_hex: String,
+    pub public_key_hex: String,
+    pub salt_hex: String,
+    pub timestamp_ms: u64,
+    pub algorithm: String,
+    pub sha256_hash: String,
+    pub is_valid: bool,
+}
+
+/// Metrik Kinerja Penandatanganan PQC Massal
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BatchPqcSigningMetrics {
+    pub total_documents: usize,
+    pub elapsed_millis: u128,
+    pub signatures_per_second: f64,
+    pub algorithm: String,
+    pub all_verified_valid: bool,
+}
+
+/// Mesin Penandatanganan Pasca-Kuantum Massal (NIST FIPS 204 ML-DSA-87)
+pub struct BatchPqcSigner;
+
+impl BatchPqcSigner {
+    /// Menandatangani daftar dokumen secara massal dengan kunci pasca-kuantum ML-DSA-87
+    pub fn sign_batch(
+        items: &[BatchPqcDocumentItem],
+        seed: &str,
+    ) -> (Vec<BatchPqcSignedItem>, BatchPqcSigningMetrics) {
+        let start = Instant::now();
+        let keypair = PqcEngine::generate_mldsa87_keypair(seed);
+        let mut results = Vec::with_capacity(items.len());
+
+        for item in items {
+            let mut hasher = sha2::Sha256::new();
+            hasher.update(item.content.as_bytes());
+            let sha256_hash = hex::encode(hasher.finalize());
+
+            let sig = PqcEngine::sign_mldsa(item.content.as_bytes(), &keypair.private_key_hex);
+            let is_valid = PqcEngine::verify_mldsa(item.content.as_bytes(), &sig, &keypair.public_key_hex);
+
+            results.push(BatchPqcSignedItem {
+                id: item.id.clone(),
+                title: item.title.clone(),
+                signature_hex: sig.signature_hex,
+                public_key_hex: keypair.public_key_hex.clone(),
+                salt_hex: sig.salt_hex,
+                timestamp_ms: sig.timestamp_ms,
+                algorithm: keypair.algorithm.clone(),
+                sha256_hash,
+                is_valid,
+            });
+        }
+
+        let elapsed = start.elapsed().as_millis();
+        let elapsed_sec = elapsed.max(1) as f64 / 1000.0;
+        let signatures_per_second = items.len() as f64 / elapsed_sec;
+        let all_verified_valid = results.iter().all(|r| r.is_valid);
+
+        let metrics = BatchPqcSigningMetrics {
+            total_documents: items.len(),
+            elapsed_millis: elapsed,
+            signatures_per_second,
+            algorithm: keypair.algorithm,
+            all_verified_valid,
+        };
+
+        (results, metrics)
+    }
+
+    /// Verifikasi integritas tanda tangan seluruh berkas yang telah ditandatangani
+    pub fn verify_batch(
+        items: &[BatchPqcSignedItem],
+        original_contents: &HashMap<String, String>,
+    ) -> (bool, usize, usize) {
+        let mut valid_count = 0;
+        let mut invalid_count = 0;
+
+        for item in items {
+            let content = original_contents.get(&item.id).map(|s| s.as_str()).unwrap_or("");
+            let sig = PqcSignature {
+                algorithm: item.algorithm.clone(),
+                signature_hex: item.signature_hex.clone(),
+                timestamp_ms: item.timestamp_ms,
+                salt_hex: item.salt_hex.clone(),
+            };
+            if PqcEngine::verify_mldsa(content.as_bytes(), &sig, &item.public_key_hex) {
+                valid_count += 1;
+            } else {
+                invalid_count += 1;
+            }
+        }
+
+        (invalid_count == 0, valid_count, invalid_count)
+    }
+}
+

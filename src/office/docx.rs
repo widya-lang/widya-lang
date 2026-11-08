@@ -105,6 +105,7 @@ pub enum DocxElement {
     Diagram { raw_mermaid: String },
     Footnote { label: String, text: String },
     TableOfContents,
+    Equation { latex_math: String, is_block: bool },
 }
 
 /// Dokumen Microsoft Word (.docx / OpenXML Document) Kelas Industri
@@ -306,6 +307,34 @@ impl DocxDocument {
         });
     }
 
+    /// Menambahkan Persamaan Matematika (Office Math OMML / LaTeX Formula)
+    pub fn add_equation(&mut self, latex_math: &str) {
+        self.elements.push(DocxElement::Equation {
+            latex_math: latex_math.to_string(),
+            is_block: true,
+        });
+    }
+
+    /// Menambahkan Persamaan Matematika Sebaris (Inline Math)
+    pub fn add_inline_equation(&mut self, latex_math: &str) {
+        self.elements.push(DocxElement::Equation {
+            latex_math: latex_math.to_string(),
+            is_block: false,
+        });
+    }
+
+    /// Menjalankan Mail Merge Massal Berdasarkan Sekumpulan Record Data
+    pub fn mail_merge_batch(&self, dataset: &[HashMap<String, String>]) -> Vec<DocxDocument> {
+        dataset
+            .iter()
+            .map(|record| {
+                let mut doc = self.clone();
+                doc.apply_template(record);
+                doc
+            })
+            .collect()
+    }
+
     /// Template Engine & Mail Merge: Ganti Placeholder `{{kunci}}` dengan Nilai Nyata
     pub fn apply_template(&mut self, variables: &HashMap<String, String>) {
         for el in &mut self.elements {
@@ -333,6 +362,9 @@ impl DocxDocument {
                 DocxElement::Callout { title, text, .. } => {
                     *title = replace_placeholders(title, variables);
                     *text = replace_placeholders(text, variables);
+                }
+                DocxElement::Equation { latex_math, .. } => {
+                    *latex_math = replace_placeholders(latex_math, variables);
                 }
                 _ => {}
             }
@@ -449,6 +481,9 @@ impl DocxDocument {
                 DocxElement::TableOfContents => {
                     out.push_str("\n[DAFTAR ISI]\n\n");
                 }
+                DocxElement::Equation { latex_math, .. } => {
+                    out.push_str(&format!("\n[EQUATION: {}]\n\n", latex_math));
+                }
             }
         }
         out
@@ -457,7 +492,7 @@ impl DocxDocument {
     /// Menghasilkan XML OpenXML Standar `word/document.xml`
     pub fn generate_document_xml(&self) -> String {
         let mut xml = String::from(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push_str(r#"<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">"#);
+        xml.push_str(r#"<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">"#);
         xml.push_str("<w:body>");
 
         for el in &self.elements {
@@ -626,6 +661,20 @@ impl DocxDocument {
                 }
                 DocxElement::TableOfContents => {
                     xml.push_str(r#"<w:p><w:pPr><w:pStyle w:val="TOCHeading"/><w:jc w:val="left"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:color w:val="0F172A"/></w:rPr><w:t>DAFTAR ISI</w:t></w:r></w:p>"#);
+                }
+                DocxElement::Equation { latex_math, is_block } => {
+                    let omml = latex_to_omml(latex_math);
+                    if *is_block {
+                        xml.push_str(&format!(
+                            r#"<w:p><w:pPr><w:jc w:val="center"/></w:pPr><m:oMathPara><m:oMath>{}</m:oMath></m:oMathPara></w:p>"#,
+                            omml
+                        ));
+                    } else {
+                        xml.push_str(&format!(
+                            r#"<w:p><m:oMath>{}</m:oMath></w:p>"#,
+                            omml
+                        ));
+                    }
                 }
             }
         }
@@ -856,6 +905,19 @@ impl DocxDocument {
                 }
                 DocxElement::TableOfContents => {
                     html.push_str("<div class='toc-box' style='background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin: 20px 0;'><h3 style='margin-top: 0; color: #0f172a;'>Daftar Isi</h3></div>");
+                }
+                DocxElement::Equation { latex_math, is_block } => {
+                    if *is_block {
+                        html.push_str(&format!(
+                            "<div class='docx-equation' style='text-align: center; margin: 20px 0; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;'><span style='font-family: \"Cambria Math\", \"Latin Modern Math\", serif; font-size: 1.25em;'>\\[ {} \\]</span></div>",
+                            html_escape(latex_math)
+                        ));
+                    } else {
+                        html.push_str(&format!(
+                            "<span class='docx-inline-equation' style='font-family: \"Cambria Math\", serif; padding: 0 4px;'>\\({}\\)</span>",
+                            html_escape(latex_math)
+                        ));
+                    }
                 }
             }
         }
@@ -1237,3 +1299,166 @@ fn merge_adjacent_runs(runs: Vec<TextRun>) -> Vec<TextRun> {
     }
     merged
 }
+
+// ============================================================================
+// CONVERTER LATEX / MATH FORMULA KE MICROSOFT WORD OMML
+// ============================================================================
+
+/// Mengonversi formula matematika (sintaks LaTeX) menjadi XML Office Math Markup Language (OMML)
+pub fn latex_to_omml(latex: &str) -> String {
+    let mut omml = String::new();
+    let chars: Vec<char> = latex.trim().chars().collect();
+    let len = chars.len();
+    let mut i = 0;
+
+    while i < len {
+        if chars[i] == '\\' {
+            let mut j = i + 1;
+            while j < len && chars[j].is_alphabetic() {
+                j += 1;
+            }
+            let cmd: String = chars[i + 1..j].iter().collect();
+            i = j;
+
+            match cmd.as_str() {
+                "frac" => {
+                    let (num, next_i) = extract_braced_content(&chars, i);
+                    let (den, final_i) = extract_braced_content(&chars, next_i);
+                    i = final_i;
+                    let num_omml = latex_to_omml(&num);
+                    let den_omml = latex_to_omml(&den);
+                    omml.push_str(&format!(
+                        "<m:f><m:num>{}</m:num><m:den>{}</m:den></m:f>",
+                        num_omml, den_omml
+                    ));
+                }
+                "sqrt" => {
+                    let (deg_opt, next_i) = if i < len && chars[i] == '[' {
+                        extract_bracket_content(&chars, i)
+                    } else {
+                        (None, i)
+                    };
+                    let (radicand, final_i) = extract_braced_content(&chars, next_i);
+                    i = final_i;
+                    let rad_omml = latex_to_omml(&radicand);
+                    if let Some(deg) = deg_opt {
+                        let deg_omml = latex_to_omml(&deg);
+                        omml.push_str(&format!(
+                            "<m:rad><m:deg>{}</m:deg><m:e>{}</m:e></m:rad>",
+                            deg_omml, rad_omml
+                        ));
+                    } else {
+                        omml.push_str(&format!(
+                            "<m:rad><m:radPr><m:degHide/></m:radPr><m:e>{}</m:e></m:rad>",
+                            rad_omml
+                        ));
+                    }
+                }
+                "alpha" => omml.push_str("<m:r><m:t>α</m:t></m:r>"),
+                "beta" => omml.push_str("<m:r><m:t>β</m:t></m:r>"),
+                "gamma" => omml.push_str("<m:r><m:t>γ</m:t></m:r>"),
+                "delta" => omml.push_str("<m:r><m:t>δ</m:t></m:r>"),
+                "pi" => omml.push_str("<m:r><m:t>π</m:t></m:r>"),
+                "sigma" => omml.push_str("<m:r><m:t>σ</m:t></m:r>"),
+                "theta" => omml.push_str("<m:r><m:t>θ</m:t></m:r>"),
+                "lambda" => omml.push_str("<m:r><m:t>λ</m:t></m:r>"),
+                "mu" => omml.push_str("<m:r><m:t>μ</m:t></m:r>"),
+                "omega" => omml.push_str("<m:r><m:t>ω</m:t></m:r>"),
+                "Delta" => omml.push_str("<m:r><m:t>Δ</m:t></m:r>"),
+                "sum" => omml.push_str("<m:r><m:t>∑</m:t></m:r>"),
+                "int" => omml.push_str("<m:r><m:t>∫</m:t></m:r>"),
+                "infty" => omml.push_str("<m:r><m:t>∞</m:t></m:r>"),
+                "times" => omml.push_str("<m:r><m:t>×</m:t></m:r>"),
+                "div" => omml.push_str("<m:r><m:t>÷</m:t></m:r>"),
+                "pm" => omml.push_str("<m:r><m:t>±</m:t></m:r>"),
+                "leq" => omml.push_str("<m:r><m:t>≤</m:t></m:r>"),
+                "geq" => omml.push_str("<m:r><m:t>≥</m:t></m:r>"),
+                "neq" => omml.push_str("<m:r><m:t>≠</m:t></m:r>"),
+                "approx" => omml.push_str("<m:r><m:t>≈</m:t></m:r>"),
+                "cdot" => omml.push_str("<m:r><m:t>·</m:t></m:r>"),
+                _ => {
+                    omml.push_str(&format!("<m:r><m:t>{}</m:t></m:r>", html_escape(&cmd)));
+                }
+            }
+        } else if chars[i] == '^' {
+            i += 1;
+            let (sup_val, next_i) = if i < len && chars[i] == '{' {
+                extract_braced_content(&chars, i)
+            } else if i < len {
+                (chars[i].to_string(), i + 1)
+            } else {
+                (String::new(), i)
+            };
+            i = next_i;
+            let sup_omml = latex_to_omml(&sup_val);
+            omml.push_str(&format!("<m:sSup><m:e></m:e><m:sup>{}</m:sup></m:sSup>", sup_omml));
+        } else if chars[i] == '_' {
+            i += 1;
+            let (sub_val, next_i) = if i < len && chars[i] == '{' {
+                extract_braced_content(&chars, i)
+            } else if i < len {
+                (chars[i].to_string(), i + 1)
+            } else {
+                (String::new(), i)
+            };
+            i = next_i;
+            let sub_omml = latex_to_omml(&sub_val);
+            omml.push_str(&format!("<m:sSub><m:e></m:e><m:sub>{}</m:sub></m:sSub>", sub_omml));
+        } else if chars[i] == ' ' || chars[i] == '\t' || chars[i] == '\n' {
+            i += 1;
+        } else {
+            let ch = chars[i];
+            omml.push_str(&format!("<m:r><m:t>{}</m:t></m:r>", html_escape(&ch.to_string())));
+            i += 1;
+        }
+    }
+
+    omml
+}
+
+fn extract_braced_content(chars: &[char], start_idx: usize) -> (String, usize) {
+    let mut i = start_idx;
+    while i < chars.len() && chars[i] != '{' {
+        i += 1;
+    }
+    if i >= chars.len() {
+        return (String::new(), i);
+    }
+    i += 1;
+    let content_start = i;
+    let mut depth = 1;
+    while i < chars.len() && depth > 0 {
+        if chars[i] == '{' {
+            depth += 1;
+        } else if chars[i] == '}' {
+            depth -= 1;
+        }
+        if depth > 0 {
+            i += 1;
+        }
+    }
+    let content: String = chars[content_start..i].iter().collect();
+    if i < chars.len() && chars[i] == '}' {
+        i += 1;
+    }
+    (content, i)
+}
+
+fn extract_bracket_content(chars: &[char], start_idx: usize) -> (Option<String>, usize) {
+    let mut i = start_idx;
+    if i < chars.len() && chars[i] == '[' {
+        i += 1;
+        let start = i;
+        while i < chars.len() && chars[i] != ']' {
+            i += 1;
+        }
+        let content: String = chars[start..i].iter().collect();
+        if i < chars.len() && chars[i] == ']' {
+            i += 1;
+        }
+        (Some(content), i)
+    } else {
+        (None, i)
+    }
+}
+

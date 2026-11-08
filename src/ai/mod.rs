@@ -51,4 +51,13 @@ pub use pure_weights::{
     PureGgufEngine, PureGgufModel, PureGgufTensor, PureGgufType, PureGgufValue,
     PureSafeTensorsEngine, SafeTensorRecord, SafeTensorsModel,
 };
+pub mod mcp;
+pub use mcp::{
+    McpServer, McpClient, McpRequest, McpResponse, McpError,
+    McpToolDefinition, McpToolCallResult, McpToolContent,
+    McpResourceDefinition, McpResourceContent,
+    McpPromptDefinition, McpPromptArgument, McpPromptMessage,
+    MCP_PROTOCOL_VERSION,
+};
+
 

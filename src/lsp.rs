@@ -11,13 +11,13 @@ pub struct WidyaLsp {
     interpreter: Interpreter,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Position {
     pub line: usize,
     pub character: usize,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Range {
     pub start: Position,
     pub end: Position,
@@ -100,6 +100,30 @@ pub enum SymbolKind {
     Function = 12,
     Variable = 13,
     Constant = 14,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum InlayHintKind {
+    Type = 1,
+    Parameter = 2,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct InlayHint {
+    pub position: Position,
+    pub label: String,
+    pub kind: InlayHintKind,
+    pub padding_left: bool,
+    pub padding_right: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SemanticToken {
+    pub line: usize,
+    pub start_char: usize,
+    pub length: usize,
+    pub token_type: String,
+    pub token_modifiers: Vec<String>,
 }
 
 impl WidyaLsp {
@@ -434,17 +458,111 @@ impl WidyaLsp {
             _ => (1, 1, format!("{}", error)),
         }
     }
-    
+
+    pub fn get_inlay_hints(&self, source: &str) -> Vec<InlayHint> {
+        let mut hints = Vec::new();
+        for (idx, line) in source.lines().enumerate() {
+            let line_num = idx + 1;
+            let trimmed = line.trim();
+            if (trimmed.starts_with("misal ") || trimmed.starts_with("let ")) && trimmed.contains(" = ") {
+                let prefix = if trimmed.starts_with("misal ") { "misal " } else { "let " };
+                let after = &trimmed[prefix.len()..];
+                let var_name = after.split('=').next().unwrap_or("").trim();
+                let rhs = after.split('=').nth(1).unwrap_or("").trim();
+
+                let inferred_type = if rhs.starts_with('"') {
+                    ": String"
+                } else if rhs == "true" || rhs == "false" || rhs == "benar" || rhs == "salah" {
+                    ": Bool"
+                } else if rhs.contains('.') && rhs.chars().all(|c| c.is_digit(10) || c == '.') {
+                    ": Float"
+                } else if rhs.chars().all(|c| c.is_digit(10)) {
+                    ": Int"
+                } else if rhs.starts_with('[') {
+                    ": Larik"
+                } else {
+                    ": Any"
+                };
+
+                if let Some(col) = line.find(var_name) {
+                    hints.push(InlayHint {
+                        position: Position {
+                            line: line_num,
+                            character: col + var_name.len(),
+                        },
+                        label: inferred_type.to_string(),
+                        kind: InlayHintKind::Type,
+                        padding_left: true,
+                        padding_right: false,
+                    });
+                }
+            }
+        }
+        hints
+    }
+
+    pub fn get_semantic_tokens(&self, source: &str) -> Vec<SemanticToken> {
+        let mut tokens = Vec::new();
+        let keywords = [
+            "fungsi", "fn", "misal", "let", "tetap", "const", "jika", "if", "lainnya",
+            "else", "selama", "while", "untuk", "for", "kembalikan", "return", "struktur",
+            "struct", "cocokkan", "match", "tidak_aman", "unsafe",
+        ];
+
+        for (idx, line) in source.lines().enumerate() {
+            let line_num = idx + 1;
+            let words: Vec<&str> = line
+                .split(|c: char| !c.is_alphanumeric() && c != '_')
+                .filter(|s| !s.is_empty())
+                .collect();
+            let mut search_from = 0;
+
+            for clean_word in words {
+                if let Some(col) = line[search_from..].find(clean_word) {
+                    let actual_col = search_from + col;
+                    search_from = actual_col + clean_word.len();
+
+                    if keywords.contains(&clean_word) {
+                        tokens.push(SemanticToken {
+                            line: line_num,
+                            start_char: actual_col,
+                            length: clean_word.len(),
+                            token_type: "keyword".to_string(),
+                            token_modifiers: vec![],
+                        });
+                    } else if clean_word.chars().next().map_or(false, |c| c.is_uppercase()) {
+                        tokens.push(SemanticToken {
+                            line: line_num,
+                            start_char: actual_col,
+                            length: clean_word.len(),
+                            token_type: "type".to_string(),
+                            token_modifiers: vec![],
+                        });
+                    }
+                }
+            }
+        }
+        tokens
+    }
+
     pub fn to_json(&self) -> serde_json::Value {
         json!({
             "name": "widya-language-server",
-            "version": "0.1.0",
+            "version": "2.6.0-rust-parity",
             "capabilities": {
                 "hoverProvider": true,
                 "completionProvider": true,
                 "definitionProvider": true,
                 "referencesProvider": true,
-                "documentSymbolProvider": true
+                "documentSymbolProvider": true,
+                "inlayHintProvider": true,
+                "semanticTokensProvider": {
+                    "full": true,
+                    "legend": {
+                        "tokenTypes": ["keyword", "type", "function", "variable", "parameter"],
+                        "tokenModifiers": ["readonly", "mutable"]
+                    }
+                }
             }
         })
     }
