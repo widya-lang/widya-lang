@@ -120,3 +120,4 @@ impor "@widya/test" sebagai test;
 - `test.tegaskan_tidak_sama(t, aktual, tidak_diharapkan, pesan_galat)`: Menegaskan bahwa nilai aktual berbeda dengan nilai yang dilarang.
 - `test.tegaskan_benar(t, kondisi, pesan_galat)`: Menegaskan bahwa suatu ekspresi bernilai `benar` (`true`).
 - `test.tegaskan_salah(t, kondisi, pesan_galat)`: Menegaskan bahwa suatu ekspresi bernilai `salah` (`false`).
+
