@@ -91,3 +91,7 @@ package.json
 package-lock.json
 
 /dist/
+
+/projects/
+run_office.bat
+run_office.ps1

@@ -63,23 +63,3 @@ unused_imports = "allow"
 [[bin]]
 name = "widya"
 path = "src/main.rs"
-
-[[bin]]
-name = "widya_office_desktop"
-path = "projects/widya_office_desktop/src/main.rs"
-
-[[bin]]
-name = "widyawriter"
-path = "projects/widya_office_desktop/src/bin/widyawriter.rs"
-
-[[bin]]
-name = "widyacalc"
-path = "projects/widya_office_desktop/src/bin/widyacalc.rs"
-
-[[bin]]
-name = "widyaimpress"
-path = "projects/widya_office_desktop/src/bin/widyaimpress.rs"
-
-[[bin]]
-name = "widyapdf"
-path = "projects/widya_office_desktop/src/bin/widyapdf.rs"
