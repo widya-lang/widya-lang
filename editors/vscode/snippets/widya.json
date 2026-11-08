@@ -201,5 +201,62 @@
       "utama();"
     ],
     "description": "Template inisialisasi aplikasi desktop WidyaDesktop"
+  },
+  "Tensor NumPy Import": {
+    "prefix": "numpy",
+    "body": [
+      "impor \"@widya/tensor\" sebagai np;",
+      "misal t = np.tensor_buat([${1:1.0, 2.0, 3.0}], [${2:1, 3}]);",
+      "${0}"
+    ],
+    "description": "Impor pustaka tensor linier aljabar setara NumPy"
+  },
+  "DataFrame Pandas Import": {
+    "prefix": "pandas",
+    "body": [
+      "impor \"@widya/dataframe\" sebagai pd;",
+      "misal df = pd.df_buat([\"${1:id}\", \"${2:nama}\"], [",
+      "\t{ \"${1:id}\": 1, \"${2:nama}\": \"${3:Contoh}\" }",
+      "]);",
+      "${0}"
+    ],
+    "description": "Impor pustaka data tabular setara Pandas"
+  },
+  "Web REST Router": {
+    "prefix": "express",
+    "body": [
+      "impor \"@widya/web\" sebagai web;",
+      "misal router = web.buat_router();",
+      "web.rute_get(router, \"/${1:api}\", fungsi(req) {",
+      "\tkembalikan web.respons_json(200, { \"status\": \"sukses\" });",
+      "});",
+      "${0}"
+    ],
+    "description": "Impor pustaka REST router setara Express/FastAPI"
+  },
+  "AI Autograd PyTorch": {
+    "prefix": "torch",
+    "body": [
+      "impor \"@widya/ai\" sebagai torch;",
+      "misal layer = torch.lapisan_linear(${1:1.0}, ${2:0.0});",
+      "misal x = torch.variabel(${3:2.0}, false);",
+      "misal y = torch.linear_maju(layer, x);",
+      "${0}"
+    ],
+    "description": "Impor pustaka autograd AI & neural network setara PyTorch"
+  },
+  "Test Runner Suite": {
+    "prefix": "testsuite",
+    "body": [
+      "impor \"@widya/test\" sebagai test;",
+      "misal pelari = test.uji_buat_pelari();",
+      "fungsi uji_${1:fitur}(t) {",
+      "\ttest.tegaskan_sama(t, ${2:1 + 1}, ${3:2}, \"${4:Penjumlahan harus benar}\");",
+      "}",
+      "test.uji_tambah(pelari, \"${5:Uji Fitur}\", uji_${1:fitur});",
+      "test.uji_jalankan(pelari);",
+      "${0}"
+    ],
+    "description": "Scaffold unit test suite setara Jest/Pytest"
   }
 }

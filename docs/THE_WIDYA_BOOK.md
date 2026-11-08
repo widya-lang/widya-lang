@@ -1,7 +1,7 @@
 # 📖 The Widya Book: Panduan Definitif Bahasa Pemrograman Berdaulat
 
-> **Widya-Lang v2.6.0 (Enterprise & Sovereign Edition)**  
-> *Bahasa Pemrograman Generasi Baru Berkeamanan Memori Formal, Berkemandirian Penuh Tanpa Ketergantungan Eksternal, dan Dirancang untuk Komputasi Misi-Kritis.*
+> **Widya-Lang v0.1.0 (Enterprise & Sovereign Edition)**  
+> *Bahasa Pemrograman Generasi Baru Berkeamanan Memori Formal, Berkemandirian Penuh Tanpa Ketergantungan Eksternal, Self-Hosting 100% Determinisik, dan Pustaka Standar Paritas Industri.*
 
 ---
 
@@ -13,7 +13,10 @@
 5. [Kriptografi Pertahanan & Hardware Enclave: PKCS#11 & Post-Quantum TLS 1.3](#5-kriptografi-pertahanan--hardware-enclave-pkcs11--post-quantum-tls-13)
 6. [Native AI Sovereign Engine & Model Context Protocol (MCP)](#6-native-ai-sovereign-engine--model-context-protocol-mcp)
 7. [Enterprise Observability & WidyaBase Connection Pooling](#7-enterprise-observability--widyabase-connection-pooling)
-8. [Perintah Antarmuka Terminal (CLI Cheatsheet)](#8-perintah-antarmuka-terminal-cli-cheatsheet)
+8. [Arsitektur Kompiler Mandiri (Self-Hosting Compiler Stage-0 → Stage-1 → Stage-2)](#8-arsitektur-kompiler-mandiri-self-hosting-compiler)
+9. [Ekosistem Pustaka Standar Resmi WPM (@widya/*)](#9-ekosistem-pustaka-standar-resmi-wpm-widya)
+10. [Pelari Uji Terintegrasi (Native Test Runner: widya test)](#10-pelari-uji-terintegrasi-native-test-runner-widya-test)
+11. [Perintah Antarmuka Terminal (CLI Cheatsheet)](#11-perintah-antarmuka-terminal-cli-cheatsheet)
 
 ---
 
@@ -21,7 +24,7 @@
 Widya-Lang lahir untuk menjawab tantangan keamanan nasional dan ketahanan infrastruktur komputasi modern. Sebagian besar bahasa kompilasi bergantung pada rantai pasok compiler raksasa (GCC, LLVM, Clang) dan ribuan *crates/packages* pihak ketiga yang rentan terhadap serangan *supply-chain injection*.
 
 Widya-Lang mengusung prinsip **Sovereign Stack (Zero External Dependencies)**:
-- **Kompiler Mandiri:** Mengemisikan biner Linux ELF-64 langsung ke tingkat instruksi mesin tanpa memerlukan `gcc` atau `ld`.
+- **Kompiler Mandiri (Self-Hosting):** Kode sumber ditulis dalam Widya murni (`.wya` / `.widya`) dan mampu mengompilasi dirinya sendiri secara deterministik bit-for-bit dengan penandatanganan kurva eliptis Ed25519.
 - **Format Pertukaran Mandiri:** Parser JSON, CSV, SafeTensors, dan GGUF murni tanpa memanggil library C/C++.
 - **Bare-Metal & Unikernel Native:** Mendukung boot langsung pada hypervisor modern (AWS Firecracker, QEMU, Cloud-Hypervisor) dengan *boot protocol direct-kernel* dan *multiboot2*.
 
@@ -79,12 +82,75 @@ Widya-Lang mengintegrasikan agen AI otonom langsung ke dalam runtime:
 
 ---
 
-## 8. Perintah Antarmuka Terminal (CLI Cheatsheet)
+## 8. Arsitektur Kompiler Mandiri (Self-Hosting Compiler)
+Widya-Lang membuktikan kemandirian teknologi penuh (*full technological sovereignty*) melalui siklus kompilasi mandiri tiga tahap:
+
+```
+[Kode Sumber Murni Widya (.wya/.widya)]
+            │
+            ▼ (Kompilasi via Stage-0 / Rust Host)
+      [Stage-1 C Biner] ──► SHA-256 Hash₁
+            │
+            ▼ (Kompilasi Ulang via Stage-1)
+      [Stage-2 C Biner] ──► SHA-256 Hash₂
+            │
+            ▼
+    [Perbandingan Deterministik: Hash₁ == Hash₂] ──► [Ed25519 Cryptographic Signature]
+```
+
+### 7 Modul Inti Kompiler Murni:
+1. `token.wya`: Definisi 50+ token leksikal (kata kunci, operator, literal, tanda baca).
+2. `lexer.wya`: Mesin pemindai kode sumber berkecepatan tinggi dengan pelacakan baris/kolom.
+3. `ast.wya`: Pohon Sintaks Abstrak (*Abstract Syntax Tree*) untuk ekspresi dan pernyataan.
+4. `parser.wya`: Parser Recursive Descent dengan penanganan presedensi operator Pratt.
+5. `typesystem.wya`: Inferensi tipe Hindley-Milner dan pemeriksa kompatibilitas statis.
+6. `codegen.wya`: Generator kode C99 ANSI murni tanpa ketergantungan runtime eksternal.
+7. `main.wya`: Driver CLI kompiler mandiri (*self-hosting entrypoint*).
+
+---
+
+## 9. Ekosistem Pustaka Standar Resmi WPM (@widya/*)
+Ekosistem resmi WPM (*Widya Package Manager*) menyediakan paritas fungsional penuh terhadap pustaka terpopuler di dunia Python dan JavaScript:
+
+| Paket Resmi | Paritas Ekosistem | Deskripsi Fungsional |
+| :--- | :--- | :--- |
+| **`@widya/tensor`** | NumPy (Python) | Larik N-dimensi, aljabar linier, perkalian matriks (*matmul*), dot product, transpose, matriks identitas, dan agregasi statistik. |
+| **`@widya/dataframe`** | Pandas (Python) | Struktur data tabular kolumnar, filter ekspresi (*saring*), seleksi kolom (*pilih_kolom*), ringkasan statistik (*ringkasan*), dan parser CSV. |
+| **`@widya/web`** | Express / FastAPI | RESTful web router berbasis Radix-tree, perantaian middleware asinkron, dan abstraksi respons JSON / teks. |
+| **`@widya/ai`** | PyTorch Autograd | Mesin autograd diferensiasi otomatis reverse-mode berbasis DAG topologis, lapisan linear, aktivasi ReLU, MSE Loss, dan SGD optimizer. |
+| **`@widya/sql`** | SQLite3 / Prisma | Mesin basis data relasional in-memory dengan query builder CRUD, filter kondisi fleksibel, dan integritas transaksi. |
+| **`@widya/test`** | Jest / Pytest | Kerangka kerja pengujian mandiri (*unit test suite runner*), assertion lengkap (*tegaskan_sama*, *tegaskan_benar*), dan laporan berperingkat. |
+
+---
+
+## 10. Pelari Uji Terintegrasi (Native Test Runner: `widya test`)
+Perintah bawaan `widya test` menyediakan kapabilitas *auto-discovery* cerdas:
+- Secara otomatis memindai seluruh direktori proyek (`packages/*/tests/`, `tests/`, `contoh/`).
+- Mendukung berkas berekstensi kanonikal ganda `.wya` dan `.widya`.
+- Mendukung eksekusi fungsi beranotasi `#[uji]` / `#[test]` dan berkas uji berbasis `@widya/test`.
+- Menampilkan ringkasan visual berkecepatan tinggi (*sub-100ms execution*).
+
+---
+
+## 11. Perintah Antarmuka Terminal (CLI Cheatsheet)
 
 ```bash
-# Menjalankan atau mengompilasi berkas Widya
+# Informasi Versi
+widya --version
+
+# Menjalankan Skrip Sumber Widya
 widya jalankan skrip.wya
+widya run skrip.wya
+
+# Menjalankan Seluruh Unit Test Suite (Auto-Discovery)
+widya test
+widya test packages/widya-ai/tests/ai_test.wya
+
+# Kompilasi Biner Mandiri
 widya build skrip.wya -o biner_mandiri
+
+# Verifikasi Kompiler Mandiri (Self-Hosting Bootstrap & Ed25519)
+widya bootstrap
 
 # Model Context Protocol (MCP Server untuk Cursor / Claude Desktop)
 widya mcp serve --transport stdio

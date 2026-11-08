@@ -71,8 +71,12 @@
     "builtins": {
       "patterns": [
         {
+          "name": "support.class.library.widya",
+          "match": "\"@widya/(tensor|dataframe|web|ai|sql|test)\""
+        },
+        {
           "name": "support.function.builtin.widya",
-          "match": "\\b(cetak|pastikan|ke_teks|ke_angka|panjang|tipe_dari|buka_basis_data|eksekusi_kueri|kueri|mulai_transaksi|BuatAplikasiDesktop|JendelaDesktop|MenuBilah|BakiSistem|SinyalReaktif|BukaDialogPilihBerkas|BukaDialogSimpanBerkas|TampilkanKotakPesan|AuditKeamananAplikasi|baca_berkas|tulis_berkas|hapus_berkas)\\b"
+          "match": "\\b(cetak|pastikan|ke_teks|ke_angka|panjang|tipe_dari|buka_basis_data|eksekusi_kueri|kueri|mulai_transaksi|BuatAplikasiDesktop|JendelaDesktop|MenuBilah|BakiSistem|SinyalReaktif|BukaDialogPilihBerkas|BukaDialogSimpanBerkas|TampilkanKotakPesan|AuditKeamananAplikasi|baca_berkas|tulis_berkas|hapus_berkas|tensor_buat|matriks_buat|df_buat|buat_router|gunakan_middleware|respons_json|respons_teks|tangani_permintaan|variabel|lapisan_linear|linear_maju|relu|mse_loss|sgd_langkah|mundur|db_buka|db_buat_tabel|db_sisip|db_pilih|uji_buat_pelari|uji_tambah|uji_jalankan|tegaskan_sama|tegaskan_tidak_sama|tegaskan_benar|tegaskan_salah)\\b"
         }
       ]
     },

@@ -89,3 +89,5 @@ scratch_*
 wordcraft_*
 package.json
 package-lock.json
+
+/dist/

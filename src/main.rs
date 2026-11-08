@@ -131,15 +131,15 @@ enum Commands {
         #[arg(value_name = "NAMA_PAKET")]
         paket: String,
     },
-    /// Menjalankan suite unit test bertanda #[uji] (Integrated Test Runner)
+    /// Menjalankan suite unit test bertanda #[uji] atau berkas uji standar (Integrated Test Runner)
     Uji {
         #[arg(value_name = "BERKAS")]
-        berkas: PathBuf,
+        berkas: Option<PathBuf>,
     },
     /// Alias Uji: test
     Test {
         #[arg(value_name = "BERKAS")]
-        berkas: PathBuf,
+        berkas: Option<PathBuf>,
     },
     /// Memformat kode sumber Widya sesuai standar indentasi & gaya resmi (Formatter)
     Format {
@@ -761,7 +761,8 @@ fn run_main() {
             widya::pm::hapus_paket(&paket);
         }
         Some(Commands::Uji { berkas }) | Some(Commands::Test { berkas }) => {
-            widya::tools::test_runner::jalankan_test_suite(&berkas);
+            let target_path = berkas.unwrap_or_else(|| PathBuf::from("."));
+            widya::tools::test_runner::jalankan_test_suite(&target_path);
         }
         Some(Commands::Format { berkas, tulis, periksa, style }) => {
             let keyword_style = style.as_deref().and_then(|s| s.parse::<widya::tools::formatter::KeywordStyle>().ok());
