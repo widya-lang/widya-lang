@@ -95,3 +95,15 @@ package-lock.json
 /projects/
 run_office.bat
 run_office.ps1
+
+# ===== Ekosistem Dokumen & Tutorial (Lokal Saja) =====
+/docs/tutorials/ekosistem_widyabase/
+/docs/tutorials/ekosistem_widyadesktop/
+/docs/tutorials/ekosistem_widyamobile/
+/docs/tutorials/ekosistem_widyaweb/
+/docs/tutorials/pptx/ekosistem_*/
+/docs/tutorials/03_BUKU_WIDYABASE.*
+/docs/tutorials/04_BUKU_WIDYAWEB.*
+/docs/tutorials/05_BUKU_WIDYADESKTOP.*
+/docs/tutorials/06_BUKU_WIDYAMOBILE.*
+/docs/tutorials/03_TUTORIAL_LEVEL_EKOSISTEM.*
