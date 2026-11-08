@@ -429,7 +429,7 @@ impl OdfMetaBuilder {
     <dc:title>{}</dc:title>
     <dc:creator>{}</dc:creator>
     <dc:date>2026-10-10T12:00:00Z</dc:date>
-    <meta:generator>WidyaOffice Sovereign Suite v2.6.0</meta:generator>
+    <meta:generator>WidyaOffice Sovereign Suite v0.1.0</meta:generator>
   </office:meta>
 </office:document-meta>"#,
             escape_xml(title), escape_xml(author)

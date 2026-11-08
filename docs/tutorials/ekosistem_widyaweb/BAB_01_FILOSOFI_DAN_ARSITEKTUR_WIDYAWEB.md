@@ -88,7 +88,7 @@ modul aplikasi_portal_berita {
 
         // 3. Registrasi Rute Status Kesehatan Sistem (Healthcheck)
         server.rute_get("/api/v1/kesehatan", |_permintaan: PermintaanHttp| -> ResponHttp {
-            biar status_json = "{\"status\": \"SEHAT\", \"mesin\": \"WidyaWeb Core v2.5.0\", \"memori_mb\": 18.4}";
+            biar status_json = "{\"status\": \"SEHAT\", \"mesin\": \"WidyaWeb Core v0.1.0\", \"memori_mb\": 18.4}";
             kembalikan ResponHttp::ok(KontenTipe::Json, status_json);
         });
 

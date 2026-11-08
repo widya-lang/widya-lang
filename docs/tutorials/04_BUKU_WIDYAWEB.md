@@ -134,7 +134,7 @@ modul aplikasi_portal_berita {
 
         // 3. Registrasi Rute Status Kesehatan Sistem (Healthcheck)
         server.rute_get("/api/v1/kesehatan", |_permintaan: PermintaanHttp| -> ResponHttp {
-            biar status_json = "{\"status\": \"SEHAT\", \"mesin\": \"WidyaWeb Core v2.5.0\", \"memori_mb\": 18.4}";
+            biar status_json = "{\"status\": \"SEHAT\", \"mesin\": \"WidyaWeb Core v0.1.0\", \"memori_mb\": 18.4}";
             kembalikan ResponHttp::ok(KontenTipe::Json, status_json);
         });
 
@@ -483,7 +483,7 @@ modul peladen_http_native {
                 biar payload = "{\"judul\": \"Kedaulatan Digital Dideklarasikan\", \"waktu\": \"2026-10-20T08:00:00Z\"}";
                 kembalikan ResponHttp::buat(StatusHttp::Ok)
                     .tambah_header("Content-Type", "application/json")
-                    .tambah_header("Server", "WidyaWeb-Native/2.5.0")
+                    .tambah_header("Server", "WidyaWeb-Native/0.1.0")
                     .isi_badan(payload);
             }
 

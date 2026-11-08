@@ -5439,7 +5439,7 @@ mod tests {
     fn test_desktop_automated_production_packager() {
         let config = PackageBuildConfig {
             app_name: "WidyaPOS".to_string(),
-            version: "2.5.0".to_string(),
+            version: "0.1.0".to_string(),
             publisher: "PT Widya Kedaulatan Digital".to_string(),
             target_dir: PathBuf::from("."),
             output_dir: PathBuf::from("dist"),

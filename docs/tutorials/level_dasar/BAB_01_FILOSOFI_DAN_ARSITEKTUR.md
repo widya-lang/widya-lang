@@ -101,7 +101,7 @@ Contoh kedua mendemonstrasikan pencetakan informasi spesifikasi lingkungan kerja
 
 fungsi utama() {
     tetap nama_sistem = "Widya Runtime Engine";
-    tetap versi = "2.6.0 Stable";
+    tetap versi = "0.1.0 Stable";
     tetap arsitektur = "x86_64 / ARM64 Universal";
     
     cetak("Informasi Perangkat Lunak:");

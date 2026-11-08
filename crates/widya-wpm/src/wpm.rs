@@ -988,7 +988,7 @@ impl WpmRegistryServer {
         add_default("widya-ai", "Mesin komputasi tensor, autograd diferensial otomatis, dan jembatan ekosistem AI", "0.1.0", 6450, vec!["ai", "autograd", "tensor", "machine-learning"]);
         add_default("widya-sql", "Driver basis data & ORM berdaulat WidyaBase (B+Tree, WAL ACID, Vector HNSW)", "0.1.0", 8120, vec!["database", "sql", "widyabase", "orm"]);
         add_default("widya-test", "Framework penegasan (assertion) dan pelari uji (test runner) setara Jest / Pytest", "0.1.0", 7200, vec!["test", "jest", "pytest", "testing"]);
-        add_default("widya-office", "Kompilator dokumen legal ISO 32000-1 PDF, Word DOCX OpenXML, Excel XLSX & TTE", "2.5.0", 9430, vec!["office", "pdf", "docx", "iso32000"]);
+        add_default("widya-office", "Kompilator dokumen legal ISO 32000-1 PDF, Word DOCX OpenXML, Excel XLSX & TTE", "0.1.0", 9430, vec!["office", "pdf", "docx", "iso32000"]);
         add_default("widya-pqc", "Kriptografi pasca-kuantum NIST FIPS 203 (ML-KEM), FIPS 204 (ML-DSA) & ZKP", "1.0.0", 4890, vec!["pqc", "quantum", "fips203", "zkp"]);
         add_default("widya-bifast", "Gateway switching transaksi finansial nasional BI-FAST ISO 20022 & QRIS", "1.0.0", 7340, vec!["fintech", "bifast", "iso20022", "qris"]);
         add_default("widya-arkas", "Tata kelola anggaran pendidikan BOS & BKU berantai audit anti-fraud BPK", "1.0.0", 5620, vec!["edutech", "arkas", "bos", "kemdikbud"]);

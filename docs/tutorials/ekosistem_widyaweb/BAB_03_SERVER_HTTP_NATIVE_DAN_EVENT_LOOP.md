@@ -67,7 +67,7 @@ modul peladen_http_native {
                 biar payload = "{\"judul\": \"Kedaulatan Digital Dideklarasikan\", \"waktu\": \"2026-10-20T08:00:00Z\"}";
                 kembalikan ResponHttp::buat(StatusHttp::Ok)
                     .tambah_header("Content-Type", "application/json")
-                    .tambah_header("Server", "WidyaWeb-Native/2.5.0")
+                    .tambah_header("Server", "WidyaWeb-Native/0.1.0")
                     .isi_badan(payload);
             }
 

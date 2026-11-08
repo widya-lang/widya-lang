@@ -574,7 +574,7 @@ fn builtin_periksa_ekosistem_tooling(_args: &[Value], _span: &Span) -> Result<Va
     let mut map = HashMap::new();
     map.insert(
         "lsp_server".to_string(),
-        Value::String("Widya LSP Server v2.5.0 (Aktif di port stdio/tcp)".to_string()),
+        Value::String("Widya LSP Server v0.1.0 (Aktif di port stdio/tcp)".to_string()),
     );
     map.insert(
         "formatter".to_string(),

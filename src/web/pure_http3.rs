@@ -830,7 +830,7 @@ impl PureHttp3Client {
             H3Header::new(":path", path),
             H3Header::new(":scheme", "https"),
             H3Header::new(":authority", &server_addr.to_string()),
-            H3Header::new("user-agent", "Widya-Pure-HTTP3/2.6.0"),
+            H3Header::new("user-agent", "Widya-Pure-HTTP3/0.1.0"),
         ];
 
         let mut h3_payload = Vec::new();

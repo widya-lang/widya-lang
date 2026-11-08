@@ -77,3 +77,4 @@ impor "@widya/test" sebagai test;
 ---
 
 *Widya-Lang Foundation — Dirancang untuk Kedaulatan Digital & Komputasi Masa Depan.*
+

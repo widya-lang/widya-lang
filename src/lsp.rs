@@ -548,7 +548,7 @@ impl WidyaLsp {
     pub fn to_json(&self) -> serde_json::Value {
         json!({
             "name": "widya-language-server",
-            "version": "2.6.0-rust-parity",
+            "version": "0.1.0",
             "capabilities": {
                 "hoverProvider": true,
                 "completionProvider": true,

@@ -413,7 +413,7 @@ impl McpClient {
                 "capabilities": {},
                 "clientInfo": {
                     "name": "Widya-Agentic-Client",
-                    "version": "2.6.0"
+                    "version": "0.1.0"
                 }
             })),
         };
@@ -503,7 +503,7 @@ mod tests {
 
     #[test]
     fn test_mcp_server_initialize_and_ping() {
-        let server = McpServer::new("widya-sovereign-mcp", "2.6.0");
+        let server = McpServer::new("widya-sovereign-mcp", "0.1.0");
 
         // 1. Initialize Handshake
         let init_req = r#"{

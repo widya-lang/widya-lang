@@ -98,7 +98,7 @@ modul mesin_broker {
 
         fungsi bangun(simpul: Teks) -> PengelolaBroker {
             cetak("==================================================================");
-            cetak("  MEMULAI WIDYA-BROKER DISTRIBUTED MESSAGE ENGINE v2.6           ");
+            cetak("  MEMULAI WIDYA-BROKER DISTRIBUTED MESSAGE ENGINE v0.1.0           ");
             cetak("==================================================================");
             cetak("[BROKER INIT] Menginisialisasi Commit-Log Storage Engine pada Simpul:", simpul);
 

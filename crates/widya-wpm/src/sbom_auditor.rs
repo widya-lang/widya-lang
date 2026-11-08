@@ -265,7 +265,7 @@ impl SbomGenerator {
                 tools: vec![CycloneTool {
                     vendor: "Widya Sovereign Foundation".to_string(),
                     name: "widya-wpm".to_string(),
-                    version: "2.6.0".to_string(),
+                    version: "0.1.0".to_string(),
                 }],
                 component: CycloneRootComponent {
                     component_type: "application".to_string(),
@@ -356,7 +356,7 @@ impl SbomGenerator {
             creation_info: SpdxCreationInfo {
                 created: now,
                 creators: vec![
-                    "Tool: Widya-WPM-2.6.0".to_string(),
+                    "Tool: Widya-WPM-0.1.0".to_string(),
                     "Organization: Widya Sovereign Foundation".to_string(),
                 ],
             },
@@ -633,7 +633,7 @@ mod tests {
 
     #[test]
     fn test_cyclonedx_generation_and_schema() {
-        let mut pkg1 = PackageInfo::new("widya-core", "2.6.0", "MIT", "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890");
+        let mut pkg1 = PackageInfo::new("widya-core", "0.1.0", "MIT", "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890");
         pkg1.dependencies.push("widya-math".to_string());
 
         let pkg2 = PackageInfo::new("widya-math", "1.2.0", "Apache-2.0", "1122334455667788990011223344556677889900112233445566778899001122");
@@ -651,7 +651,7 @@ mod tests {
         let json = SbomGenerator::generate_cyclonedx("widya-app", "1.0.0", &packages, &vulns).unwrap();
         assert!(json.contains("\"bomFormat\": \"CycloneDX\""));
         assert!(json.contains("\"specVersion\": \"1.5\""));
-        assert!(json.contains("pkg:widya/widya-core@2.6.0"));
+        assert!(json.contains("pkg:widya/widya-core@0.1.0"));
         assert!(json.contains("pkg:widya/widya-math@1.2.0"));
         assert!(json.contains("WIDYA-SEC-2026-001"));
     }

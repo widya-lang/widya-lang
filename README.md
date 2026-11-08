@@ -3,7 +3,7 @@
 # ⚡ Widya-Lang
 ### *Bahasa Pemrograman Berdaulat, Tipe Aman, Kinerja Tinggi, dan Zero-External-Dependency Stack.*
 
-[![Version](https://img.shields.io/badge/version-2.6.0--GA%20Stable-blue.svg)](https://github.com/widya-lang/widya-lang/releases)
+[![Version](https://img.shields.io/badge/version-0.1.0--Stable-blue.svg)](https://github.com/widya-lang/widya-lang/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Security Policy](https://img.shields.io/badge/security-RFC%209116-red.svg)](SECURITY.md)
 [![Penta-Core Matrix](https://img.shields.io/badge/Penta--Core-100%25%20PASS-brightgreen.svg)](#-penta-core-sovereign-matrix)
@@ -15,11 +15,11 @@
 
 ---
 
-## 🌟 Tentang Widya-Lang (v2.6.0 General Availability / GA)
+## 🌟 Tentang Widya-Lang (v0.1.0 Genesis Release)
 
 **Widya-Lang** adalah bahasa pemrograman tingkat sistem dan aplikasi yang menggabungkan ekspresivitas sintaks dwibahasa (Nusantara & Internasional), inferensi tipe statis matematis **Hindley-Milner**, alokator memori aman berkinerja tinggi, serta arsitektur **Zero-Foreign-Dependency** terpadu untuk ekosistem **OS, Web, Desktop, Mobile, dan 18 Pilar Industri Strategis**.
 
-Mulai rilis **v2.6.0 GA**, Widya-Lang mandiri 100% dari pustaka pihak ketiga: menghapus ketergantungan pada GCC, Clang, GNU ld, LLVM, Node.js, Chromium, Python, dan C-runtime eksternal.
+Mulai rilis **v0.1.0**, Widya-Lang mandiri 100% dari pustaka pihak ketiga: menghapus ketergantungan pada GCC, Clang, GNU ld, LLVM, Node.js, Chromium, Python, dan C-runtime eksternal.
 
 ---
 
@@ -147,7 +147,7 @@ cargo install --path .
 
 # 3. Verifikasi instalasi
 widya --version
-# Output: widya 2.6.0
+# Output: widya 0.1.0
 ```
 
 ### 🍎 Di macOS (Apple Silicon M1/M2/M3 & Intel)
@@ -174,6 +174,9 @@ widya --version
 # Menjalankan skrip langsung
 widya run contoh/01_halo_dunia.wya
 
+# Menjalankan seluruh pengujian unit test bawaan (Auto-Discovery)
+widya test
+
 # Kompilasi ke biner mandiri (.exe / ELF)
 widya compile app.wya --output app.exe
 
@@ -196,7 +199,8 @@ widya dap
 widya wasm app.wya --output app.wasm
 
 # Manajemen Paket WPM & Keamanan Rantai Pasok
-widya wpm add widya-office --versi 2.6.0
+widya wpm add @widya/tensor
+widya wpm add @widya/ai
 widya wpm audit          # Audit rantai pasok (CVE/WSA, SHA256 & Ed25519)
 widya wpm outdated       # Pengecekan versi usang (SemVer)
 widya wpm serve-registry # Jalankan registry lokal di port 8090

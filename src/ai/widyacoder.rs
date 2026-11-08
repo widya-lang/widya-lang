@@ -48,7 +48,7 @@ impl Default for KnowledgeBase {
 impl KnowledgeBase {
     pub fn new() -> Self {
         Self {
-            version: "2.6.0".to_string(),
+            version: "0.1.0".to_string(),
             created_at: chrono::Local::now().to_rfc3339(),
             total_chunks: 0,
             chunks: Vec::new(),

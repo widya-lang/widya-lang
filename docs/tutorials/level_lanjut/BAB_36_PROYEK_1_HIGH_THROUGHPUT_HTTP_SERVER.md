@@ -54,7 +54,7 @@ modul server_reaktor {
 
         fungsi bangun(port: Angka) -> MesinWebReactor {
             cetak("==================================================================");
-            cetak("  MEMULAI WIDYA-REACTOR HIGH-THROUGHPUT HTTP ENGINE v2.6          ");
+            cetak("  MEMULAI WIDYA-REACTOR HIGH-THROUGHPUT HTTP ENGINE v0.1.0          ");
             cetak("==================================================================");
             cetak("[INISIALISASI] Mengonfigurasi socket non-blocking pada port:", port);
             cetak("[INISIALISASI] Mengaktifkan IO Multiplexing epoll Edge-Triggered...");

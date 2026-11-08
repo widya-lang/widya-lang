@@ -3,7 +3,7 @@
 **Edisi Standar Industri Rekayasa Perangkat Lunak Sistem & Arsitektur Kedaulatan Digital**  
 *Penulis: Tim Riset, Perancangan Bahasa, dan Kurikulum Pendidikan Widya-Lang*  
 *Lisensi: Open Source Standard (MIT / Kedaulatan Data Lokal 100%)*  
-*Tahun Rilis: 2026 | Versi Bahasa: v2.6.0 Stable*
+*Tahun Rilis: 2026 | Versi Bahasa: v0.1.0 Stable*
 
 ---
 
@@ -6618,7 +6618,7 @@ modul server_reaktor {
 
         fungsi bangun(port: Angka) -> MesinWebReactor {
             cetak("==================================================================");
-            cetak("  MEMULAI WIDYA-REACTOR HIGH-THROUGHPUT HTTP ENGINE v2.6          ");
+            cetak("  MEMULAI WIDYA-REACTOR HIGH-THROUGHPUT HTTP ENGINE v0.1.0          ");
             cetak("==================================================================");
             cetak("[INISIALISASI] Mengonfigurasi socket non-blocking pada port:", port);
             cetak("[INISIALISASI] Mengaktifkan IO Multiplexing epoll Edge-Triggered...");
@@ -7090,7 +7090,7 @@ modul mesin_broker {
 
         fungsi bangun(simpul: Teks) -> PengelolaBroker {
             cetak("==================================================================");
-            cetak("  MEMULAI WIDYA-BROKER DISTRIBUTED MESSAGE ENGINE v2.6           ");
+            cetak("  MEMULAI WIDYA-BROKER DISTRIBUTED MESSAGE ENGINE v0.1.0           ");
             cetak("==================================================================");
             cetak("[BROKER INIT] Menginisialisasi Commit-Log Storage Engine pada Simpul:", simpul);
 

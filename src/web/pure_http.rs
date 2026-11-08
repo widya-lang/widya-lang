@@ -21,7 +21,7 @@ pub struct PureHttpRequest {
 impl PureHttpRequest {
     pub fn new(method: &str, path: &str) -> Self {
         let mut headers = HashMap::new();
-        headers.insert("User-Agent".to_string(), "Widya-Sovereign-HTTP/2.6.0".to_string());
+        headers.insert("User-Agent".to_string(), "Widya-Sovereign-HTTP/0.1.0".to_string());
         headers.insert("Accept".to_string(), "*/*".to_string());
         Self {
             method: method.to_uppercase(),
@@ -126,7 +126,7 @@ pub struct PureHttpResponse {
 impl PureHttpResponse {
     pub fn new(status_code: u16, status_text: &str) -> Self {
         let mut headers = HashMap::new();
-        headers.insert("Server".to_string(), "Widya-Sovereign-HTTP-Server/2.6.0".to_string());
+        headers.insert("Server".to_string(), "Widya-Sovereign-HTTP-Server/0.1.0".to_string());
         headers.insert("Connection".to_string(), "close".to_string());
         Self {
             status_code,

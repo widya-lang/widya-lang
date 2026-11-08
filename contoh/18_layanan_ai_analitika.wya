@@ -107,7 +107,7 @@ web.get(router, "/kesehatan", fungsi(req) {
     kembalikan web.respons_json({
         "status": "online",
         "layanan": "Widya AI Analytics Service",
-        "versi": "2.6.0"
+        "versi": "0.1.0"
     }, 200);
 });
 

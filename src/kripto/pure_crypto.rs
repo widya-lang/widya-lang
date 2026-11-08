@@ -900,7 +900,7 @@ mod tests {
         let pub_k = PureEd25519::derive_public_key(&seed);
         assert_eq!(pub_k.len(), 32);
 
-        let message = b"Paket Resmi widya-office v2.5.0";
+        let message = b"Paket Resmi widya-office v0.1.0";
         let sig = PureEd25519::sign(&seed, message);
         assert_eq!(sig.len(), 64);
 

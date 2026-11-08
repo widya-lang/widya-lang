@@ -3,7 +3,7 @@
 **Edisi Standar Industri & Kedaulatan Digital Nusantara**  
 *Penulis: Tim Riset, Perancangan Bahasa, dan Kurikulum Pendidikan Widya-Lang*  
 *Lisensi: Open Source Standard (MIT / Kedaulatan Data Lokal 100%)*  
-*Tahun Rilis: 2026 | Versi Bahasa: v2.6.0 Stable*
+*Tahun Rilis: 2026 | Versi Bahasa: v0.1.0 Stable*
 
 ---
 
@@ -130,7 +130,7 @@ Contoh kedua mendemonstrasikan pencetakan informasi spesifikasi lingkungan kerja
 
 fungsi utama() {
     tetap nama_sistem = "Widya Runtime Engine";
-    tetap versi = "2.6.0 Stable";
+    tetap versi = "0.1.0 Stable";
     tetap arsitektur = "x86_64 / ARM64 Universal";
     
     cetak("Informasi Perangkat Lunak:");

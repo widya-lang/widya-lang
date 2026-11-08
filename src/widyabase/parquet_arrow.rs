@@ -257,7 +257,7 @@ impl PureParquetEngine {
         // 3. FileMetaData (JSON / Thrift payload)
         let meta = ParquetFileMetadata {
             version: 2,
-            created_by: "WidyaBase Sovereign Parquet Engine v2.6.0".to_string(),
+            created_by: "WidyaBase Sovereign Parquet Engine v0.1.0".to_string(),
             num_rows: batch.num_rows as i64,
             columns: col_metas,
             row_groups: Vec::new(),
@@ -710,7 +710,7 @@ impl ParquetArrowConnector {
 
         ParquetFileMetadata {
             version: 2,
-            created_by: "WidyaBase Sovereign Parquet Engine v2.6.0".to_string(),
+            created_by: "WidyaBase Sovereign Parquet Engine v0.1.0".to_string(),
             num_rows,
             columns: col_metas,
             row_groups: vec![row_group],

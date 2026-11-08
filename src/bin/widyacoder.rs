@@ -23,7 +23,7 @@ use widya::ai::widyacoder::{KnowledgeBase, KnowledgeMatch, WidyaCoderEngine};
 
 const BANNER: &str = r#"
 ╔══════════════════════════════════════════════════════════════════════╗
-║  ╦ ╦┬╔╦╗╦ ╦╔═╗╔═╗╔═╗╔╦╗╔═╗╦═╗   WidyaCoder v2.6.0 GA Stable         ║
+║  ╦ ╦┬╔╦╗╦ ╦╔═╗╔═╗╔═╗╔╦╗╔═╗╦═╗   WidyaCoder v0.1.0 Stable         ║
 ║  ║║║│ ║║╚╦╝╠═╣║  ║ ║ ║║║╣ ╠╦╝   Asisten AI Pemrograman Berdaulat     ║
 ║  ╚╩╝┴═╩╝ ╩ ╩ ╩╚═╝╚═╝═╩╝╚═╝╩╚═   100% Lokal • HNSW RAG • CPU Native   ║
 ╚══════════════════════════════════════════════════════════════════════╝
@@ -522,7 +522,7 @@ fn handle_http_client(
         ("GET", "/health") | ("GET", "/api/status") => {
             let resp = json!({
                 "status": "ok",
-                "version": "2.6.0",
+                "version": "0.1.0",
                 "total_chunks": engine.kb.total_chunks,
                 "model": model,
                 "endpoint": endpoint

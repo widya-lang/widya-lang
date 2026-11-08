@@ -167,7 +167,7 @@ pub fn handle_hsm_command(aksi: &HsmSubcommands) {
 // ============================================================================
 
 fn setup_default_mcp_server() -> Arc<McpServer> {
-    let server = McpServer::new("widya-mcp-engine", "2.6.0");
+    let server = McpServer::new("widya-mcp-engine", "0.1.0");
 
     // Tool 1: widya_eval
     server.register_tool(
@@ -192,7 +192,7 @@ fn setup_default_mcp_server() -> Arc<McpServer> {
         "Menampilkan informasi rilis dan versi kompiler Widya",
         json!({ "type": "object", "properties": {} }),
         |_: serde_json::Value| {
-            Ok(format!("Widya-Lang v2.6.0 (Sovereign Stack Edition, Protocol MCP {})", MCP_PROTOCOL_VERSION))
+            Ok(format!("Widya-Lang v0.1.0 (Sovereign Stack Edition, Protocol MCP {})", MCP_PROTOCOL_VERSION))
         },
     );
 
@@ -375,9 +375,9 @@ fn audit_sbom(path: &Path, format: &str, output: Option<&Path>) {
     println!("  Format Standar: {}", format.to_uppercase().bright_green().bold());
 
     let mut sample_packages = Vec::new();
-    sample_packages.push(PackageInfo::new("widya-core", "2.6.0", "MIT", "a3b8c2d1e0f9876543210fedcba9876543210fedcba9876543210fedcba98765"));
-    sample_packages.push(PackageInfo::new("widya-kripto", "2.6.0", "MIT", "9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba"));
-    sample_packages.push(PackageInfo::new("widyabase", "2.6.0", "Apache-2.0", "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"));
+    sample_packages.push(PackageInfo::new("widya-core", "0.1.0", "MIT", "a3b8c2d1e0f9876543210fedcba9876543210fedcba9876543210fedcba98765"));
+    sample_packages.push(PackageInfo::new("widya-kripto", "0.1.0", "MIT", "9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba"));
+    sample_packages.push(PackageInfo::new("widyabase", "0.1.0", "Apache-2.0", "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"));
 
     let content = if format.eq_ignore_ascii_case("spdx") {
         let spdx = SbomGenerator::generate_spdx("widya-enterprise-app", "1.0.0", &sample_packages);
@@ -404,8 +404,8 @@ fn audit_licenses(_path: &Path) {
     println!("\n{}", "⚖️  Memeriksa Kepatuhan Lisensi Perusahaan...".bright_cyan().bold());
     let policy = LicensePolicy::default();
     let mut packages = Vec::new();
-    packages.push(PackageInfo::new("widya-core", "2.6.0", "MIT", "hash1"));
-    packages.push(PackageInfo::new("widyabase", "2.6.0", "Apache-2.0", "hash2"));
+    packages.push(PackageInfo::new("widya-core", "0.1.0", "MIT", "hash1"));
+    packages.push(PackageInfo::new("widyabase", "0.1.0", "Apache-2.0", "hash2"));
 
     let report = policy.audit(&packages);
     println!("  Total Paket Dinilai : {}", packages.len());
@@ -418,7 +418,7 @@ fn audit_airgap(vendor_path: &Path) {
     println!("\n{}", "📦 Memeriksa Integritas Vendor Offline / Air-Gapped...".bright_cyan().bold());
     println!("  Direktori Vendor: {}", vendor_path.display());
     let expected = vec![
-        PackageInfo::new("widya-core", "2.6.0", "MIT", "hash_placeholder")
+        PackageInfo::new("widya-core", "0.1.0", "MIT", "hash_placeholder")
     ];
     let report = AirGappedAuditor::audit_vendor_directory(vendor_path, &expected);
     println!("  Status Air-Gap: {}", if report.is_air_gapped_ready { "INTEGRITAS UTUH (Air-Gap Ready)".bright_green().bold() } else { "PERINGATAN INTEGRITAS".bright_yellow().bold() });

@@ -788,7 +788,7 @@ impl PdfDocument {
         // Trailer
         let now = chrono::Utc::now().format("%Y%m%d%H%M%SZ").to_string();
         let trailer = format!(
-            "trailer\n<< /Size {} /Root 1 0 R /Info << /Title ({}) /Author ({}) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:{}) >> >>\nstartxref\n{}\n%%EOF\n",
+            "trailer\n<< /Size {} /Root 1 0 R /Info << /Title ({}) /Author ({}) /Producer (Widya PDF Engine v0.1.0 Enterprise) /CreationDate (D:{}) >> >>\nstartxref\n{}\n%%EOF\n",
             total_objects, escape_pdf_string(&sanitize_pdf_text(&self.title)), escape_pdf_string(&sanitize_pdf_text(&self.author)), now, xref_start
         );
         out.extend_from_slice(trailer.as_bytes());

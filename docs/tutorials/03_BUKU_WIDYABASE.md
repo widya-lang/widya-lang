@@ -65,7 +65,7 @@ modul inisialisasi_widyabase {
 
     fungsi jalankan_server_basis_data() -> Hasil<Boolean, Teks> {
         cetak("==================================================================");
-        cetak("  MEMULAI WIDYABASE UNIFIED DATABASE SERVER v2.6.0                ");
+        cetak("  MEMULAI WIDYABASE UNIFIED DATABASE SERVER v0.1.0                ");
         cetak("  Kedaulatan Penyimpanan Data Transaksional Nasional              ");
         cetak("==================================================================");
 

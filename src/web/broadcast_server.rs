@@ -131,7 +131,7 @@ impl BroadcastStudioServer {
     ) {
         println!("\n{}", "╔═══════════════════════════════════════════════════════════════════════════════════════════╗".bright_cyan().bold());
         println!("{}", "║  📡 WIDYA SOVEREIGN BROADCAST STUDIO - OB VAN STANDALONE LAUNCHER                         ║".bright_white().bold());
-        println!("{}", "║     v2.6.0 • Full-Duplex WebRTC Signaling Hub & Zero-Latency Tally Router          ║".bright_cyan());
+        println!("{}", "║     v0.1.0 • Full-Duplex WebRTC Signaling Hub & Zero-Latency Tally Router          ║".bright_cyan());
         println!("{}", "╚═══════════════════════════════════════════════════════════════════════════════════════════╝".bright_cyan().bold());
 
         println!("\n{}", "🚀 KONSOL OPERATOR & ANTARMUKA SIARAN TERHUBUNG:".bright_yellow().bold());

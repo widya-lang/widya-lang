@@ -3,7 +3,7 @@
 **Edisi Standar Industri & Kedaulatan Digital Nusantara**  
 *Penulis: Tim Riset, Perancangan Bahasa, dan Kurikulum Pendidikan Widya-Lang*  
 *Lisensi: Open Source Standard (MIT / Kedaulatan Data Lokal 100%)*  
-*Tahun Rilis: 2026 | Versi Bahasa: v2.6.0 Stable*
+*Tahun Rilis: 2026 | Versi Bahasa: v0.1.0 Stable*
 
 ---
 

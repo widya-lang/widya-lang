@@ -572,7 +572,7 @@ impl ApkSigner {
         // 1. MANIFEST.MF
         let mut manifest_mf = String::new();
         manifest_mf.push_str("Manifest-Version: 1.0\r\n");
-        manifest_mf.push_str("Built-By: Widya Sovereign Mobile Packager v2.6.0\r\n");
+        manifest_mf.push_str("Built-By: Widya Sovereign Mobile Packager v0.1.0\r\n");
         manifest_mf.push_str("Created-By: Widya-Lang AOT Native Compiler Engine\r\n\r\n");
 
         for &(name, content) in files {
