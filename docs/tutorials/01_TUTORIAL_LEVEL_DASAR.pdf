@@ -35,7 +35,7 @@ BT /F2 16 Tf 0.05 0.15 0.35 rg 1 0 0 1 50 719.89 Tm (DASAR) Tj ET
 BT /F2 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 695.89 Tm (Edisi Standar Industri & Kedaulatan Digital Nusantara) Tj ET
 BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 677.89 Tm (Penulis: Tim Riset, Perancangan Bahasa, dan Kurikulum Pendidikan Widya-Lang) Tj ET
 BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 659.89 Tm (Lisensi: Open Source Standard \(MIT / Kedaulatan Data Lokal 100%\)) Tj ET
-BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 641.89 Tm (Tahun Rilis: 2026 | Versi Bahasa: v2.6.0 Stable) Tj ET
+BT /F3 10 Tf 0.15 0.2 0.25 rg 1 0 0 1 50 641.89 Tm (Tahun Rilis: 2026 | Versi Bahasa: v0.1.0 Stable) Tj ET
 0.8 0.85 0.9 RG 0.8 w 50 629.89 m 530 629.89 l S
 endstream
 endobj
@@ -15171,7 +15171,7 @@ BT /F4 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 111 331.39 Tm (versi) Tj ET
 BT /F4 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 136.5 331.39 Tm ( ) Tj ET
 BT /F4 8.5 Tf 0.35 0.4 0.5 rg 1 0 0 1 141.6 331.39 Tm (=) Tj ET
 BT /F4 8.5 Tf 0.15 0.2 0.25 rg 1 0 0 1 146.70001 331.39 Tm ( ) Tj ET
-BT /F4 8.5 Tf 0.12 0.55 0.25 rg 1 0 0 1 151.80002 331.39 Tm ("2.6.0 Stable") Tj ET
+BT /F4 8.5 Tf 0.12 0.55 0.25 rg 1 0 0 1 151.80002 331.39 Tm ("0.1.0 Stable") Tj ET
 BT /F4 8.5 Tf 0.35 0.4 0.5 rg 1 0 0 1 223.20001 331.39 Tm (;) Tj ET
 0.96 0.97 0.98 rg 50 316.39 480 12 re f
 0.35 0.4 0.48 RG 3.5 w 50 316.39 m 50 328.39 l S
@@ -66977,7 +66977,7 @@ xref
 0004614698 00000 n 
 0004614879 00000 n 
 trailer
-<< /Size 1010 /Root 1 0 R /Info << /Title (BUKU PANDUAN LENGKAP WIDYA-LANG: LEVEL DASAR) /Author (Widya Office Suite) /Producer (Widya PDF Engine v2.5.0 Enterprise) /CreationDate (D:20261019155442Z) >> >>
+<< /Size 1010 /Root 1 0 R /Info << /Title (BUKU PANDUAN LENGKAP WIDYA-LANG: LEVEL DASAR) /Author (Widya Office Suite) /Producer (Widya PDF Engine v0.1.0 Enterprise) /CreationDate (D:20261108044440Z) >> >>
 startxref
 4615037
 %%EOF

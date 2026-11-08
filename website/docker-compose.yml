@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: widya_lang_portal
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./downloads:/var/www/widya-lang.org/downloads:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro

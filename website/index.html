@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widya-Lang — Bahasa Pemrograman Modern & Berdaulat Nusantara</title>
+  <meta name="description" content="Widya-Lang adalah bahasa pemrograman modern berkinerja tinggi dengan inferensi tipe Hindley-Milner, Full Self-Hosting, serta ekosistem terpadu untuk Web, Desktop, dan Mobile.">
+  <meta name="keywords" content="widya-lang, widya, bahasa pemrograman indonesia, hindley-milner, self-hosting, rust, widyaweb, widyabase, widyadesktop, widyamobile">
+  <meta name="author" content="Tim Riset & Pengembang Widya-Lang">
+
+  <!-- Open Graph / Meta Sosial -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://widya-lang.org/">
+  <meta property="og:title" content="Widya-Lang — Bahasa Pemrograman Modern & Berdaulat">
+  <meta property="og:description" content="Bahasa pemrograman modern dengan tipe aman, kompilasi mandiri bebas libc, dan kurikulum interaktif.">
+
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Hero Section Styling */
+    .hero {
+      padding: 4.5rem 0 3.5rem 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      color: var(--text-main);
+    }
+
+    .hero h1 span.highlight {
+      background: linear-gradient(135deg, var(--primary), #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p.lead {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 820px;
+      margin: 0 auto 2.25rem auto;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.75rem;
+    }
+
+    /* Install Snippet Box */
+    .install-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 0.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .install-tabs {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.25rem;
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.5rem;
+    }
+
+    .install-tab {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .install-tab.active {
+      background: var(--bg-card);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .install-cmd-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--bg-code);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .install-cmd-text {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .btn-copy {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+      background: var(--border-subtle);
+      color: var(--text-main);
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Core Features Grid */
+    .features-section {
+      padding: 4.5rem 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.85rem;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-active);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border-active);
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+      color: var(--text-main);
+      letter-spacing: -0.015em;
+    }
+
+    .feature-card p {
+      font-size: 0.94rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Showcase Section */
+    .showcase-section {
+      padding: 4.5rem 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .showcase-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .showcase-tab {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.35rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .showcase-tab:hover {
+      border-color: var(--border-light);
+    }
+
+    .showcase-tab.active {
+      border-color: var(--primary);
+      background: var(--bg-card-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .showcase-tab h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .showcase-tab p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Download Section */
+    .download-section {
+      padding: 5rem 0;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .dl-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all var(--transition-fast);
+    }
+
+    .dl-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .dl-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .dl-card h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .dl-meta {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 992px) {
+      .hero h1 { font-size: 2.4rem; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .showcase-grid { grid-template-columns: 1fr; }
+      .download-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.95rem; }
+      .hero p.lead { font-size: 1.05rem; }
+      .download-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-bg"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">W</div>
+        <span>Widya-Lang</span>
+        <span class="brand-badge">v0.1.0 Stabil</span>
+      </a>
+
+      <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link active">Beranda</a></li>
+        <li><a href="get-started.html" class="nav-link">Memulai</a></li>
+        <li><a href="playground.html" class="nav-link">Playground</a></li>
+        <li><a href="lms.html" class="nav-link">Akademi LMS</a></li>
+        <li><a href="apps.html" class="nav-link">Aplikasi</a></li>
+        <li><a href="resources.html" class="nav-link">Dokumentasi</a></li>
+        <li><a href="use-cases.html" class="nav-link">Studi Kasus</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Ganti Tema">☀️</button>
+        <a href="https://github.com/widya-lang/widya-lang" target="_blank" rel="noopener" class="btn-github">
+          <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+        <button class="mobile-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="badge badge-sage">🌱 Rilis Perdana Resmi v0.1.0 • Bahasa Pemrograman Berdaulat & Mandiri</span>
+      </div>
+      <h1>Rekayasa Perangkat Lunak Berkinerja Tinggi <br><span class="highlight">Elegan, Aman, dan Berdaulat</span></h1>
+      <p class="lead">
+        Bahasa pemrograman modern yang dirancang dari fondasi pertama dengan inferensi tipe <strong>Hindley-Milner</strong>, 
+        kompilator <strong>Full Self-Hosting</strong>, komunikasi langsung kernel OS bebas libc, serta ekosistem terpadu untuk Web, Desktop, dan Mobile.
+      </p>
+
+      <div class="hero-actions">
+        <a href="lms.html" class="btn btn-primary">🎓 Akademi & Belajar LMS</a>
+        <a href="playground.html" class="btn btn-secondary">⚡ Coba di Playground</a>
+        <a href="#unduh" class="btn btn-outline">📥 Unduh Rilis v0.1.0</a>
+      </div>
+
+      <!-- Install Snippet Box -->
+      <div class="install-wrapper">
+        <div class="install-tabs">
+          <div class="install-tab active" onclick="switchInstall('win', this)">Windows (PowerShell)</div>
+          <div class="install-tab" onclick="switchInstall('nix', this)">Linux / macOS (Bash)</div>
+          <div class="install-tab" onclick="switchInstall('git', this)">Git Clone & Cargo</div>
+        </div>
+        <div class="install-cmd-box">
+          <span class="install-cmd-text" id="installCmd">iwr https://widya-lang.org/downloads/widya-v0.1.0-windows-x64.zip -OutFile widya.zip; Expand-Archive widya.zip .</span>
+          <button class="btn-copy" onclick="copyText('installCmd', this)">Salin Perintah</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Core Features Section -->
+  <section class="features-section" id="fitur">
+    <div class="container">
+      <div class="section-header">
+        <h2>Prinsip Rekayasa & Keunggulan Inti</h2>
+        <p>Enam pilar fundamental yang membedakan Widya-Lang dari bahasa pemrograman konvensional.</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3>Inferensi Tipe Hindley-Milner</h3>
+          <p>
+            Ketik kode secara ringkas dan alami layaknya bahasa dinamis tanpa anotasi tipe berlebih, namun nikmati 100% kepastian keamanan tipe saat waktu-kompilasi.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>Full Self-Hosting Compiler</h3>
+          <p>
+            Kompilator Widya ditulis dalam bahasa Widya itu sendiri. Terverifikasi deterministik penuh melalui tahapan <em>Stage-0 &rarr; Stage-1 &rarr; Stage-2</em> tanpa deviasi biner.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Pilar Kemandirian (Bebas Libc)</h3>
+          <p>
+            Berkomunikasi langsung dengan kernel Linux (x86_64/ARM64) melalui <em>Direct Raw Syscalls</em> tanpa ketergantungan runtime glibc atau pustaka pihak ketiga.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Kriptografi Pasca-Kuantum (PQC)</h3>
+          <p>
+            Kesiapan era komputasi kuantum dengan algoritma standar NIST FIPS 203 (ML-KEM Kyber) dan FIPS 204 (ML-DSA Dilithium) yang terpasang secara native.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>Manajer Paket WPM Berdaulat</h3>
+          <p>
+            Penyelesai pohon dependensi matematis berbasis PubGrub, verifikasi integritas Ed25519, serta mode <em>zero-trust offline vendoring</em> untuk keamanan rantai pasok.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>Ekosistem Terpadu Berdaulat</h3>
+          <p>
+            Mendukung kerangka kerja rekayasa aplikasi tingkat industri: <strong>WidyaBase</strong> (basis data ACID), <strong>WidyaWeb</strong> (HTTP/3 SSR), <strong>WidyaDesktop</strong>, dan <strong>WidyaMobile</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Code Showcase -->
+  <section class="showcase-section" id="showcase">
+    <div class="container">
+      <div class="section-header">
+        <h2>Sintaks Alami, Logika Presisi</h2>
+        <p>Eksplorasi kode program Widya-Lang dalam sintaks dwi-bahasa Nusantara yang intuitif dan ekspresif.</p>
+      </div>
+
+      <div class="showcase-grid">
+        <div class="showcase-tabs">
+          <div class="showcase-tab active" onclick="switchCode(0, this)">
+            <h4>01. Halo Dunia & Inferensi Tipe</h4>
+            <p>Deklarasi variabel otomatis dan fungsi modular.</p>
+          </div>
+          <div class="showcase-tab" onclick="switchCode(1, this)">
+            <h4>02. ADT & Exhaustive Pattern Matching</h4>
+            <p>Pencocokan pola struktural aman tanpa bahaya null-pointer.</p>
+          </div>
+          <div class="showcase-tab" onclick="switchCode(2, this)">
+            <h4>03. Utas Paralel & Saluran Komunikasi</h4>
+            <p>Model Aktor konkuren bebas data-race pada tingkat kernel OS.</p>
+          </div>
+          <div class="showcase-tab" onclick="switchCode(3, this)">
+            <h4>04. Kriptografi Pasca-Kuantum (PQC)</h4>
+            <p>Enkapsulasi kunci ML-KEM Kyber-768 tahan serangan kuantum.</p>
+          </div>
+        </div>
+
+        <div class="code-window">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="code-dot red"></div>
+              <div class="code-dot yellow"></div>
+              <div class="code-dot green"></div>
+            </div>
+            <span class="code-title" id="codeFilename">program.wya</span>
+            <button class="btn-copy" onclick="copyText('codeDisplay', this)">Salin</button>
+          </div>
+          <pre class="code-body" id="codeDisplay"><code><span class="cmt">// Program Perdana: Halo Dunia & Inferensi Tipe</span>
+<span class="kw">fungsi</span> <span class="fn">sapa</span>(nama) {
+    <span class="kw">kembalikan</span> <span class="str">"Selamat datang di Widya-Lang, "</span> + nama + <span class="str">"!"</span>;
+}
+
+<span class="kw">fungsi</span> <span class="fn">utama</span>() {
+    <span class="kw">variabel</span> bahasa = <span class="str">"Widya"</span>;
+    <span class="kw">variabel</span> versi = <span class="str">"0.1.0"</span>;
+    
+    <span class="fn">cetak</span>(<span class="fn">sapa</span>(bahasa));
+    <span class="fn">cetak</span>(<span class="str">"Versi Sistem: "</span> + versi);
+}</code></pre>
+          <div class="terminal-output" id="terminalOutput">
+            &gt; widya jalankan program.wya<br>
+            Selamat datang di Widya-Lang, Widya!<br>
+            Versi Sistem: 0.1.0<br>
+            [Selesai dalam 1.2 ms]
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="download-section" id="unduh">
+    <div class="container">
+      <div class="section-header">
+        <h2>Unduh Rilis Biner Mandiri (v0.1.0 Stabil)</h2>
+        <p>Biner mandiri pra-kompilasi siap jalan tanpa konfigurasi runtime eksternal.</p>
+      </div>
+
+      <div class="download-grid">
+        <!-- Windows -->
+        <div class="dl-card">
+          <div>
+            <div class="dl-icon">🪟</div>
+            <h4>Windows (x64)</h4>
+            <div class="dl-meta">ZIP Biner Mandiri • 18.17 MB<br>Kompilator, VM &amp; Pustaka Standar</div>
+          </div>
+          <a href="downloads/widya-v0.1.0-windows-x64.zip" class="btn btn-primary" download>Unduh .ZIP</a>
+        </div>
+
+        <!-- Linux / Tarball -->
+        <div class="dl-card">
+          <div>
+            <div class="dl-icon">🐧</div>
+            <h4>Linux (x86_64)</h4>
+            <div class="dl-meta">Cargo / Bare-Metal Build<br>Zero-Libc Direct Syscall</div>
+          </div>
+          <a href="get-started.html#linux" class="btn btn-secondary">Panduan Linux</a>
+        </div>
+
+        <!-- VS Code Extension -->
+        <div class="dl-card">
+          <div>
+            <div class="dl-icon">🧩</div>
+            <h4>VS Code Extension</h4>
+            <div class="dl-meta">Paket VSIX Resmi v0.1.0<br>Penyorotan Sintaks &amp; Snippets</div>
+          </div>
+          <a href="downloads/widya-lang-0.1.0.vsix" class="btn btn-secondary" download>Unduh .VSIX</a>
+        </div>
+
+        <!-- PDF Handbook -->
+        <div class="dl-card">
+          <div>
+            <div class="dl-icon">📚</div>
+            <h4>Buku Tutorial ISO PDF</h4>
+            <div class="dl-meta">Level Dasar (229 Halaman)<br>ISO 32000-1 Vektor Murni</div>
+          </div>
+          <a href="downloads/01_TUTORIAL_LEVEL_DASAR.pdf" class="btn btn-secondary" target="_blank">Buka PDF</a>
+        </div>
+      </div>
+
+      <!-- SHA256 Checksum Verification Box -->
+      <div class="install-wrapper" style="max-width: 820px;">
+        <div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.84rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono);">SHA256SUMS.txt (Integritas Kriptografi Rilis)</span>
+          <a href="downloads/SHA256SUMS.txt" target="_blank" style="font-size: 0.8rem; color: var(--primary);">Lihat Berkas Asli</a>
+        </div>
+        <div style="padding: 1rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); line-height: 1.7; overflow-x: auto;">
+          cf5da0a6cf5fe74188bf6ab3b59c3444ee5b5890b0598157e9f593f25d809ea1  widya-v0.1.0-windows-x64.zip<br>
+          c784e75d8c46b439491fe91907f875eb2d1ba211dd74a4804c4c56da4315cb2b  widya-lang-0.1.0.vsix<br>
+          2f21e02fd71ec415fbb480ee9f44b5c6c815174762be13b2a0f434c241b40c08  01_TUTORIAL_LEVEL_DASAR.pdf<br>
+          dcb2d133d9d211f212853132f9ca1d11b0c406069ffddd12072386ad1a88ef36  02_TUTORIAL_LEVEL_LANJUT.pdf
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">
+            <div class="brand-icon">W</div>
+            <span>Widya-Lang</span>
+          </a>
+          <p>
+            Bahasa pemrograman modern berdaulat Nusantara. Dirancang dengan presisi logika matematis tinggi, keamanan memori statis, dan ekosistem terpadu bebas ketergantungan asing.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigasi</h4>
+          <ul>
+            <li><a href="index.html">Beranda</a></li>
+            <li><a href="get-started.html">Panduan Memulai</a></li>
+            <li><a href="playground.html">Web Playground</a></li>
+            <li><a href="lms.html">Akademi &amp; LMS</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Ekosistem</h4>
+          <ul>
+            <li><a href="apps.html">Galeri Aplikasi</a></li>
+            <li><a href="resources.html">Sumber Daya &amp; PDF</a></li>
+            <li><a href="use-cases.html">Studi Kasus Industri</a></li>
+            <li><a href="#unduh">Unduh Biner v0.1.0</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Kedaulatan &amp; Legal</h4>
+          <ul>
+            <li><a href="https://github.com/widya-lang/widya-lang" target="_blank">Repositori GitHub</a></li>
+            <li><a href=".well-known/security.txt">Kebijakan Keamanan</a></li>
+            <li><a href="sitemap.xml">Peta Situs (Sitemap)</a></li>
+            <li><span>Lisensi Terbuka MIT</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Tim Riset &amp; Pengembang Widya-Lang. Seluruh hak cipta dilindungi.</div>
+        <div>Kedaulatan Komputasi Nusantara • Rilis v0.1.0</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // Tab switching for install snippet
+    const installSnippets = {
+      win: 'iwr https://widya-lang.org/downloads/widya-v0.1.0-windows-x64.zip -OutFile widya.zip; Expand-Archive widya.zip .',
+      nix: 'curl -sSL https://raw.githubusercontent.com/widya-lang/widya-lang/master/install.sh | bash',
+      git: 'git clone https://github.com/widya-lang/widya-lang.git; cd widya-lang; cargo build --release'
+    };
+
+    function switchInstall(os, tabEl) {
+      document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+      tabEl.classList.add('active');
+      document.getElementById('installCmd').innerText = installSnippets[os];
+    }
+
+    // Code showcase snippet definitions
+    const codeSnippets = [
+      {
+        filename: '01_halo_dunia.wya',
+        code: `<span class="cmt">// Program Perdana: Halo Dunia &amp; Inferensi Tipe</span>
+<span class="kw">fungsi</span> <span class="fn">sapa</span>(nama) {
+    <span class="kw">kembalikan</span> <span class="str">"Selamat datang di Widya-Lang, "</span> + nama + <span class="str">"!"</span>;
+}
+
+<span class="kw">fungsi</span> <span class="fn">utama</span>() {
+    <span class="kw">variabel</span> bahasa = <span class="str">"Widya"</span>;
+    <span class="kw">variabel</span> versi = <span class="str">"0.1.0"</span>;
+    
+    <span class="fn">cetak</span>(<span class="fn">sapa</span>(bahasa));
+    <span class="fn">cetak</span>(<span class="str">"Versi Sistem: "</span> + versi);
+}`,
+        output: `&gt; widya jalankan 01_halo_dunia.wya\nSelamat datang di Widya-Lang, Widya!\nVersi Sistem: 0.1.0\n[Selesai dalam 1.2 ms]`
+      },
+      {
+        filename: '02_pola_adt.wya',
+        code: `<span class="cmt">// Algebraic Data Types (ADT) &amp; Pencocokan Pola</span>
+<span class="kw">pilihan</span> <span class="typ">StatusTransaksi</span> {
+    Berhasil(<span class="typ">Biner</span>),
+    Gagal(<span class="typ">Teks</span>),
+    Menunggu,
+}
+
+<span class="kw">fungsi</span> <span class="fn">evaluasi_status</span>(status: <span class="typ">StatusTransaksi</span>) {
+    <span class="kw">cocokkan</span> status {
+        <span class="typ">StatusTransaksi</span>::Berhasil(tx_id) =&gt; <span class="fn">cetak</span>(<span class="str">"Sukses ID: "</span> + tx_id),
+        <span class="typ">StatusTransaksi</span>::Gagal(alasan)   =&gt; <span class="fn">cetak</span>(<span class="str">"Galat: "</span> + alasan),
+        <span class="typ">StatusTransaksi</span>::Menunggu         =&gt; <span class="fn">cetak</span>(<span class="str">"Memproses di antrean konsensus..."</span>),
+    }
+}`,
+        output: `&gt; widya jalankan 02_pola_adt.wya\nSukses ID: 0x9f8b1a3c7e4d\n[Pemeriksaan kehabisan varian: 100% EXHAUSTIVE]`
+      },
+      {
+        filename: '03_konkurensi_utas.wya',
+        code: `<span class="cmt">// Utas Paralel Kernel OS &amp; Saluran Bebas Data-Race</span>
+<span class="kw">fungsi</span> <span class="fn">pekerja_latar</span>(kanal_kirim) {
+    <span class="kw">untuk</span> i <span class="kw">dalam</span> <span class="num">1</span>..<span class="num">4</span> {
+        <span class="fn">saluran_kirim</span>(kanal_kirim, <span class="str">"Data Sensor Batch #"</span> + i);
+    }
+}
+
+<span class="kw">fungsi</span> <span class="fn">utama</span>() {
+    <span class="kw">variabel</span> (tx, rx) = <span class="fn">buat_saluran</span>();
+    <span class="fn">buat_utas</span>(<span class="kw">fungsi</span>() { <span class="fn">pekerja_latar</span>(tx); });
+    
+    <span class="kw">untuk</span> _ <span class="kw">dalam</span> <span class="num">1</span>..<span class="num">4</span> {
+        <span class="kw">variabel</span> pesan = <span class="fn">saluran_terima</span>(rx);
+        <span class="fn">cetak</span>(<span class="str">"Diterima: "</span> + pesan);
+    }
+}`,
+        output: `&gt; widya jalankan 03_konkurensi_utas.wya\nDiterima: Data Sensor Batch #1\nDiterima: Data Sensor Batch #2\nDiterima: Data Sensor Batch #3\n[Konkurensi OS Murni: 0 Data Races]`
+      },
+      {
+        filename: '04_pqc_kyber.wya',
+        code: `<span class="cmt">// Kriptografi Pasca-Kuantum: NIST FIPS 203 ML-KEM Kyber-768</span>
+<span class="kw">impor</span> kripto::pqc;
+
+<span class="kw">fungsi</span> <span class="fn">buat_kunci_kuantum</span>() {
+    <span class="kw">variabel</span> (kunci_publik, kunci_rahasia) = pqc::<span class="fn">mlkem768_buat_kunci</span>();
+    <span class="kw">variabel</span> (teks_sandi, kunci_bersama_a) = pqc::<span class="fn">mlkem768_enkapsulasi</span>(kunci_publik);
+    
+    <span class="kw">variabel</span> kunci_bersama_b = pqc::<span class="fn">mlkem768_dekapsulasi</span>(teks_sandi, kunci_rahasia);
+    
+    <span class="fn">tegaskan</span>(kunci_bersama_a == kunci_bersama_b);
+    <span class="fn">cetak</span>(<span class="str">"Jabat-tangan Kripto Pasca-Kuantum Berhasil Terverifikasi!"</span>);
+}`,
+        output: `&gt; widya jalankan 04_pqc_kyber.wya\nJabat-tangan Kripto Pasca-Kuantum Berhasil Terverifikasi!\n[Tahan Dekripsi Komputer Kuantum: NIST FIPS 203]`
+      }
+    ];
+
+    function switchCode(idx, tabEl) {
+      document.querySelectorAll('.showcase-tab').forEach(t => t.classList.remove('active'));
+      tabEl.classList.add('active');
+      const snippet = codeSnippets[idx];
+      document.getElementById('codeFilename').innerText = snippet.filename;
+      document.getElementById('codeDisplay').innerHTML = `<code>${snippet.code}</code>`;
+      document.getElementById('terminalOutput').innerHTML = snippet.output.replace(/\n/g, '<br>');
+    }
+  </script>
+</body>
+</html>
