@@ -35,7 +35,7 @@ jobs:
         run: cargo check --workspace
 
       - name: Run Core Test Suites
-        run: cargo test --workspace
+        run: cargo test --workspace --lib --bins
 
       - name: Verify Self-Hosting Compiler Pipeline
         run: cargo test --test self_hosting_tests

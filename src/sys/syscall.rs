@@ -20,7 +20,7 @@ impl DirectSyscall {
     #[inline(always)]
     pub unsafe fn write(fd: i32, buf: *const u8, count: usize) -> isize {
         let ret: isize;
-        #[cfg(target_arch = "x86_64")]
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
         unsafe {
             std::arch::asm!(
                 "syscall",
@@ -34,8 +34,15 @@ impl DirectSyscall {
                 options(nostack)
             );
         }
-        #[cfg(not(target_arch = "x86_64"))]
+        #[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
         {
+            use std::io::Write;
+            let s = unsafe { std::slice::from_raw_parts(buf, count) };
+            if fd == 1 {
+                let _ = std::io::stdout().write_all(s);
+            } else if fd == 2 {
+                let _ = std::io::stderr().write_all(s);
+            }
             ret = count as isize;
         }
         ret
@@ -45,7 +52,7 @@ impl DirectSyscall {
     #[inline(always)]
     pub unsafe fn read(fd: i32, buf: *mut u8, count: usize) -> isize {
         let ret: isize;
-        #[cfg(target_arch = "x86_64")]
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
         unsafe {
             std::arch::asm!(
                 "syscall",
@@ -59,9 +66,15 @@ impl DirectSyscall {
                 options(nostack)
             );
         }
-        #[cfg(not(target_arch = "x86_64"))]
+        #[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
         {
-            ret = 0;
+            use std::io::Read;
+            if fd == 0 {
+                let s = unsafe { std::slice::from_raw_parts_mut(buf, count) };
+                ret = std::io::stdin().read(s).unwrap_or(0) as isize;
+            } else {
+                ret = 0;
+            }
         }
         ret
     }
@@ -77,7 +90,7 @@ impl DirectSyscall {
         offset: i64,
     ) -> *mut u8 {
         let ret: *mut u8;
-        #[cfg(target_arch = "x86_64")]
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
         unsafe {
             std::arch::asm!(
                 "syscall",
@@ -94,9 +107,14 @@ impl DirectSyscall {
                 options(nostack)
             );
         }
-        #[cfg(not(target_arch = "x86_64"))]
+        #[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
         {
-            ret = std::ptr::null_mut();
+            let _ = (addr, prot, flags, fd, offset);
+            if let Ok(layout) = std::alloc::Layout::from_size_align(length, 4096) {
+                ret = unsafe { std::alloc::alloc_zeroed(layout) };
+            } else {
+                ret = std::ptr::null_mut();
+            }
         }
         ret
     }
@@ -105,7 +123,7 @@ impl DirectSyscall {
     #[inline(always)]
     pub unsafe fn munmap(addr: *mut u8, length: usize) -> isize {
         let ret: isize;
-        #[cfg(target_arch = "x86_64")]
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
         unsafe {
             std::arch::asm!(
                 "syscall",
@@ -118,8 +136,15 @@ impl DirectSyscall {
                 options(nostack)
             );
         }
-        #[cfg(not(target_arch = "x86_64"))]
+        #[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
         {
+            if !addr.is_null() {
+                if let Ok(layout) = std::alloc::Layout::from_size_align(length, 4096) {
+                    unsafe {
+                        std::alloc::dealloc(addr, layout);
+                    }
+                }
+            }
             ret = 0;
         }
         ret
@@ -129,7 +154,7 @@ impl DirectSyscall {
     #[inline(always)]
     pub unsafe fn getpid() -> i32 {
         let ret: isize;
-        #[cfg(target_arch = "x86_64")]
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
         unsafe {
             std::arch::asm!(
                 "syscall",
@@ -140,9 +165,9 @@ impl DirectSyscall {
                 options(nostack)
             );
         }
-        #[cfg(not(target_arch = "x86_64"))]
+        #[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
         {
-            ret = 1;
+            ret = std::process::id() as isize;
         }
         ret as i32
     }

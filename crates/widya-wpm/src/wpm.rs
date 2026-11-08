@@ -1051,7 +1051,14 @@ impl WpmRegistryServer {
                 }
             }
         }
-        results.sort_by(|a, b| b.total_downloads.cmp(&a.total_downloads));
+        results.sort_by(|a, b| {
+            let a_name_match = a.name.to_lowercase().contains(&q);
+            let b_name_match = b.name.to_lowercase().contains(&q);
+            if a_name_match != b_name_match {
+                return b_name_match.cmp(&a_name_match);
+            }
+            b.total_downloads.cmp(&a.total_downloads)
+        });
         results
     }
 
